@@ -25,24 +25,42 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 public:
-    // 生成网格
-    void GenerateGrid(int32 GridWidth, int32 GridHeight);
+	UFUNCTION(BlueprintCallable, Category = "Hex Grid")
+    void GenerateGrid(int32 Width, int32 Height);
 
-    // 获取相邻格子
-    TArray<ALFPHexTile*> GetNeighbors(const FLFPHexCoordinates& Coords) const;
+	UFUNCTION(BlueprintCallable, Category = "Hex Grid")
+	TArray<ALFPHexTile*> GetNeighbors(const FLFPHexCoordinates& Coords) const;
 
-    // A*寻路算法
-    TArray<ALFPHexTile*> FindPath(ALFPHexTile* Start, ALFPHexTile* End);
+	/*UFUNCTION(BlueprintCallable, Category = "Hex Grid")
+	TArray<ALFPHexTile*> FindPath(ALFPHexTile* Start, ALFPHexTile* End);*/
 
-    // 获取可移动范围
-    TArray<ALFPHexTile*> GetMovementRange(ALFPHexTile* StartTile, int32 MoveRange);
+	UFUNCTION(BlueprintCallable, Category = "Hex Grid")
+	TArray<ALFPHexTile*> GetMovementRange(ALFPHexTile* StartTile, int32 MoveRange);
+
+	UFUNCTION(BlueprintCallable, Category = "Hex Grid")
+	ALFPHexTile* GetTileAtCoordinates(const FLFPHexCoordinates& Coords) const;
 
 private:
     UPROPERTY(EditDefaultsOnly)
     TSubclassOf<ALFPHexTile> HexTileClass;
 
-    UPROPERTY(EditAnywhere)
-    float HexSize = 100.0f;
+	UPROPERTY(EditAnywhere, Category = "Hex Grid")
+	float HexSize;
 
-    TMap<FIntPoint, ALFPHexTile*> GridMap; // 使用(Q,R)作为键
+	UPROPERTY(EditAnywhere, Category = "Hex Grid")
+	int32 GridWidth;
+
+	UPROPERTY(EditAnywhere, Category = "Hex Grid")
+	int32 GridHeight;
+
+	UPROPERTY(EditAnywhere, Category = "Debug")
+	bool bDrawDebug = true;
+
+private:
+	TMap<FIntPoint, ALFPHexTile*> GridMap;
+
+	void DrawDebugHexagon(const FVector& Center, FColor Color) const;
+
+	// 六边形方向定义 (静态常量)
+	static const TArray<FLFPHexCoordinates> HexDirections;
 };

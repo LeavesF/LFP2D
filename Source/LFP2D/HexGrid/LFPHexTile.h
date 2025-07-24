@@ -70,8 +70,11 @@ public:
 	// ∏ﬂ¡¡œ‘ æ
 	void Highlight(bool bActive);
 
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr< UPaperSpriteComponent> SpriteComponent;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	USceneComponent* RootSceneComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UPaperSpriteComponent* SpriteComponent;
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UPaperSprite> DefaultSprite;

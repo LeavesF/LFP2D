@@ -2,6 +2,7 @@
 
 
 #include "LFP2D/HexGrid/LFPHexTile.h"
+#include "PaperSpriteComponent.h"
 
 // Sets default values
 ALFPHexTile::ALFPHexTile()
@@ -9,6 +10,13 @@ ALFPHexTile::ALFPHexTile()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	// 创建根场景组件
+	RootSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
+	RootComponent = RootSceneComponent;
+
+	// 创建并附加精灵组件到根组件
+	SpriteComponent = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("SpriteComponent"));
+	SpriteComponent->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
