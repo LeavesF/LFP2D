@@ -58,8 +58,11 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 public:
+	FLFPHexCoordinates GetCoordinates() { return Coordinates; }
 	// 设置坐标数据
 	void SetCoordinates(const FLFPHexCoordinates& NewCoords) { Coordinates = NewCoords; }
+
+	bool IsWalkable() { return bIsWalkable; }
 
 	// 设置格子状态
 	void SetState(bool bWalkable, bool bOccupied);
