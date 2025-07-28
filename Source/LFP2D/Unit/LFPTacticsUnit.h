@@ -4,37 +4,97 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "LFP2D/HexGrid/LFPHexTile.h"
+#include "Components/TimelineComponent.h"
+#include "PaperSpriteComponent.h"
+#include "Components/ArrowComponent.h"
 #include "LFPTacticsUnit.generated.h"
 
-class ALFPHexTile;
+class ALFPHexGridManager;
 
 UCLASS()
 class LFP2D_API ALFPTacticsUnit : public AActor
 {
 	GENERATED_BODY()
 	
-public:	
-	// Sets default values for this actor's properties
-	ALFPTacticsUnit();
-
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
 public:
-	// 移动到目标格子
-	void MoveToTile(ALFPHexTile* TargetTile);
+    ALFPTacticsUnit();
 
-	// 计算可移动范围
-	void CalculateMoveRange();
+    // 设置/获取当前坐标
+    UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
+    void SetCurrentCoordinates(const FLFPHexCoordinates& NewCoords);
 
-	UPROPERTY(EditAnywhere)
-	int32 MovementRange = 5;
+    UFUNCTION(BlueprintPure, Category = "Tactics Unit")
+    FLFPHexCoordinates GetCurrentCoordinates() const { return CurrentCoordinates; }
+
+    // 移动到目标格子
+    UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
+    void MoveToTile(ALFPHexTile* TargetTile);
+
+    // 设置选中状态
+    UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
+    void SetSelected(bool bSelected);
+
+    // 获取移动范围
+    UFUNCTION(BlueprintPure, Category = "Tactics Unit")
+    int32 GetMovementRange() const { return MovementRange; }
+
+    // 消耗行动点
+    UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
+    void ConsumeActionPoints(int32 Amount);
+
+    // 检查是否有足够行动点
+    UFUNCTION(BlueprintPure, Category = "Tactics Unit")
+    bool HasEnoughActionPoints(int32 Required) const;
+
+    ALFPHexGridManager* GetGridManager() const;
+protected:
+    virtual void BeginPlay() override;
+    virtual void Tick(float DeltaTime) override;
+
+    // 移动动画更新
+    UFUNCTION()
+    void UpdateMoveAnimation(float Value);
+
+    // 完成移动
+    void FinishMove();
 
 private:
-	ALFPHexTile* CurrentTile = nullptr;
+    // 单位属性
+    UPROPERTY(EditAnywhere, Category = "Unit Stats")
+    int32 MovementRange = 5;
+
+    UPROPERTY(EditAnywhere, Category = "Unit Stats")
+    int32 MaxActionPoints = 3;
+
+    UPROPERTY(VisibleInstanceOnly, Category = "Unit State")
+    int32 CurrentActionPoints;
+
+    // 当前坐标
+    FLFPHexCoordinates CurrentCoordinates;
+
+    // 移动状态
+    UPROPERTY(Transient)
+    ALFPHexTile* TargetTile;
+
+    TArray<ALFPHexTile*> MovePath;
+    int32 CurrentPathIndex;
+    float MoveProgress;
+
+    // 动画
+    FTimerHandle MoveTimerHandle;
+    FTimeline MoveTimeline;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Animation")
+    UCurveFloat* MoveCurve;
+
+    // 组件
+    UPROPERTY(VisibleAnywhere, Category = "Components")
+    USceneComponent* RootSceneComponent;
+
+    UPROPERTY(VisibleAnywhere, Category = "Components")
+    UPaperSpriteComponent* SpriteComponent;
+
+    UPROPERTY(VisibleAnywhere, Category = "Components")
+    UArrowComponent* FacingDirection;
 };

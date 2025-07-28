@@ -33,3 +33,20 @@ void ALFPHexTile::Tick(float DeltaTime)
 
 }
 
+void ALFPHexTile::SetPathHighlight(bool bActive)
+{
+	if (bActive && PathSprite)
+	{
+		SpriteComponent->SetSprite(PathSprite);
+	}
+	else if (DefaultSprite)
+	{
+		SpriteComponent->SetSprite(DefaultSprite);
+	}
+}
+
+//void ALFPHexTile::SetSelected(bool bSelect)
+//{
+//	bIsSelect = bSelect;
+//}
+

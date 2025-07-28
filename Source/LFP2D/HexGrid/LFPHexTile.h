@@ -67,6 +67,9 @@ public:
 	// 设置格子状态
 	void SetState(bool bWalkable, bool bOccupied);
 
+	// 设置格子状态
+	//void SetSelected(bool bSelect);
+
 	// 高亮显示
 	void Highlight(bool bActive);
 
@@ -86,4 +89,14 @@ private:
 	FLFPHexCoordinates Coordinates;
 	bool bIsWalkable = true;
 	bool bIsOccupied = false;
+	//bool bIsSelect = false;
+
+public:
+	// 添加路径高亮功能
+	UFUNCTION(BlueprintCallable, Category = "Hex Tile")
+	void SetPathHighlight(bool bActive);
+
+	// 在类中添加
+	UPROPERTY(EditDefaultsOnly, Category = "Sprites")
+	UPaperSprite* PathSprite;
 };

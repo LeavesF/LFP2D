@@ -40,6 +40,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Hex Grid")
 	ALFPHexTile* GetTileAtCoordinates(const FLFPHexCoordinates& Coords) const;
 
+	// µ÷ÊÔ¿ª¹Ø
+	UFUNCTION(BlueprintCallable, Category = "Hex Grid")
+	void SetDebugEnabled(bool bEnabled) { bDrawDebug = bEnabled; }
+
+	UFUNCTION(BlueprintCallable, Category = "Hex Grid")
+	TArray<ALFPHexTile*> FindPath(ALFPHexTile* Start, ALFPHexTile* End);
 private:
     UPROPERTY(EditDefaultsOnly)
     TSubclassOf<ALFPHexTile> HexTileClass;

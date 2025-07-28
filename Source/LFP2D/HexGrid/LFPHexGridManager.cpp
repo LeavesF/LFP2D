@@ -181,6 +181,11 @@ ALFPHexTile* ALFPHexGridManager::GetTileAtCoordinates(const FLFPHexCoordinates& 
 	return nullptr;
 }
 
+TArray<ALFPHexTile*> ALFPHexGridManager::FindPath(ALFPHexTile* Start, ALFPHexTile* End)
+{
+	return TArray<ALFPHexTile*>();
+}
+
 void ALFPHexGridManager::DrawDebugHexagon(const FVector& Center, FColor Color) const
 {
 	const float AngleStep = 60.0f;
