@@ -33,6 +33,11 @@ void ALFPHexTile::Tick(float DeltaTime)
 
 }
 
+void ALFPHexTile::Highlight(bool bActive)
+{
+	// Todo
+}
+
 void ALFPHexTile::SetPathHighlight(bool bActive)
 {
 	if (bActive && PathSprite)

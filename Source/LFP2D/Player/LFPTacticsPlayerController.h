@@ -52,24 +52,24 @@ protected:
     // 调试功能
     void ToggleDebugDisplay();
 
-private:
+protected:
     // 输入系统资产
-    UPROPERTY(EditAnywhere, Category = "Input")
-    TSoftObjectPtr<UInputMappingContext> DefaultInputMapping;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+    TObjectPtr<UInputMappingContext> DefaultInputMapping;
 
-    UPROPERTY(EditAnywhere, Category = "Input")
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
     UInputAction* SelectAction;
 
-    UPROPERTY(EditAnywhere, Category = "Input")
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
     UInputAction* ConfirmAction;
 
-    UPROPERTY(EditAnywhere, Category = "Input")
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
     UInputAction* CancelAction;
 
-    UPROPERTY(EditAnywhere, Category = "Input")
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
     UInputAction* RotateCameraAction;
 
-    UPROPERTY(EditAnywhere, Category = "Input")
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
     UInputAction* DebugToggleAction;
 
     // 引用网格管理器
@@ -95,7 +95,11 @@ private:
     FVector2D SelectionStart;
 
     // 相机控制
-    float CameraRotationAngle;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera")
+    float CameraRotationPitchAngle;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera")
+    float CameraRotationYawAngle;
 
     // 调试标志
     bool bDebugEnabled;

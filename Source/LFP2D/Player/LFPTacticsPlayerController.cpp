@@ -16,7 +16,8 @@ ALFPTacticsPlayerController::ALFPTacticsPlayerController()
     SelectedUnit = nullptr;
     SelectedTile = nullptr;
     bIsSelecting = false;
-    CameraRotationAngle = 0.0f;
+    CameraRotationPitchAngle = 60.0f;
+    CameraRotationYawAngle = 0.0f;
     bDebugEnabled = false;
 }
 
@@ -26,10 +27,10 @@ void ALFPTacticsPlayerController::BeginPlay()
 
     // 设置输入模式
     FInputModeGameAndUI InputMode;
-    InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-    InputMode.SetHideCursorDuringCapture(false);
+    InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockInFullscreen);
+    InputMode.SetHideCursorDuringCapture(true);
     SetInputMode(InputMode);
-    bShowMouseCursor = true;
+    bShowMouseCursor = false;
 
     // 获取网格管理器
     TArray<AActor*> FoundActors;
@@ -42,9 +43,9 @@ void ALFPTacticsPlayerController::BeginPlay()
     // 设置Enhanced Input
     if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
     {
-        if (DefaultInputMapping.IsValid())
+        if (DefaultInputMapping)
         {
-            Subsystem->AddMappingContext(DefaultInputMapping.LoadSynchronous(), 0);
+            Subsystem->AddMappingContext(DefaultInputMapping, 0);
         }
     }
 }
@@ -63,7 +64,7 @@ void ALFPTacticsPlayerController::SetupInputComponent()
         // 其他操作
         EnhancedInputComponent->BindAction(ConfirmAction, ETriggerEvent::Triggered, this, &ALFPTacticsPlayerController::OnConfirmAction);
         EnhancedInputComponent->BindAction(CancelAction, ETriggerEvent::Triggered, this, &ALFPTacticsPlayerController::OnCancelAction);
-        EnhancedInputComponent->BindAction(RotateCameraAction, ETriggerEvent::Triggered, this, &ALFPTacticsPlayerController::OnRotateCamera);
+        //EnhancedInputComponent->BindAction(RotateCameraAction, ETriggerEvent::Triggered, this, &ALFPTacticsPlayerController::OnRotateCamera);
         EnhancedInputComponent->BindAction(DebugToggleAction, ETriggerEvent::Triggered, this, &ALFPTacticsPlayerController::OnToggleDebug);
     }
 }
@@ -76,7 +77,7 @@ void ALFPTacticsPlayerController::Tick(float DeltaTime)
     if (GridManager)
     {
         FVector CameraLocation = GridManager->GetActorLocation();
-        FRotator CameraRotation(0, CameraRotationAngle, 0);
+        FRotator CameraRotation(CameraRotationPitchAngle, CameraRotationYawAngle, 0);
         SetControlRotation(CameraRotation);
 
         // 计算相机位置偏移
@@ -178,7 +179,7 @@ void ALFPTacticsPlayerController::OnRotateCamera(const FInputActionValue& Value)
     const FVector2D RotationValue = Value.Get<FVector2D>();
     if (FMath::Abs(RotationValue.X) > 0.1f)
     {
-        CameraRotationAngle += RotationValue.X * 2.0f; // 旋转速度
+        CameraRotationYawAngle += RotationValue.X * 2.0f; // 旋转速度
     }
 }
 
