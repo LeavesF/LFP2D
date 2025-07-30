@@ -32,13 +32,17 @@ protected:
     virtual void Tick(float DeltaTime) override;
 
     // Enhanced Input 绑定函数
-    void OnSelectTriggered();
     void OnSelectStarted(const FInputActionValue& Value);
     void OnSelectCompleted(const FInputActionValue& Value);
     void OnConfirmAction(const FInputActionValue& Value);
     void OnCancelAction(const FInputActionValue& Value);
-    void OnRotateCamera(const FInputActionValue& Value);
+    //void OnRotateCamera(const FInputActionValue& Value);
     void OnToggleDebug(const FInputActionValue& Value);
+    void OnCameraPan(const FInputActionValue& Value);
+    void OnCameraDragStarted(const FInputActionValue& Value);
+    void OnCameraDragTriggered(const FInputActionValue& Value);
+    void OnCameraDragCompleted(const FInputActionValue& Value);
+    void OnCameraZoom(const FInputActionValue& Value);
 
     // 游戏流程函数
     void SelectUnit(ALFPTacticsUnit* Unit);
@@ -54,23 +58,33 @@ protected:
 
 protected:
     // 输入系统资产
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+    UPROPERTY(EditAnywhere, Category = "Input")
     TObjectPtr<UInputMappingContext> DefaultInputMapping;
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+    UPROPERTY(EditAnywhere, Category = "Input")
     UInputAction* SelectAction;
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+    UPROPERTY(EditAnywhere, Category = "Input")
     UInputAction* ConfirmAction;
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+    UPROPERTY(EditAnywhere, Category = "Input")
     UInputAction* CancelAction;
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
-    UInputAction* RotateCameraAction;
+    //UPROPERTY(EditAnywhere, Category = "Input")
+    //UInputAction* RotateCameraAction;
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+    UPROPERTY(EditAnywhere, Category = "Input")
     UInputAction* DebugToggleAction;
+
+    UPROPERTY(EditAnywhere, Category = "Input")
+    UInputAction* CameraPanAction;
+
+    UPROPERTY(EditAnywhere, Category = "Input")
+    UInputAction* CameraDragAction;
+
+    UPROPERTY(EditAnywhere, Category = "Input")
+    UInputAction* CameraZoomAction;
+
 
     // 引用网格管理器
     UPROPERTY()
@@ -100,7 +114,32 @@ protected:
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera")
     float CameraRotationYawAngle;
+    FVector CameraOffset;
+
+    // 拖拽状态
+    bool bIsDragging;
+    FVector2D DragStartPosition;
 
     // 调试标志
     bool bDebugEnabled;
+
+    // 相机移动速度
+    UPROPERTY(EditAnywhere, Category = "Camera")
+    float CameraPanSpeed = 500.0f;
+
+    UPROPERTY(EditAnywhere, Category = "Camera")
+    float CameraDragSpeed = 10.0f;
+
+    // 相机缩放
+    UPROPERTY(EditAnywhere, Category = "Camera")
+    float CameraZoomSpeed = 100.0f;
+
+    UPROPERTY(EditAnywhere, Category = "Camera")
+    float MinZoomDistance = 300.0f;
+
+    UPROPERTY(EditAnywhere, Category = "Camera")
+    float MaxZoomDistance = 2000.0f;
+
+    float CurrentZoom = 1000.0f;
+
 };

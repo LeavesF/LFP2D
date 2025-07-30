@@ -19,6 +19,8 @@ ALFPTacticsPlayerController::ALFPTacticsPlayerController()
     CameraRotationPitchAngle = 60.0f;
     CameraRotationYawAngle = 0.0f;
     bDebugEnabled = false;
+    CameraOffset = FVector::ZeroVector;
+    bIsDragging = false;
 }
 
 void ALFPTacticsPlayerController::BeginPlay()
@@ -27,10 +29,10 @@ void ALFPTacticsPlayerController::BeginPlay()
 
     // 设置输入模式
     FInputModeGameAndUI InputMode;
-    InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockInFullscreen);
-    InputMode.SetHideCursorDuringCapture(true);
+    InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+    InputMode.SetHideCursorDuringCapture(false);
     SetInputMode(InputMode);
-    bShowMouseCursor = false;
+    bShowMouseCursor = true;
 
     // 获取网格管理器
     TArray<AActor*> FoundActors;
@@ -57,7 +59,7 @@ void ALFPTacticsPlayerController::SetupInputComponent()
     // 设置Enhanced Input组件
     if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
     {
-        // 选择操作（有开始/完成事件）
+        // 选择操作
         EnhancedInputComponent->BindAction(SelectAction, ETriggerEvent::Started, this, &ALFPTacticsPlayerController::OnSelectStarted);
         EnhancedInputComponent->BindAction(SelectAction, ETriggerEvent::Completed, this, &ALFPTacticsPlayerController::OnSelectCompleted);
 
@@ -66,6 +68,13 @@ void ALFPTacticsPlayerController::SetupInputComponent()
         EnhancedInputComponent->BindAction(CancelAction, ETriggerEvent::Triggered, this, &ALFPTacticsPlayerController::OnCancelAction);
         //EnhancedInputComponent->BindAction(RotateCameraAction, ETriggerEvent::Triggered, this, &ALFPTacticsPlayerController::OnRotateCamera);
         EnhancedInputComponent->BindAction(DebugToggleAction, ETriggerEvent::Triggered, this, &ALFPTacticsPlayerController::OnToggleDebug);
+
+        // 相机控制
+        EnhancedInputComponent->BindAction(CameraPanAction, ETriggerEvent::Triggered, this, &ALFPTacticsPlayerController::OnCameraPan);
+        EnhancedInputComponent->BindAction(CameraDragAction, ETriggerEvent::Started, this, &ALFPTacticsPlayerController::OnCameraDragStarted);
+        EnhancedInputComponent->BindAction(CameraDragAction, ETriggerEvent::Triggered, this, &ALFPTacticsPlayerController::OnCameraDragTriggered);
+        EnhancedInputComponent->BindAction(CameraDragAction, ETriggerEvent::Completed, this, &ALFPTacticsPlayerController::OnCameraDragCompleted);
+        EnhancedInputComponent->BindAction(CameraZoomAction, ETriggerEvent::Triggered, this, &ALFPTacticsPlayerController::OnCameraZoom);
     }
 }
 
@@ -76,20 +85,27 @@ void ALFPTacticsPlayerController::Tick(float DeltaTime)
     // 更新相机位置
     if (GridManager)
     {
-        FVector CameraLocation = GridManager->GetActorLocation();
+        FVector CameraLocation = GridManager->GetActorLocation() + CameraOffset;
         FRotator CameraRotation(CameraRotationPitchAngle, CameraRotationYawAngle, 0);
         SetControlRotation(CameraRotation);
 
         // 计算相机位置偏移
-        FVector Offset = CameraRotation.Vector() * 1000.0f;
-        Offset.Z = 500.0f; // 高度
+        FVector DirectionOffset = CameraRotation.Vector() * CurrentZoom;
+        DirectionOffset.Z = CurrentZoom * 0.5f; // 高度与距离成比例
 
         // 设置相机位置
         APawn* ControlledPawn = GetPawn();
         if (ControlledPawn)
         {
-            ControlledPawn->SetActorLocation(CameraLocation + Offset);
+            FVector TargetLocation = CameraLocation + DirectionOffset;
+            ControlledPawn->SetActorLocation(FMath::VInterpTo(
+                ControlledPawn->GetActorLocation(),
+                TargetLocation,
+                DeltaTime,
+                5.0f // 插值速度
+            ));
         }
+        
     }
 }
 
@@ -173,19 +189,86 @@ void ALFPTacticsPlayerController::OnCancelAction(const FInputActionValue& Value)
     }
 }
 
-void ALFPTacticsPlayerController::OnRotateCamera(const FInputActionValue& Value)
-{
-    // 获取轴值
-    const FVector2D RotationValue = Value.Get<FVector2D>();
-    if (FMath::Abs(RotationValue.X) > 0.1f)
-    {
-        CameraRotationYawAngle += RotationValue.X * 2.0f; // 旋转速度
-    }
-}
+//void ALFPTacticsPlayerController::OnRotateCamera(const FInputActionValue& Value)
+//{
+//    // 获取轴值
+//    const FVector2D RotationValue = Value.Get<FVector2D>();
+//    if (FMath::Abs(RotationValue.X) > 0.1f)
+//    {
+//        CameraRotationYawAngle += RotationValue.X * 2.0f; // 旋转速度
+//    }
+//}
 
 void ALFPTacticsPlayerController::OnToggleDebug(const FInputActionValue& Value)
 {
     ToggleDebugDisplay();
+}
+
+void ALFPTacticsPlayerController::OnCameraPan(const FInputActionValue& Value)
+{
+    // 获取轴值 (WASD/方向键)
+    const FVector2D PanValue = Value.Get<FVector2D>();
+
+    // 计算移动方向 (基于当前相机旋转)
+    FRotator CameraRotation(CameraRotationPitchAngle, CameraRotationYawAngle, 0);
+    FVector Forward = CameraRotation.RotateVector(FVector::ForwardVector);
+    FVector Right = CameraRotation.RotateVector(FVector::RightVector);
+
+    // 计算移动偏移
+    FVector PanDirection = (Forward * PanValue.Y) + (Right * PanValue.X);
+    PanDirection.Z = 0;
+    PanDirection.Normalize();
+
+    // 应用移动
+    CameraOffset += PanDirection * CameraPanSpeed * GetWorld()->GetDeltaSeconds();
+}
+
+void ALFPTacticsPlayerController::OnCameraDragStarted(const FInputActionValue& Value)
+{
+    // 记录拖拽起始位置
+    bIsDragging = true;
+    GetMousePosition(DragStartPosition.X, DragStartPosition.Y);
+}
+
+void ALFPTacticsPlayerController::OnCameraDragTriggered(const FInputActionValue& Value)
+{
+    if (!bIsDragging) return;
+
+    // 获取当前鼠标位置
+    FVector2D CurrentMousePosition;
+    GetMousePosition(CurrentMousePosition.X, CurrentMousePosition.Y);
+
+    // 计算鼠标移动偏移
+    FVector2D MouseDelta = CurrentMousePosition - DragStartPosition;
+
+    // 反转Y轴 (屏幕Y向下为正，但世界Y向上为正)
+    MouseDelta.Y = -MouseDelta.Y;
+
+    // 计算移动方向 (基于当前相机旋转)
+    FRotator CameraRotation(0, CameraRotationYawAngle, 0);
+    FVector Right = CameraRotation.RotateVector(FVector::RightVector);
+    FVector Forward = CameraRotation.RotateVector(FVector::ForwardVector);
+
+    // 计算移动偏移
+    FVector PanDirection = (Right * -MouseDelta.X) + (Forward * -MouseDelta.Y);
+    //PanDirection.Normalize();
+
+    // 应用移动
+    CameraOffset += PanDirection * CameraDragSpeed;
+
+    // 更新起始位置为当前位置
+    DragStartPosition = CurrentMousePosition;
+}
+
+void ALFPTacticsPlayerController::OnCameraDragCompleted(const FInputActionValue& Value)
+{
+    bIsDragging = false;
+}
+
+void ALFPTacticsPlayerController::OnCameraZoom(const FInputActionValue& Value)
+{
+    const float ZoomValue = Value.Get<float>();
+    CurrentZoom = FMath::Clamp(CurrentZoom - ZoomValue * CameraZoomSpeed, MinZoomDistance, MaxZoomDistance);
 }
 
 void ALFPTacticsPlayerController::SelectUnit(ALFPTacticsUnit* Unit)
