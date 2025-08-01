@@ -183,7 +183,117 @@ ALFPHexTile* ALFPHexGridManager::GetTileAtCoordinates(const FLFPHexCoordinates& 
 
 TArray<ALFPHexTile*> ALFPHexGridManager::FindPath(ALFPHexTile* Start, ALFPHexTile* End)
 {
-	return TArray<ALFPHexTile*>();
+	TArray<ALFPHexTile*> Path;
+
+	// 验证输入有效性
+	if (!Start || !End || !End->IsWalkable())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("FindPath: Invalid start or end tile"));
+		return Path;
+	}
+
+	// 起点终点相同的情况
+	if (Start == End) {
+		Path.Add(Start);
+		UE_LOG(LogTemp, Log, TEXT("FindPath: Start and end are the same tile"));
+		return Path;
+	}
+
+	// 寻路数据结构
+	TMap<ALFPHexTile*, ALFPHexTile*> ParentMap;
+	TMap<ALFPHexTile*, float> GScoreMap;  // 实际移动代价
+	TSet<ALFPHexTile*> OpenSet;
+	TSet<ALFPHexTile*> ClosedSet;
+
+	// 初始化起点
+	OpenSet.Add(Start);
+	GScoreMap.Add(Start, 0.0f);
+	ParentMap.Add(Start, nullptr);
+
+	bool bPathFound = false;
+
+	while (!OpenSet.IsEmpty())
+	{
+		// 获取开放集中F值最小的节点
+		ALFPHexTile* Current = nullptr;
+		float LowestF = TNumericLimits<float>::Max();
+
+		for (ALFPHexTile* Tile : OpenSet)
+		{
+			const float G = GScoreMap[Tile];
+			const float H = FLFPHexCoordinates::Distance(Tile->GetCoordinates(), End->GetCoordinates());
+			const float F = G + H;
+
+			if (F < LowestF)
+			{
+				LowestF = F;
+				Current = Tile;
+			}
+		}
+
+		// 到达终点
+		if (Current == End)
+		{
+			bPathFound = true;
+			ALFPHexTile* PathNode = End;
+			while (PathNode)
+			{
+				Path.Add(PathNode);
+				PathNode = ParentMap[PathNode];
+			}
+			Algo::Reverse(Path);
+			break;
+		}
+
+		// 移动节点到关闭集
+		OpenSet.Remove(Current);
+		ClosedSet.Add(Current);
+
+		// 检查所有邻居
+		for (const FLFPHexCoordinates& Dir : HexDirections)
+		{
+			FLFPHexCoordinates NeighborCoords = Current->GetCoordinates();
+			NeighborCoords.Q += Dir.Q;
+			NeighborCoords.R += Dir.R;
+			NeighborCoords.S = -NeighborCoords.Q - NeighborCoords.R;  // 更新立方坐标
+
+			ALFPHexTile* Neighbor = GetTileAtCoordinates(NeighborCoords);
+
+			// 跳过无效邻居
+			if (!Neighbor ||
+				!Neighbor->IsWalkable() ||
+				ClosedSet.Contains(Neighbor))
+			{
+				continue;
+			}
+
+			// 计算新G值（假设所有格子代价相同）
+			const float TentativeG = GScoreMap[Current] + 1.0f;
+
+			// 发现新节点或找到更优路径
+			if (!OpenSet.Contains(Neighbor) || TentativeG < GScoreMap[Neighbor])
+			{
+				ParentMap.Add(Neighbor, Current);
+				GScoreMap.Add(Neighbor, TentativeG);
+
+				if (!OpenSet.Contains(Neighbor)) {
+					OpenSet.Add(Neighbor);
+				}
+			}
+		}
+	}
+
+	// 调试绘制路径
+	//DrawDebugPath(Path, bPathFound);
+
+	if (bPathFound) {
+		UE_LOG(LogTemp, Log, TEXT("FindPath: Found path with %d tiles"), Path.Num());
+	}
+	else {
+		UE_LOG(LogTemp, Warning, TEXT("FindPath: No valid path found"));
+	}
+
+	return Path;
 }
 
 void ALFPHexGridManager::DrawDebugHexagon(const FVector& Center, FColor Color) const
@@ -215,4 +325,84 @@ void ALFPHexGridManager::DrawDebugHexagon(const FVector& Center, FColor Color) c
 	}
 }
 
+void ALFPHexGridManager::DrawDebugPath(const TArray<ALFPHexTile*>& Path, bool bPathFound)
+{
+	if (!GetWorld()) return;
 
+	const float DebugDuration = 5.0f; // 显示5秒
+
+	// 绘制起点和终点
+	if (Path.Num() > 0) {
+		// 起点：绿色球体
+		DrawDebugSphere(
+			GetWorld(),
+			Path[0]->GetActorLocation() + FVector(0, 0, 20),
+			15.0f, 12, FColor::Green, false, DebugDuration
+		);
+	}
+
+	if (bPathFound && Path.Num() > 1) {
+		// 终点：蓝色球体
+		DrawDebugSphere(
+			GetWorld(),
+			Path.Last()->GetActorLocation() + FVector(0, 0, 20),
+			15.0f, 12, FColor::Blue, false, DebugDuration
+		);
+	}
+
+	// 绘制路径连线
+	for (int32 i = 0; i < Path.Num() - 1; i++)
+	{
+		FVector StartLoc = Path[i]->GetActorLocation() + FVector(0, 0, 15);
+		FVector EndLoc = Path[i + 1]->GetActorLocation() + FVector(0, 0, 15);
+
+		// 路径线：黄色
+		DrawDebugLine(
+			GetWorld(),
+			StartLoc,
+			EndLoc,
+			FColor::Yellow,
+			false,
+			DebugDuration,
+			0,
+			3.0f // 线宽
+		);
+
+		// 路径点：黄色球体
+		DrawDebugSphere(
+			GetWorld(),
+			StartLoc,
+			10.0f, 8, FColor::Yellow, false, DebugDuration
+		);
+	}
+
+	// 如果找到路径但在绘制前就被清空了（比如长度为1）
+	if (bPathFound && Path.Num() == 1) {
+		DrawDebugSphere(
+			GetWorld(),
+			Path[0]->GetActorLocation() + FVector(0, 0, 20),
+			15.0f, 12, FColor::Blue, false, DebugDuration
+		);
+	}
+
+	// 绘制失败提示
+	if (!bPathFound) {
+		// 在起点位置绘制红色X
+		FVector StartLoc = Path.Num() > 0 ?
+			Path[0]->GetActorLocation() :
+			(GetActorLocation() + FVector(0, 0, 100));
+
+		DrawDebugLine(
+			GetWorld(),
+			StartLoc + FVector(-30, -30, 50),
+			StartLoc + FVector(30, 30, 50),
+			FColor::Red, false, DebugDuration, 0, 5.0f
+		);
+		DrawDebugLine(
+			GetWorld(),
+			StartLoc + FVector(-30, 30, 50),
+			StartLoc + FVector(30, -30, 50),
+			FColor::Red, false, DebugDuration, 0, 5.0f
+		);
+	}
+}
