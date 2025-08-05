@@ -148,7 +148,7 @@ TArray<ALFPHexTile*> ALFPHexGridManager::GetMovementRange(ALFPHexTile* StartTile
 		// 获取所有邻居
 		for (ALFPHexTile* Neighbor : GetNeighbors(CurrentTile->GetCoordinates()))
 		{
-			if (!Neighbor || !Neighbor->IsWalkable()) continue;
+			if (!Neighbor || !Neighbor->IsWalkable() || Neighbor->IsOccupied()) continue;
 
 			// 计算新移动代价
 			const int32 NewCost = CurrentCost + 1;
@@ -262,6 +262,7 @@ TArray<ALFPHexTile*> ALFPHexGridManager::FindPath(ALFPHexTile* Start, ALFPHexTil
 			// 跳过无效邻居
 			if (!Neighbor ||
 				!Neighbor->IsWalkable() ||
+				Neighbor->IsOccupied() ||
 				ClosedSet.Contains(Neighbor))
 			{
 				continue;

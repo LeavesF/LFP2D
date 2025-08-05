@@ -38,6 +38,18 @@ void ALFPHexTile::Highlight(bool bActive)
 	// Todo
 }
 
+void ALFPHexTile::SetMovementHighlight(bool bActive)
+{
+	if (bActive && MovementRangeSprite)
+	{
+		SpriteComponent->SetSprite(MovementRangeSprite);
+	}
+	else if (DefaultSprite)
+	{
+		SpriteComponent->SetSprite(DefaultSprite);
+	}
+}
+
 void ALFPHexTile::SetPathHighlight(bool bActive)
 {
 	if (bActive && PathSprite)

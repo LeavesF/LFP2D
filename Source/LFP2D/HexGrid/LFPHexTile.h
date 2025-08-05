@@ -63,6 +63,10 @@ public:
 	void SetCoordinates(const FLFPHexCoordinates& NewCoords) { Coordinates = NewCoords; }
 
 	bool IsWalkable() { return bIsWalkable; }
+	bool IsOccupied() { return bIsOccupied; }
+
+	void SetIsWalkable(bool bInIsWalkable) { bIsWalkable = bInIsWalkable; }
+	void SetIsOccupied(bool bInIsOccupied) { bIsOccupied = bInIsOccupied; }
 
 	// 设置格子状态
 	void SetState(bool bWalkable, bool bOccupied);
@@ -76,15 +80,6 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USceneComponent* RootSceneComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	UPaperSpriteComponent* SpriteComponent;
-
-	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<UPaperSprite> DefaultSprite;
-
-	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<UPaperSprite> HighlightedSprite;
-
 private:
 	FLFPHexCoordinates Coordinates;
 	bool bIsWalkable = true;
@@ -92,11 +87,25 @@ private:
 	//bool bIsSelect = false;
 
 public:
+
 	// 添加路径高亮功能
 	UFUNCTION(BlueprintCallable, Category = "Hex Tile")
 	void SetPathHighlight(bool bActive);
 
-	// 在类中添加
+	// 添加移动范围高亮功能
+	UFUNCTION(BlueprintCallable, Category = "Hex Tile")
+	void SetMovementHighlight(bool bActive);
+
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<UPaperSpriteComponent> SpriteComponent;
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UPaperSprite> DefaultSprite;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Sprites")
-	UPaperSprite* PathSprite;
+	TObjectPtr<UPaperSprite> PathSprite;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Sprites")
+	TObjectPtr<UPaperSprite> MovementRangeSprite;
 };

@@ -42,6 +42,9 @@ void ALFPTacticsUnit::BeginPlay()
 {
     Super::BeginPlay();
 
+    FLFPHexCoordinates SpawnPoint = FLFPHexCoordinates(StartCoordinates_Q, StartCoordinates_R);
+    SetCurrentCoordinates(SpawnPoint);
+
     // 设置移动时间线
     if (MoveCurve)
     {
@@ -65,8 +68,37 @@ void ALFPTacticsUnit::SetCurrentCoordinates(const FLFPHexCoordinates& NewCoords)
         if (ALFPHexTile* Tile = GridManager->GetTileAtCoordinates(NewCoords))
         {
             SetActorLocation(Tile->GetActorLocation() + FVector(0, 0, 50));
+            Tile->SetIsOccupied(true);
         }
     }
+}
+
+//void ALFPTacticsUnit::SnapToGrid()
+//{
+//    if (ALFPHexGridManager* GridManager = GetGridManager())
+//    {
+//        if (ALFPHexTile* Tile = GridManager->GetTileAtCoordinates(CurrentCoordinates))
+//        {
+//            SetActorLocation(Tile->GetActorLocation() + FVector(0, 0, 50));
+//        }
+//    }
+//}
+
+// 获取可移动范围
+TArray<ALFPHexTile*> ALFPTacticsUnit::GetMovementRangeTiles()
+{
+    if (MovementRangeTiles.Num() > 0)
+        return MovementRangeTiles;
+
+    if (ALFPHexGridManager* GridManager = GetGridManager())
+    {
+        if (ALFPHexTile* UnitTile = GridManager->GetTileAtCoordinates(CurrentCoordinates))
+        {
+            // 计算移动范围
+            MovementRangeTiles = GridManager->GetMovementRange(UnitTile, MovementRange);
+        }
+    }
+    return MovementRangeTiles;
 }
 
 void ALFPTacticsUnit::MoveToTile(ALFPHexTile* Target)
@@ -85,12 +117,14 @@ void ALFPTacticsUnit::MoveToTile(ALFPHexTile* Target)
     if (MovePath.Num() == 0) return;
 
     // 设置移动状态
+    CurrentTile->SetIsOccupied(false);
     TargetTile = Target;
     CurrentPathIndex = 0;
     MoveProgress = 0.0f;
+    MovementRangeTiles.Empty();
 
     // 消耗行动点
-    ConsumeActionPoints(1);
+    //ConsumeActionPoints(1);
 
     // 开始移动动画
     //if (MoveTimeline)
@@ -173,6 +207,7 @@ void ALFPTacticsUnit::FinishMove()
 
 void ALFPTacticsUnit::SetSelected(bool bSelected)
 {
+    bIsSelected = bSelected;
     // 视觉反馈：高亮单位
     if (bSelected)
     {
@@ -181,6 +216,23 @@ void ALFPTacticsUnit::SetSelected(bool bSelected)
     else
     {
         SpriteComponent->SetSpriteColor(FLinearColor::White);
+    }
+}
+
+void ALFPTacticsUnit::HighlightMovementRange(bool bHighlight)
+{
+    TArray<ALFPHexTile*> Tiles = GetMovementRangeTiles();
+
+    for (ALFPHexTile* Tile : Tiles)
+    {
+        if (bHighlight)
+        {
+            Tile->SetMovementHighlight(true);
+        }
+        else
+        {
+            Tile->SetMovementHighlight(false);
+        }
     }
 }
 

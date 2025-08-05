@@ -27,6 +27,14 @@ public:
     UFUNCTION(BlueprintPure, Category = "Tactics Unit")
     FLFPHexCoordinates GetCurrentCoordinates() const { return CurrentCoordinates; }
 
+    // 获取可移动范围
+    UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
+    TArray<ALFPHexTile*> GetMovementRangeTiles();
+
+    // 可移动范围格子
+    UPROPERTY(VisibleInstanceOnly, Category = "Unit State")
+    TArray<ALFPHexTile*> MovementRangeTiles;
+
     // 移动到目标格子
     UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
     void MoveToTile(ALFPHexTile* TargetTile);
@@ -35,9 +43,16 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
     void SetSelected(bool bSelected);
 
+    UFUNCTION(BlueprintPure, Category = "Tactics Unit")
+    bool IsSelected() const { return bIsSelected; }
+
     // 获取移动范围
     UFUNCTION(BlueprintPure, Category = "Tactics Unit")
     int32 GetMovementRange() const { return MovementRange; }
+
+    // 高亮可移动范围
+    UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
+    void HighlightMovementRange(bool bHighlight);
 
     // 消耗行动点
     UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
@@ -59,19 +74,32 @@ protected:
     // 完成移动
     void FinishMove();
 
-private:
+    // 对齐格子
+    void SnapToGrid();
+
+protected:
     // 单位属性
-    UPROPERTY(EditAnywhere, Category = "Unit Stats")
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Unit Stats")
     int32 MovementRange = 5;
 
-    UPROPERTY(EditAnywhere, Category = "Unit Stats")
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Unit Stats")
     int32 MaxActionPoints = 3;
 
     UPROPERTY(VisibleInstanceOnly, Category = "Unit State")
     int32 CurrentActionPoints;
 
     // 当前坐标
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Unit Stats")
+    int32 StartCoordinates_Q = 0;
+
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Unit Stats")
+    int32 StartCoordinates_R = 0;
+
     FLFPHexCoordinates CurrentCoordinates;
+
+    // 选中状态
+    UPROPERTY(VisibleInstanceOnly, Category = "Unit State")
+    bool bIsSelected = false;
 
     // 移动状态
     UPROPERTY(Transient)

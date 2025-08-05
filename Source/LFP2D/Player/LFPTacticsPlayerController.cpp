@@ -183,7 +183,8 @@ void ALFPTacticsPlayerController::OnCancelAction(const FInputActionValue& Value)
     }
     else if (SelectedUnit)
     {
-        HideMovementRange();
+        // 取消单位的高亮范围
+        SelectedUnit->HighlightMovementRange(false);
         SelectedUnit->SetSelected(false);
         SelectedUnit = nullptr;
     }
@@ -273,11 +274,12 @@ void ALFPTacticsPlayerController::OnCameraZoom(const FInputActionValue& Value)
 
 void ALFPTacticsPlayerController::SelectUnit(ALFPTacticsUnit* Unit)
 {
-    // 如果已经有选中的单位，取消选择
+    // 取消之前选中的单位
     if (SelectedUnit && SelectedUnit != Unit)
     {
         SelectedUnit->SetSelected(false);
-        HideMovementRange();
+        SelectedUnit->HighlightMovementRange(false); // 取消高亮范围
+        MovementRangeTiles.Empty();
     }
 
     // 选择新单位
@@ -285,9 +287,12 @@ void ALFPTacticsPlayerController::SelectUnit(ALFPTacticsUnit* Unit)
     if (SelectedUnit)
     {
         SelectedUnit->SetSelected(true);
-
-        // 显示可移动范围
-        ShowMovementRange();
+        SelectedUnit->HighlightMovementRange(true); // 高亮可移动范围
+        ALFPHexTile* UnitTile = GridManager->GetTileAtCoordinates(SelectedUnit->GetCurrentCoordinates());
+        if (UnitTile)
+        {
+            MovementRangeTiles = GridManager->GetMovementRange(UnitTile, SelectedUnit->GetMovementRange());
+        }
     }
 }
 
@@ -305,10 +310,10 @@ void ALFPTacticsPlayerController::SelectTile(ALFPHexTile* Tile)
 
 void ALFPTacticsPlayerController::ConfirmMove()
 {
-    if (!SelectedUnit || !SelectedTile || !GridManager) return;
+    if (!SelectedUnit || !SelectedTile) return;
 
-    // 隐藏范围与路径
-    HideMovementRange();
+    // 移动前取消高亮
+    SelectedUnit->HighlightMovementRange(false);
     HidePath();
 
     // 移动单位
