@@ -24,10 +24,15 @@ struct FLFPHexCoordinates
 	FLFPHexCoordinates(int32 q, int32 r) : Q(q), R(r), S(-q - r) {}
 
 	// 坐标转换方法
-	FVector ToWorldLocation(float HexSize) const
+	FVector ToWorldLocation(float Size, float VerticalScale = 1.0f) const
 	{
-		const float X = HexSize * (FMath::Sqrt(3.f) * Q + FMath::Sqrt(3.f) / 2 * R);
-		const float Y = HexSize * (3.0f / 2 * R);
+		// 平顶六边形布局
+		const float HorizontalSpacing = Size * FMath::Sqrt(3.f); // 水平间距
+		const float VerticalSpacing = Size * 1.5f * VerticalScale; // 垂直间距应用缩放
+
+		float X = HorizontalSpacing * (Q + R * 0.5f);
+		float Y = VerticalSpacing * R;
+
 		return FVector(X, Y, 0);
 	}
 
@@ -80,8 +85,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USceneComponent* RootSceneComponent;
 
-private:
+protected:
 	FLFPHexCoordinates Coordinates;
+
 	bool bIsWalkable = true;
 	bool bIsOccupied = false;
 	//bool bIsSelect = false;

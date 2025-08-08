@@ -15,6 +15,8 @@ class ALFPHexGridManager;
 
 class UInputMappingContext;
 class UInputAction;
+
+class ALFPTurnManager;
 /**
  * 
  */
@@ -48,8 +50,7 @@ protected:
     void SelectUnit(ALFPTacticsUnit* Unit);
     void SelectTile(ALFPHexTile* Tile);
     void ConfirmMove();
-    void ShowMovementRange();
-    void HideMovementRange();
+    void ShowMovementRange(bool bHighlight);
     void ShowPathToSelectedTile();
     void HidePath();
 
@@ -142,4 +143,29 @@ protected:
 
     float CurrentZoom = 1000.0f;
 
+public:
+    ALFPTurnManager* GetTurnManager() const;
+
+    // 回合事件
+    UFUNCTION(BlueprintImplementableEvent, Category = "Turn Events")
+    void OnTurnStarted(ALFPTacticsUnit* Unit);
+
+    UFUNCTION(BlueprintImplementableEvent, Category = "Turn Events")
+    void OnTurnEnded(ALFPTacticsUnit* Unit);
+
+    UFUNCTION(BlueprintImplementableEvent, Category = "Turn Events")
+    void OnRoundStarted(int32 RoundNumber);
+
+    UFUNCTION(BlueprintImplementableEvent, Category = "Turn Events")
+    void OnRoundEnded(int32 RoundNumber);
+
+    // 单位行动
+    UFUNCTION(BlueprintCallable, Category = "Unit Actions")
+    void MoveUnit(ALFPTacticsUnit* Unit, ALFPHexTile* TargetTile);
+
+    UFUNCTION(BlueprintCallable, Category = "Unit Actions")
+    void AttackTarget(ALFPTacticsUnit* Attacker, ALFPTacticsUnit* Target);
+
+    UFUNCTION(BlueprintCallable, Category = "Unit Actions")
+    void SkipTurn(ALFPTacticsUnit* Unit);
 };

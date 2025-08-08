@@ -82,8 +82,8 @@ void ALFPHexGridManager::GenerateGrid(int32 Width, int32 Height)
 			// 创建六边形坐标
 			FLFPHexCoordinates HexCoord(offsetQ, r);
 
-			// 生成世界位置
-			FVector WorldLocation = HexCoord.ToWorldLocation(HexSize) + GetActorLocation();
+			// 生成世界位置（使用垂直缩放）
+			FVector WorldLocation = HexCoord.ToWorldLocation(HexSize, VerticalScale) + GetActorLocation();
 
 			// 生成格子
 			FActorSpawnParameters SpawnParams;
@@ -128,6 +128,13 @@ TArray<ALFPHexTile*> ALFPHexGridManager::GetNeighbors(const FLFPHexCoordinates& 
 
 TArray<ALFPHexTile*> ALFPHexGridManager::GetMovementRange(ALFPHexTile* StartTile, int32 MoveRange)
 {
+	//// Todo: 用Map优化
+	//TPair<ALFPHexTile*, int32> Key(StartTile, MoveRange);
+	//if (MoveRangeCache.Contains(Key))
+	//{
+	//	return MoveRangeCache[Key];
+	//}
+
 	TArray<ALFPHexTile*> ReachableTiles;
 	if (!StartTile || MoveRange <= 0) return ReachableTiles;
 
@@ -300,7 +307,8 @@ TArray<ALFPHexTile*> ALFPHexGridManager::FindPath(ALFPHexTile* Start, ALFPHexTil
 void ALFPHexGridManager::DrawDebugHexagon(const FVector& Center, FColor Color) const
 {
 	const float AngleStep = 60.0f;
-	const float Radius = HexSize;
+	const float HorizontalRadius = HexSize; // 水平方向半径不变
+	const float VerticalRadius = HexSize * VerticalScale; // 垂直方向半径缩放
 
 	// 添加 30° 偏移，使六边形正确对齐
 	const float AngleOffset = 30.0f;
@@ -311,8 +319,8 @@ void ALFPHexGridManager::DrawDebugHexagon(const FVector& Center, FColor Color) c
 		// 添加 30° 偏移
 		float Angle = FMath::DegreesToRadians(AngleStep * i + AngleOffset);
 		FVector Point(
-			Center.X + Radius * FMath::Cos(Angle),
-			Center.Y + Radius * FMath::Sin(Angle),
+			Center.X + HorizontalRadius * FMath::Cos(Angle),
+			Center.Y + VerticalRadius * FMath::Sin(Angle), // 应用垂直缩放
 			Center.Z
 		);
 		Points.Add(Point);

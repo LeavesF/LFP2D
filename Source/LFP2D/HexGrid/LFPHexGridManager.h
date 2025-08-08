@@ -40,10 +40,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Hex Grid")
 	ALFPHexTile* GetTileAtCoordinates(const FLFPHexCoordinates& Coords) const;
 
+
+    UFUNCTION(BlueprintCallable, Category = "Hex Grid")
+    void SetVerticalScale(float Scale) { VerticalScale = Scale; }
+
 	// µ÷ÊÔ¿ª¹Ø
 	UFUNCTION(BlueprintCallable, Category = "Hex Grid")
 	void SetDebugEnabled(bool bEnabled) { bDrawDebug = bEnabled; }
-private:
+protected:
     UPROPERTY(EditDefaultsOnly)
     TSubclassOf<ALFPHexTile> HexTileClass;
 
@@ -55,6 +59,9 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Hex Grid")
 	int32 GridHeight;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hex Grid", meta = (ClampMin = "0.1", ClampMax = "2.0"))
+    float VerticalScale = 1.0f;
 
 	UPROPERTY(EditAnywhere, Category = "Debug")
 	bool bDrawDebug = true;

@@ -7,7 +7,6 @@
 #include "LFP2D/HexGrid/LFPHexTile.h"
 #include "Components/TimelineComponent.h"
 #include "PaperSpriteComponent.h"
-#include "Components/ArrowComponent.h"
 #include "LFPTacticsUnit.generated.h"
 
 class ALFPHexGridManager;
@@ -27,9 +26,9 @@ public:
     UFUNCTION(BlueprintPure, Category = "Tactics Unit")
     FLFPHexCoordinates GetCurrentCoordinates() const { return CurrentCoordinates; }
 
-    // 获取可移动范围
-    UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
-    TArray<ALFPHexTile*> GetMovementRangeTiles();
+    //// 获取可移动范围
+    //UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
+    //TArray<ALFPHexTile*> GetMovementRangeTiles();
 
     // 可移动范围格子
     UPROPERTY(VisibleInstanceOnly, Category = "Unit State")
@@ -50,17 +49,13 @@ public:
     UFUNCTION(BlueprintPure, Category = "Tactics Unit")
     int32 GetMovementRange() const { return MovementRange; }
 
-    // 高亮可移动范围
-    UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
-    void HighlightMovementRange(bool bHighlight);
-
     // 消耗行动点
     UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
-    void ConsumeActionPoints(int32 Amount);
+    void ConsumeMovePoints(int32 Amount);
 
     // 检查是否有足够行动点
     UFUNCTION(BlueprintPure, Category = "Tactics Unit")
-    bool HasEnoughActionPoints(int32 Required) const;
+    bool HasEnoughMovePoints(int32 Required) const;
 
     ALFPHexGridManager* GetGridManager() const;
 protected:
@@ -83,10 +78,10 @@ protected:
     int32 MovementRange = 5;
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Unit Stats")
-    int32 MaxActionPoints = 3;
+    int32 MaxMovePoints = 3;
 
     UPROPERTY(VisibleInstanceOnly, Category = "Unit State")
-    int32 CurrentActionPoints;
+    int32 CurrentMovePoints;
 
     // 当前坐标
     UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Unit Stats")
@@ -123,6 +118,37 @@ protected:
     UPROPERTY(VisibleAnywhere, Category = "Components")
     UPaperSpriteComponent* SpriteComponent;
 
-    UPROPERTY(VisibleAnywhere, Category = "Components")
-    UArrowComponent* FacingDirection;
+public:
+    // 回合系统属性
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Stats")
+    int32 Speed = 5; // 速度值（决定行动顺序）
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Unit State")
+    bool bHasActed = false;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Unit State")
+    bool bOnTurn = false;
+
+    // 回合系统函数
+    UFUNCTION(BlueprintCallable, Category = "Turn System")
+    void ResetForNewRound();
+
+    UFUNCTION(BlueprintPure, Category = "Turn System")
+    bool CanAct() const { return !bHasActed && bOnTurn; }
+
+    UFUNCTION(BlueprintPure, Category = "Turn System")
+    int32 GetSpeed() const { return Speed; }
+
+    UFUNCTION(BlueprintPure, Category = "Turn System")
+    bool HasActed() const { return bHasActed; }
+
+    UFUNCTION(BlueprintCallable, Category = "Turn System")
+    void SetHasActed(bool bActed) { bHasActed = bActed; }
+
+    // 回合事件
+    UFUNCTION()
+    void OnTurnStarted();
+
+    UFUNCTION()
+    void OnTurnEnded();
 };

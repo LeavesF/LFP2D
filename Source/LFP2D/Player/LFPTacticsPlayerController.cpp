@@ -5,6 +5,7 @@
 #include "LFP2D/HexGrid/LFPHexGridManager.h"
 #include "LFP2D/HexGrid/LFPHexTile.h"
 #include "LFP2D/Unit/LFPTacticsUnit.h"
+#include "LFP2D/Turn/LFPTurnManager.h"
 #include "Kismet/GameplayStatics.h"
 //#include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "EnhancedInputComponent.h"
@@ -169,7 +170,7 @@ void ALFPTacticsPlayerController::OnConfirmAction(const FInputActionValue& Value
     else if (SelectedUnit)
     {
         // 如果没有选择目标格子，显示可移动范围
-        ShowMovementRange();
+        //ShowMovementRange(true);
     }
 }
 
@@ -184,7 +185,7 @@ void ALFPTacticsPlayerController::OnCancelAction(const FInputActionValue& Value)
     else if (SelectedUnit)
     {
         // 取消单位的高亮范围
-        SelectedUnit->HighlightMovementRange(false);
+        ShowMovementRange(false);
         SelectedUnit->SetSelected(false);
         SelectedUnit = nullptr;
     }
@@ -278,8 +279,7 @@ void ALFPTacticsPlayerController::SelectUnit(ALFPTacticsUnit* Unit)
     if (SelectedUnit && SelectedUnit != Unit)
     {
         SelectedUnit->SetSelected(false);
-        SelectedUnit->HighlightMovementRange(false); // 取消高亮范围
-        MovementRangeTiles.Empty();
+        ShowMovementRange(false);
     }
 
     // 选择新单位
@@ -287,12 +287,7 @@ void ALFPTacticsPlayerController::SelectUnit(ALFPTacticsUnit* Unit)
     if (SelectedUnit)
     {
         SelectedUnit->SetSelected(true);
-        SelectedUnit->HighlightMovementRange(true); // 高亮可移动范围
-        ALFPHexTile* UnitTile = GridManager->GetTileAtCoordinates(SelectedUnit->GetCurrentCoordinates());
-        if (UnitTile)
-        {
-            MovementRangeTiles = GridManager->GetMovementRange(UnitTile, SelectedUnit->GetMovementRange());
-        }
+        ShowMovementRange(true);
     }
 }
 
@@ -313,11 +308,11 @@ void ALFPTacticsPlayerController::ConfirmMove()
     if (!SelectedUnit || !SelectedTile) return;
 
     // 移动前取消高亮
-    SelectedUnit->HighlightMovementRange(false);
+    ShowMovementRange(false);
     HidePath();
 
     // 移动单位
-    SelectedUnit->MoveToTile(SelectedTile);
+    MoveUnit(SelectedUnit, SelectedTile);
 
     // 清除选择
     SelectedTile = nullptr;
@@ -325,7 +320,7 @@ void ALFPTacticsPlayerController::ConfirmMove()
     SelectedUnit = nullptr;
 }
 
-void ALFPTacticsPlayerController::ShowMovementRange()
+void ALFPTacticsPlayerController::ShowMovementRange(bool bHighlight)
 {
     if (!SelectedUnit || !GridManager) return;
 
@@ -334,23 +329,23 @@ void ALFPTacticsPlayerController::ShowMovementRange()
     if (UnitTile)
     {
         MovementRangeTiles = GridManager->GetMovementRange(UnitTile, SelectedUnit->GetMovementRange());
-
         // 高亮显示这些格子
         for (ALFPHexTile* Tile : MovementRangeTiles)
         {
-            Tile->Highlight(true);
+            if (bHighlight)
+            {
+                Tile->SetMovementHighlight(true);
+            }
+            else
+            {
+                Tile->SetMovementHighlight(false);
+            }
+        }
+        if (!bHighlight)
+        {
+            MovementRangeTiles.Empty();
         }
     }
-}
-
-void ALFPTacticsPlayerController::HideMovementRange()
-{
-    // 取消高亮
-    for (ALFPHexTile* Tile : MovementRangeTiles)
-    {
-        Tile->Highlight(false);
-    }
-    MovementRangeTiles.Empty();
 }
 
 void ALFPTacticsPlayerController::ShowPathToSelectedTile()
@@ -390,4 +385,73 @@ void ALFPTacticsPlayerController::ToggleDebugDisplay()
     {
         GridManager->SetDebugEnabled(bDebugEnabled);
     }
+}
+
+void ALFPTacticsPlayerController::MoveUnit(ALFPTacticsUnit* Unit, ALFPHexTile* TargetTile)
+{
+    if (!Unit || !TargetTile || !Unit->CanAct()) return;
+
+    // 计算移动消耗（假设每次移动消耗1点行动点）
+    const int32 MoveCost = 1;
+
+    // 执行移动
+    Unit->MoveToTile(TargetTile);
+
+    // 消耗行动点
+    Unit->ConsumeMovePoints(MoveCost);
+
+    // 通知回合管理器单位完成行动
+    if (ALFPTurnManager* TurnManager = GetTurnManager())
+    {
+        TurnManager->OnUnitFinishedAction(Unit);
+    }
+}
+
+void ALFPTacticsPlayerController::AttackTarget(ALFPTacticsUnit* Attacker, ALFPTacticsUnit* Target)
+{
+    if (!Attacker || !Target || !Attacker->CanAct()) return;
+
+    // 计算攻击消耗
+    const int32 AttackCost = 1;
+
+    // 执行攻击逻辑
+    // ...
+
+    // 消耗行动点
+    Attacker->ConsumeMovePoints(AttackCost);
+
+    // 通知回合管理器单位完成行动
+    if (ALFPTurnManager* TurnManager = GetTurnManager())
+    {
+        TurnManager->OnUnitFinishedAction(Attacker);
+    }
+}
+
+void ALFPTacticsPlayerController::SkipTurn(ALFPTacticsUnit* Unit)
+{
+    if (!Unit || !Unit->CanAct()) return;
+
+    // 标记为已行动
+    Unit->SetHasActed(true);
+
+    // 可选：消耗1点行动点作为跳过代价
+    // Unit->ConsumeMovePoints(1);
+
+    // 通知回合管理器单位完成行动
+    if (ALFPTurnManager* TurnManager = GetTurnManager())
+    {
+        TurnManager->OnUnitFinishedAction(Unit);
+    }
+}
+
+ALFPTurnManager* ALFPTacticsPlayerController::GetTurnManager() const
+{
+    TArray<AActor*> FoundManagers;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALFPTurnManager::StaticClass(), FoundManagers);
+
+    if (FoundManagers.Num() > 0)
+    {
+        return Cast<ALFPTurnManager>(FoundManagers[0]);
+    }
+    return nullptr;
 }

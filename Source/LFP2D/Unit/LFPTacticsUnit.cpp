@@ -20,17 +20,10 @@ ALFPTacticsUnit::ALFPTacticsUnit()
     // 创建精灵组件
     SpriteComponent = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("SpriteComponent"));
     SpriteComponent->SetupAttachment(RootComponent);
-    SpriteComponent->SetRelativeLocation(FVector(0, 0, 50)); // 在格子上方
-
-    // 创建朝向指示器
-    FacingDirection = CreateDefaultSubobject<UArrowComponent>(TEXT("FacingDirection"));
-    FacingDirection->SetupAttachment(RootComponent);
-    FacingDirection->SetRelativeLocation(FVector(0, 0, 10));
-    FacingDirection->SetArrowColor(FLinearColor::Red);
-    FacingDirection->SetArrowSize(1.5f);
+    SpriteComponent->SetRelativeLocation(FVector(0, 0, 0)); // 在格子上方
 
     // 默认值
-    CurrentActionPoints = MaxActionPoints;
+    CurrentMovePoints = MaxMovePoints;
     CurrentPathIndex = -1;
     MoveProgress = 0.0f;
 
@@ -67,7 +60,7 @@ void ALFPTacticsUnit::SetCurrentCoordinates(const FLFPHexCoordinates& NewCoords)
     {
         if (ALFPHexTile* Tile = GridManager->GetTileAtCoordinates(NewCoords))
         {
-            SetActorLocation(Tile->GetActorLocation() + FVector(0, 0, 50));
+            SetActorLocation(Tile->GetActorLocation() + FVector(0, 0, 5));
             Tile->SetIsOccupied(true);
         }
     }
@@ -84,26 +77,26 @@ void ALFPTacticsUnit::SetCurrentCoordinates(const FLFPHexCoordinates& NewCoords)
 //    }
 //}
 
-// 获取可移动范围
-TArray<ALFPHexTile*> ALFPTacticsUnit::GetMovementRangeTiles()
-{
-    if (MovementRangeTiles.Num() > 0)
-        return MovementRangeTiles;
-
-    if (ALFPHexGridManager* GridManager = GetGridManager())
-    {
-        if (ALFPHexTile* UnitTile = GridManager->GetTileAtCoordinates(CurrentCoordinates))
-        {
-            // 计算移动范围
-            MovementRangeTiles = GridManager->GetMovementRange(UnitTile, MovementRange);
-        }
-    }
-    return MovementRangeTiles;
-}
+//// 获取可移动范围
+//TArray<ALFPHexTile*> ALFPTacticsUnit::GetMovementRangeTiles()
+//{
+//    if (MovementRangeTiles.Num() > 0)
+//        return MovementRangeTiles;
+//
+//    if (ALFPHexGridManager* GridManager = GetGridManager())
+//    {
+//        if (ALFPHexTile* UnitTile = GridManager->GetTileAtCoordinates(CurrentCoordinates))
+//        {
+//            // 计算移动范围
+//            MovementRangeTiles = GridManager->GetMovementRange(UnitTile, MovementRange);
+//        }
+//    }
+//    return MovementRangeTiles;
+//}
 
 void ALFPTacticsUnit::MoveToTile(ALFPHexTile* Target)
 {
-    if (!Target || !HasEnoughActionPoints(1)) return;
+    if (!Target || !HasEnoughMovePoints(1)) return;
 
     ALFPHexGridManager* GridManager = GetGridManager();
     if (!GridManager) return;
@@ -124,7 +117,7 @@ void ALFPTacticsUnit::MoveToTile(ALFPHexTile* Target)
     MovementRangeTiles.Empty();
 
     // 消耗行动点
-    //ConsumeActionPoints(1);
+    //ConsumeMovePoints(1);
 
     // 开始移动动画
     //if (MoveTimeline)
@@ -195,7 +188,7 @@ void ALFPTacticsUnit::FinishMove()
     if (TargetTile)
     {
         SetCurrentCoordinates(TargetTile->GetCoordinates());
-        SetActorLocation(TargetTile->GetActorLocation() + FVector(0, 0, 50));
+        //SetActorLocation(TargetTile->GetActorLocation() + FVector(0, 0, 50));
     }
 
     // 重置移动状态
@@ -203,6 +196,28 @@ void ALFPTacticsUnit::FinishMove()
     MovePath.Empty();
     CurrentPathIndex = -1;
     MoveProgress = 0.0f;
+}
+
+void ALFPTacticsUnit::ResetForNewRound()
+{
+    CurrentMovePoints = MaxMovePoints;
+    bHasActed = false;
+
+    // 可选：添加视觉反馈
+    if (SpriteComponent)
+    {
+        SpriteComponent->SetSpriteColor(FLinearColor::White);
+    }
+}
+
+void ALFPTacticsUnit::OnTurnStarted()
+{
+    bOnTurn = true;
+}
+
+void ALFPTacticsUnit::OnTurnEnded()
+{
+    bOnTurn = false;
 }
 
 void ALFPTacticsUnit::SetSelected(bool bSelected)
@@ -219,31 +234,42 @@ void ALFPTacticsUnit::SetSelected(bool bSelected)
     }
 }
 
-void ALFPTacticsUnit::HighlightMovementRange(bool bHighlight)
-{
-    TArray<ALFPHexTile*> Tiles = GetMovementRangeTiles();
+//void ALFPTacticsUnit::HighlightMovementRange(bool bHighlight)
+//{
+//    TArray<ALFPHexTile*> Tiles = GetMovementRangeTiles();
+//
+//    for (ALFPHexTile* Tile : Tiles)
+//    {
+//        if (bHighlight)
+//        {
+//            Tile->SetMovementHighlight(true);
+//        }
+//        else
+//        {
+//            Tile->SetMovementHighlight(false);
+//        }
+//    }
+//
+//    if (!bHighlight)
+//    {
+//        MovementRangeTiles.Empty();
+//    }
+//}
 
-    for (ALFPHexTile* Tile : Tiles)
+void ALFPTacticsUnit::ConsumeMovePoints(int32 Amount)
+{
+    CurrentMovePoints = FMath::Max(0, CurrentMovePoints - Amount);
+
+    // 如果没有行动点了，标记为已行动
+    if (CurrentMovePoints <= 0)
     {
-        if (bHighlight)
-        {
-            Tile->SetMovementHighlight(true);
-        }
-        else
-        {
-            Tile->SetMovementHighlight(false);
-        }
+        //bHasActed = true;
     }
 }
 
-void ALFPTacticsUnit::ConsumeActionPoints(int32 Amount)
+bool ALFPTacticsUnit::HasEnoughMovePoints(int32 Required) const
 {
-    CurrentActionPoints = FMath::Max(0, CurrentActionPoints - Amount);
-}
-
-bool ALFPTacticsUnit::HasEnoughActionPoints(int32 Required) const
-{
-    return CurrentActionPoints >= Required;
+    return CurrentMovePoints >= Required;
 }
 
 ALFPHexGridManager* ALFPTacticsUnit::GetGridManager() const
