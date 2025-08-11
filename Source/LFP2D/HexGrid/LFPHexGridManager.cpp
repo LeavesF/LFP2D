@@ -174,7 +174,7 @@ TArray<ALFPHexTile*> ALFPHexGridManager::GetMovementRange(ALFPHexTile* StartTile
 			}
 		}
 	}
-
+	ReachableTiles.Remove(StartTile);
 	return ReachableTiles;
 }
 
@@ -291,6 +291,7 @@ TArray<ALFPHexTile*> ALFPHexGridManager::FindPath(ALFPHexTile* Start, ALFPHexTil
 		}
 	}
 
+	Path.Remove(Start);
 	// µ÷ÊÔ»æÖÆÂ·¾¶
 	//DrawDebugPath(Path, bPathFound);
 

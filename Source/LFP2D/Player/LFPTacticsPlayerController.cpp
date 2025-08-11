@@ -6,6 +6,7 @@
 #include "LFP2D/HexGrid/LFPHexTile.h"
 #include "LFP2D/Unit/LFPTacticsUnit.h"
 #include "LFP2D/Turn/LFPTurnManager.h"
+#include "LFP2D/UI/Fighting/LFPTurnSpeedListWidget.h"
 #include "Kismet/GameplayStatics.h"
 //#include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "EnhancedInputComponent.h"
@@ -51,6 +52,16 @@ void ALFPTacticsPlayerController::BeginPlay()
             Subsystem->AddMappingContext(DefaultInputMapping, 0);
         }
     }
+
+    // 初始化UI
+    if (TurnSpeedWidgetClass)
+    {
+        TurnSpeedListWidget = CreateWidget<ULFPTurnSpeedListWidget>(this, TurnSpeedWidgetClass);
+        if (TurnSpeedListWidget)
+        {
+            TurnSpeedListWidget->AddToViewport();
+        }
+    }
 }
 
 void ALFPTacticsPlayerController::SetupInputComponent()
@@ -68,7 +79,7 @@ void ALFPTacticsPlayerController::SetupInputComponent()
         EnhancedInputComponent->BindAction(ConfirmAction, ETriggerEvent::Triggered, this, &ALFPTacticsPlayerController::OnConfirmAction);
         EnhancedInputComponent->BindAction(CancelAction, ETriggerEvent::Triggered, this, &ALFPTacticsPlayerController::OnCancelAction);
         //EnhancedInputComponent->BindAction(RotateCameraAction, ETriggerEvent::Triggered, this, &ALFPTacticsPlayerController::OnRotateCamera);
-        EnhancedInputComponent->BindAction(DebugToggleAction, ETriggerEvent::Triggered, this, &ALFPTacticsPlayerController::OnToggleDebug);
+        EnhancedInputComponent->BindAction(DebugToggleAction, ETriggerEvent::Started, this, &ALFPTacticsPlayerController::OnToggleDebug);
 
         // 相机控制
         EnhancedInputComponent->BindAction(CameraPanAction, ETriggerEvent::Triggered, this, &ALFPTacticsPlayerController::OnCameraPan);
@@ -179,7 +190,7 @@ void ALFPTacticsPlayerController::OnCancelAction(const FInputActionValue& Value)
     // 取消当前选择
     if (SelectedTile)
     {
-        HidePath();
+        HidePathToDefault();
         SelectedTile = nullptr;
     }
     else if (SelectedUnit)
@@ -307,9 +318,9 @@ void ALFPTacticsPlayerController::ConfirmMove()
 {
     if (!SelectedUnit || !SelectedTile) return;
 
+    //HidePathToDefault();
     // 移动前取消高亮
     ShowMovementRange(false);
-    HidePath();
 
     // 移动单位
     MoveUnit(SelectedUnit, SelectedTile);
@@ -343,6 +354,7 @@ void ALFPTacticsPlayerController::ShowMovementRange(bool bHighlight)
         }
         if (!bHighlight)
         {
+            HidePathToDefault();
             MovementRangeTiles.Empty();
         }
     }
@@ -353,8 +365,7 @@ void ALFPTacticsPlayerController::ShowPathToSelectedTile()
     if (!SelectedUnit || !SelectedTile || !GridManager) return;
 
     // 先隐藏之前可能显示的路径
-    HidePath();
-
+    HidePathToRange();
     // 计算路径
     ALFPHexTile* UnitTile = GridManager->GetTileAtCoordinates(SelectedUnit->GetCurrentCoordinates());
     if (UnitTile)
@@ -369,11 +380,20 @@ void ALFPTacticsPlayerController::ShowPathToSelectedTile()
     }
 }
 
-void ALFPTacticsPlayerController::HidePath()
+void ALFPTacticsPlayerController::HidePathToDefault()
 {
     for (ALFPHexTile* Tile : CurrentPath)
     {
-        Tile->SetPathHighlight(false);
+        Tile->SetMovementHighlight(false);
+    }
+    CurrentPath.Empty();
+}
+
+void ALFPTacticsPlayerController::HidePathToRange()
+{
+    for (ALFPHexTile* Tile : CurrentPath)
+    {
+        Tile->SetMovementHighlight(true);
     }
     CurrentPath.Empty();
 }

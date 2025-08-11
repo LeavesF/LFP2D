@@ -48,6 +48,10 @@ void ALFPHexTile::SetMovementHighlight(bool bActive)
 	{
 		SpriteComponent->SetSprite(DefaultSprite);
 	}
+	else if (!DefaultSprite)
+	{
+		SpriteComponent->SetSprite(nullptr);
+	}
 }
 
 void ALFPHexTile::SetPathHighlight(bool bActive)
@@ -56,9 +60,9 @@ void ALFPHexTile::SetPathHighlight(bool bActive)
 	{
 		SpriteComponent->SetSprite(PathSprite);
 	}
-	else if (DefaultSprite)
+	else if (MovementRangeSprite)
 	{
-		SpriteComponent->SetSprite(DefaultSprite);
+		SpriteComponent->SetSprite(MovementRangeSprite);
 	}
 }
 

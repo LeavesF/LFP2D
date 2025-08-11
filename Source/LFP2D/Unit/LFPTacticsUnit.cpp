@@ -60,7 +60,7 @@ void ALFPTacticsUnit::SetCurrentCoordinates(const FLFPHexCoordinates& NewCoords)
     {
         if (ALFPHexTile* Tile = GridManager->GetTileAtCoordinates(NewCoords))
         {
-            SetActorLocation(Tile->GetActorLocation() + FVector(0, 0, 5));
+            SetActorLocation(Tile->GetActorLocation() + FVector(0, 0, 1));
             Tile->SetIsOccupied(true);
         }
     }

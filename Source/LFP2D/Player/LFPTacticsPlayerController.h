@@ -17,6 +17,8 @@ class UInputMappingContext;
 class UInputAction;
 
 class ALFPTurnManager;
+
+class ULFPTurnSpeedListWidget;
 /**
  * 
  */
@@ -52,7 +54,8 @@ protected:
     void ConfirmMove();
     void ShowMovementRange(bool bHighlight);
     void ShowPathToSelectedTile();
-    void HidePath();
+    void HidePathToDefault();
+    void HidePathToRange();
 
     // 调试功能
     void ToggleDebugDisplay();
@@ -168,4 +171,12 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Unit Actions")
     void SkipTurn(ALFPTacticsUnit* Unit);
+
+// UI相关
+protected:
+    UPROPERTY(EditDefaultsOnly, Category = "UI")
+    TSubclassOf<class UUserWidget> TurnSpeedWidgetClass;
+
+    UPROPERTY()
+    TObjectPtr<ULFPTurnSpeedListWidget> TurnSpeedListWidget;
 };
