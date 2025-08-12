@@ -10,6 +10,7 @@
 #include "LFPTacticsUnit.generated.h"
 
 class ALFPHexGridManager;
+class ALFPTurnManager;
 
 UCLASS()
 class LFP2D_API ALFPTacticsUnit : public AActor
@@ -58,8 +59,10 @@ public:
     bool HasEnoughMovePoints(int32 Required) const;
 
     ALFPHexGridManager* GetGridManager() const;
+    ALFPTurnManager* GetTurnManager() const;
 protected:
     virtual void BeginPlay() override;
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
     virtual void Tick(float DeltaTime) override;
 
     // 移动动画更新
@@ -119,16 +122,6 @@ protected:
     UPaperSpriteComponent* SpriteComponent;
 
 public:
-    // 回合系统属性
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Stats")
-    int32 Speed = 5; // 速度值（决定行动顺序）
-
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Unit State")
-    bool bHasActed = false;
-
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Unit State")
-    bool bOnTurn = false;
-
     // 回合系统函数
     UFUNCTION(BlueprintCallable, Category = "Turn System")
     void ResetForNewRound();
@@ -145,10 +138,27 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Turn System")
     void SetHasActed(bool bActed) { bHasActed = bActed; }
 
+    UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Turn System")
+    UTexture2D* GetUnitIcon() const { return UnitIconTexture; }
+
     // 回合事件
     UFUNCTION()
     void OnTurnStarted();
 
     UFUNCTION()
     void OnTurnEnded();
+
+public:
+    // 回合系统属性
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Stats")
+    int32 Speed = 5; // 速度值（决定行动顺序）
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Unit State")
+    bool bHasActed = false;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Unit State")
+    bool bOnTurn = false;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Turn System")
+    UTexture2D* UnitIconTexture;
 };

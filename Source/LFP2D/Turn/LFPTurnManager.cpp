@@ -4,7 +4,7 @@
 #include "LFP2D/Turn/LFPTurnManager.h"
 #include "LFP2D/Unit/LFPTacticsUnit.h"
 #include "LFP2D/Player/LFPTacticsPlayerController.h"
-#include <Kismet/GameplayStatics.h>
+#include "Kismet/GameplayStatics.h"
 
 ALFPTurnManager::ALFPTurnManager()
 {
@@ -28,7 +28,7 @@ void ALFPTurnManager::StartGame()
     {
         if (ALFPTacticsUnit* Unit = Cast<ALFPTacticsUnit>(Actor))
         {
-            AllUnits.Add(Unit);
+            TurnOrderUnits.Add(Unit);
         }
     }
 
@@ -42,7 +42,7 @@ void ALFPTurnManager::BeginNewRound()
     bIsInRound = true;
 
     // 重置所有单位
-    for (ALFPTacticsUnit* Unit : AllUnits)
+    for (ALFPTacticsUnit* Unit : TurnOrderUnits)
     {
         if (Unit && Unit->IsValidLowLevel())
         {
@@ -54,9 +54,9 @@ void ALFPTurnManager::BeginNewRound()
     SortUnitsBySpeed();
 
     // 开始第一个单位的回合
-    if (AllUnits.Num() > 0)
+    if (TurnOrderUnits.Num() > 0)
     {
-        BeginUnitTurn(AllUnits[0]);
+        BeginUnitTurn(TurnOrderUnits[0]);
     }
 }
 
@@ -82,7 +82,7 @@ void ALFPTurnManager::SortUnitsBySpeed()
 {
     // 按速度降序排序（速度高的先行动）
     // Todo: 速度相同时，玩家先于AI
-    AllUnits.Sort([](const ALFPTacticsUnit& A, const ALFPTacticsUnit& B) {
+    TurnOrderUnits.Sort([](const ALFPTacticsUnit& A, const ALFPTacticsUnit& B) {
         return A.GetSpeed() > B.GetSpeed();
         });
 }
@@ -126,21 +126,21 @@ void ALFPTurnManager::PassTurn()
     EndUnitTurn(CurrentUnit);
 
     // 找到下一个未行动的单位
-    int32 CurrentIndex = AllUnits.Find(CurrentUnit);
-    int32 NextIndex = (CurrentIndex + 1) % AllUnits.Num();
+    int32 CurrentIndex = TurnOrderUnits.Find(CurrentUnit);
+    int32 NextIndex = (CurrentIndex + 1) % TurnOrderUnits.Num();
 
     // 检查所有单位是否都行动过
-    bool AllUnitsActed = true;
-    for (ALFPTacticsUnit* Unit : AllUnits)
+    bool TurnOrderUnitsActed = true;
+    for (ALFPTacticsUnit* Unit : TurnOrderUnits)
     {
         if (!Unit->HasActed())
         {
-            AllUnitsActed = false;
+            TurnOrderUnitsActed = false;
             break;
         }
     }
 
-    if (AllUnitsActed)
+    if (TurnOrderUnitsActed)
     {
         // 所有单位行动完毕，结束回合
         EndCurrentRound();
@@ -148,10 +148,10 @@ void ALFPTurnManager::PassTurn()
     else
     {
         // 寻找下一个可行动单位
-        for (int32 i = 0; i < AllUnits.Num(); i++)
+        for (int32 i = 0; i < TurnOrderUnits.Num(); i++)
         {
-            int32 Index = (NextIndex + i) % AllUnits.Num();
-            ALFPTacticsUnit* NextUnit = AllUnits[Index];
+            int32 Index = (NextIndex + i) % TurnOrderUnits.Num();
+            ALFPTacticsUnit* NextUnit = TurnOrderUnits[Index];
 
             if (NextUnit && !NextUnit->HasActed())
             {
@@ -178,9 +178,9 @@ void ALFPTurnManager::OnUnitFinishedAction(ALFPTacticsUnit* Unit)
 
 void ALFPTurnManager::RegisterUnit(ALFPTacticsUnit* Unit)
 {
-    if (Unit && !AllUnits.Contains(Unit))
+    if (Unit && !TurnOrderUnits.Contains(Unit))
     {
-        AllUnits.Add(Unit);
+        TurnOrderUnits.Add(Unit);
 
         // 如果游戏已经开始，重新排序
         if (bIsInRound)
@@ -194,7 +194,7 @@ void ALFPTurnManager::UnregisterUnit(ALFPTacticsUnit* Unit)
 {
     if (Unit)
     {
-        AllUnits.Remove(Unit);
+        TurnOrderUnits.Remove(Unit);
 
         // 如果当前单位被移除，传递回合
         if (Unit == CurrentUnit)

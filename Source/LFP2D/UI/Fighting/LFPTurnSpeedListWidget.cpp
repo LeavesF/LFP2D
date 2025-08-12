@@ -4,7 +4,31 @@
 #include "Components/TextBlock.h"
 #include "Components/HorizontalBox.h"
 #include "Components/HorizontalBoxSlot.h"
+#include "Kismet/GameplayStatics.h"
 #include "LFP2D/Unit/LFPTacticsUnit.h"
+
+void ULFPTurnSpeedListWidget::InitializeTurnOrder()
+{
+	if (!TurnManagerRef)
+	{
+		// 查找回合管理器
+		TArray<AActor*> FoundManagers;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALFPTurnManager::StaticClass(), FoundManagers);
+		if (FoundManagers.Num() > 0)
+		{
+			TurnManagerRef = Cast<ALFPTurnManager>(FoundManagers[0]);
+		}
+	}
+
+	if (TurnManagerRef)
+	{
+		// 绑定回合变化事件
+		TurnManagerRef->OnTurnChanged.AddDynamic(this, &ULFPTurnSpeedListWidget::OnTurnChanged);
+
+		// 立即更新UI
+		UpdateTurnOrder();
+	}
+}
 
 void ULFPTurnSpeedListWidget::SetRoundNumber(int32 Round)
 {
@@ -13,8 +37,52 @@ void ULFPTurnSpeedListWidget::SetRoundNumber(int32 Round)
 		RoundText->SetText(FText::AsNumber(Round));
 	}
 }
-void ULFPTurnSpeedListWidget::UpdateTurnOrder(const TArray<ALFPTacticsUnit*>& Units, int32 CurrentUnitIndex)
+void ULFPTurnSpeedListWidget::UpdateTurnOrder()
 {
+	if (!TurnManagerRef)
+	{
+		return;
+	}
+	// 设置回合文本
+	RoundText->SetText(FText::FromString(FString::Printf(TEXT("Round %d"), TurnManagerRef->GetCurrentRound())));
+
+	// 复用现有图标而不是销毁重建
+	TArray<UWidget*> ExistingIcons = UnitIconsContainer->GetAllChildren();
+
+	TArray<ALFPTacticsUnit*> TurnOrderUnits = TurnManagerRef->GetTurnOrderUnits();
+	
+	//for (int32 i = 0; i < TurnOrderUnits.Num(); i++)
+	//{
+	//	UWBP_UnitTurnIcon* Icon = nullptr;
+
+	//	if (i < ExistingIcons.Num())
+	//	{
+	//		// 复用现有图标
+	//		Icon = Cast<UWBP_UnitTurnIcon>(ExistingIcons[i]);
+	//	}
+	//	else
+	//	{
+	//		// 创建新图标
+	//		Icon = CreateWidget<UWBP_UnitTurnIcon>(this, UnitIconClass);
+	//		UnitIconsContainer->AddChild(Icon);
+	//	}
+
+	//	// 更新图标内容
+	//	ALFPTacticsUnit* Unit = TurnManagerRef->TurnOrderArray[i];
+	//	if (Icon && Unit)
+	//	{
+	//		Icon->SetUnit(Unit);
+	//		Icon->SetIsCurrent(TurnManagerRef->GetCurrentTurnIndex() == i);
+	//	}
+	//}
+
+	//// 移除多余图标
+	//for (int32 i = TurnOrderUnits.Num(); i < ExistingIcons.Num(); i++)
+	//{
+	//	ExistingIcons[i]->RemoveFromParent();
+	//}
+
+
 	//if (!UnitIconsContainer || !UnitIconClass) return;
 	//// 清空现有图标
 	//UnitIconsContainer->ClearChildren();
@@ -49,4 +117,13 @@ void ULFPTurnSpeedListWidget::UpdateTurnOrder(const TArray<ALFPTacticsUnit*>& Un
 	//		}
 	//	}
 	//}
+}
+
+void ULFPTurnSpeedListWidget::OnTurnChanged()
+{
+	// 取消之前的延迟更新
+	GetWorld()->GetTimerManager().ClearTimer(UpdateTimerHandle);
+
+	// 延迟一帧更新，避免同一帧内多次更新
+	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULFPTurnSpeedListWidget::UpdateTurnOrder);
 }

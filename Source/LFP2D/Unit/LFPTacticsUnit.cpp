@@ -4,6 +4,7 @@
 #include "LFP2D/Unit/LFPTacticsUnit.h"
 #include "LFP2D/HexGrid/LFPHexTile.h"
 #include "LFP2D/HexGrid/LFPHexGridManager.h"
+#include "LFP2D/Turn/LFPTurnManager.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/TimelineComponent.h"
 #include "Curves/CurveFloat.h"
@@ -35,6 +36,12 @@ void ALFPTacticsUnit::BeginPlay()
 {
     Super::BeginPlay();
 
+    // 注册到回合管理器
+    if (ALFPTurnManager* TurnManager = GetTurnManager())
+    {
+        TurnManager->RegisterUnit(this);
+    }
+
     FLFPHexCoordinates SpawnPoint = FLFPHexCoordinates(StartCoordinates_Q, StartCoordinates_R);
     SetCurrentCoordinates(SpawnPoint);
 
@@ -48,6 +55,16 @@ void ALFPTacticsUnit::BeginPlay()
         FOnTimelineEvent TimelineFinishedCallback;
         TimelineFinishedCallback.BindUFunction(this, FName("FinishMove"));
         //MoveTimeline->SetTimelineFinishedFunc(TimelineFinishedCallback);
+    }
+}
+
+void ALFPTacticsUnit::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+    Super::EndPlay(EndPlayReason);
+
+    if (ALFPTurnManager* TurnManager = GetTurnManager())
+    {
+        TurnManager->UnregisterUnit(this);
     }
 }
 
@@ -279,6 +296,18 @@ ALFPHexGridManager* ALFPTacticsUnit::GetGridManager() const
     if (FoundActors.Num() > 0)
     {
         return Cast<ALFPHexGridManager>(FoundActors[0]);
+    }
+    return nullptr;
+}
+
+ALFPTurnManager* ALFPTacticsUnit::GetTurnManager() const
+{
+    TArray<AActor*> FoundManagers;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALFPTurnManager::StaticClass(), FoundManagers);
+
+    if (FoundManagers.Num() > 0)
+    {
+        return Cast<ALFPTurnManager>(FoundManagers[0]);
     }
     return nullptr;
 }

@@ -8,6 +8,8 @@
 
 class ALFPTacticsUnit;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnTurnChangedSignature);
+
 UCLASS()
 class LFP2D_API ALFPTurnManager : public AActor
 {
@@ -31,6 +33,14 @@ public:
     UFUNCTION(BlueprintPure, Category = "Turn System")
     ALFPTacticsUnit* GetCurrentUnit() const { return CurrentUnit; }
 
+    // 获取当前回合数
+    UFUNCTION(BlueprintPure, Category = "Turn System")
+    int32 GetCurrentRound() const { return CurrentRound; }
+
+    // 获取当前单位列表
+    UFUNCTION(BlueprintPure, Category = "Turn System")
+    TArray<ALFPTacticsUnit*> GetTurnOrderUnits() const { return TurnOrderUnits; }
+
     // 传递回合到下一个单位
     UFUNCTION(BlueprintCallable, Category = "Turn System")
     void PassTurn();
@@ -45,10 +55,14 @@ public:
     // 从回合系统注销单位
     void UnregisterUnit(ALFPTacticsUnit* Unit);
 
+public:
+    UPROPERTY(BlueprintAssignable, Category = "Turn System")
+    FOnTurnChangedSignature OnTurnChanged;
+
 protected:
     virtual void BeginPlay() override;
 
-private:
+protected:
     // 排序单位（速度优先）
     void SortUnitsBySpeed();
 
@@ -60,7 +74,7 @@ private:
 
     // 单位列表
     UPROPERTY(VisibleAnywhere, Category = "Turn System")
-    TArray<ALFPTacticsUnit*> AllUnits;
+    TArray<ALFPTacticsUnit*> TurnOrderUnits;
 
     // 当前行动单位
     UPROPERTY(VisibleAnywhere, Category = "Turn System")

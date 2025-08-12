@@ -60,6 +60,7 @@ void ALFPTacticsPlayerController::BeginPlay()
         if (TurnSpeedListWidget)
         {
             TurnSpeedListWidget->AddToViewport();
+            TurnSpeedListWidget->InitializeTurnOrder(); // 初始化单位顺序
         }
     }
 }

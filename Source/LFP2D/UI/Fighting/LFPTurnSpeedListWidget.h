@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "LFP2D/Turn/LFPTurnManager.h"
 #include "LFPTurnSpeedListWidget.generated.h"
 
 class UHorizontalBox;
@@ -19,12 +20,20 @@ class LFP2D_API ULFPTurnSpeedListWidget : public UUserWidget
 	GENERATED_BODY()
 	
 public:
+	UFUNCTION(BlueprintCallable, Category = "Turn UI")
+	void InitializeTurnOrder();
+
 	// 设置回合数
 	UFUNCTION(BlueprintCallable, Category = "Turn UI")
 	void SetRoundNumber(int32 Round);
+
 	// 更新行动单位列表
 	UFUNCTION(BlueprintCallable, Category = "Turn UI")
-	void UpdateTurnOrder(const TArray<class ALFPTacticsUnit*>& Units, int32 CurrentUnitIndex);
+	void UpdateTurnOrder();
+
+	UFUNCTION()
+	void OnTurnChanged();
+
 protected:
 	// 用于显示回合数的文本
 	UPROPERTY(meta = (BindWidget))
@@ -35,4 +44,9 @@ protected:
 	// 单位头像的控件蓝图类（在蓝图中设置）
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turn UI")
 	TSubclassOf<UUserWidget> UnitIconClass;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Turn Order")
+	ALFPTurnManager* TurnManagerRef;
+
+	FTimerHandle UpdateTimerHandle;
 };
