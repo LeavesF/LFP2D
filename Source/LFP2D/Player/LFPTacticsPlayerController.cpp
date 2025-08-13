@@ -77,8 +77,8 @@ void ALFPTacticsPlayerController::SetupInputComponent()
         EnhancedInputComponent->BindAction(SelectAction, ETriggerEvent::Completed, this, &ALFPTacticsPlayerController::OnSelectCompleted);
 
         // 其他操作
-        EnhancedInputComponent->BindAction(ConfirmAction, ETriggerEvent::Triggered, this, &ALFPTacticsPlayerController::OnConfirmAction);
-        EnhancedInputComponent->BindAction(CancelAction, ETriggerEvent::Triggered, this, &ALFPTacticsPlayerController::OnCancelAction);
+        EnhancedInputComponent->BindAction(ConfirmAction, ETriggerEvent::Completed, this, &ALFPTacticsPlayerController::OnConfirmAction);
+        EnhancedInputComponent->BindAction(CancelAction, ETriggerEvent::Completed, this, &ALFPTacticsPlayerController::OnCancelAction);
         //EnhancedInputComponent->BindAction(RotateCameraAction, ETriggerEvent::Triggered, this, &ALFPTacticsPlayerController::OnRotateCamera);
         EnhancedInputComponent->BindAction(DebugToggleAction, ETriggerEvent::Started, this, &ALFPTacticsPlayerController::OnToggleDebug);
 
@@ -119,6 +119,30 @@ void ALFPTacticsPlayerController::Tick(float DeltaTime)
             ));
         }
         
+        // 获取鼠标位置
+        float MouseX, MouseY;
+        if (GetMousePosition(MouseX, MouseY))
+        {
+            FVector2D ScreenPosition(MouseX, MouseY);
+            // 获取鼠标下的六边形Tile
+            ALFPHexTile* HoveredTile = GridManager->GetHexTileUnderCursor(ScreenPosition, this);
+            // 处理鼠标悬停逻辑
+            if (HoveredTile != LastHoveredTile)
+            {
+                if (LastHoveredTile)
+                {
+                    //LastHoveredTile->OnMouseExit();
+                }
+
+                if (HoveredTile)
+                {
+                    SelectTile(HoveredTile);
+                    //HoveredTile->OnMouseEnter();
+                }
+
+                LastHoveredTile = HoveredTile;
+            }
+        }
     }
 }
 
@@ -175,6 +199,11 @@ void ALFPTacticsPlayerController::OnSelectCompleted(const FInputActionValue& Val
 
 void ALFPTacticsPlayerController::OnConfirmAction(const FInputActionValue& Value)
 {
+    if (bIsDragging)
+    {
+        bIsDragging = false;
+        return;
+    }
     if (SelectedUnit && SelectedTile)
     {
         ConfirmMove();
@@ -276,7 +305,7 @@ void ALFPTacticsPlayerController::OnCameraDragTriggered(const FInputActionValue&
 
 void ALFPTacticsPlayerController::OnCameraDragCompleted(const FInputActionValue& Value)
 {
-    bIsDragging = false;
+    //bIsDragging = false;
 }
 
 void ALFPTacticsPlayerController::OnCameraZoom(const FInputActionValue& Value)
@@ -328,8 +357,8 @@ void ALFPTacticsPlayerController::ConfirmMove()
 
     // 清除选择
     SelectedTile = nullptr;
-    SelectedUnit->SetSelected(false);
-    SelectedUnit = nullptr;
+    /*SelectedUnit->SetSelected(false);
+    SelectedUnit = nullptr;*/
 }
 
 void ALFPTacticsPlayerController::ShowMovementRange(bool bHighlight)

@@ -416,3 +416,142 @@ void ALFPHexGridManager::DrawDebugPath(const TArray<ALFPHexTile*>& Path, bool bP
 		);
 	}
 }
+
+// 主入口函数：通过屏幕位置获取六边形Tile
+ALFPHexTile* ALFPHexGridManager::GetHexTileUnderCursor(const FVector2D& ScreenPosition, APlayerController* PlayerController)
+{
+	FHitResult Hit;
+	bool bHitSuccessful = false;
+	bHitSuccessful = PlayerController->GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, Hit);
+	if (!bHitSuccessful)
+	{
+		return nullptr;
+	}
+
+	// 转换为局部坐标（相对于网格管理器
+	FVector2D LocalLocation;
+	LocalLocation.X = Hit.Location.X - GetActorLocation().X;
+	LocalLocation.Y = Hit.Location.Y - GetActorLocation().Y;
+
+	// 计算六边形坐标
+	FLFPHexCoordinates HexCoords = FLFPHexCoordinates::FromWorldLocation(
+		LocalLocation,
+		HexSize,
+		VerticalScale
+	);
+
+	// 在GridMap中查找
+	FIntPoint Key(HexCoords.Q, HexCoords.R);
+	if (GridMap.Contains(Key))
+		return GridMap[Key];
+
+	return nullptr;
+}
+
+// 世界坐标转换为六边形网格坐标
+FVector2D ALFPHexGridManager::WorldToHexGridPosition(const FVector& WorldPosition, float InHexSize, float InVerticalScale)
+{
+	// 尖顶六边形布局参数
+	const float HorizontalSpacing = InHexSize * 1.5f * InVerticalScale; // 水平间距 (应用垂直缩放)
+	const float VerticalSpacing = InHexSize * FMath::Sqrt(3.0f); // 垂直间距
+
+	// 网格原点位置
+	FVector GridOrigin = GetActorLocation();
+
+	// 计算相对于网格原点的位置
+	float RelX = WorldPosition.X - GridOrigin.X;
+	float RelY = WorldPosition.Y - GridOrigin.Y;
+
+	// 转换为六边形网格坐标（无量纲）
+	return FVector2D(
+		RelX / HorizontalSpacing,
+		RelY / VerticalSpacing
+	);
+}
+
+// 像素位置转换为六边形坐标
+FLFPHexCoordinates ALFPHexGridManager::PixelToHexCoordinates(const FVector2D& PixelPosition, float InHexSize)
+{
+    // 提取坐标值
+    float x = PixelPosition.X;
+    float y = PixelPosition.Y;
+    
+    // 转换为立方体坐标 - 尖顶布局公式
+    float q = (2.0f / 3.0f) * x;
+    float r = (-1.0f / 3.0f) * x + (FMath::Sqrt(3.0f) / 3.0f) * y;
+    
+    // 使用优化的六边形坐标四舍五入
+    return RoundToHex(q, r);
+}
+
+// 检查点是否在六边形内
+bool ALFPHexGridManager::IsPointInHexagon(const FVector2D& Point, const FVector2D& Center, float InHexSize)
+{
+	// 将点转换为相对于六边形中心的位置
+	FVector2D relPoint = Point - Center;
+
+	// 尖顶六边形的顶点位置（从0度开始）
+	static const TArray<FVector2D> vertices = [] {
+		TArray<FVector2D> result;
+		for (int i = 0; i < 6; i++) {
+			float angle_deg = 60 * i; // 尖顶六边形从0度开始
+			float angle_rad = FMath::DegreesToRadians(angle_deg);
+			result.Add(FVector2D(FMath::Cos(angle_rad), FMath::Sin(angle_rad)));
+		}
+		return result;
+		}();
+
+	// 检查点是否在六边形内（使用射线法）
+	int crossings = 0;
+	for (int i = 0; i < 6; i++) {
+		int j = (i + 1) % 6;
+		FVector2D v1 = vertices[i] * InHexSize;
+		FVector2D v2 = vertices[j] * InHexSize;
+
+		// 检查边是否跨越点的y坐标
+		if ((v1.Y > relPoint.Y) != (v2.Y > relPoint.Y)) {
+			// 计算交点x坐标
+			float intersectX = (v2.X - v1.X) * (relPoint.Y - v1.Y) / (v2.Y - v1.Y) + v1.X;
+
+			// 如果交点在点的右侧
+			if (relPoint.X < intersectX) {
+				crossings++;
+			}
+		}
+	}
+
+	// 奇数次跨越表示点在内部
+	return (crossings % 2 == 1);
+}
+
+// 优化的六边形坐标四舍五入
+FLFPHexCoordinates ALFPHexGridManager::RoundToHex(float q, float r)
+{
+	// 转换为立方体坐标
+	float cube_x = q;
+	float cube_z = r;
+	float cube_y = -cube_x - cube_z;
+
+	// 四舍五入到最近的整数
+	int32 rx = FMath::RoundToInt(cube_x);
+	int32 ry = FMath::RoundToInt(cube_y);
+	int32 rz = FMath::RoundToInt(cube_z);
+
+	// 检查四舍五入误差
+	float x_diff = FMath::Abs(rx - cube_x);
+	float y_diff = FMath::Abs(ry - cube_y);
+	float z_diff = FMath::Abs(rz - cube_z);
+
+	// 调整最大误差的坐标
+	if (x_diff > y_diff && x_diff > z_diff) {
+		rx = -ry - rz;
+	}
+	else if (y_diff > z_diff) {
+		ry = -rx - rz;
+	}
+	else {
+		rz = -rx - ry;
+	}
+
+	return FLFPHexCoordinates(rx, rz);
+}

@@ -35,6 +35,7 @@ protected:
     virtual void SetupInputComponent() override;
     virtual void Tick(float DeltaTime) override;
 
+public:
     // Enhanced Input 绑定函数
     void OnSelectStarted(const FInputActionValue& Value);
     void OnSelectCompleted(const FInputActionValue& Value);
@@ -101,6 +102,9 @@ protected:
     // 当前选中的格子（用于移动目标）
     UPROPERTY()
     ALFPHexTile* SelectedTile;
+
+    UPROPERTY()
+    ALFPHexTile* LastHoveredTile;
 
     // 当前显示的可移动范围
     TArray<ALFPHexTile*> MovementRangeTiles;

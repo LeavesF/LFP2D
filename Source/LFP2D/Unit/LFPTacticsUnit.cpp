@@ -237,6 +237,10 @@ void ALFPTacticsUnit::OnTurnEnded()
     bOnTurn = false;
 }
 
+void ALFPTacticsUnit::OnMouseEnter()
+{
+}
+
 void ALFPTacticsUnit::SetSelected(bool bSelected)
 {
     bIsSelected = bSelected;

@@ -112,4 +112,21 @@ private:
     //{
     //    return PointerHash(Tile);
     //}
+public:
+    UFUNCTION(BlueprintCallable, Category = "Hex Grid")
+    ALFPHexTile* GetHexTileUnderCursor(const FVector2D& ScreenPosition, APlayerController* PlayerController);
+
+    UFUNCTION(BlueprintPure, Category = "Hex Grid")
+    FVector2D WorldToHexGridPosition(const FVector& WorldPosition, float InHexSize, float InVerticalScale = 1.0f);
+
+    UFUNCTION(BlueprintPure, Category = "Hex Grid")
+    FLFPHexCoordinates PixelToHexCoordinates(const FVector2D& PixelPosition, float InHexSize);
+
+    UFUNCTION(BlueprintPure, Category = "Hex Grid")
+    FLFPHexCoordinates RoundToHex(float q, float r);
+
+protected:
+    // º∆À„¡˘±ﬂ–Œ±ﬂΩÁ
+    UFUNCTION(BlueprintPure, Category = "Hex Grid")
+    bool IsPointInHexagon(const FVector2D& Point, const FVector2D& Center, float InHexSize);
 };

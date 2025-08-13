@@ -159,6 +159,16 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Unit State")
     bool bOnTurn = false;
 
-    UPROPERTY(EditDefaultsOnly, Category = "Turn System")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turn System")
     UTexture2D* UnitIconTexture;
+
+public:
+    UFUNCTION(BlueprintCallable, Category = "Mouse Input")
+    void OnMouseEnter();
+
+    UFUNCTION(BlueprintImplementableEvent, Category = "Mouse Input")
+    void OnMouseExit();
+
+    UFUNCTION(BlueprintImplementableEvent, Category = "Mouse Input")
+    void OnMouseClick();
 };

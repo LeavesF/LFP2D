@@ -32,8 +32,9 @@ void ALFPTurnManager::StartGame()
         }
     }
 
-    // 开始第一回合
-    BeginNewRound();
+    // 短暂延迟后开始第一回合
+    FTimerHandle TimerHandle;
+    GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ALFPTurnManager::BeginNewRound, 0.5f, false);
 }
 
 void ALFPTurnManager::BeginNewRound()
@@ -75,7 +76,7 @@ void ALFPTurnManager::EndCurrentRound()
 
     // 短暂延迟后开始新回合
     FTimerHandle TimerHandle;
-    GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ALFPTurnManager::BeginNewRound, 2.0f, false);
+    GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ALFPTurnManager::BeginNewRound, 0.5f, false);
 }
 
 void ALFPTurnManager::SortUnitsBySpeed()
@@ -89,6 +90,8 @@ void ALFPTurnManager::SortUnitsBySpeed()
 
 void ALFPTurnManager::BeginUnitTurn(ALFPTacticsUnit* Unit)
 {
+    OnTurnChanged.Broadcast();
+
     CurrentUnit = Unit;
 
     // 通知单位回合开始
@@ -101,6 +104,7 @@ void ALFPTurnManager::BeginUnitTurn(ALFPTacticsUnit* Unit)
     if (ALFPTacticsPlayerController* PC = GetWorld()->GetFirstPlayerController<ALFPTacticsPlayerController>())
     {
         PC->OnTurnStarted(Unit);
+        PC->SelectUnit(Unit);
     }
 }
 
@@ -120,7 +124,10 @@ void ALFPTurnManager::EndUnitTurn(ALFPTacticsUnit* Unit)
 
 void ALFPTurnManager::PassTurn()
 {
-    if (!CurrentUnit) return;
+    if (!CurrentUnit || TurnOrderUnits.IsEmpty())
+    {
+        return;
+    }
 
     // 结束当前单位回合
     EndUnitTurn(CurrentUnit);

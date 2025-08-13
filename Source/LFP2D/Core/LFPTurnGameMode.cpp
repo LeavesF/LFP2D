@@ -6,8 +6,6 @@
 
 void ALFPTurnGameMode::StartPlay()
 {
-    Super::StartPlay();
-
     // 生成回合管理器
     FActorSpawnParameters SpawnParams;
     SpawnParams.Owner = this;
@@ -23,4 +21,6 @@ void ALFPTurnGameMode::StartPlay()
     {
         TurnManager->StartGame();
     }
+
+    Super::StartPlay();
 }

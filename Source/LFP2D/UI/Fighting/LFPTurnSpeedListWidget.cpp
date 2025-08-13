@@ -5,6 +5,7 @@
 #include "Components/HorizontalBox.h"
 #include "Components/HorizontalBoxSlot.h"
 #include "Kismet/GameplayStatics.h"
+#include "LFP2D/UI/Fighting/LFPTurnSpeedIconWidget.h"
 #include "LFP2D/Unit/LFPTacticsUnit.h"
 
 void ULFPTurnSpeedListWidget::InitializeTurnOrder()
@@ -51,36 +52,36 @@ void ULFPTurnSpeedListWidget::UpdateTurnOrder()
 
 	TArray<ALFPTacticsUnit*> TurnOrderUnits = TurnManagerRef->GetTurnOrderUnits();
 	
-	//for (int32 i = 0; i < TurnOrderUnits.Num(); i++)
-	//{
-	//	UWBP_UnitTurnIcon* Icon = nullptr;
+	for (int32 i = 0; i < TurnOrderUnits.Num(); i++)
+	{
+		ULFPTurnSpeedIconWidget* Icon = nullptr;
 
-	//	if (i < ExistingIcons.Num())
-	//	{
-	//		// 复用现有图标
-	//		Icon = Cast<UWBP_UnitTurnIcon>(ExistingIcons[i]);
-	//	}
-	//	else
-	//	{
-	//		// 创建新图标
-	//		Icon = CreateWidget<UWBP_UnitTurnIcon>(this, UnitIconClass);
-	//		UnitIconsContainer->AddChild(Icon);
-	//	}
+		if (i < ExistingIcons.Num())
+		{
+			// 复用现有图标
+			Icon = Cast<ULFPTurnSpeedIconWidget>(ExistingIcons[i]);
+		}
+		else
+		{
+			// 创建新图标
+			Icon = CreateWidget<ULFPTurnSpeedIconWidget>(this, UnitIconClass);
+			UnitIconsContainer->AddChild(Icon);
+		}
 
-	//	// 更新图标内容
-	//	ALFPTacticsUnit* Unit = TurnManagerRef->TurnOrderArray[i];
-	//	if (Icon && Unit)
-	//	{
-	//		Icon->SetUnit(Unit);
-	//		Icon->SetIsCurrent(TurnManagerRef->GetCurrentTurnIndex() == i);
-	//	}
-	//}
+		// 更新图标内容
+		ALFPTacticsUnit* Unit = TurnOrderUnits[i];
+		if (Icon && Unit)
+		{
+			Icon->SetUnit(Unit);
+			Icon->SetIsCurrent(TurnManagerRef->GetCurrentUnit() == Unit);
+		}
+	}
 
-	//// 移除多余图标
-	//for (int32 i = TurnOrderUnits.Num(); i < ExistingIcons.Num(); i++)
-	//{
-	//	ExistingIcons[i]->RemoveFromParent();
-	//}
+	// 移除多余图标
+	for (int32 i = TurnOrderUnits.Num(); i < ExistingIcons.Num(); i++)
+	{
+		ExistingIcons[i]->RemoveFromParent();
+	}
 
 
 	//if (!UnitIconsContainer || !UnitIconClass) return;
