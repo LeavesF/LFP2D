@@ -9,6 +9,7 @@
 
 class UPaperSpriteComponent;
 class UPaperSprite;
+class ALFPTacticsUnit;
 
 USTRUCT(BlueprintType)
 struct FLFPHexCoordinates
@@ -42,6 +43,27 @@ struct FLFPHexCoordinates
 		return (FMath::Abs(A.Q - B.Q) +
 			FMath::Abs(A.R - B.R) +
 			FMath::Abs(A.S - B.S)) / 2;
+	}
+
+	// 获取所有相邻坐标
+	TArray<FLFPHexCoordinates> GetNeighbors() const
+	{
+		// 尖顶六边形的邻居方向
+		static const TArray<FLFPHexCoordinates> Directions = {
+			FLFPHexCoordinates(+1,  0), // 右
+			FLFPHexCoordinates(+1, -1), // 右上
+			FLFPHexCoordinates(0, -1), // 左上
+			FLFPHexCoordinates(-1,  0), // 左
+			FLFPHexCoordinates(-1, +1), // 左下
+			FLFPHexCoordinates(0, +1)  // 右下
+		};
+
+		TArray<FLFPHexCoordinates> Neighbors;
+		for (const auto& Dir : Directions)
+		{
+			Neighbors.Add(FLFPHexCoordinates(Q + Dir.Q, R + Dir.R));
+		}
+		return Neighbors;
 	}
 
 	static FLFPHexCoordinates FromWorldLocation(const FVector2D& WorldLocation, float HexSize, float VerticalScale)
@@ -135,6 +157,7 @@ public:
 	void SetIsWalkable(bool bInIsWalkable) { bIsWalkable = bInIsWalkable; }
 	void SetIsOccupied(bool bInIsOccupied) { bIsOccupied = bInIsOccupied; }
 
+	void SetUnitOnTile(ALFPTacticsUnit* Unit) { CurrentUnit = Unit; }
 	// 设置格子状态
 	void SetState(bool bWalkable, bool bOccupied);
 
@@ -154,6 +177,8 @@ protected:
 	bool bIsOccupied = false;
 	//bool bIsSelect = false;
 
+	TObjectPtr<ALFPTacticsUnit> CurrentUnit;
+
 public:
 
 	// 添加路径高亮功能
@@ -164,6 +189,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Hex Tile")
 	void SetMovementHighlight(bool bActive);
 
+	// 添加攻击范围高亮功能
+	UFUNCTION(BlueprintCallable, Category = "Hex Tile")
+	void SetAttackHighlight(bool bActive);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UPaperSpriteComponent> SpriteComponent;
@@ -176,4 +204,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Sprites")
 	TObjectPtr<UPaperSprite> MovementRangeSprite;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Sprites")
+	TObjectPtr<UPaperSprite> AttackRangeSprite;
 };

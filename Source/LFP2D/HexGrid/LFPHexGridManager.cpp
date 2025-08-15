@@ -126,25 +126,25 @@ TArray<ALFPHexTile*> ALFPHexGridManager::GetNeighbors(const FLFPHexCoordinates& 
 	return Neighbors;
 }
 
-TArray<ALFPHexTile*> ALFPHexGridManager::GetMovementRange(ALFPHexTile* StartTile, int32 MoveRange)
+TArray<ALFPHexTile*> ALFPHexGridManager::GetTilesInRange(ALFPHexTile* Center, int32 MaxRange, int32 MinRange)
 {
 	//// Todo: 用Map优化
-	//TPair<ALFPHexTile*, int32> Key(StartTile, MoveRange);
-	//if (MoveRangeCache.Contains(Key))
+	//TPair<ALFPHexTile*, int32> Key(Center, MaxRange);
+	//if (MaxRangeCache.Contains(Key))
 	//{
-	//	return MoveRangeCache[Key];
+	//	return MaxRangeCache[Key];
 	//}
 
 	TArray<ALFPHexTile*> ReachableTiles;
-	if (!StartTile || MoveRange <= 0) return ReachableTiles;
+	if (!Center || MaxRange <= 0) return ReachableTiles;
 
 	// BFS数据结构
 	TMap<ALFPHexTile*, int32> MoveCosts;
 	TQueue<ALFPHexTile*> TileQueue;
 
-	TileQueue.Enqueue(StartTile);
-	MoveCosts.Add(StartTile, 0);
-	ReachableTiles.Add(StartTile);
+	TileQueue.Enqueue(Center);
+	MoveCosts.Add(Center, 0);
+	ReachableTiles.Add(Center);
 
 	while (!TileQueue.IsEmpty())
 	{
@@ -166,7 +166,7 @@ TArray<ALFPHexTile*> ALFPHexGridManager::GetMovementRange(ALFPHexTile* StartTile
 				MoveCosts.Add(Neighbor, NewCost);
 
 				// 如果在移动范围内
-				if (NewCost <= MoveRange)
+				if (NewCost <= MaxRange)
 				{
 					ReachableTiles.Add(Neighbor);
 					TileQueue.Enqueue(Neighbor);
@@ -174,7 +174,7 @@ TArray<ALFPHexTile*> ALFPHexGridManager::GetMovementRange(ALFPHexTile* StartTile
 			}
 		}
 	}
-	ReachableTiles.Remove(StartTile);
+	ReachableTiles.Remove(Center);
 	return ReachableTiles;
 }
 

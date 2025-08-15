@@ -54,6 +54,22 @@ void ALFPHexTile::SetMovementHighlight(bool bActive)
 	}
 }
 
+void ALFPHexTile::SetAttackHighlight(bool bActive)
+{
+	if (bActive && AttackRangeSprite)
+	{
+		SpriteComponent->SetSprite(AttackRangeSprite);
+	}
+	else if (DefaultSprite)
+	{
+		SpriteComponent->SetSprite(DefaultSprite);
+	}
+	else if (!DefaultSprite)
+	{
+		SpriteComponent->SetSprite(nullptr);
+	}
+}
+
 void ALFPHexTile::SetPathHighlight(bool bActive)
 {
 	if (bActive && PathSprite)

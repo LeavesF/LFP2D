@@ -9,6 +9,15 @@
 #include "PaperSpriteComponent.h"
 #include "LFPTacticsUnit.generated.h"
 
+// 单位阵营枚举
+UENUM(BlueprintType)
+enum class EUnitAffiliation : uint8
+{
+    UA_Player     UMETA(DisplayName = "Player"),
+    UA_Enemy      UMETA(DisplayName = "Enemy"),
+    UA_Neutral    UMETA(DisplayName = "Neutral")
+};
+
 class ALFPHexGridManager;
 class ALFPTurnManager;
 
@@ -27,6 +36,8 @@ public:
     UFUNCTION(BlueprintPure, Category = "Tactics Unit")
     FLFPHexCoordinates GetCurrentCoordinates() const { return CurrentCoordinates; }
 
+    UFUNCTION(BlueprintPure, Category = "Tactics Unit")
+    ALFPHexTile* GetCurrentTile();
     //// 获取可移动范围
     //UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
     //TArray<ALFPHexTile*> GetMovementRangeTiles();
@@ -57,6 +68,9 @@ public:
     // 检查是否有足够行动点
     UFUNCTION(BlueprintPure, Category = "Tactics Unit")
     bool HasEnoughMovePoints(int32 Required) const;
+
+    UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
+    int32 GetMovePoints(int32 Amount) { return CurrentMovePoints; }
 
     ALFPHexGridManager* GetGridManager() const;
     ALFPTurnManager* GetTurnManager() const;
@@ -171,4 +185,102 @@ public:
 
     UFUNCTION(BlueprintImplementableEvent, Category = "Mouse Input")
     void OnMouseClick();
+
+public:
+    // 血量属性
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Stats")
+    int32 MaxHealth = 100;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Unit Stats")
+    int32 CurrentHealth = 100;
+
+    // 攻击力属性
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Stats")
+    int32 AttackPower = 10;
+
+    // 防御力属性
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Stats")
+    int32 Defense = 5;
+
+    // 阵营标识
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Stats")
+    EUnitAffiliation Affiliation = EUnitAffiliation::UA_Player;
+
+    // ==== 新增函数 ====
+
+    // 应用伤害
+    UFUNCTION(BlueprintCallable, Category = "Unit Combat")
+    void TakeDamage(int32 Damage);
+
+    // 治疗单位
+    UFUNCTION(BlueprintCallable, Category = "Unit Combat")
+    void Heal(int32 Amount);
+
+    // 检查是否存活
+    UFUNCTION(BlueprintPure, Category = "Unit Combat")
+    bool IsAlive() const { return CurrentHealth > 0; }
+
+    // 检查是否为敌方单位
+    UFUNCTION(BlueprintPure, Category = "Unit Combat")
+    bool IsEnemy() const { return Affiliation == EUnitAffiliation::UA_Enemy; }
+
+    // 检查是否为友方单位
+    UFUNCTION(BlueprintPure, Category = "Unit Combat")
+    bool IsAlly() const { return Affiliation == EUnitAffiliation::UA_Player; }
+
+    // 检查是否为中立单位
+    UFUNCTION(BlueprintPure, Category = "Unit Combat")
+    bool IsNeutral() const { return Affiliation == EUnitAffiliation::UA_Neutral; }
+
+    // 攻击目标单位
+    UFUNCTION(BlueprintCallable, Category = "Unit Combat")
+    void AttackTarget(ALFPTacticsUnit* Target);
+
+    void ApplyDamageToTarget(ALFPTacticsUnit* Target);
+
+    // 死亡处理
+    UFUNCTION(BlueprintImplementableEvent, Category = "Unit Combat")
+    void OnDeath();
+
+    // 伤害处理
+    UFUNCTION(BlueprintImplementableEvent, Category = "Unit Combat")
+    void OnTakeDamage(int32 DamageTaken);
+
+    // 治疗处理
+    UFUNCTION(BlueprintImplementableEvent, Category = "Unit Combat")
+    void OnHeal(int32 HealAmount);
+
+    // 攻击动画
+    UFUNCTION(BlueprintImplementableEvent, Category = "Unit Combat")
+    void PlayAttackAnimation(ALFPTacticsUnit* Target);
+
+    // 获取攻击范围
+    UFUNCTION(BlueprintCallable, Category = "Unit Combat")
+    TArray<ALFPHexTile*> GetAttackRangeTiles();
+
+    // 检查目标是否在攻击范围内
+    UFUNCTION(BlueprintPure, Category = "Unit Combat")
+    bool IsTargetInAttackRange(ALFPTacticsUnit* Target) const;
+
+    // 阵营颜色
+    UFUNCTION(BlueprintPure, Category = "Unit Display")
+    FLinearColor GetAffiliationColor() const;
+
+    void UpdateHealthUI();
+
+protected:
+    // 死亡处理
+    void HandleDeath();
+
+    // 攻击范围
+    UPROPERTY(EditAnywhere, Category = "Unit Combat")
+    int32 AttackRange = 2;
+
+    // 攻击范围模式
+    UPROPERTY(EditAnywhere, Category = "Unit Combat")
+    bool bMeleeAttack = true;
+
+    // 死亡状态
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Unit State", meta = (AllowPrivateAccess = "true"))
+    bool bIsDead = false;
 };

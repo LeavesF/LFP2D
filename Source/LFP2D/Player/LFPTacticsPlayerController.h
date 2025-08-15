@@ -39,6 +39,7 @@ public:
     // Enhanced Input 绑定函数
     void OnSelectStarted(const FInputActionValue& Value);
     void OnSelectCompleted(const FInputActionValue& Value);
+    void OnAttackStarted(const FInputActionValue& Value);
     void OnConfirmAction(const FInputActionValue& Value);
     void OnCancelAction(const FInputActionValue& Value);
     //void OnRotateCamera(const FInputActionValue& Value);
@@ -54,6 +55,7 @@ public:
     void SelectTile(ALFPHexTile* Tile);
     void ConfirmMove();
     void ShowMovementRange(bool bHighlight);
+    void ShowAttackRange(bool bHighlight);
     void ShowPathToSelectedTile();
     void HidePathToDefault();
     void HidePathToRange();
@@ -68,6 +70,9 @@ protected:
 
     UPROPERTY(EditAnywhere, Category = "Input")
     UInputAction* SelectAction;
+
+    UPROPERTY(EditAnywhere, Category = "Input")
+    UInputAction* AttackAction;
 
     UPROPERTY(EditAnywhere, Category = "Input")
     UInputAction* ConfirmAction;
@@ -99,6 +104,9 @@ protected:
     UPROPERTY()
     ALFPTacticsUnit* SelectedUnit;
 
+    UPROPERTY()
+    ALFPTacticsUnit* TargetUnit;
+
     // 当前选中的格子（用于移动目标）
     UPROPERTY()
     ALFPHexTile* SelectedTile;
@@ -114,6 +122,7 @@ protected:
 
     // 状态标志
     bool bIsSelecting;
+    bool bIsAttacking = false;
     FVector2D SelectionStart;
 
     // 相机控制

@@ -83,6 +83,18 @@ void ALFPTacticsUnit::SetCurrentCoordinates(const FLFPHexCoordinates& NewCoords)
     }
 }
 
+ALFPHexTile* ALFPTacticsUnit::GetCurrentTile()
+{
+    if (ALFPHexGridManager* GridManager = GetGridManager())
+    {
+        if (ALFPHexTile* Tile = GridManager->GetTileAtCoordinates(CurrentCoordinates))
+        {
+            return Tile;
+        }
+    }
+    return nullptr;
+}
+
 //void ALFPTacticsUnit::SnapToGrid()
 //{
 //    if (ALFPHexGridManager* GridManager = GetGridManager())
@@ -325,4 +337,188 @@ void ALFPTacticsUnit::Tick(float DeltaTime)
     {
         MoveTimeline->TickComponent(DeltaTime, LEVELTICK_TimeOnly, nullptr);
     }*/
+}
+
+void ALFPTacticsUnit::TakeDamage(int32 Damage)
+{
+    if (bIsDead) return;
+
+    // 计算实际伤害（考虑防御）
+    int32 ActualDamage = FMath::Max(Damage - Defense, 1);
+    CurrentHealth = FMath::Max(CurrentHealth - ActualDamage, 0);
+
+    // 蓝图事件
+    OnTakeDamage(ActualDamage);
+
+    // 更新UI
+    UpdateHealthUI();
+
+    // 检查死亡
+    if (CurrentHealth <= 0)
+    {
+        HandleDeath();
+    }
+}
+
+void ALFPTacticsUnit::Heal(int32 Amount)
+{
+    if (bIsDead) return;
+
+    CurrentHealth = FMath::Min(CurrentHealth + Amount, MaxHealth);
+
+    // 蓝图事件
+    OnHeal(Amount);
+
+    // 更新UI
+    UpdateHealthUI();
+}
+
+void ALFPTacticsUnit::AttackTarget(ALFPTacticsUnit* Target)
+{
+    if (!Target || bIsDead || Target->bIsDead) return;
+
+    // 检查攻击范围
+    if (!IsTargetInAttackRange(Target))
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Target is out of attack range!"));
+        return;
+    }
+
+    ApplyDamageToTarget(Target);
+
+    //// 播放攻击动画
+    //PlayAttackAnimation(Target);
+
+    //// 实际伤害计算（延迟到动画结束）
+    //FTimerDelegate TimerDelegate;
+    //TimerDelegate.BindUFunction(this, FName("ApplyDamageToTarget"), Target);
+    //GetWorld()->GetTimerManager().SetTimer(AttackTimerHandle, TimerDelegate, 0.5f, false);
+}
+
+void ALFPTacticsUnit::ApplyDamageToTarget(ALFPTacticsUnit* Target)
+{
+    if (!Target || Target->bIsDead) return;
+
+    // 基础伤害计算
+    int32 Damage = AttackPower;
+
+    // 添加随机波动 (10% 范围)
+    float RandomFactor = FMath::RandRange(0.9f, 1.1f);
+    Damage = FMath::RoundToInt(Damage * RandomFactor);
+
+    // 应用伤害
+    Target->TakeDamage(Damage);
+
+    // 消耗行动点
+    ConsumeMovePoints(1);
+}
+
+void ALFPTacticsUnit::HandleDeath()
+{
+    bIsDead = true;
+
+    // 蓝图事件
+    OnDeath();
+
+    // 从网格上移除
+    ALFPHexTile* CurrentTile = GetCurrentTile();
+    if (CurrentTile)
+    {
+        CurrentTile->SetUnitOnTile(nullptr);
+    }
+
+    // 从回合系统中移除
+    if (ALFPTurnManager* TurnManager = GetTurnManager())
+    {
+        TurnManager->UnregisterUnit(this);
+    }
+
+    // 禁用碰撞
+    SetActorEnableCollision(false);
+
+    // 延迟销毁
+    FTimerHandle TimerHandle;
+    GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]()
+        {
+            Destroy();
+        }, 2.0f, false);
+}
+
+TArray<ALFPHexTile*> ALFPTacticsUnit::GetAttackRangeTiles()
+{
+    TArray<ALFPHexTile*> AttackRangeTiles;
+
+    if (ALFPHexGridManager* GridManager = GetGridManager())
+    {
+        // 近战攻击范围
+        if (bMeleeAttack)
+        {
+            // 获取相邻格子
+            TArray<FLFPHexCoordinates> Neighbors = CurrentCoordinates.GetNeighbors();
+            for (const FLFPHexCoordinates& Coord : Neighbors)
+            {
+                FLFPHexCoordinates Key(Coord.Q, Coord.R);
+                if (ALFPHexTile* Tile = GridManager->GetTileAtCoordinates(Key))
+                {
+                    AttackRangeTiles.Add(Tile);
+                }
+            }
+        }
+        // 远程攻击范围
+        else
+        {
+            // 获取攻击范围内的所有格子
+            TArray<ALFPHexTile*> TilesInRange = GridManager->GetTilesInRange(GetCurrentTile(), AttackRange);
+
+            for (ALFPHexTile* Tile : TilesInRange)
+            {
+                AttackRangeTiles.Add(Tile);
+            }
+        }
+    }
+
+    return AttackRangeTiles;
+}
+
+bool ALFPTacticsUnit::IsTargetInAttackRange(ALFPTacticsUnit* Target) const
+{
+    if (!Target || !Target->GetCurrentTile()) return false;
+
+    // 计算距离
+    int32 Distance = FLFPHexCoordinates::Distance(
+        CurrentCoordinates,
+        Target->GetCurrentCoordinates()
+    );
+
+    // 近战攻击检查
+    if (bMeleeAttack)
+    {
+        return Distance == 1; // 相邻格子
+    }
+    // 远程攻击检查
+    else
+    {
+        return Distance >= 2 && Distance <= AttackRange;
+    }
+}
+
+FLinearColor ALFPTacticsUnit::GetAffiliationColor() const
+{
+    switch (Affiliation)
+    {
+    case EUnitAffiliation::UA_Player:
+        return FLinearColor(0.0f, 0.5f, 1.0f, 1.0f); // 蓝色
+    case EUnitAffiliation::UA_Enemy:
+        return FLinearColor(1.0f, 0.1f, 0.1f, 1.0f); // 红色
+    case EUnitAffiliation::UA_Neutral:
+        return FLinearColor(0.5f, 0.5f, 0.5f, 1.0f); // 灰色
+    default:
+        return FLinearColor::White;
+    }
+}
+
+void ALFPTacticsUnit::UpdateHealthUI()
+{
+    // 在实际项目中，这里会更新单位的血条UI
+    // 例如：HealthBarWidget->SetPercent((float)CurrentHealth / MaxHealth);
 }

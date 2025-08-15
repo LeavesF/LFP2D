@@ -35,7 +35,7 @@ public:
 	TArray<ALFPHexTile*> FindPath(ALFPHexTile* Start, ALFPHexTile* End);
 
 	UFUNCTION(BlueprintCallable, Category = "Hex Grid")
-	TArray<ALFPHexTile*> GetMovementRange(ALFPHexTile* StartTile, int32 MoveRange);
+    TArray<ALFPHexTile*> GetTilesInRange(ALFPHexTile* Center, int32 MaxRange, int32 MinRange = 0);
 
 	UFUNCTION(BlueprintCallable, Category = "Hex Grid")
 	ALFPHexTile* GetTileAtCoordinates(const FLFPHexCoordinates& Coords) const;

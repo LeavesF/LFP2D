@@ -15,9 +15,11 @@
 
 ALFPTacticsPlayerController::ALFPTacticsPlayerController()
 {
+    TargetUnit = nullptr;
     SelectedUnit = nullptr;
     SelectedTile = nullptr;
     bIsSelecting = false;
+    bIsAttacking = false;
     CameraRotationPitchAngle = 60.0f;
     CameraRotationYawAngle = 0.0f;
     bDebugEnabled = false;
@@ -75,6 +77,9 @@ void ALFPTacticsPlayerController::SetupInputComponent()
         // 选择操作
         EnhancedInputComponent->BindAction(SelectAction, ETriggerEvent::Started, this, &ALFPTacticsPlayerController::OnSelectStarted);
         EnhancedInputComponent->BindAction(SelectAction, ETriggerEvent::Completed, this, &ALFPTacticsPlayerController::OnSelectCompleted);
+
+        // 攻击操作
+        EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Started, this, &ALFPTacticsPlayerController::OnAttackStarted);
 
         // 其他操作
         EnhancedInputComponent->BindAction(ConfirmAction, ETriggerEvent::Completed, this, &ALFPTacticsPlayerController::OnConfirmAction);
@@ -197,6 +202,15 @@ void ALFPTacticsPlayerController::OnSelectCompleted(const FInputActionValue& Val
     }
 }
 
+void ALFPTacticsPlayerController::OnAttackStarted(const FInputActionValue& Value)
+{
+    if (SelectedUnit)
+    {
+        bIsAttacking = true;
+        ShowAttackRange(true);
+    }
+}
+
 void ALFPTacticsPlayerController::OnConfirmAction(const FInputActionValue& Value)
 {
     if (bIsDragging)
@@ -206,7 +220,31 @@ void ALFPTacticsPlayerController::OnConfirmAction(const FInputActionValue& Value
     }
     if (SelectedUnit && SelectedTile)
     {
-        ConfirmMove();
+        if (bIsAttacking)
+        {
+            // 获取鼠标位置
+            float MouseX, MouseY;
+            GetMousePosition(MouseX, MouseY);
+            FVector2D SelectionEnd = FVector2D(MouseX, MouseY);
+
+            FHitResult HitResult;
+            GetHitResultAtScreenPosition(SelectionEnd, ECC_Visibility, false, HitResult);
+
+            if (HitResult.bBlockingHit)
+            {
+                // 尝试选择单位
+                ALFPTacticsUnit* Unit = Cast<ALFPTacticsUnit>(HitResult.GetActor());
+                if (Unit)
+                {
+                    AttackTarget(SelectedUnit, Unit);
+                    return;
+                }
+            }
+        }
+        else
+        {
+            ConfirmMove();
+        }
     }
     else if (SelectedUnit)
     {
@@ -369,7 +407,7 @@ void ALFPTacticsPlayerController::ShowMovementRange(bool bHighlight)
     ALFPHexTile* UnitTile = GridManager->GetTileAtCoordinates(SelectedUnit->GetCurrentCoordinates());
     if (UnitTile)
     {
-        MovementRangeTiles = GridManager->GetMovementRange(UnitTile, SelectedUnit->GetMovementRange());
+        MovementRangeTiles = GridManager->GetTilesInRange(UnitTile, SelectedUnit->GetMovementRange());
         // 高亮显示这些格子
         for (ALFPHexTile* Tile : MovementRangeTiles)
         {
@@ -387,6 +425,30 @@ void ALFPTacticsPlayerController::ShowMovementRange(bool bHighlight)
             HidePathToDefault();
             MovementRangeTiles.Empty();
         }
+    }
+}
+
+void ALFPTacticsPlayerController::ShowAttackRange(bool bHighlight)
+{
+    if (!SelectedUnit || !GridManager) return;
+
+    // 获取可攻击范围
+    TArray<ALFPHexTile*> AttackRangeTiles = SelectedUnit->GetAttackRangeTiles();
+    // 高亮显示这些格子
+    for (ALFPHexTile* Tile : AttackRangeTiles)
+    {
+        if (bHighlight)
+        {
+            Tile->SetAttackHighlight(true);
+        }
+        else
+        {
+            Tile->SetAttackHighlight(false);
+        }
+    }
+    if (!bHighlight)
+    {
+        HidePathToDefault();
     }
 }
 
@@ -451,10 +513,10 @@ void ALFPTacticsPlayerController::MoveUnit(ALFPTacticsUnit* Unit, ALFPHexTile* T
     Unit->ConsumeMovePoints(MoveCost);
 
     // 通知回合管理器单位完成行动
-    if (ALFPTurnManager* TurnManager = GetTurnManager())
+    /*if (ALFPTurnManager* TurnManager = GetTurnManager())
     {
         TurnManager->OnUnitFinishedAction(Unit);
-    }
+    }*/
 }
 
 void ALFPTacticsPlayerController::AttackTarget(ALFPTacticsUnit* Attacker, ALFPTacticsUnit* Target)
@@ -465,10 +527,11 @@ void ALFPTacticsPlayerController::AttackTarget(ALFPTacticsUnit* Attacker, ALFPTa
     const int32 AttackCost = 1;
 
     // 执行攻击逻辑
-    // ...
+    Attacker->AttackTarget(Target);
 
     // 消耗行动点
-    Attacker->ConsumeMovePoints(AttackCost);
+    //Attacker->ConsumeMovePoints(AttackCost);
+    ShowAttackRange(false);
 
     // 通知回合管理器单位完成行动
     if (ALFPTurnManager* TurnManager = GetTurnManager())
