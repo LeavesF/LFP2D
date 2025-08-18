@@ -399,6 +399,30 @@ void ALFPTacticsPlayerController::ConfirmMove()
     SelectedUnit = nullptr;*/
 }
 
+void ALFPTacticsPlayerController::ShowUnitRange(EUnitRange UnitRange)
+{
+    if (!SelectedUnit || !GridManager) return;
+
+    for (ALFPHexTile* Tile : CacheRangeTiles)
+    {
+        Tile->SetRangeSprite(EUnitRange::UR_Default);
+    }
+
+    switch (UnitRange)
+    {
+    case EUnitRange::UR_Default:
+        break;
+    case EUnitRange::UR_Move:
+
+        break;
+    case EUnitRange::UR_Attack:
+
+        break;
+    default:
+        break;
+    }
+}
+
 void ALFPTacticsPlayerController::ShowMovementRange(bool bHighlight)
 {
     if (!SelectedUnit || !GridManager) return;
@@ -519,25 +543,32 @@ void ALFPTacticsPlayerController::MoveUnit(ALFPTacticsUnit* Unit, ALFPHexTile* T
     }*/
 }
 
-void ALFPTacticsPlayerController::AttackTarget(ALFPTacticsUnit* Attacker, ALFPTacticsUnit* Target)
+bool ALFPTacticsPlayerController::AttackTarget(ALFPTacticsUnit* Attacker, ALFPTacticsUnit* Target)
 {
-    if (!Attacker || !Target || !Attacker->CanAct()) return;
+    if (!Attacker || !Target || !Attacker->CanAct())
+    {
+        return false;
+    }
 
     // 计算攻击消耗
     const int32 AttackCost = 1;
 
     // 执行攻击逻辑
-    Attacker->AttackTarget(Target);
+    bool bAttackSucceed = Attacker->AttackTarget(Target);
 
     // 消耗行动点
     //Attacker->ConsumeMovePoints(AttackCost);
     ShowAttackRange(false);
 
     // 通知回合管理器单位完成行动
-    if (ALFPTurnManager* TurnManager = GetTurnManager())
+    if (bAttackSucceed)
     {
-        TurnManager->OnUnitFinishedAction(Attacker);
+        if (ALFPTurnManager* TurnManager = GetTurnManager())
+        {
+            TurnManager->OnUnitFinishedAction(Attacker);
+        }
     }
+    return bAttackSucceed;
 }
 
 void ALFPTacticsPlayerController::SkipTurn(ALFPTacticsUnit* Unit)

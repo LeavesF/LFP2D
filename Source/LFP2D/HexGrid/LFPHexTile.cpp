@@ -70,6 +70,24 @@ void ALFPHexTile::SetAttackHighlight(bool bActive)
 	}
 }
 
+void ALFPHexTile::SetRangeSprite(EUnitRange UnitRange)
+{
+	switch (UnitRange)
+	{
+	case EUnitRange::UR_Default:
+		SpriteComponent->SetSprite(DefaultSprite);
+		break;
+	case EUnitRange::UR_Move:
+		SpriteComponent->SetSprite(MovementRangeSprite);
+		break;
+	case EUnitRange::UR_Attack:
+		SpriteComponent->SetSprite(AttackRangeSprite);
+		break;
+	default:
+		break;
+	}
+}
+
 void ALFPHexTile::SetPathHighlight(bool bActive)
 {
 	if (bActive && PathSprite)

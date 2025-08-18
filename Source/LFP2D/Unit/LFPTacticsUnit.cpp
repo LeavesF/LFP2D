@@ -373,15 +373,23 @@ void ALFPTacticsUnit::Heal(int32 Amount)
     UpdateHealthUI();
 }
 
-void ALFPTacticsUnit::AttackTarget(ALFPTacticsUnit* Target)
+bool ALFPTacticsUnit::AttackTarget(ALFPTacticsUnit* Target)
 {
-    if (!Target || bIsDead || Target->bIsDead) return;
+    if (!Target || bIsDead || Target->bIsDead)
+    {
+        return false;
+    }
 
     // ¼ì²é¹¥»÷·¶Î§
     if (!IsTargetInAttackRange(Target))
     {
         UE_LOG(LogTemp, Warning, TEXT("Target is out of attack range!"));
-        return;
+        return false;
+    }
+    if (Affiliation == Target->Affiliation)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Target is Ally!"));
+        return false;
     }
 
     ApplyDamageToTarget(Target);
@@ -393,6 +401,7 @@ void ALFPTacticsUnit::AttackTarget(ALFPTacticsUnit* Target)
     //FTimerDelegate TimerDelegate;
     //TimerDelegate.BindUFunction(this, FName("ApplyDamageToTarget"), Target);
     //GetWorld()->GetTimerManager().SetTimer(AttackTimerHandle, TimerDelegate, 0.5f, false);
+    return true;
 }
 
 void ALFPTacticsUnit::ApplyDamageToTarget(ALFPTacticsUnit* Target)

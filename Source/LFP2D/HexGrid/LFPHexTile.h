@@ -129,6 +129,15 @@ struct FLFPHexCoordinates
 	}
 };
 
+// 单位显示枚举
+UENUM(BlueprintType)
+enum class EUnitRange : uint8
+{
+	UR_Default     UMETA(DisplayName = "Default"),
+	UR_Move     UMETA(DisplayName = "Move"),
+	UR_Attack    UMETA(DisplayName = "Attack")
+};
+
 UCLASS()
 class LFP2D_API ALFPHexTile : public AActor
 {
@@ -180,6 +189,9 @@ protected:
 	TObjectPtr<ALFPTacticsUnit> CurrentUnit;
 
 public:
+	// 设置RangeSprite功能
+	UFUNCTION(BlueprintCallable, Category = "Hex Tile")
+	void SetRangeSprite(EUnitRange UnitRange = EUnitRange::UR_Default);
 
 	// 添加路径高亮功能
 	UFUNCTION(BlueprintCallable, Category = "Hex Tile")

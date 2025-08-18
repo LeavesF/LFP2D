@@ -54,6 +54,7 @@ public:
     void SelectUnit(ALFPTacticsUnit* Unit);
     void SelectTile(ALFPHexTile* Tile);
     void ConfirmMove();
+    void ShowUnitRange(EUnitRange UnitRange = EUnitRange::UR_Default);
     void ShowMovementRange(bool bHighlight);
     void ShowAttackRange(bool bHighlight);
     void ShowPathToSelectedTile();
@@ -117,6 +118,7 @@ protected:
     // 当前显示的可移动范围
     TArray<ALFPHexTile*> MovementRangeTiles;
 
+    TArray<ALFPHexTile*> CacheRangeTiles;
     // 当前显示的路径
     TArray<ALFPHexTile*> CurrentPath;
 
@@ -180,7 +182,7 @@ public:
     void MoveUnit(ALFPTacticsUnit* Unit, ALFPHexTile* TargetTile);
 
     UFUNCTION(BlueprintCallable, Category = "Unit Actions")
-    void AttackTarget(ALFPTacticsUnit* Attacker, ALFPTacticsUnit* Target);
+    bool AttackTarget(ALFPTacticsUnit* Attacker, ALFPTacticsUnit* Target);
 
     UFUNCTION(BlueprintCallable, Category = "Unit Actions")
     void SkipTurn(ALFPTacticsUnit* Unit);

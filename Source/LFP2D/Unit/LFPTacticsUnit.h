@@ -234,7 +234,7 @@ public:
 
     // 攻击目标单位
     UFUNCTION(BlueprintCallable, Category = "Unit Combat")
-    void AttackTarget(ALFPTacticsUnit* Target);
+    bool AttackTarget(ALFPTacticsUnit* Target);
 
     void ApplyDamageToTarget(ALFPTacticsUnit* Target);
 
