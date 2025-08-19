@@ -207,7 +207,7 @@ void ALFPTacticsPlayerController::OnAttackStarted(const FInputActionValue& Value
     if (SelectedUnit)
     {
         bIsAttacking = true;
-        ShowAttackRange(true);
+        ShowUnitRange(EUnitRange::UR_Attack);
     }
 }
 
@@ -255,18 +255,19 @@ void ALFPTacticsPlayerController::OnConfirmAction(const FInputActionValue& Value
 
 void ALFPTacticsPlayerController::OnCancelAction(const FInputActionValue& Value)
 {
+    ShowUnitRange(EUnitRange::UR_Default);
     // 取消当前选择
     if (SelectedTile)
     {
         HidePathToDefault();
-        SelectedTile = nullptr;
+        //SelectedTile = nullptr;
     }
     else if (SelectedUnit)
     {
         // 取消单位的高亮范围
-        ShowMovementRange(false);
-        SelectedUnit->SetSelected(false);
-        SelectedUnit = nullptr;
+        //ShowMovementRange(false);
+        //SelectedUnit->SetSelected(false);
+        //SelectedUnit = nullptr;
     }
 }
 
@@ -358,7 +359,7 @@ void ALFPTacticsPlayerController::SelectUnit(ALFPTacticsUnit* Unit)
     if (SelectedUnit && SelectedUnit != Unit)
     {
         SelectedUnit->SetSelected(false);
-        ShowMovementRange(false);
+        ShowUnitRange(EUnitRange::UR_Default);
     }
 
     // 选择新单位
@@ -366,7 +367,7 @@ void ALFPTacticsPlayerController::SelectUnit(ALFPTacticsUnit* Unit)
     if (SelectedUnit)
     {
         SelectedUnit->SetSelected(true);
-        ShowMovementRange(true);
+        ShowUnitRange(EUnitRange::UR_Move);
     }
 }
 
@@ -388,13 +389,12 @@ void ALFPTacticsPlayerController::ConfirmMove()
 
     //HidePathToDefault();
     // 移动前取消高亮
-    ShowMovementRange(false);
+    ShowUnitRange(EUnitRange::UR_Default);
 
     // 移动单位
     MoveUnit(SelectedUnit, SelectedTile);
 
-    // 清除选择
-    SelectedTile = nullptr;
+    ShowUnitRange(EUnitRange::UR_Move);
     /*SelectedUnit->SetSelected(false);
     SelectedUnit = nullptr;*/
 }
@@ -407,16 +407,36 @@ void ALFPTacticsPlayerController::ShowUnitRange(EUnitRange UnitRange)
     {
         Tile->SetRangeSprite(EUnitRange::UR_Default);
     }
+    CacheRangeTiles.Empty();
+    MovementRangeTiles.Empty();
 
     switch (UnitRange)
     {
     case EUnitRange::UR_Default:
         break;
     case EUnitRange::UR_Move:
-
+	{
+        // 获取可移动范围
+		ALFPHexTile* UnitTile = GridManager->GetTileAtCoordinates(SelectedUnit->GetCurrentCoordinates());
+		if (UnitTile)
+		{
+			CacheRangeTiles= MovementRangeTiles = GridManager->GetTilesInRange(UnitTile, SelectedUnit->GetMovementRange());
+			// 高亮显示这些格子
+			for (ALFPHexTile* Tile : CacheRangeTiles)
+			{
+				Tile->SetRangeSprite(EUnitRange::UR_Move);
+			}
+		}
         break;
+	}
     case EUnitRange::UR_Attack:
-
+		// 获取可攻击范围
+        CacheRangeTiles = SelectedUnit->GetAttackRangeTiles();
+		// 高亮显示这些格子
+		for (ALFPHexTile* Tile : CacheRangeTiles)
+		{
+			Tile->SetRangeSprite(EUnitRange::UR_Attack);
+		}
         break;
     default:
         break;
@@ -556,9 +576,11 @@ bool ALFPTacticsPlayerController::AttackTarget(ALFPTacticsUnit* Attacker, ALFPTa
     // 执行攻击逻辑
     bool bAttackSucceed = Attacker->AttackTarget(Target);
 
+    bIsAttacking = !bAttackSucceed;
+
     // 消耗行动点
     //Attacker->ConsumeMovePoints(AttackCost);
-    ShowAttackRange(false);
+    ShowUnitRange(EUnitRange::UR_Default);
 
     // 通知回合管理器单位完成行动
     if (bAttackSucceed)
