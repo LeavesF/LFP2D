@@ -55,8 +55,6 @@ public:
     void SelectTile(ALFPHexTile* Tile);
     void ConfirmMove();
     void ShowUnitRange(EUnitRange UnitRange = EUnitRange::UR_Default);
-    void ShowMovementRange(bool bHighlight);
-    void ShowAttackRange(bool bHighlight);
     void ShowPathToSelectedTile();
     void HidePathToDefault();
     void HidePathToRange();
