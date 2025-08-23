@@ -5,8 +5,10 @@
 #include "LFP2D/HexGrid/LFPHexTile.h"
 #include "LFP2D/HexGrid/LFPHexGridManager.h"
 #include "LFP2D/Turn/LFPTurnManager.h"
+#include "LFP2D/UI/Fighting/LFPHealthBarWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/TimelineComponent.h"
+#include "Components/WidgetComponent.h"
 #include "Curves/CurveFloat.h"
 #include "DrawDebugHelpers.h"
 
@@ -28,6 +30,14 @@ ALFPTacticsUnit::ALFPTacticsUnit()
     CurrentPathIndex = -1;
     MoveProgress = 0.0f;
 
+	// 创建血条组件
+	HealthBarComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBarComponent"));
+	HealthBarComponent->SetupAttachment(RootComponent);
+	HealthBarComponent->SetWidgetSpace(EWidgetSpace::Screen);
+	HealthBarComponent->SetDrawAtDesiredSize(true);
+	// 设置相对位置（在单位上方）
+	HealthBarComponent->SetRelativeLocation(FVector(0, 150, 0));
+
     // 创建时间线组件
     //MoveTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("MoveTimeline"));
 }
@@ -44,6 +54,10 @@ void ALFPTacticsUnit::BeginPlay()
 
     FLFPHexCoordinates SpawnPoint = FLFPHexCoordinates(StartCoordinates_Q, StartCoordinates_R);
     SetCurrentCoordinates(SpawnPoint);
+
+	// 初始化血条
+    CurrentHealth = MaxHealth;
+	InitializeHealthBar();
 
     // 设置移动时间线
     if (MoveCurve)
@@ -123,20 +137,20 @@ ALFPHexTile* ALFPTacticsUnit::GetCurrentTile()
 //    return MovementRangeTiles;
 //}
 
-void ALFPTacticsUnit::MoveToTile(ALFPHexTile* Target)
+bool ALFPTacticsUnit::MoveToTile(ALFPHexTile* Target)
 {
-    if (!Target || !HasEnoughMovePoints(1)) return;
+    if (!Target || !HasEnoughMovePoints(1)) return false;
 
     ALFPHexGridManager* GridManager = GetGridManager();
-    if (!GridManager) return;
+    if (!GridManager) return false;
 
     // 获取当前所在的格子
     ALFPHexTile* CurrentTile = GridManager->GetTileAtCoordinates(CurrentCoordinates);
-    if (!CurrentTile) return;
+    if (!CurrentTile) return false;
 
     // 计算路径
     MovePath = GridManager->FindPath(CurrentTile, Target);
-    if (MovePath.Num() == 0) return;
+    if (MovePath.Num() == 0|| MovePath.Num()>CurrentMovePoints) return false;
 
     // 设置移动状态
     CurrentTile->SetIsOccupied(false);
@@ -159,6 +173,7 @@ void ALFPTacticsUnit::MoveToTile(ALFPHexTile* Target)
     //    FinishMove();
     //}
     FinishMove();
+    return true;
 }
 
 void ALFPTacticsUnit::UpdateMoveAnimation(float Value)
@@ -217,6 +232,7 @@ void ALFPTacticsUnit::FinishMove()
     if (TargetTile)
     {
         SetCurrentCoordinates(TargetTile->GetCoordinates());
+        ConsumeMovePoints(MovePath.Num());
         //SetActorLocation(TargetTile->GetActorLocation() + FVector(0, 0, 50));
     }
 
@@ -339,38 +355,54 @@ void ALFPTacticsUnit::Tick(float DeltaTime)
     }*/
 }
 
+void ALFPTacticsUnit::InitializeHealthBar()
+{
+	if (HealthBarComponent)
+	{
+		// 获取血条控件
+		ULFPHealthBarWidget* HealthBarWidget = Cast<ULFPHealthBarWidget>(HealthBarComponent->GetWidget());
+		if (HealthBarWidget)
+		{
+			// 绑定到单位
+			HealthBarWidget->BindToUnit(this);
+		}
+	}
+}
+
 void ALFPTacticsUnit::TakeDamage(int32 Damage)
 {
     if (bIsDead) return;
 
-    // 计算实际伤害（考虑防御）
-    int32 ActualDamage = FMath::Max(Damage - Defense, 1);
-    CurrentHealth = FMath::Max(CurrentHealth - ActualDamage, 0);
+	// 计算实际伤害（考虑防御）
+	int32 ActualDamage = FMath::Max(Damage - Defense, 1);
+	int32 OldHealth = CurrentHealth;
+	CurrentHealth = FMath::Max(CurrentHealth - ActualDamage, 0);
 
-    // 蓝图事件
-    OnTakeDamage(ActualDamage);
+	// 触发血量变化事件
+	OnHealthChangedDelegate.Broadcast(CurrentHealth, MaxHealth);
 
-    // 更新UI
-    UpdateHealthUI();
+	// 蓝图事件
+	OnTakeDamage(ActualDamage);
 
-    // 检查死亡
-    if (CurrentHealth <= 0)
-    {
-        HandleDeath();
-    }
+	// 检查死亡
+	if (CurrentHealth <= 0)
+	{
+		HandleDeath();
+	}
 }
 
 void ALFPTacticsUnit::Heal(int32 Amount)
 {
-    if (bIsDead) return;
+	if (bIsDead) return;
 
-    CurrentHealth = FMath::Min(CurrentHealth + Amount, MaxHealth);
+	int32 OldHealth = CurrentHealth;
+	CurrentHealth = FMath::Min(CurrentHealth + Amount, MaxHealth);
 
-    // 蓝图事件
-    OnHeal(Amount);
+	// 触发血量变化事件
+	OnHealthChangedDelegate.Broadcast(CurrentHealth, MaxHealth);
 
-    // 更新UI
-    UpdateHealthUI();
+	// 蓝图事件
+	OnHeal(Amount);
 }
 
 bool ALFPTacticsUnit::AttackTarget(ALFPTacticsUnit* Target)
@@ -425,6 +457,9 @@ void ALFPTacticsUnit::ApplyDamageToTarget(ALFPTacticsUnit* Target)
 void ALFPTacticsUnit::HandleDeath()
 {
     bIsDead = true;
+
+	// 触发死亡事件
+    OnDeathDelegate.Broadcast();
 
     // 蓝图事件
     OnDeath();

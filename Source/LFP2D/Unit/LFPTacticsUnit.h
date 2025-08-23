@@ -9,6 +9,11 @@
 #include "PaperSpriteComponent.h"
 #include "LFPTacticsUnit.generated.h"
 
+// 委托签名
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnHealthChangedSignature, int32, CurrentHealth, int32, MaxHealth);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUnitDeathSignature);
+
 // 单位阵营枚举
 UENUM(BlueprintType)
 enum class EUnitAffiliation : uint8
@@ -48,7 +53,7 @@ public:
 
     // 移动到目标格子
     UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
-    void MoveToTile(ALFPHexTile* TargetTile);
+    bool MoveToTile(ALFPHexTile* TargetTile);
 
     // 设置选中状态
     UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
@@ -59,7 +64,7 @@ public:
 
     // 获取移动范围
     UFUNCTION(BlueprintPure, Category = "Tactics Unit")
-    int32 GetMovementRange() const { return MovementRange; }
+    int32 GetMovementRange() const { return CurrentMovePoints; }
 
     // 消耗行动点
     UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
@@ -185,6 +190,36 @@ public:
 
     UFUNCTION(BlueprintImplementableEvent, Category = "Mouse Input")
     void OnMouseClick();
+
+	// 在单位类中添加血量变化事件
+public:
+	// 事件：血量变化
+	UPROPERTY(BlueprintAssignable, Category = "Unit Events")
+	FOnHealthChangedSignature OnHealthChangedDelegate;
+
+	// 事件：单位死亡
+	UPROPERTY(BlueprintAssignable, Category = "Unit Events")
+    FOnUnitDeathSignature OnDeathDelegate;
+
+	// 获取当前血量
+	UFUNCTION(BlueprintPure, Category = "Unit Combat")
+	int32 GetCurrentHealth() const { return CurrentHealth; }
+
+	// 获取最大血量
+	UFUNCTION(BlueprintPure, Category = "Unit Combat")
+	int32 GetMaxHealth() const { return MaxHealth; }
+
+	// 获取阵营标识
+	UFUNCTION(BlueprintPure, Category = "Unit Combat")
+    EUnitAffiliation GetAffiliation() const { return Affiliation; }
+
+	// 血条组件
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	class UWidgetComponent* HealthBarComponent;
+
+	// 初始化血条
+	UFUNCTION(BlueprintCallable, Category = "Unit Display")
+	void InitializeHealthBar();
 
 public:
     // 血量属性

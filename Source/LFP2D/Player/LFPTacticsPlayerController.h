@@ -137,6 +137,12 @@ protected:
     bool bIsDragging;
     FVector2D DragStartPosition;
 
+	UPROPERTY(EditAnywhere, Category = "Input")
+	float DragTime = 0.f;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	float DragThresholdTime = 0.5f;
+
     // µ÷ÊÔ±êÖ¾
     bool bDebugEnabled;
 

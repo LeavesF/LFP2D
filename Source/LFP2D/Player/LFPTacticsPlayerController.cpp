@@ -99,6 +99,11 @@ void ALFPTacticsPlayerController::SetupInputComponent()
 void ALFPTacticsPlayerController::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
+    
+    if (bIsDragging)
+    {
+        DragTime += DeltaTime;
+    }
 
     // 更新相机位置
     if (GridManager)
@@ -213,11 +218,14 @@ void ALFPTacticsPlayerController::OnAttackStarted(const FInputActionValue& Value
 
 void ALFPTacticsPlayerController::OnConfirmAction(const FInputActionValue& Value)
 {
-    if (bIsDragging)
+    bIsDragging = false;
+    if (DragTime > DragThresholdTime)
     {
-        bIsDragging = false;
+        DragTime = 0.f;
         return;
     }
+	DragTime = 0.f;
+
     if (SelectedUnit && SelectedTile)
     {
         if (bIsAttacking)
@@ -257,7 +265,8 @@ void ALFPTacticsPlayerController::OnCancelAction(const FInputActionValue& Value)
 {
     if (bIsDragging)
     {
-        bIsDragging = false;
+		bIsDragging = false;
+		DragTime = 0.f;
         return;
     }
     bIsAttacking = false;
@@ -526,9 +535,6 @@ void ALFPTacticsPlayerController::MoveUnit(ALFPTacticsUnit* Unit, ALFPHexTile* T
 
     // 执行移动
     Unit->MoveToTile(TargetTile);
-
-    // 消耗行动点
-    Unit->ConsumeMovePoints(MoveCost);
 
     // 通知回合管理器单位完成行动
     /*if (ALFPTurnManager* TurnManager = GetTurnManager())
