@@ -44,6 +44,8 @@ public:
     void OnCancelAction(const FInputActionValue& Value);
     //void OnRotateCamera(const FInputActionValue& Value);
     void OnToggleDebug(const FInputActionValue& Value);
+    void OnSkipTurnAction(const FInputActionValue& Value);
+
     void OnCameraPan(const FInputActionValue& Value);
     void OnCameraDragStarted(const FInputActionValue& Value);
     void OnCameraDragTriggered(const FInputActionValue& Value);
@@ -84,6 +86,9 @@ protected:
 
     UPROPERTY(EditAnywhere, Category = "Input")
     UInputAction* DebugToggleAction;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* SkipTurnAction;
 
     UPROPERTY(EditAnywhere, Category = "Input")
     UInputAction* CameraPanAction;

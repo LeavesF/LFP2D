@@ -66,16 +66,27 @@ public:
     UFUNCTION(BlueprintPure, Category = "Tactics Unit")
     int32 GetMovementRange() const { return CurrentMovePoints; }
 
-    // 消耗行动点
+    // 消耗移动点
     UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
     void ConsumeMovePoints(int32 Amount);
 
-    // 检查是否有足够行动点
+	// 消耗行动点
+	UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
+	void ConsumeActionPoints(int32 Amount);
+
+    // 检查是否有足够移动点
     UFUNCTION(BlueprintPure, Category = "Tactics Unit")
     bool HasEnoughMovePoints(int32 Required) const;
 
+    // 检查是否有足够行动点
+    UFUNCTION(BlueprintPure, Category = "Tactics Unit")
+    bool HasEnoughActionPoints(int32 Required) const;
+
     UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
     int32 GetMovePoints(int32 Amount) { return CurrentMovePoints; }
+
+	UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
+	int32 GetActionPoints(int32 Amount) { return CurrentActionPoints; }
 
     ALFPHexGridManager* GetGridManager() const;
     ALFPTurnManager* GetTurnManager() const;
@@ -104,6 +115,12 @@ protected:
 
     UPROPERTY(VisibleInstanceOnly, Category = "Unit State")
     int32 CurrentMovePoints;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Unit Stats")
+	int32 MaxActionPoints = 3;
+
+	UPROPERTY(VisibleInstanceOnly, Category = "Unit State")
+	int32 CurrentActionPoints;
 
     // 当前坐标
     UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Unit Stats")

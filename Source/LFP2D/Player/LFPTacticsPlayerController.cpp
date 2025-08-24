@@ -86,6 +86,7 @@ void ALFPTacticsPlayerController::SetupInputComponent()
         EnhancedInputComponent->BindAction(CancelAction, ETriggerEvent::Completed, this, &ALFPTacticsPlayerController::OnCancelAction);
         //EnhancedInputComponent->BindAction(RotateCameraAction, ETriggerEvent::Triggered, this, &ALFPTacticsPlayerController::OnRotateCamera);
         EnhancedInputComponent->BindAction(DebugToggleAction, ETriggerEvent::Started, this, &ALFPTacticsPlayerController::OnToggleDebug);
+        EnhancedInputComponent->BindAction(SkipTurnAction, ETriggerEvent::Completed, this, &ALFPTacticsPlayerController::OnSkipTurnAction);
 
         // 相机控制
         EnhancedInputComponent->BindAction(CameraPanAction, ETriggerEvent::Triggered, this, &ALFPTacticsPlayerController::OnCameraPan);
@@ -299,6 +300,12 @@ void ALFPTacticsPlayerController::OnCancelAction(const FInputActionValue& Value)
 void ALFPTacticsPlayerController::OnToggleDebug(const FInputActionValue& Value)
 {
     ToggleDebugDisplay();
+}
+
+void ALFPTacticsPlayerController::OnSkipTurnAction(const FInputActionValue& Value)
+{
+    if (!SelectedUnit) return;
+    SkipTurn(SelectedUnit);
 }
 
 void ALFPTacticsPlayerController::OnCameraPan(const FInputActionValue& Value)
@@ -555,11 +562,16 @@ bool ALFPTacticsPlayerController::AttackTarget(ALFPTacticsUnit* Attacker, ALFPTa
 
     bIsAttacking = false;
 
+    if (!Attacker->HasEnoughActionPoints(AttackCost))
+    {
+        return false;
+    }
+
     // 执行攻击逻辑
     bool bAttackSucceed = Attacker->AttackTarget(Target);
 
     // 消耗行动点
-    //Attacker->ConsumeMovePoints(AttackCost);
+    Attacker->ConsumeActionPoints(AttackCost);
     if (bAttackSucceed)
     {
         ShowUnitRange(EUnitRange::UR_Default);
@@ -570,13 +582,14 @@ bool ALFPTacticsPlayerController::AttackTarget(ALFPTacticsUnit* Attacker, ALFPTa
     }
 
     // 通知回合管理器单位完成行动
-    if (bAttackSucceed)
+    if (!Attacker->HasEnoughActionPoints(1))
     {
-        if (ALFPTurnManager* TurnManager = GetTurnManager())
-        {
-            TurnManager->OnUnitFinishedAction(Attacker);
-        }
+		if (bAttackSucceed)
+		{
+            SkipTurn(Attacker);
+		}
     }
+    
     return bAttackSucceed;
 }
 
