@@ -25,6 +25,7 @@ enum class EUnitAffiliation : uint8
 
 class ALFPHexGridManager;
 class ALFPTurnManager;
+class ULFPBetrayalCondition;
 
 UCLASS()
 class LFP2D_API ALFPTacticsUnit : public AActor
@@ -335,4 +336,12 @@ protected:
     // ËÀÍö×´Ì¬
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Unit State", meta = (AllowPrivateAccess = "true"))
     bool bIsDead = false;
+
+public:
+    UFUNCTION(BlueprintCallable, Category = "Betrayal")
+    void ChangeAffiliation(EUnitAffiliation NewAffiliation = EUnitAffiliation::UA_Player);
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Betrayal")
+	TArray<ULFPBetrayalCondition*> BetrayalConditions;
 };

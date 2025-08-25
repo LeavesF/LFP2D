@@ -2,6 +2,7 @@
 
 
 #include "LFP2D/Unit/LFPTacticsUnit.h"
+#include "LFP2D/Unit/Betrayal/LFPBetrayalCondition.h"
 #include "LFP2D/HexGrid/LFPHexTile.h"
 #include "LFP2D/HexGrid/LFPHexGridManager.h"
 #include "LFP2D/Turn/LFPTurnManager.h"
@@ -53,6 +54,11 @@ void ALFPTacticsUnit::BeginPlay()
         TurnManager->RegisterUnit(this);
     }
 
+    for (ULFPBetrayalCondition* Condition : BetrayalConditions)
+    {
+        Condition->RegisterCondition(this);
+    }
+
     FLFPHexCoordinates SpawnPoint = FLFPHexCoordinates(StartCoordinates_Q, StartCoordinates_R);
     SetCurrentCoordinates(SpawnPoint);
 
@@ -81,6 +87,11 @@ void ALFPTacticsUnit::EndPlay(const EEndPlayReason::Type EndPlayReason)
     {
         TurnManager->UnregisterUnit(this);
     }
+
+	for (ULFPBetrayalCondition* Condition : BetrayalConditions)
+	{
+		Condition->UnRegisterCondition(this);
+	}
 }
 
 void ALFPTacticsUnit::SetCurrentCoordinates(const FLFPHexCoordinates& NewCoords)
@@ -247,6 +258,7 @@ void ALFPTacticsUnit::FinishMove()
 void ALFPTacticsUnit::ResetForNewRound()
 {
     CurrentMovePoints = MaxMovePoints;
+    CurrentActionPoints = MaxActionPoints;
     bHasActed = false;
 
     // 可选：添加视觉反馈
@@ -498,6 +510,14 @@ void ALFPTacticsUnit::HandleDeath()
         {
             Destroy();
         }, 2.0f, false);
+}
+
+void ALFPTacticsUnit::ChangeAffiliation(EUnitAffiliation NewAffiliation)
+{
+	Affiliation = NewAffiliation;
+
+	// 触发事件
+    //OnAffiliationChanged.Broadcast(OldAffiliation, NewAffiliation);
 }
 
 TArray<ALFPHexTile*> ALFPTacticsUnit::GetAttackRangeTiles()

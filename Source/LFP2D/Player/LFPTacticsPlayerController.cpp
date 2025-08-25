@@ -570,10 +570,10 @@ bool ALFPTacticsPlayerController::AttackTarget(ALFPTacticsUnit* Attacker, ALFPTa
     // 执行攻击逻辑
     bool bAttackSucceed = Attacker->AttackTarget(Target);
 
-    // 消耗行动点
-    Attacker->ConsumeActionPoints(AttackCost);
     if (bAttackSucceed)
     {
+		// 消耗行动点
+		Attacker->ConsumeActionPoints(AttackCost);
         ShowUnitRange(EUnitRange::UR_Default);
     }
     else
@@ -602,7 +602,7 @@ void ALFPTacticsPlayerController::SkipTurn(ALFPTacticsUnit* Unit)
 
     // 可选：消耗1点行动点作为跳过代价
     // Unit->ConsumeMovePoints(1);
-
+    bIsAttacking = false;
     // 通知回合管理器单位完成行动
     if (ALFPTurnManager* TurnManager = GetTurnManager())
     {
