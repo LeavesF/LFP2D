@@ -94,6 +94,20 @@ void ALFPTurnManager::BeginUnitTurn(ALFPTacticsUnit* Unit)
 
     CurrentUnit = Unit;
 
+    // 如果是AI单位，由AI控制器接管
+    if (Unit->IsEnemy())
+    {
+        if (ALFPAIController* AIController = Unit->GetAIController())
+        {
+            // AI控制器将处理回合开始
+            // 通知单位回合开始
+            if (Unit)
+            {
+                Unit->OnTurnStarted();
+            }
+            return;
+        }
+    }
     // 通知单位回合开始
     if (Unit)
     {

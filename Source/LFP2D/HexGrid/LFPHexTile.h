@@ -166,6 +166,7 @@ public:
 	void SetIsWalkable(bool bInIsWalkable) { bIsWalkable = bInIsWalkable; }
 	void SetIsOccupied(bool bInIsOccupied) { bIsOccupied = bInIsOccupied; }
 
+	ALFPTacticsUnit* GetUnitOnTile() { return CurrentUnit; }
 	void SetUnitOnTile(ALFPTacticsUnit* Unit) { CurrentUnit = Unit; }
 	// ÉèÖÃ¸ñ×Ó×´Ì¬
 	void SetState(bool bWalkable, bool bOccupied);

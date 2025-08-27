@@ -26,9 +26,10 @@ enum class EUnitAffiliation : uint8
 class ALFPHexGridManager;
 class ALFPTurnManager;
 class ULFPBetrayalCondition;
+class ALFPAIController;
 
 UCLASS()
-class LFP2D_API ALFPTacticsUnit : public AActor
+class LFP2D_API ALFPTacticsUnit : public APawn
 {
 	GENERATED_BODY()
 	
@@ -84,12 +85,15 @@ public:
     bool HasEnoughActionPoints(int32 Required) const;
 
     UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
-    int32 GetMovePoints(int32 Amount) { return CurrentMovePoints; }
+    int32 GetMovePoints() { return CurrentMovePoints; }
 
 	UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
-	int32 GetActionPoints(int32 Amount) { return CurrentActionPoints; }
+	int32 GetActionPoints() { return CurrentActionPoints; }
 
+    UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
     ALFPHexGridManager* GetGridManager() const;
+
+    UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
     ALFPTurnManager* GetTurnManager() const;
 protected:
     virtual void BeginPlay() override;
@@ -227,6 +231,10 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Unit Combat")
 	int32 GetMaxHealth() const { return MaxHealth; }
 
+    // 获取攻击力
+    UFUNCTION(BlueprintPure, Category = "Unit Combat")
+    int32 GetAttackPower() const { return AttackPower; }
+
 	// 获取阵营标识
 	UFUNCTION(BlueprintPure, Category = "Unit Combat")
     EUnitAffiliation GetAffiliation() const { return Affiliation; }
@@ -311,6 +319,10 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Unit Combat")
     TArray<ALFPHexTile*> GetAttackRangeTiles();
 
+    // 获取攻击范围大小
+    UFUNCTION(BlueprintCallable, Category = "Unit Combat")
+    int32 GetAttackRange() { return AttackRange; }
+
     // 检查目标是否在攻击范围内
     UFUNCTION(BlueprintPure, Category = "Unit Combat")
     bool IsTargetInAttackRange(ALFPTacticsUnit* Target) const;
@@ -344,4 +356,54 @@ public:
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Betrayal")
 	TArray<ULFPBetrayalCondition*> BetrayalConditions;
+
+    // 添加AI控制器支持和事件
+public:
+    // 获取AI控制器
+    UFUNCTION(BlueprintPure, Category = "AI")
+    ALFPAIController* GetAIController() const { return AIController; }
+
+    //// 事件：移动完成
+    //UPROPERTY(BlueprintAssignable, Category = "Events")
+    //FSimpleMulticastDelegate OnMoveCompleteDelegate;
+
+    //// 事件：攻击完成
+    //UPROPERTY(BlueprintAssignable, Category = "Events")
+    //FSimpleMulticastDelegate OnAttackCompleteDelegate;
+
+    //// 在移动函数中触发事件
+    //UFUNCTION()
+    //void NotifyMoveComplete()
+    //{
+    //    OnMoveCompleteDelegate.Broadcast();
+    //}
+
+    //// 在攻击函数中触发事件
+    //UFUNCTION()
+    //void NotifyAttackComplete()
+    //{
+    //    OnAttackCompleteDelegate.Broadcast();
+    //}
+
+protected:
+    // AI控制器
+    UPROPERTY()
+    ALFPAIController* AIController;
+
+public:
+    // 寻找最佳目标
+    UFUNCTION(BlueprintCallable, Category = "AI")
+    virtual ALFPTacticsUnit* FindBestTarget();
+
+    // 寻找最佳移动位置
+    UFUNCTION(BlueprintCallable, Category = "AI")
+    virtual ALFPHexTile* FindBestMovementTile(ALFPTacticsUnit* Target);
+
+    // 计算威胁值
+    UFUNCTION(BlueprintCallable, Category = "AI")
+    virtual float CalculateThreatValue(ALFPTacticsUnit* Target);
+
+    // 计算位置价值
+    UFUNCTION(BlueprintCallable, Category = "AI")
+    virtual float CalculatePositionValue(ALFPHexTile* Tile, ALFPTacticsUnit* Target);
 };

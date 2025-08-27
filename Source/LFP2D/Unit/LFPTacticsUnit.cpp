@@ -2,6 +2,7 @@
 
 
 #include "LFP2D/Unit/LFPTacticsUnit.h"
+#include "LFP2D/AI/LFPAIController.h"
 #include "LFP2D/Unit/Betrayal/LFPBetrayalCondition.h"
 #include "LFP2D/HexGrid/LFPHexTile.h"
 #include "LFP2D/HexGrid/LFPHexGridManager.h"
@@ -76,6 +77,24 @@ void ALFPTacticsUnit::BeginPlay()
         FOnTimelineEvent TimelineFinishedCallback;
         TimelineFinishedCallback.BindUFunction(this, FName("FinishMove"));
         //MoveTimeline->SetTimelineFinishedFunc(TimelineFinishedCallback);
+    }
+
+    // 如果是敌方单位，创建AI控制器
+    if (IsEnemy())
+    {
+        FActorSpawnParameters SpawnParams;
+        SpawnParams.Owner = this;
+        SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+        if (AIControllerClass)
+        {
+            AIController = GetWorld()->SpawnActor<ALFPAIController>(AIControllerClass, SpawnParams);
+            if (AIController)
+            {
+                AIController->Possess(this);
+                AIController->SetControlledUnit(this);
+            }
+        }
     }
 }
 
@@ -185,6 +204,7 @@ bool ALFPTacticsUnit::MoveToTile(ALFPHexTile* Target)
     //    FinishMove();
     //}
     FinishMove();
+    //NotifyMoveComplete();
     return true;
 }
 
@@ -457,6 +477,7 @@ bool ALFPTacticsUnit::AttackTarget(ALFPTacticsUnit* Target)
     //FTimerDelegate TimerDelegate;
     //TimerDelegate.BindUFunction(this, FName("ApplyDamageToTarget"), Target);
     //GetWorld()->GetTimerManager().SetTimer(AttackTimerHandle, TimerDelegate, 0.5f, false);
+    //NotifyAttackComplete();
     return true;
 }
 
@@ -518,6 +539,145 @@ void ALFPTacticsUnit::ChangeAffiliation(EUnitAffiliation NewAffiliation)
 
 	// 触发事件
     //OnAffiliationChanged.Broadcast(OldAffiliation, NewAffiliation);
+}
+
+ALFPTacticsUnit* ALFPTacticsUnit::FindBestTarget()
+{
+    // 获取所有玩家单位
+    TArray<AActor*> PlayerUnits;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALFPTacticsUnit::StaticClass(), PlayerUnits);
+
+    ALFPTacticsUnit* BestTarget = nullptr;
+    float BestThreatValue = -MAX_FLT;
+
+    for (AActor* Actor : PlayerUnits)
+    {
+        ALFPTacticsUnit* Unit = Cast<ALFPTacticsUnit>(Actor);
+        if (Unit && Unit->IsAlive() && Unit->IsAlly())
+        {
+            float ThreatValue = CalculateThreatValue(Unit);
+            if (ThreatValue > BestThreatValue)
+            {
+                BestThreatValue = ThreatValue;
+                BestTarget = Unit;
+            }
+        }
+    }
+
+    return BestTarget;
+}
+
+ALFPHexTile* ALFPTacticsUnit::FindBestMovementTile(ALFPTacticsUnit* Target)
+{
+    ALFPHexGridManager* GridManager = GetGridManager();
+    if (!GridManager)
+    {
+        return nullptr;
+    }
+    // 获取所有可移动位置
+    MovementRangeTiles = GridManager->GetTilesInRange(GetCurrentTile(), GetMovePoints());
+
+    ALFPHexTile* BestTile = nullptr;
+    float BestPositionValue = -MAX_FLT;
+
+    for (ALFPHexTile* Tile : MovementRangeTiles)
+    {
+        // 跳过已有单位的格子
+        if (Tile->GetUnitOnTile()) continue;
+
+        float PositionValue = CalculatePositionValue(Tile, Target);
+        if (PositionValue > BestPositionValue)
+        {
+            BestPositionValue = PositionValue;
+            BestTile = Tile;
+        }
+    }
+
+    return BestTile;
+}
+
+float ALFPTacticsUnit::CalculateThreatValue(ALFPTacticsUnit* Target)
+{
+    // 基础威胁值 = 目标攻击力 * (1 - 目标当前血量/最大血量)
+    float ThreatValue = Target->GetAttackPower();
+
+    // 距离因子 (越近威胁越大)
+    int32 Distance = FLFPHexCoordinates::Distance(
+        GetCurrentCoordinates(),
+        Target->GetCurrentCoordinates()
+    );
+    float DistanceFactor = 1.0f / FMath::Max(Distance, 1);
+
+    //// 应用行为数据
+    //if (BehaviorData)
+    //{
+    //    if (BehaviorData->bPrioritizeWeakTargets)
+    //    {
+    //        // 增加对低血量目标的权重
+    //        float HealthRatio = (float)Target->GetCurrentHealth() / Target->GetMaxHealth();
+    //        ThreatValue *= (2.0f - HealthRatio); // 血量越低，威胁值越高
+    //    }
+
+    //    // 应用攻击倾向
+    //    ThreatValue *= BehaviorData->Aggressiveness;
+    //}
+
+    return ThreatValue * DistanceFactor;
+}
+
+float ALFPTacticsUnit::CalculatePositionValue(ALFPHexTile* Tile, ALFPTacticsUnit* Target)
+{
+    if (!Tile || !Target) return 0.0f;
+
+    float PositionValue = 0.0f;
+
+    // 1. 距离目标越近越好
+    int32 DistanceToTarget = FLFPHexCoordinates::Distance(
+        Tile->GetCoordinates(),
+        Target->GetCurrentCoordinates()
+    );
+    PositionValue += 10.0f / FMath::Max(DistanceToTarget, 1);
+
+    // 2. 如果在攻击范围内额外加分
+    if (DistanceToTarget <= GetAttackRange())
+    {
+        PositionValue += 20.0f;
+    }
+
+    //// 3. 靠近其他敌人单位（团队协作）
+    //TArray<AActor*> EnemyUnits;
+    //UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALFPTacticsUnit::StaticClass(), EnemyUnits);
+
+    //for (AActor* Actor : EnemyUnits)
+    //{
+    //    ALFPTacticsUnit* Unit = Cast<ALFPTacticsUnit>(Actor);
+    //    if (Unit && Unit != this && Unit->IsEnemy() && Unit->IsAlive())
+    //    {
+    //        int32 DistanceToAlly = FLFPHexCoordinates::Distance(
+    //            Tile->GetCoordinates(),
+    //            Unit->GetCurrentCoordinates()
+    //        );
+
+    //        if (DistanceToAlly <= 2)
+    //        {
+    //            PositionValue += 5.0f / FMath::Max(DistanceToAlly, 1);
+    //        }
+    //    }
+    //}
+
+    //// 4. 避免危险位置（如火焰、毒雾等）
+    //if (Tile->IsDangerous())
+    //{
+    //    PositionValue -= 30.0f;
+    //}
+
+    //// 5. 高地优势
+    //if (Tile->IsHighGround())
+    //{
+    //    PositionValue += 15.0f;
+    //}
+
+    return PositionValue;
 }
 
 TArray<ALFPHexTile*> ALFPTacticsUnit::GetAttackRangeTiles()
