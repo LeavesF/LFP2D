@@ -4,6 +4,7 @@
 #include "LFP2D/Player/LFPTacticsPlayerController.h"
 #include "LFP2D/HexGrid/LFPHexGridManager.h"
 #include "LFP2D/HexGrid/LFPHexTile.h"
+#include "LFP2D/Skill/LFPSkillBase.h"
 #include "LFP2D/Unit/LFPTacticsUnit.h"
 #include "LFP2D/Turn/LFPTurnManager.h"
 #include "LFP2D/UI/Fighting/LFPTurnSpeedListWidget.h"
@@ -620,4 +621,60 @@ ALFPTurnManager* ALFPTacticsPlayerController::GetTurnManager() const
         return Cast<ALFPTurnManager>(FoundManagers[0]);
     }
     return nullptr;
+}
+
+void ALFPTacticsPlayerController::HandleSkillSelection()
+{
+    if (!SelectedUnit) return;
+
+    // 显示技能选择UI
+    if (SkillSelectionWidgetClass)
+    {
+        USkillSelectionWidget* SkillWidget = CreateWidget<USkillSelectionWidget>(this, SkillSelectionWidgetClass);
+        if (SkillWidget)
+        {
+            SkillWidget->InitializeSkills(SelectedUnit);
+            SkillWidget->AddToViewport();
+
+            // 进入技能选择模式
+            CurrentSelectionMode = ESelectionMode::SkillSelection;
+        }
+    }
+}
+
+void ALFPTacticsPlayerController::HandleSkillTargetSelection(ULFPSkillBase* Skill)
+{
+    if (!SelectedUnit || !Skill) return;
+
+    // 获取技能范围内的目标格子
+    TArray<ALFPHexTile*> TargetTiles = Skill->GetTargetTiles(SelectedUnit);
+
+    //// 高亮可目标格子
+    //if (GridManager)
+    //{
+    //    GridManager->HighlightTiles(TargetTiles, FLinearColor::Red);
+    //}
+
+    // 进入目标选择模式
+    //CurrentSelectionMode = ESelectionMode::TargetSelection;
+    CurrentSelectedSkill = Skill;
+}
+
+void ALFPTacticsPlayerController::HandleTargetSelected(ALFPHexTile* TargetTile)
+{
+    if (!SelectedUnit || !CurrentSelectedSkill || !TargetTile) return;
+
+    // 执行技能
+    if (SelectedUnit->ExecuteSkill(CurrentSelectedSkill, TargetTile))
+    {
+        //// 技能执行成功
+        //if (GridManager)
+        //{
+        //    GridManager->ClearHighlights();
+        //}
+
+        // 返回正常选择模式
+        //CurrentSelectionMode = ESelectionMode::UnitSelection;
+        CurrentSelectedSkill = nullptr;
+    }
 }

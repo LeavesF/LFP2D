@@ -23,10 +23,12 @@ enum class EUnitAffiliation : uint8
     UA_Neutral    UMETA(DisplayName = "Neutral")
 };
 
+class ULFPSkillBase;
 class ALFPHexGridManager;
 class ALFPTurnManager;
 class ULFPBetrayalCondition;
 class ALFPAIController;
+class ULFPSkillComponent;
 
 UCLASS()
 class LFP2D_API ALFPTacticsUnit : public APawn
@@ -55,7 +57,7 @@ public:
 
     // 移动到目标格子
     UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
-    bool MoveToTile(ALFPHexTile* TargetTile);
+    bool MoveToTile(ALFPHexTile* NewTargetTile);
 
     // 设置选中状态
     UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
@@ -85,7 +87,10 @@ public:
     bool HasEnoughActionPoints(int32 Required) const;
 
     UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
-    int32 GetMovePoints() { return CurrentMovePoints; }
+    int32 GetCurrentMovePoints() { return CurrentMovePoints; }
+
+    UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
+    int32 GetMaxMovePoints() { return CurrentMovePoints; }
 
 	UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
 	int32 GetActionPoints() { return CurrentActionPoints; }
@@ -406,4 +411,14 @@ public:
     // 计算位置价值
     UFUNCTION(BlueprintCallable, Category = "AI")
     virtual float CalculatePositionValue(ALFPHexTile* Tile, ALFPTacticsUnit* Target);
+
+public:
+    TArray<ULFPSkillBase*> GetAvailableSkills();
+
+    bool ExecuteSkill(ULFPSkillBase* Skill, ALFPHexTile* NewTargetTile);
+
+    ULFPSkillBase* GetDefaultAttackSkill();
+
+protected:
+    TObjectPtr<ULFPSkillComponent> SkillComponent;
 };

@@ -16,6 +16,8 @@ class ALFPHexGridManager;
 class UInputMappingContext;
 class UInputAction;
 
+class ULFPSkillBase;
+
 class ALFPTurnManager;
 
 class ULFPTurnSpeedListWidget;
@@ -173,6 +175,12 @@ protected:
 public:
     ALFPTurnManager* GetTurnManager() const;
 
+    void HandleSkillSelection();
+
+    void HandleSkillTargetSelection(ULFPSkillBase* Skill);
+
+    void HandleTargetSelected(ALFPHexTile* TargetTile);
+
     // 回合事件
     UFUNCTION(BlueprintImplementableEvent, Category = "Turn Events")
     void OnTurnStarted(ALFPTacticsUnit* Unit);
@@ -198,9 +206,15 @@ public:
 
 // UI相关
 protected:
-    UPROPERTY(EditDefaultsOnly, Category = "UI")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
     TSubclassOf<class UUserWidget> TurnSpeedWidgetClass;
 
-    UPROPERTY()
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
     TObjectPtr<ULFPTurnSpeedListWidget> TurnSpeedListWidget;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+    TSubclassOf<class UUserWidget> SkillSelectionWidgetClass;
+
+protected:
+    TObjectPtr<ULFPSkillBase> CurrentSelectedSkill;
 };

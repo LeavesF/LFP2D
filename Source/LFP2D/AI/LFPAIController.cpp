@@ -112,7 +112,7 @@ ALFPHexTile* ALFPAIController::FindBestMovementTile(ALFPTacticsUnit* Target) con
     if (!ControlledUnit || !Target || !GridManager) return nullptr;
 
     // 获取所有可移动位置
-    TArray<ALFPHexTile*> MovementRange = GridManager->GetTilesInRange(ControlledUnit->GetCurrentTile(), ControlledUnit->GetMovePoints());
+    TArray<ALFPHexTile*> MovementRange = GridManager->GetTilesInRange(ControlledUnit->GetCurrentTile(), ControlledUnit->GetCurrentMovePoints());
 
     ALFPHexTile* BestTile = nullptr;
     float BestPositionValue = -MAX_FLT;

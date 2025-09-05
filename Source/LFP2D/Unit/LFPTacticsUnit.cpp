@@ -3,6 +3,8 @@
 
 #include "LFP2D/Unit/LFPTacticsUnit.h"
 #include "LFP2D/AI/LFPAIController.h"
+#include "LFP2D/Skill/LFPSkillBase.h"
+#include "LFP2D/Skill/LFPSkillComponent.h"
 #include "LFP2D/Unit/Betrayal/LFPBetrayalCondition.h"
 #include "LFP2D/HexGrid/LFPHexTile.h"
 #include "LFP2D/HexGrid/LFPHexGridManager.h"
@@ -41,6 +43,8 @@ ALFPTacticsUnit::ALFPTacticsUnit()
 	// 设置相对位置（在单位上方）
 	HealthBarComponent->SetRelativeLocation(FVector(0, 150, 0));
 
+    // 创建技能组件
+    SkillComponent = CreateDefaultSubobject<ULFPSkillComponent>(TEXT("SkillComponent"));
     // 创建时间线组件
     //MoveTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("MoveTimeline"));
 }
@@ -168,9 +172,9 @@ ALFPHexTile* ALFPTacticsUnit::GetCurrentTile()
 //    return MovementRangeTiles;
 //}
 
-bool ALFPTacticsUnit::MoveToTile(ALFPHexTile* Target)
+bool ALFPTacticsUnit::MoveToTile(ALFPHexTile* NewTargetTile)
 {
-    if (!Target || !HasEnoughMovePoints(1)) return false;
+    if (!NewTargetTile || !HasEnoughMovePoints(1)) return false;
 
     ALFPHexGridManager* GridManager = GetGridManager();
     if (!GridManager) return false;
@@ -180,12 +184,12 @@ bool ALFPTacticsUnit::MoveToTile(ALFPHexTile* Target)
     if (!CurrentTile) return false;
 
     // 计算路径
-    MovePath = GridManager->FindPath(CurrentTile, Target);
+    MovePath = GridManager->FindPath(CurrentTile, NewTargetTile);
     if (MovePath.Num() == 0|| MovePath.Num()>CurrentMovePoints) return false;
 
     // 设置移动状态
     CurrentTile->SetIsOccupied(false);
-    TargetTile = Target;
+    TargetTile = NewTargetTile;
     CurrentPathIndex = 0;
     MoveProgress = 0.0f;
     MovementRangeTiles.Empty();
@@ -291,6 +295,11 @@ void ALFPTacticsUnit::ResetForNewRound()
 void ALFPTacticsUnit::OnTurnStarted()
 {
     bOnTurn = true;
+
+    if (SkillComponent)
+    {
+        SkillComponent->OnTurnStarted();
+    }
 }
 
 void ALFPTacticsUnit::OnTurnEnded()
@@ -575,7 +584,7 @@ ALFPHexTile* ALFPTacticsUnit::FindBestMovementTile(ALFPTacticsUnit* Target)
         return nullptr;
     }
     // 获取所有可移动位置
-    MovementRangeTiles = GridManager->GetTilesInRange(GetCurrentTile(), GetMovePoints());
+    MovementRangeTiles = GridManager->GetTilesInRange(GetCurrentTile(), GetCurrentMovePoints());
 
     ALFPHexTile* BestTile = nullptr;
     float BestPositionValue = -MAX_FLT;
@@ -757,4 +766,31 @@ void ALFPTacticsUnit::UpdateHealthUI()
 {
     // 在实际项目中，这里会更新单位的血条UI
     // 例如：HealthBarWidget->SetPercent((float)CurrentHealth / MaxHealth);
+}
+
+TArray<ULFPSkillBase*> ALFPTacticsUnit::GetAvailableSkills()
+{
+    if (SkillComponent)
+    {
+        return SkillComponent->GetAvailableSkills();
+    }
+    return TArray<ULFPSkillBase*>();
+}
+
+bool ALFPTacticsUnit::ExecuteSkill(ULFPSkillBase* Skill, ALFPHexTile* NewTargetTile)
+{
+    if (SkillComponent)
+    {
+        return SkillComponent->ExecuteSkill(Skill, NewTargetTile);
+    }
+    return false;
+}
+
+ULFPSkillBase* ALFPTacticsUnit::GetDefaultAttackSkill()
+{
+    if (SkillComponent)
+    {
+        return SkillComponent->GetDefaultAttackSkill();
+    }
+    return nullptr;
 }
