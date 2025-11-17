@@ -7,6 +7,7 @@
 #include "LFP2D/Skill/LFPSkillBase.h"
 #include "LFP2D/Unit/LFPTacticsUnit.h"
 #include "LFP2D/Turn/LFPTurnManager.h"
+#include "LFP2D/UI/Fighting/LFPSkillSelectionWidget.h"
 #include "LFP2D/UI/Fighting/LFPTurnSpeedListWidget.h"
 #include "Kismet/GameplayStatics.h"
 //#include "Blueprint/AIBlueprintHelperLibrary.h"
@@ -611,6 +612,11 @@ void ALFPTacticsPlayerController::SkipTurn(ALFPTacticsUnit* Unit)
     }
 }
 
+void ALFPTacticsPlayerController::ExecuteSkill(ULFPSkillBase* CurrentSkill)
+{
+    CurrentSkill->Execute(SelectedUnit, SelectedTile);
+}
+
 ALFPTurnManager* ALFPTacticsPlayerController::GetTurnManager() const
 {
     TArray<AActor*> FoundManagers;
@@ -630,14 +636,14 @@ void ALFPTacticsPlayerController::HandleSkillSelection()
     // 显示技能选择UI
     if (SkillSelectionWidgetClass)
     {
-        USkillSelectionWidget* SkillWidget = CreateWidget<USkillSelectionWidget>(this, SkillSelectionWidgetClass);
+        ULFPSkillSelectionWidget* SkillWidget = CreateWidget<ULFPSkillSelectionWidget>(this, SkillSelectionWidgetClass);
         if (SkillWidget)
         {
             SkillWidget->InitializeSkills(SelectedUnit);
             SkillWidget->AddToViewport();
 
             // 进入技能选择模式
-            CurrentSelectionMode = ESelectionMode::SkillSelection;
+            //CurrentSelectionMode = ESelectionMode::SkillSelection;
         }
     }
 }

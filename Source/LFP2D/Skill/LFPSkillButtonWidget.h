@@ -11,6 +11,7 @@
 
 // 前向声明
 class ULFPSkillBase;
+class ALFPTacticsUnit;
 
 // 技能按钮委托
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSkillButtonClickedSignature, ULFPSkillBase*, Skill);
@@ -136,12 +137,14 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill Button")
     USoundBase* HoverSound;
 
-private:
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill Attributes")
+    ALFPTacticsUnit* OwnerUnit;
+
     // 关联的技能
-    UPROPERTY()
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill Attributes")
     ULFPSkillBase* AssociatedSkill;
 
     // 是否被选中
-    UPROPERTY()
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill Attributes")
     bool bIsSelected;
 };

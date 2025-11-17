@@ -18,7 +18,7 @@ class LFP2D_API ULFPSkillDataAsset : public UDataAsset
 	
 public:
     // 单位可用的技能类
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skills")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skills")
     TArray<TSubclassOf<ULFPSkillBase>> AvailableSkills;
 
     // 根据单位类型获取技能数据

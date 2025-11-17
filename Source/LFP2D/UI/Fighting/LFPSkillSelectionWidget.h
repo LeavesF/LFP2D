@@ -201,21 +201,21 @@ protected:
     //UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill Selection")
     //USoundBase* CancelSound;
 
-private:
+protected:
     // 当前选中的技能
-    UPROPERTY()
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill Attributes")
     ULFPSkillBase* SelectedSkill;
 
     // 所属单位
-    UPROPERTY()
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill Attributes")
     ALFPTacticsUnit* OwnerUnit;
 
     // 所有技能按钮
-    UPROPERTY()
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill Attributes")
     TArray<ULFPSkillButtonWidget*> SkillButtons;
 
     // 技能过滤标签
-    UPROPERTY()
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill Attributes")
     FGameplayTagContainer SkillFilterTags;
 
     // 最大列数

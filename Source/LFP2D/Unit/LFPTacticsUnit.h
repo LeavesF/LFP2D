@@ -419,6 +419,7 @@ public:
 
     ULFPSkillBase* GetDefaultAttackSkill();
 
-protected:
+public:
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
     TObjectPtr<ULFPSkillComponent> SkillComponent;
 };

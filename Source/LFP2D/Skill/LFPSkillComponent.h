@@ -10,7 +10,7 @@
 // 委托签名
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSkillExecutedSignature, ALFPTacticsUnit*, Caster, ALFPHexTile*, TargetTile);
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(Blueprintable, ClassGroup=(Skill), meta=(BlueprintSpawnableComponent))
 class LFP2D_API ULFPSkillComponent : public UActorComponent
 {
 	GENERATED_BODY()
@@ -51,13 +51,13 @@ public:
     UPROPERTY(BlueprintAssignable, Category = "Skill")
     FOnSkillExecutedSignature OnSkillExecuted;
 
-private:
+protected:
     // 所有技能
-    UPROPERTY(VisibleAnywhere, Category = "Skill")
+    UPROPERTY(EditAnywhere, Category = "Skill")
     TArray<ULFPSkillBase*> Skills;
 
     // 默认攻击技能
-    UPROPERTY()
+    UPROPERTY(EditAnywhere, Category = "Skill")
     ULFPSkillBase* DefaultAttackSkill;
 
     // 技能数据资产

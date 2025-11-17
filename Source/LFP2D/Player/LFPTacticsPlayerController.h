@@ -217,4 +217,9 @@ protected:
 
 protected:
     TObjectPtr<ULFPSkillBase> CurrentSelectedSkill;
+
+/////////// Skill part  ////////////
+public:
+    UFUNCTION(BlueprintCallable, Category = "Battle System")
+    void ExecuteSkill(ULFPSkillBase* CurrentSkill);
 };

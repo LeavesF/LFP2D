@@ -27,21 +27,18 @@ void ULFPSkillButtonWidget::NativeConstruct()
     {
         // 绑定点击事件
         SkillButton->OnClicked.AddDynamic(this, &ULFPSkillButtonWidget::OnButtonClicked);
-
-        // 应用默认样式
-        SkillButton->SetStyle(DefaultButtonStyle);
     }
 
-    // 初始隐藏选中边框和禁用遮罩
-    if (SelectionBorder)
-    {
-        SelectionBorder->SetVisibility(ESlateVisibility::Hidden);
-    }
+    //// 初始隐藏选中边框和禁用遮罩
+    //if (SelectionBorder)
+    //{
+    //    SelectionBorder->SetVisibility(ESlateVisibility::Hidden);
+    //}
 
-    if (DisabledOverlay)
-    {
-        DisabledOverlay->SetVisibility(ESlateVisibility::Hidden);
-    }
+    //if (DisabledOverlay)
+    //{
+    //    DisabledOverlay->SetVisibility(ESlateVisibility::Hidden);
+    //}
 }
 
 void ULFPSkillButtonWidget::Initialize(ULFPSkillBase* Skill)
@@ -123,17 +120,17 @@ void ULFPSkillButtonWidget::OnButtonClicked()
 {
     if (!AssociatedSkill || !bIsEnabled) return;
 
-    // 播放点击音效
-    if (ClickSound)
-    {
-        UGameplayStatics::PlaySound2D(this, ClickSound);
-    }
+    //// 播放点击音效
+    //if (ClickSound)
+    //{
+    //    UGameplayStatics::PlaySound2D(this, ClickSound);
+    //}
 
-    // 触发点击委托
-    if (OnButtonClickedDelegate.IsBound())
-    {
-        OnButtonClickedDelegate.Broadcast(AssociatedSkill);
-    }
+    //// 触发点击委托
+    //if (OnButtonClickedDelegate.IsBound())
+    //{
+    //    OnButtonClickedDelegate.Broadcast(AssociatedSkill);
+    //}
 }
 
 void ULFPSkillButtonWidget::NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)

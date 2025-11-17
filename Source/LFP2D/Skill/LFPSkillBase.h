@@ -49,7 +49,7 @@ public:
 
     // 技能执行
     UFUNCTION(BlueprintCallable, Category = "Skill")
-    virtual void Execute(ALFPTacticsUnit* Caster, ALFPHexTile* TargetTile);
+    virtual void Execute(ALFPTacticsUnit* Caster, ALFPHexTile* TargetTile = nullptr);
 
     // 检查技能是否可用
     UFUNCTION(BlueprintCallable, Category = "Skill")
