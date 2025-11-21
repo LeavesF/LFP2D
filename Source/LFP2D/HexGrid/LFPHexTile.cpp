@@ -70,6 +70,15 @@ void ALFPHexTile::SetAttackHighlight(bool bActive)
 	}
 }
 
+bool ALFPHexTile::IsTargetHexInLine(FLFPHexCoordinates Coord)
+{
+	if (Coord.Q == Coordinates.Q || Coord.R == Coordinates.R || Coord.S == Coordinates.S)
+	{
+		return true;
+	}
+	return false;
+}
+
 void ALFPHexTile::SetRangeSprite(EUnitRange UnitRange)
 {
 	switch (UnitRange)
@@ -83,6 +92,8 @@ void ALFPHexTile::SetRangeSprite(EUnitRange UnitRange)
 	case EUnitRange::UR_Attack:
 		SpriteComponent->SetSprite(AttackRangeSprite);
 		break;
+	case EUnitRange::UR_SkillEffect:
+		SpriteComponent->SetSprite(SkillEffectRangeSprite);
 	default:
 		break;
 	}

@@ -80,7 +80,7 @@ public:
     UPROPERTY(BlueprintAssignable, Category = "Skill Button")
     FSkillButtonUnhoveredSignature OnButtonUnhoveredDelegate;
 
-protected:
+public:
     // °´Å¥×é¼þ
     UPROPERTY(BlueprintReadOnly, Category = "Skill Button", meta = (BindWidget))
     UButton* SkillButton;

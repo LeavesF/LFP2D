@@ -51,6 +51,12 @@ void ULFPSkillComponent::InitializeSkills()
             {
                 Skills.Add(NewSkill);
 
+                /*ALFPTacticsUnit* OwnerUnit = Cast<ALFPTacticsUnit>(GetOwner());
+                if (OwnerUnit)
+                {
+                    NewSkill->Owner = OwnerUnit;
+                }*/
+                NewSkill->InitSkillRange();
                 // 设置默认攻击技能
                 if (NewSkill->bIsDefaultAttack)
                 {
@@ -91,7 +97,7 @@ TArray<ULFPSkillBase*> ULFPSkillComponent::GetAvailableSkills() const
 bool ULFPSkillComponent::ExecuteSkill(ULFPSkillBase* Skill, ALFPHexTile* TargetTile)
 {
     ALFPTacticsUnit* OwnerUnit = Cast<ALFPTacticsUnit>(GetOwner());
-    if (!OwnerUnit || !Skill || !TargetTile) return false;
+    if (!OwnerUnit || !Skill) return false;
 
     // 检查技能是否可用
     if (!Skill->CanExecute(OwnerUnit)) return false;

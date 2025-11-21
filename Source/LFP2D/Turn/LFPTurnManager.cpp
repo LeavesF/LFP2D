@@ -119,6 +119,7 @@ void ALFPTurnManager::BeginUnitTurn(ALFPTacticsUnit* Unit)
     {
         PC->OnTurnStarted(Unit);
         PC->SelectUnit(Unit);
+        PC->HandleSkillSelection();
     }
 }
 

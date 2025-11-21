@@ -4,6 +4,7 @@
 #include "LFP2D/Skill/LFPSkillButtonWidget.h"
 #include "LFP2D/Skill/LFPSkillBase.h"
 #include "Sound/SoundBase.h"
+#include "LFP2D/Unit/LFPTacticsUnit.h"
 #include "Kismet/GameplayStatics.h"
 
 ULFPSkillButtonWidget::ULFPSkillButtonWidget(const FObjectInitializer& ObjectInitializer)
@@ -23,11 +24,11 @@ void ULFPSkillButtonWidget::NativeConstruct()
     Super::NativeConstruct();
 
     // 确保组件已绑定
-    if (SkillButton)
-    {
-        // 绑定点击事件
-        SkillButton->OnClicked.AddDynamic(this, &ULFPSkillButtonWidget::OnButtonClicked);
-    }
+    //if (SkillButton)
+    //{
+    //    // 绑定点击事件
+    //    SkillButton->OnClicked.AddDynamic(this, &ULFPSkillButtonWidget::OnButtonClicked);
+    //}
 
     //// 初始隐藏选中边框和禁用遮罩
     //if (SelectionBorder)
@@ -118,7 +119,9 @@ void ULFPSkillButtonWidget::SetSelected(bool bSelected)
 
 void ULFPSkillButtonWidget::OnButtonClicked()
 {
-    if (!AssociatedSkill || !bIsEnabled) return;
+    if (!AssociatedSkill || OwnerUnit || !bIsEnabled) return;
+
+    OwnerUnit->ExecuteSkill(AssociatedSkill);
 
     //// 播放点击音效
     //if (ClickSound)
@@ -171,13 +174,14 @@ void ULFPSkillButtonWidget::UpdateAppearance()
     if (SkillNameText)
     {
         SkillNameText->SetText(AssociatedSkill->SkillName);
+        //SkillNameText->SetVisibility(ESlateVisibility::HitTestInvisible);
     }
 
     // 更新技能图标
     if (SkillIcon && AssociatedSkill->SkillIcon)
     {
         SkillIcon->SetBrushFromTexture(AssociatedSkill->SkillIcon);
-        SkillIcon->SetVisibility(ESlateVisibility::Visible);
+        SkillIcon->SetVisibility(ESlateVisibility::HitTestInvisible);
     }
     else if (SkillIcon)
     {
@@ -192,11 +196,13 @@ void ULFPSkillButtonWidget::UpdateAppearance()
     {
         FString CostString = FString::Printf(TEXT("%d AP"), AssociatedSkill->ActionPointCost);
         CostText->SetText(FText::FromString(CostString));
+        CostText->SetVisibility(ESlateVisibility::HitTestInvisible);
     }
 
     // 更新按钮可用状态
-    bool bCanExecute = AssociatedSkill->CanExecute(nullptr); // 传入nullptr，因为我们不检查具体单位
-    SetButtonEnabled(bCanExecute);
+    //bool bCanExecute = AssociatedSkill->CanExecute(nullptr); // 传入nullptr，因为我们不检查具体单位
+    //SetButtonEnabled(bCanExecute);
+    SetButtonEnabled(true);
 }
 
 void ULFPSkillButtonWidget::UpdateCooldownDisplay()
@@ -208,7 +214,7 @@ void ULFPSkillButtonWidget::UpdateCooldownDisplay()
         // 显示冷却信息
         FString CooldownString = FString::Printf(TEXT("%d"), AssociatedSkill->CurrentCooldown);
         CooldownText->SetText(FText::FromString(CooldownString));
-        CooldownText->SetVisibility(ESlateVisibility::Visible);
+        CooldownText->SetVisibility(ESlateVisibility::HitTestInvisible);
         CooldownText->SetColorAndOpacity(CooldownTextColor);
     }
     else if (AssociatedSkill->CooldownRounds > 0)
@@ -216,7 +222,7 @@ void ULFPSkillButtonWidget::UpdateCooldownDisplay()
         // 显示冷却回合数（但当前不在冷却中）
         FString CooldownString = FString::Printf(TEXT("%dR"), AssociatedSkill->CooldownRounds);
         CooldownText->SetText(FText::FromString(CooldownString));
-        CooldownText->SetVisibility(ESlateVisibility::Visible);
+        CooldownText->SetVisibility(ESlateVisibility::HitTestInvisible);
         CooldownText->SetColorAndOpacity(AvailableTextColor);
     }
     else

@@ -48,12 +48,12 @@ public:
     ULFPSkillBase();
 
     // 技能执行
-    UFUNCTION(BlueprintCallable, Category = "Skill")
-    virtual void Execute(ALFPTacticsUnit* Caster, ALFPHexTile* TargetTile = nullptr);
+    UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Skill")
+    void Execute(ALFPTacticsUnit* Caster, ALFPHexTile* TargetTile = nullptr);
 
     // 检查技能是否可用
     UFUNCTION(BlueprintCallable, Category = "Skill")
-    virtual bool CanExecute(ALFPTacticsUnit* Caster) const;
+    bool CanExecute(ALFPTacticsUnit* Caster) const;
 
     // 获取技能冷却状态
     UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Skill")
@@ -66,6 +66,19 @@ public:
     // 回合开始时的冷却更新
     UFUNCTION(BlueprintCallable, Category = "Skill")
     void OnTurnStart();
+
+    UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Skill")
+    void InitSkillRange();
+
+    UFUNCTION(BlueprintCallable, Category = "Skill")
+    void ShowReleaseRange(bool bShow = true);
+
+    UFUNCTION(BlueprintCallable, Category = "Skill")
+    void ShowEffectRange(bool bShow = true);
+public:
+    // 基础属性
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
+    ALFPTacticsUnit* Owner;
 
     // 技能属性
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
@@ -98,4 +111,12 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
     bool bIsDefaultAttack; // 是否为默认攻击技能
+
+    // 技能释放范围
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
+    TArray<ALFPHexTile*> ReleaseRangeTiles;
+
+    // 技能生效范围
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
+    TArray<ALFPHexTile*> EffectRangeTiles;
 };

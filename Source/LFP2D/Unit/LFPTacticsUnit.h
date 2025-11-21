@@ -415,7 +415,7 @@ public:
 public:
     TArray<ULFPSkillBase*> GetAvailableSkills();
 
-    bool ExecuteSkill(ULFPSkillBase* Skill, ALFPHexTile* NewTargetTile);
+    bool ExecuteSkill(ULFPSkillBase* Skill, ALFPHexTile* NewTargetTile = nullptr);
 
     ULFPSkillBase* GetDefaultAttackSkill();
 

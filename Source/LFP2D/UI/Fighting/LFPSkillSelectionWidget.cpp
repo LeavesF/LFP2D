@@ -69,7 +69,7 @@ void ULFPSkillSelectionWidget::InitializeSkills(ALFPTacticsUnit* Unit)
             {
                 // 初始化按钮
                 SkillButton->Initialize(Skill);
-
+                SkillButton->OwnerUnit = OwnerUnit;
                 // 绑定点击事件
                 //SkillButton->OnSkillSelected.AddDynamic(this, &ULFPSkillSelectionWidget::OnSkillSelected);
 

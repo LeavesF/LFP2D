@@ -14,11 +14,6 @@ ULFPSkillBase::ULFPSkillBase()
     bIsDefaultAttack = false;
 }
 
-void ULFPSkillBase::Execute(ALFPTacticsUnit* Caster, ALFPHexTile* TargetTile)
-{
-    // 基类实现为空，由子类重写
-}
-
 bool ULFPSkillBase::CanExecute(ALFPTacticsUnit* Caster) const
 {
     if (!Caster) return false;
@@ -65,5 +60,41 @@ void ULFPSkillBase::OnTurnStart()
     if (CurrentCooldown > 0)
     {
         CurrentCooldown--;
+    }
+}
+
+void ULFPSkillBase::ShowReleaseRange(bool bShow)
+{
+    if (!ReleaseRangeTiles.IsEmpty())
+    {
+        for (ALFPHexTile* Tile : ReleaseRangeTiles)
+        {
+            if (bShow)
+            {
+                Tile->SetRangeSprite(EUnitRange::UR_Attack);
+            }
+            else
+            {
+                Tile->SetRangeSprite(EUnitRange::UR_Default);
+            }
+        }
+    }
+}
+
+void ULFPSkillBase::ShowEffectRange(bool bShow)
+{
+    if (!ReleaseRangeTiles.IsEmpty())
+    {
+        for (ALFPHexTile* Tile : ReleaseRangeTiles)
+        {
+            if (bShow)
+            {
+                Tile->SetRangeSprite(EUnitRange::UR_SkillEffect);
+            }
+            else
+            {
+                Tile->SetRangeSprite(EUnitRange::UR_Default);
+            }
+        }
     }
 }

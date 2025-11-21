@@ -135,7 +135,8 @@ enum class EUnitRange : uint8
 {
 	UR_Default     UMETA(DisplayName = "Default"),
 	UR_Move     UMETA(DisplayName = "Move"),
-	UR_Attack    UMETA(DisplayName = "Attack")
+	UR_Attack    UMETA(DisplayName = "Attack"),
+	UR_SkillEffect    UMETA(DisplayName = "SkillEffect")
 };
 
 UCLASS()
@@ -156,6 +157,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 public:
+	UFUNCTION(BlueprintCallable, Category = "Hex Tile")
 	FLFPHexCoordinates GetCoordinates() { return Coordinates; }
 	// 设置坐标数据
 	void SetCoordinates(const FLFPHexCoordinates& NewCoords) { Coordinates = NewCoords; }
@@ -220,4 +222,12 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Sprites")
 	TObjectPtr<UPaperSprite> AttackRangeSprite;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Sprites")
+	TObjectPtr<UPaperSprite> SkillEffectRangeSprite;
+	
+/////////////////	Math	///////////////
+public:
+	UFUNCTION(BlueprintCallable, Category = "Hex Math")
+	bool IsTargetHexInLine(FLFPHexCoordinates Coord);
 };
