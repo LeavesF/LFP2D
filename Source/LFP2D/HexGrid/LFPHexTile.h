@@ -16,8 +16,14 @@ struct FLFPHexCoordinates
 {
 	GENERATED_USTRUCT_BODY()
 
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HexCoordinates")
 	int32 Q; // 轴向坐标 q
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HexCoordinates")
 	int32 R; // 轴向坐标 r
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HexCoordinates")
 	int32 S; // 立方坐标 s（计算得出）
 
 	FLFPHexCoordinates() : Q(0), R(0), S(0) {}

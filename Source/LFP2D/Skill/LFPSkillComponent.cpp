@@ -3,6 +3,7 @@
 
 #include "LFP2D/Skill/LFPSkillComponent.h"
 #include "LFP2D/Skill/LFPSkillDataAsset.h"
+#include "LFP2D/Player/LFPTacticsPlayerController.h"
 #include "LFP2D/Unit/LFPTacticsUnit.h"
 
 // Sets default values for this component's properties
@@ -51,11 +52,14 @@ void ULFPSkillComponent::InitializeSkills()
             {
                 Skills.Add(NewSkill);
 
-                /*ALFPTacticsUnit* OwnerUnit = Cast<ALFPTacticsUnit>(GetOwner());
-                if (OwnerUnit)
+                NewSkill->Owner = OwnerUnit;
+                for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
                 {
-                    NewSkill->Owner = OwnerUnit;
-                }*/
+                    if (ALFPTacticsPlayerController* PC = Cast<ALFPTacticsPlayerController>(*It))
+                    {
+                        NewSkill->OwnerController = PC;
+                    }
+                }
                 NewSkill->InitSkillRange();
                 // 设置默认攻击技能
                 if (NewSkill->bIsDefaultAttack)

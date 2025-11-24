@@ -31,6 +31,18 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Hex Grid")
 	TArray<ALFPHexTile*> GetNeighbors(const FLFPHexCoordinates& Coords) const;
 
+    UFUNCTION(BlueprintCallable, Category = "Hex Grid")
+    FLFPHexCoordinates Coord_AddQ(FLFPHexCoordinates Coord, int32 In_Q)
+    {
+        return FLFPHexCoordinates(Coord.Q + In_Q, Coord.R);
+    }
+
+    UFUNCTION(BlueprintCallable, Category = "Hex Grid")
+    FLFPHexCoordinates Coord_AddR(FLFPHexCoordinates Coord, int32 In_R)
+    {
+        return FLFPHexCoordinates(Coord.Q, Coord.R + In_R);
+    }
+
 	UFUNCTION(BlueprintCallable, Category = "Hex Grid")
 	TArray<ALFPHexTile*> FindPath(ALFPHexTile* Start, ALFPHexTile* End);
 

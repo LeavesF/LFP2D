@@ -128,8 +128,15 @@ protected:
     TArray<ALFPHexTile*> CurrentPath;
 
     // 状态标志
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "State")
     bool bIsSelecting;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "State")
     bool bIsAttacking = false;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "State")
+    bool bIsReleaseSkill = false;
+
     FVector2D SelectionStart;
 
     // 相机控制

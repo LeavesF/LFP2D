@@ -399,7 +399,7 @@ void ALFPTacticsPlayerController::SelectTile(ALFPHexTile* Tile)
 {
     if (!SelectedUnit || !GridManager) return;
 
-    if (bIsAttacking)
+    if (bIsAttacking || bIsReleaseSkill)
     {
         SelectedTile = Tile;
     }

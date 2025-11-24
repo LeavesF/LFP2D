@@ -9,6 +9,7 @@
 
 class ALFPTacticsUnit;
 class ALFPHexTile;
+class ALFPTacticsPlayerController;
 
 UENUM(BlueprintType)
 enum class ESkillTargetType : uint8
@@ -79,6 +80,9 @@ public:
     // 基础属性
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
     ALFPTacticsUnit* Owner;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
+    ALFPTacticsPlayerController* OwnerController;
 
     // 技能属性
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
