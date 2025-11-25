@@ -5,6 +5,7 @@
 #include "LFP2D/Skill/LFPSkillBase.h"
 #include "Sound/SoundBase.h"
 #include "LFP2D/Unit/LFPTacticsUnit.h"
+#include "LFP2D/Player/LFPTacticsPlayerController.h"
 #include "Kismet/GameplayStatics.h"
 
 ULFPSkillButtonWidget::ULFPSkillButtonWidget(const FObjectInitializer& ObjectInitializer)
@@ -54,8 +55,6 @@ void ULFPSkillButtonWidget::Initialize(ULFPSkillBase* Skill)
 
 void ULFPSkillButtonWidget::RefreshState()
 {
-    if (!AssociatedSkill) return;
-
     // 更新按钮显示
     UpdateAppearance();
 }
@@ -121,8 +120,8 @@ void ULFPSkillButtonWidget::OnButtonClicked()
 {
     if (!AssociatedSkill || OwnerUnit || !bIsEnabled) return;
 
-    OwnerUnit->ExecuteSkill(AssociatedSkill);
-
+    //OwnerUnit->ExecuteSkill(AssociatedSkill);
+    TacticsPC->HandleSkillTargetSelection(AssociatedSkill);
     //// 播放点击音效
     //if (ClickSound)
     //{
@@ -168,7 +167,12 @@ void ULFPSkillButtonWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent
 
 void ULFPSkillButtonWidget::UpdateAppearance()
 {
-    if (!AssociatedSkill) return;
+    if (!AssociatedSkill)
+    {
+        SetVisibility(ESlateVisibility::Hidden);
+        return;
+    }
+    SetVisibility(ESlateVisibility::Visible);
 
     // 更新技能名称
     if (SkillNameText)

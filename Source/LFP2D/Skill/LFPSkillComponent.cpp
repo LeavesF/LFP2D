@@ -60,7 +60,7 @@ void ULFPSkillComponent::InitializeSkills()
                         NewSkill->OwnerController = PC;
                     }
                 }
-                NewSkill->InitSkillRange();
+                //NewSkill->InitSkillRange();
                 // 设置默认攻击技能
                 if (NewSkill->bIsDefaultAttack)
                 {

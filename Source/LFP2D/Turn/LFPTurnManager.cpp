@@ -94,11 +94,17 @@ void ALFPTurnManager::BeginUnitTurn(ALFPTacticsUnit* Unit)
 
     CurrentUnit = Unit;
 
+    ALFPTacticsPlayerController* PC = GetWorld()->GetFirstPlayerController<ALFPTacticsPlayerController>();
+
     // 如果是AI单位，由AI控制器接管
     if (Unit->IsEnemy())
     {
         if (ALFPAIController* AIController = Unit->GetAIController())
         {
+            if (PC)
+            {
+                PC->HideSkillSelection();
+            }
             // AI控制器将处理回合开始
             // 通知单位回合开始
             if (Unit)
@@ -115,7 +121,7 @@ void ALFPTurnManager::BeginUnitTurn(ALFPTacticsUnit* Unit)
     }
 
     // 通知玩家控制器
-    if (ALFPTacticsPlayerController* PC = GetWorld()->GetFirstPlayerController<ALFPTacticsPlayerController>())
+    if (PC)
     {
         PC->OnTurnStarted(Unit);
         PC->SelectUnit(Unit);

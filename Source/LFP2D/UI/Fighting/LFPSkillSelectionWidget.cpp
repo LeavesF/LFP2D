@@ -37,11 +37,12 @@ void ULFPSkillSelectionWidget::NativeConstruct()
     }
 }
 
-void ULFPSkillSelectionWidget::InitializeSkills(ALFPTacticsUnit* Unit)
+void ULFPSkillSelectionWidget::InitializeSkills(ALFPTacticsUnit* Unit, ALFPTacticsPlayerController* PC)
 {
-    if (!Unit || !SkillGrid) return;
+    if (!Unit || !PC || !SkillGrid) return;
 
     OwnerUnit = Unit;
+    TacticsPC = PC;
 
     // 清空现有技能按钮
     SkillGrid->ClearChildren();
@@ -70,6 +71,7 @@ void ULFPSkillSelectionWidget::InitializeSkills(ALFPTacticsUnit* Unit)
                 // 初始化按钮
                 SkillButton->Initialize(Skill);
                 SkillButton->OwnerUnit = OwnerUnit;
+                SkillButton->TacticsPC = TacticsPC;
                 // 绑定点击事件
                 //SkillButton->OnSkillSelected.AddDynamic(this, &ULFPSkillSelectionWidget::OnSkillSelected);
 
@@ -339,37 +341,37 @@ void ULFPSkillSelectionWidget::NativeTick(const FGeometry& MyGeometry, float InD
 
 void ULFPSkillSelectionWidget::Show()
 {
-    SetVisibility(ESlateVisibility::Visible);
+    SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 
-    // 获取玩家控制器并设置输入模式
-    APlayerController* PC = GetOwningPlayer();
-    if (PC)
-    {
-        // 设置UI-only输入模式
-        FInputModeUIOnly InputMode;
-        InputMode.SetWidgetToFocus(TakeWidget());
-        InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-        PC->SetInputMode(InputMode);
+    //// 获取玩家控制器并设置输入模式
+    //APlayerController* PC = GetOwningPlayer();
+    //if (PC)
+    //{
+    //    // 设置UI-only输入模式
+    //    FInputModeUIOnly InputMode;
+    //    InputMode.SetWidgetToFocus(TakeWidget());
+    //    InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+    //    PC->SetInputMode(InputMode);
 
-        // 显示鼠标光标
-        PC->bShowMouseCursor = true;
-    }
+    //    // 显示鼠标光标
+    //    PC->bShowMouseCursor = true;
+    //}
 }
 
 void ULFPSkillSelectionWidget::Hide()
 {
     SetVisibility(ESlateVisibility::Collapsed);
 
-    // 恢复游戏输入模式
-    APlayerController* PC = GetOwningPlayer();
-    if (PC)
-    {
-        FInputModeGameOnly InputMode;
-        PC->SetInputMode(InputMode);
+    //// 恢复游戏输入模式
+    //APlayerController* PC = GetOwningPlayer();
+    //if (PC)
+    //{
+    //    FInputModeGameOnly InputMode;
+    //    PC->SetInputMode(InputMode);
 
-        // 隐藏鼠标光标
-        PC->bShowMouseCursor = false;
-    }
+    //    // 隐藏鼠标光标
+    //    PC->bShowMouseCursor = false;
+    //}
 }
 
 void ULFPSkillSelectionWidget::SetSkillFilter(const FGameplayTagContainer& FilterTags)
@@ -380,7 +382,7 @@ void ULFPSkillSelectionWidget::SetSkillFilter(const FGameplayTagContainer& Filte
     // 重新初始化技能列表
     if (OwnerUnit)
     {
-        InitializeSkills(OwnerUnit);
+        InitializeSkills(OwnerUnit, this);
     }
 }
 
@@ -392,7 +394,7 @@ void ULFPSkillSelectionWidget::ClearSkillFilter()
     // 重新初始化技能列表
     if (OwnerUnit)
     {
-        InitializeSkills(OwnerUnit);
+        InitializeSkills(OwnerUnit, this);
     }
 }
 

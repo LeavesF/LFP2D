@@ -11,6 +11,8 @@ class ALFPTacticsUnit;
 class ALFPHexTile;
 class ALFPTacticsPlayerController;
 
+struct FLFPHexCoordinates;
+
 UENUM(BlueprintType)
 enum class ESkillTargetType : uint8
 {
@@ -69,7 +71,10 @@ public:
     void OnTurnStart();
 
     UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Skill")
-    void InitSkillRange();
+    void UpdateSkillRange();
+
+    UFUNCTION(BlueprintCallable, Category = "Skill")
+    TArray<FLFPHexCoordinates> GetReleaseRange() { return ReleaseRangeCoords; }
 
     UFUNCTION(BlueprintCallable, Category = "Skill")
     void ShowReleaseRange(bool bShow = true);
@@ -118,9 +123,9 @@ public:
 
     // 技能释放范围
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
-    TArray<ALFPHexTile*> ReleaseRangeTiles;
+    TArray<FLFPHexCoordinates> ReleaseRangeCoords;
 
     // 技能生效范围
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
-    TArray<ALFPHexTile*> EffectRangeTiles;
+    TArray<FLFPHexCoordinates> EffectRangeCoords;
 };

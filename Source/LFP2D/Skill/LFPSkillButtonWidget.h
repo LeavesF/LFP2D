@@ -12,6 +12,7 @@
 // 前向声明
 class ULFPSkillBase;
 class ALFPTacticsUnit;
+class ALFPTacticsPlayerController;
 
 // 技能按钮委托
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSkillButtonClickedSignature, ULFPSkillBase*, Skill);
@@ -139,6 +140,9 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill Attributes")
     ALFPTacticsUnit* OwnerUnit;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill Attributes")
+    ALFPTacticsPlayerController* TacticsPC;
 
     // 关联的技能
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill Attributes")

@@ -21,6 +21,7 @@ class ULFPSkillBase;
 class ALFPTurnManager;
 
 class ULFPTurnSpeedListWidget;
+class ULFPSkillSelectionWidget;
 /**
  * 
  */
@@ -184,6 +185,8 @@ public:
 
     void HandleSkillSelection();
 
+    void HideSkillSelection();
+
     void HandleSkillTargetSelection(ULFPSkillBase* Skill);
 
     void HandleTargetSelected(ALFPHexTile* TargetTile);
@@ -221,6 +224,10 @@ protected:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
     TSubclassOf<class UUserWidget> SkillSelectionWidgetClass;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+
+    TObjectPtr<ULFPSkillSelectionWidget> SkillSelectionWidget;
 
 protected:
     TObjectPtr<ULFPSkillBase> CurrentSelectedSkill;

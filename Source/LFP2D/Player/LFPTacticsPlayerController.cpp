@@ -636,15 +636,36 @@ void ALFPTacticsPlayerController::HandleSkillSelection()
     // 显示技能选择UI
     if (SkillSelectionWidgetClass)
     {
-        ULFPSkillSelectionWidget* SkillWidget = CreateWidget<ULFPSkillSelectionWidget>(this, SkillSelectionWidgetClass);
-        if (SkillWidget)
+        if (!SkillSelectionWidget)
         {
-            SkillWidget->InitializeSkills(SelectedUnit);
-            SkillWidget->AddToViewport();
+            SkillSelectionWidget = CreateWidget<ULFPSkillSelectionWidget>(this, SkillSelectionWidgetClass);
+            if (SkillSelectionWidget)
+            {
+                SkillSelectionWidget->Show();
+                SkillSelectionWidget->InitializeSkills(SelectedUnit, this);
+                SkillSelectionWidget->AddToViewport();
+
+                // 进入技能选择模式
+                //CurrentSelectionMode = ESelectionMode::SkillSelection;
+            }
+        }
+        else
+        {
+            SkillSelectionWidget->Show();
+            SkillSelectionWidget->InitializeSkills(SelectedUnit, this);
 
             // 进入技能选择模式
             //CurrentSelectionMode = ESelectionMode::SkillSelection;
         }
+        
+    }
+}
+
+void ALFPTacticsPlayerController::HideSkillSelection()
+{
+    if (SkillSelectionWidget)
+    {
+        SkillSelectionWidget->Hide();
     }
 }
 
@@ -653,8 +674,18 @@ void ALFPTacticsPlayerController::HandleSkillTargetSelection(ULFPSkillBase* Skil
     if (!SelectedUnit || !Skill) return;
 
     // 获取技能范围内的目标格子
-    TArray<ALFPHexTile*> TargetTiles = Skill->GetTargetTiles(SelectedUnit);
-
+    TArray<FLFPHexCoordinates> TargetTilesCoord = Skill->GetReleaseRange();
+    if (GridManager)
+    {
+        for (FLFPHexCoordinates Coord : TargetTilesCoord)
+        {
+            ALFPHexTile* TargetTile = GridManager->GetTileAtCoordinates(Coord);
+            if(TargetTile)
+            {
+                TargetTile->SetRangeSprite(EUnitRange::UR_SkillEffect);
+            }
+        }
+    }
     //// 高亮可目标格子
     //if (GridManager)
     //{

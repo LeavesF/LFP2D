@@ -14,6 +14,7 @@
 class ULFPSkillBase;
 class ALFPTacticsUnit;
 class ULFPSkillButtonWidget;
+class ALFPTacticsPlayerController;
 /**
  * 
  */
@@ -43,7 +44,7 @@ public:
 
     // 初始化技能列表
     UFUNCTION(BlueprintCallable, Category = "Skill Selection")
-    void InitializeSkills(ALFPTacticsUnit* Unit);
+    void InitializeSkills(ALFPTacticsUnit* Unit, ALFPTacticsPlayerController* PC);
 
     // 显示技能选择窗口
     UFUNCTION(BlueprintCallable, Category = "Skill Selection")
@@ -205,6 +206,9 @@ protected:
     // 当前选中的技能
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill Attributes")
     ULFPSkillBase* SelectedSkill;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill Attributes")
+    ALFPTacticsPlayerController* TacticsPC;
 
     // 所属单位
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill Attributes")

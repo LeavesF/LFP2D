@@ -63,38 +63,38 @@ void ULFPSkillBase::OnTurnStart()
     }
 }
 
-void ULFPSkillBase::ShowReleaseRange(bool bShow)
-{
-    if (!ReleaseRangeTiles.IsEmpty())
-    {
-        for (ALFPHexTile* Tile : ReleaseRangeTiles)
-        {
-            if (bShow)
-            {
-                Tile->SetRangeSprite(EUnitRange::UR_Attack);
-            }
-            else
-            {
-                Tile->SetRangeSprite(EUnitRange::UR_Default);
-            }
-        }
-    }
-}
-
-void ULFPSkillBase::ShowEffectRange(bool bShow)
-{
-    if (!ReleaseRangeTiles.IsEmpty())
-    {
-        for (ALFPHexTile* Tile : ReleaseRangeTiles)
-        {
-            if (bShow)
-            {
-                Tile->SetRangeSprite(EUnitRange::UR_SkillEffect);
-            }
-            else
-            {
-                Tile->SetRangeSprite(EUnitRange::UR_Default);
-            }
-        }
-    }
-}
+//void ULFPSkillBase::ShowReleaseRange(bool bShow)
+//{
+//    if (!ReleaseRangeTiles.IsEmpty())
+//    {
+//        for (ALFPHexTile* Tile : ReleaseRangeTiles)
+//        {
+//            if (bShow)
+//            {
+//                Tile->SetRangeSprite(EUnitRange::UR_Attack);
+//            }
+//            else
+//            {
+//                Tile->SetRangeSprite(EUnitRange::UR_Default);
+//            }
+//        }
+//    }
+//}
+//
+//void ULFPSkillBase::ShowEffectRange(bool bShow)
+//{
+//    if (!ReleaseRangeTiles.IsEmpty())
+//    {
+//        for (ALFPHexTile* Tile : ReleaseRangeTiles)
+//        {
+//            if (bShow)
+//            {
+//                Tile->SetRangeSprite(EUnitRange::UR_SkillEffect);
+//            }
+//            else
+//            {
+//                Tile->SetRangeSprite(EUnitRange::UR_Default);
+//            }
+//        }
+//    }
+//}
