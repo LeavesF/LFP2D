@@ -183,12 +183,16 @@ protected:
 public:
     ALFPTurnManager* GetTurnManager() const;
 
+    UFUNCTION(BlueprintCallable, Category = "Skill")
     void HandleSkillSelection();
 
+    UFUNCTION(BlueprintCallable, Category = "Skill")
     void HideSkillSelection();
 
+    UFUNCTION(BlueprintCallable, Category = "Skill")
     void HandleSkillTargetSelection(ULFPSkillBase* Skill);
 
+    UFUNCTION(BlueprintCallable, Category = "Skill")
     void HandleTargetSelected(ALFPHexTile* TargetTile);
 
     // 回合事件

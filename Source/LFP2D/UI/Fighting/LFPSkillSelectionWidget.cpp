@@ -382,7 +382,7 @@ void ULFPSkillSelectionWidget::SetSkillFilter(const FGameplayTagContainer& Filte
     // 重新初始化技能列表
     if (OwnerUnit)
     {
-        InitializeSkills(OwnerUnit, this);
+        //InitializeSkills(OwnerUnit, this);
     }
 }
 
@@ -394,7 +394,7 @@ void ULFPSkillSelectionWidget::ClearSkillFilter()
     // 重新初始化技能列表
     if (OwnerUnit)
     {
-        InitializeSkills(OwnerUnit, this);
+        //InitializeSkills(OwnerUnit, this);
     }
 }
 

@@ -76,11 +76,11 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Skill")
     TArray<FLFPHexCoordinates> GetReleaseRange() { return ReleaseRangeCoords; }
 
-    UFUNCTION(BlueprintCallable, Category = "Skill")
+    /*UFUNCTION(BlueprintCallable, Category = "Skill")
     void ShowReleaseRange(bool bShow = true);
 
     UFUNCTION(BlueprintCallable, Category = "Skill")
-    void ShowEffectRange(bool bShow = true);
+    void ShowEffectRange(bool bShow = true);*/
 public:
     // »ù´¡ÊôÐÔ
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")

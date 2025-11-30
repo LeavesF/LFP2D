@@ -252,6 +252,10 @@ void ALFPTacticsPlayerController::OnConfirmAction(const FInputActionValue& Value
                 }
             }
         }
+        else if(bIsReleaseSkill)
+        {
+            bIsReleaseSkill = false;
+        }
         else
         {
             ConfirmMove();
@@ -273,6 +277,7 @@ void ALFPTacticsPlayerController::OnCancelAction(const FInputActionValue& Value)
         return;
     }
     bIsAttacking = false;
+    bIsReleaseSkill = false;
     ShowUnitRange(EUnitRange::UR_Move);
     // 取消当前选择
     if (SelectedTile)
@@ -674,9 +679,11 @@ void ALFPTacticsPlayerController::HandleSkillTargetSelection(ULFPSkillBase* Skil
     if (!SelectedUnit || !Skill) return;
 
     // 获取技能范围内的目标格子
+    Skill->UpdateSkillRange();
     TArray<FLFPHexCoordinates> TargetTilesCoord = Skill->GetReleaseRange();
     if (GridManager)
     {
+        bIsReleaseSkill = true;
         for (FLFPHexCoordinates Coord : TargetTilesCoord)
         {
             ALFPHexTile* TargetTile = GridManager->GetTileAtCoordinates(Coord);

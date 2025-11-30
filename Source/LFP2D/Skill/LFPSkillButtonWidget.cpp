@@ -25,11 +25,11 @@ void ULFPSkillButtonWidget::NativeConstruct()
     Super::NativeConstruct();
 
     // 确保组件已绑定
-    //if (SkillButton)
-    //{
-    //    // 绑定点击事件
-    //    SkillButton->OnClicked.AddDynamic(this, &ULFPSkillButtonWidget::OnButtonClicked);
-    //}
+    if (SkillButton)
+    {
+        // 绑定点击事件
+        SkillButton->OnClicked.AddDynamic(this, &ULFPSkillButtonWidget::OnButtonClicked);
+    }
 
     //// 初始隐藏选中边框和禁用遮罩
     //if (SelectionBorder)
@@ -118,7 +118,7 @@ void ULFPSkillButtonWidget::SetSelected(bool bSelected)
 
 void ULFPSkillButtonWidget::OnButtonClicked()
 {
-    if (!AssociatedSkill || OwnerUnit || !bIsEnabled) return;
+    if (!AssociatedSkill || !OwnerUnit || !bIsEnabled) return;
 
     //OwnerUnit->ExecuteSkill(AssociatedSkill);
     TacticsPC->HandleSkillTargetSelection(AssociatedSkill);
