@@ -121,7 +121,7 @@ void ULFPSkillButtonWidget::OnButtonClicked()
     if (!AssociatedSkill || !OwnerUnit || !bIsEnabled) return;
 
     //OwnerUnit->ExecuteSkill(AssociatedSkill);
-    TacticsPC->HandleSkillTargetSelection(AssociatedSkill);
+    TacticsPC->HandleSkillTargetSelecting(AssociatedSkill);
     //// ²¥·Åµã»÷ÒôĞ§
     //if (ClickSound)
     //{

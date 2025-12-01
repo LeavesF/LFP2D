@@ -4,6 +4,7 @@
 #include "LFP2D/HexGrid/LFPHexGridManager.h"
 #include "Engine/World.h"
 #include "Kismet/GameplayStatics.h"
+#include "LFP2D/Unit/LFPTacticsUnit.h"
 #include "DrawDebugHelpers.h"
 
 // 六边形方向向量 (平顶六边形布局)
@@ -522,6 +523,71 @@ bool ALFPHexGridManager::IsPointInHexagon(const FVector2D& Point, const FVector2
 
 	// 奇数次跨越表示点在内部
 	return (crossings % 2 == 1);
+}
+
+void ALFPHexGridManager::UpdateGridSpriteWithTiles(EPlayControlState CurrentControlState, TArray<ALFPHexTile*>& Tiles)
+{
+	ResetGridSprite();
+	switch (CurrentControlState)
+	{
+	case EPlayControlState::MoveState:
+		// 高亮显示这些格子
+		for (ALFPHexTile* Tile : Tiles)
+		{
+			Tile->SetRangeSprite(EUnitRange::UR_Move);
+		}
+		break;
+	case EPlayControlState::SkillReleaseState:
+		for (ALFPHexTile* Tile : Tiles)
+		{
+			Tile->SetRangeSprite(EUnitRange::UR_SkillEffect);
+		}
+		break;
+	default:
+		break;
+	}
+}
+
+void ALFPHexGridManager::UpdateGridSpriteWithCoords(EPlayControlState CurrentControlState, TArray<FLFPHexCoordinates>& Coords)
+{
+	ResetGridSprite();
+	switch (CurrentControlState)
+	{
+	case EPlayControlState::MoveState:
+		// 高亮显示这些格子
+		for (FLFPHexCoordinates Coord : Coords)
+		{
+			ALFPHexTile* Tile = GetTileAtCoordinates(Coord);
+			if (Tile)
+			{
+				Tile->SetRangeSprite(EUnitRange::UR_Move);
+			}
+		}
+		break;
+	case EPlayControlState::SkillReleaseState:
+		for (FLFPHexCoordinates Coord : Coords)
+		{
+			ALFPHexTile* Tile = GetTileAtCoordinates(Coord);
+			if (Tile)
+			{
+				Tile->SetRangeSprite(EUnitRange::UR_SkillEffect);
+			}
+		}
+		break;
+	default:
+		break;
+	}
+}
+
+void ALFPHexGridManager::ResetGridSprite()
+{
+	for (auto& TilePair : GridMap)
+	{
+		if (TilePair.Value)
+		{
+			TilePair.Value->SetRangeSprite(EUnitRange::UR_Default);
+		}
+	}
 }
 
 // 优化的六边形坐标四舍五入

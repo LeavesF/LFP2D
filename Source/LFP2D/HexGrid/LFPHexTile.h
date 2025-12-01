@@ -145,6 +145,14 @@ enum class EUnitRange : uint8
 	UR_SkillEffect    UMETA(DisplayName = "SkillEffect")
 };
 
+// ÓÎÍæ¿ØÖÆ×´Ì¬
+UENUM(BlueprintType)
+enum class EPlayControlState : uint8
+{
+	MoveState,
+	SkillReleaseState
+};
+
 UCLASS()
 class LFP2D_API ALFPHexTile : public AActor
 {

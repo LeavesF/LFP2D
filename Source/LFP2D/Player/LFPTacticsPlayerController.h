@@ -6,8 +6,6 @@
 #include "GameFramework/PlayerController.h"
 #include "LFP2D/HexGrid/LFPHexTile.h"
 #include "InputActionValue.h"
-//#include "LFP2D/HexGrid/LFPHexGridManager.h"
-//#include "LFP2D/Unit/LFPTacticsUnit.h"
 #include "LFPTacticsPlayerController.generated.h"
 
 class ALFPTacticsUnit;
@@ -184,16 +182,16 @@ public:
     ALFPTurnManager* GetTurnManager() const;
 
     UFUNCTION(BlueprintCallable, Category = "Skill")
-    void HandleSkillSelection();
-
-    UFUNCTION(BlueprintCallable, Category = "Skill")
     void HideSkillSelection();
 
     UFUNCTION(BlueprintCallable, Category = "Skill")
-    void HandleSkillTargetSelection(ULFPSkillBase* Skill);
+    void HandleSkillSelection();
 
     UFUNCTION(BlueprintCallable, Category = "Skill")
-    void HandleTargetSelected(ALFPHexTile* TargetTile);
+    void HandleSkillTargetSelecting(ULFPSkillBase* Skill);
+
+    UFUNCTION(BlueprintCallable, Category = "Skill")
+    void HandleSkillTargetSelected(ALFPHexTile* TargetTile);
 
     // 回合事件
     UFUNCTION(BlueprintImplementableEvent, Category = "Turn Events")
@@ -233,8 +231,15 @@ protected:
 
     TObjectPtr<ULFPSkillSelectionWidget> SkillSelectionWidget;
 
-protected:
+public:
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
     TObjectPtr<ULFPSkillBase> CurrentSelectedSkill;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
+    EPlayControlState LastControlState;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
+    EPlayControlState CurrentControlState;
 
 /////////// Skill part  ////////////
 public:

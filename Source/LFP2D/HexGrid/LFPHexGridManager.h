@@ -7,6 +7,7 @@
 #include "LFP2D/HexGrid/LFPHexTile.h"
 #include "LFPHexGridManager.generated.h"
 
+
 UCLASS()
 class LFP2D_API ALFPHexGridManager : public AActor
 {
@@ -141,4 +142,15 @@ protected:
     // º∆À„¡˘±ﬂ–Œ±ﬂΩÁ
     UFUNCTION(BlueprintPure, Category = "Hex Grid")
     bool IsPointInHexagon(const FVector2D& Point, const FVector2D& Center, float InHexSize);
+
+
+public:
+    UFUNCTION(BlueprintCallable, Category = "Hex Grid")
+    void UpdateGridSpriteWithTiles(EPlayControlState CurrentControlState, TArray<ALFPHexTile*>& Tiles);
+
+    UFUNCTION(BlueprintCallable, Category = "Hex Grid")
+    void UpdateGridSpriteWithCoords(EPlayControlState CurrentControlState, TArray<FLFPHexCoordinates>& Coords);
+
+    UFUNCTION(BlueprintCallable, Category = "Hex Grid")
+    void ResetGridSprite();
 };

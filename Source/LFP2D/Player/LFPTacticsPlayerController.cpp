@@ -27,6 +27,8 @@ ALFPTacticsPlayerController::ALFPTacticsPlayerController()
     bDebugEnabled = false;
     CameraOffset = FVector::ZeroVector;
     bIsDragging = false;
+    CurrentControlState = EPlayControlState::MoveState;
+    LastControlState = CurrentControlState;
 }
 
 void ALFPTacticsPlayerController::BeginPlay()
@@ -157,6 +159,20 @@ void ALFPTacticsPlayerController::Tick(float DeltaTime)
             }
         }
     }
+
+    // 更新地图格子高亮
+    if (LastControlState != CurrentControlState)
+    {
+        switch (CurrentControlState)
+        {
+        case EPlayControlState::MoveState:
+            break;
+        case EPlayControlState::SkillReleaseState:
+            break;
+        default:
+            break;
+        }
+    }
 }
 
 // 选择开始
@@ -215,6 +231,7 @@ void ALFPTacticsPlayerController::OnAttackStarted(const FInputActionValue& Value
     if (SelectedUnit)
     {
         bIsAttacking = true;
+        CurrentControlState = EPlayControlState::SkillReleaseState;
         ShowUnitRange(EUnitRange::UR_Attack);
     }
 }
@@ -255,6 +272,7 @@ void ALFPTacticsPlayerController::OnConfirmAction(const FInputActionValue& Value
         else if(bIsReleaseSkill)
         {
             bIsReleaseSkill = false;
+            CurrentControlState = EPlayControlState::MoveState;
         }
         else
         {
@@ -278,11 +296,12 @@ void ALFPTacticsPlayerController::OnCancelAction(const FInputActionValue& Value)
     }
     bIsAttacking = false;
     bIsReleaseSkill = false;
+    CurrentControlState = EPlayControlState::MoveState;
     ShowUnitRange(EUnitRange::UR_Move);
     // 取消当前选择
     if (SelectedTile)
     {
-        HidePathToDefault();
+        //HidePathToDefault();
         //SelectedTile = nullptr;
     }
     else if (SelectedUnit)
@@ -404,12 +423,9 @@ void ALFPTacticsPlayerController::SelectTile(ALFPHexTile* Tile)
 {
     if (!SelectedUnit || !GridManager) return;
 
-    if (bIsAttacking || bIsReleaseSkill)
+    switch (CurrentControlState)
     {
-        SelectedTile = Tile;
-    }
-    else
-    {
+    case EPlayControlState::MoveState:
         // 检查是否在可移动范围内
         if (MovementRangeTiles.Contains(Tile))
         {
@@ -422,6 +438,12 @@ void ALFPTacticsPlayerController::SelectTile(ALFPHexTile* Tile)
             // 先隐藏之前可能显示的路径
             HidePathToRange();
         }
+        break;
+    case EPlayControlState::SkillReleaseState:
+        SelectedTile = Tile;
+        break;
+    default:
+        break;
     }
 }
 
@@ -453,10 +475,11 @@ void ALFPTacticsPlayerController::ShowUnitRange(EUnitRange UnitRange)
 {
     if (!SelectedUnit || !GridManager) return;
 
-    for (ALFPHexTile* Tile : CacheRangeTiles)
+    GridManager->ResetGridSprite();
+    /*for (ALFPHexTile* Tile : CacheRangeTiles)
     {
         Tile->SetRangeSprite(EUnitRange::UR_Default);
-    }
+    }*/
     CacheRangeTiles.Empty();
     MovementRangeTiles.Empty();
 
@@ -472,10 +495,7 @@ void ALFPTacticsPlayerController::ShowUnitRange(EUnitRange UnitRange)
 		{
 			CacheRangeTiles= MovementRangeTiles = GridManager->GetTilesInRange(UnitTile, SelectedUnit->GetMovementRange());
 			// 高亮显示这些格子
-			for (ALFPHexTile* Tile : CacheRangeTiles)
-			{
-				Tile->SetRangeSprite(EUnitRange::UR_Move);
-			}
+            GridManager->UpdateGridSpriteWithTiles(CurrentControlState, MovementRangeTiles);
 		}
         break;
 	}
@@ -568,6 +588,7 @@ bool ALFPTacticsPlayerController::AttackTarget(ALFPTacticsUnit* Attacker, ALFPTa
     const int32 AttackCost = 1;
 
     bIsAttacking = false;
+    CurrentControlState = EPlayControlState::MoveState;
 
     if (!Attacker->HasEnoughActionPoints(AttackCost))
     {
@@ -610,6 +631,7 @@ void ALFPTacticsPlayerController::SkipTurn(ALFPTacticsUnit* Unit)
     // 可选：消耗1点行动点作为跳过代价
     // Unit->ConsumeMovePoints(1);
     bIsAttacking = false;
+    CurrentControlState = EPlayControlState::MoveState;
     // 通知回合管理器单位完成行动
     if (ALFPTurnManager* TurnManager = GetTurnManager())
     {
@@ -674,7 +696,7 @@ void ALFPTacticsPlayerController::HideSkillSelection()
     }
 }
 
-void ALFPTacticsPlayerController::HandleSkillTargetSelection(ULFPSkillBase* Skill)
+void ALFPTacticsPlayerController::HandleSkillTargetSelecting(ULFPSkillBase* Skill)
 {
     if (!SelectedUnit || !Skill) return;
 
@@ -684,14 +706,8 @@ void ALFPTacticsPlayerController::HandleSkillTargetSelection(ULFPSkillBase* Skil
     if (GridManager)
     {
         bIsReleaseSkill = true;
-        for (FLFPHexCoordinates Coord : TargetTilesCoord)
-        {
-            ALFPHexTile* TargetTile = GridManager->GetTileAtCoordinates(Coord);
-            if(TargetTile)
-            {
-                TargetTile->SetRangeSprite(EUnitRange::UR_SkillEffect);
-            }
-        }
+        CurrentControlState = EPlayControlState::SkillReleaseState;
+        GridManager->UpdateGridSpriteWithCoords(CurrentControlState, TargetTilesCoord);
     }
     //// 高亮可目标格子
     //if (GridManager)
@@ -704,7 +720,7 @@ void ALFPTacticsPlayerController::HandleSkillTargetSelection(ULFPSkillBase* Skil
     CurrentSelectedSkill = Skill;
 }
 
-void ALFPTacticsPlayerController::HandleTargetSelected(ALFPHexTile* TargetTile)
+void ALFPTacticsPlayerController::HandleSkillTargetSelected(ALFPHexTile* TargetTile)
 {
     if (!SelectedUnit || !CurrentSelectedSkill || !TargetTile) return;
 
