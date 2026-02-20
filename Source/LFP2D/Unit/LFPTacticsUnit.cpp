@@ -3,6 +3,7 @@
 
 #include "LFP2D/Unit/LFPTacticsUnit.h"
 #include "LFP2D/AI/LFPAIController.h"
+#include "LFP2D/Player/LFPTacticsPlayerController.h"
 #include "LFP2D/Skill/LFPSkillBase.h"
 #include "LFP2D/Skill/LFPSkillComponent.h"
 #include "LFP2D/Unit/Betrayal/LFPBetrayalCondition.h"
@@ -119,15 +120,20 @@ void ALFPTacticsUnit::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void ALFPTacticsUnit::SetCurrentCoordinates(const FLFPHexCoordinates& NewCoords)
 {
-    CurrentCoordinates = NewCoords;
-
     // 更新位置
     if (ALFPHexGridManager* GridManager = GetGridManager())
     {
+        if (ALFPHexTile* LastTile = GridManager->GetTileAtCoordinates(CurrentCoordinates))
+        {
+            LastTile->SetIsOccupied(false);
+            LastTile->SetUnitOnTile(nullptr);
+        }
         if (ALFPHexTile* Tile = GridManager->GetTileAtCoordinates(NewCoords))
         {
             SetActorLocation(Tile->GetActorLocation() + FVector(0, 0, 1));
             Tile->SetIsOccupied(true);
+            Tile->SetUnitOnTile(this);
+            CurrentCoordinates = NewCoords;
         }
     }
 }
@@ -546,6 +552,21 @@ void ALFPTacticsUnit::ChangeAffiliation(EUnitAffiliation NewAffiliation)
 {
 	Affiliation = NewAffiliation;
 
+    if (NewAffiliation == EUnitAffiliation::UA_Player)
+    {
+        if (AIController)
+        {
+            AIController->UnPossess();
+            AIController->Destroy();
+            /*for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+            {
+                if (ALFPTacticsPlayerController* PC = Cast<ALFPTacticsPlayerController>(*It))
+                {
+                    PC->Possess(this);
+                }
+            }*/
+        }
+    }
 	// 触发事件
     //OnAffiliationChanged.Broadcast(OldAffiliation, NewAffiliation);
 }
