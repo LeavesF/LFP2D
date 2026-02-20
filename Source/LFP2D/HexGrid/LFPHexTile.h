@@ -182,9 +182,13 @@ public:
 	void SetIsWalkable(bool bInIsWalkable) { bIsWalkable = bInIsWalkable; }
 	void SetIsOccupied(bool bInIsOccupied) { bIsOccupied = bInIsOccupied; }
 
+	UFUNCTION(BlueprintCallable, Category = "Hex Tile")
 	ALFPTacticsUnit* GetUnitOnTile() { return CurrentUnit; }
+
+	UFUNCTION(BlueprintCallable, Category = "Hex Tile")
 	void SetUnitOnTile(ALFPTacticsUnit* Unit) { CurrentUnit = Unit; }
 	// 设置格子状态
+
 	void SetState(bool bWalkable, bool bOccupied);
 
 	// 设置格子状态

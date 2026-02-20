@@ -269,10 +269,13 @@ void ALFPTacticsPlayerController::OnConfirmAction(const FInputActionValue& Value
                 }
             }
         }
-        else if(bIsReleaseSkill)
+        else if (bIsReleaseSkill && CurrentSelectedSkill)
         {
             bIsReleaseSkill = false;
+            CurrentSelectedSkill->Execute(SelectedUnit, SelectedTile);
             CurrentControlState = EPlayControlState::MoveState;
+            ShowUnitRange(EUnitRange::UR_Move);
+            SkipTurn(SelectedUnit);
         }
         else
         {
