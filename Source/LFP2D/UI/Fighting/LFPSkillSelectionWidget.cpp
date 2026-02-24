@@ -215,7 +215,7 @@ void ULFPSkillSelectionWidget::UpdateConfirmButtonState()
     if (!OwnerUnit || !SelectedSkill) return;
 
     // 检查技能是否可用
-    bool bCanExecute = SelectedSkill->CanExecute(OwnerUnit);
+    bool bCanExecute = SelectedSkill->CanExecute();
 
     //// 更新确认按钮状态
     //ConfirmButton->SetIsEnabled(bCanExecute);
@@ -256,7 +256,7 @@ void ULFPSkillSelectionWidget::OnConfirmClicked()
     if (!SelectedSkill || !OwnerUnit) return;
 
     // 检查技能是否可用
-    if (!SelectedSkill->CanExecute(OwnerUnit))
+    if (!SelectedSkill->CanExecute())
     {
         // 播放错误音效或提示
         return;

@@ -190,8 +190,8 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Skill")
     void HandleSkillTargetSelecting(ULFPSkillBase* Skill);
 
-    UFUNCTION(BlueprintCallable, Category = "Skill")
-    void HandleSkillTargetSelected(ALFPHexTile* TargetTile);
+    /*UFUNCTION(BlueprintCallable, Category = "Skill")
+    void HandleSkillTargetSelected(ALFPHexTile* TargetTile);*/
 
     // 回合事件
     UFUNCTION(BlueprintImplementableEvent, Category = "Turn Events")

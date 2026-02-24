@@ -14,15 +14,15 @@ ULFPSkillBase::ULFPSkillBase()
     bIsDefaultAttack = false;
 }
 
-bool ULFPSkillBase::CanExecute(ALFPTacticsUnit* Caster) const
+bool ULFPSkillBase::CanExecute_Implementation(ALFPHexTile* TargetTile)
 {
-    if (!Caster) return false;
+    if (!Owner) return false;
 
     // 检查冷却
-    if (CurrentCooldown > 0) return false;
+    //if (CurrentCooldown > 0) return false;
 
     // 检查行动点
-    if (!Caster->HasEnoughMovePoints(ActionPointCost)) return false;
+    if (!Owner->HasEnoughActionPoints(ActionPointCost)) return false;
 
     return true;
 }

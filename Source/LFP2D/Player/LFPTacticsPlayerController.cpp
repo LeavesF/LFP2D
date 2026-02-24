@@ -244,7 +244,7 @@ void ALFPTacticsPlayerController::OnConfirmAction(const FInputActionValue& Value
         DragTime = 0.f;
         return;
     }
-	DragTime = 0.f;
+    DragTime = 0.f;
 
     if (SelectedUnit && SelectedTile)
     {
@@ -271,11 +271,7 @@ void ALFPTacticsPlayerController::OnConfirmAction(const FInputActionValue& Value
         }
         else if (bIsReleaseSkill && CurrentSelectedSkill)
         {
-            bIsReleaseSkill = false;
-            CurrentSelectedSkill->Execute(SelectedUnit, SelectedTile);
-            CurrentControlState = EPlayControlState::MoveState;
-            ShowUnitRange(EUnitRange::UR_Move);
-            SkipTurn(SelectedUnit);
+            ExecuteSkill(CurrentSelectedSkill);
         }
         else
         {
@@ -291,12 +287,14 @@ void ALFPTacticsPlayerController::OnConfirmAction(const FInputActionValue& Value
 
 void ALFPTacticsPlayerController::OnCancelAction(const FInputActionValue& Value)
 {
-    if (bIsDragging)
+    bIsDragging = false;
+    if (DragTime > DragThresholdTime)
     {
-		bIsDragging = false;
-		DragTime = 0.f;
+        DragTime = 0.f;
         return;
     }
+    DragTime = 0.f;
+
     bIsAttacking = false;
     bIsReleaseSkill = false;
     CurrentControlState = EPlayControlState::MoveState;
@@ -644,7 +642,22 @@ void ALFPTacticsPlayerController::SkipTurn(ALFPTacticsUnit* Unit)
 
 void ALFPTacticsPlayerController::ExecuteSkill(ULFPSkillBase* CurrentSkill)
 {
-    CurrentSkill->Execute(SelectedUnit, SelectedTile);
+    if (SelectedUnit && SelectedTile && CurrentSkill)
+    {
+        if (CurrentSkill->CanExecute(SelectedTile))
+        {
+            bIsReleaseSkill = false;
+            CurrentSkill->Execute(SelectedTile);
+            SelectedUnit->ConsumeActionPoints(CurrentSkill->ActionPointCost);
+            CurrentControlState = EPlayControlState::MoveState;
+            ShowUnitRange(EUnitRange::UR_Move);
+            SkipTurn(SelectedUnit);
+        }
+        else
+        {
+            UE_LOG(LogTemp, Log, TEXT("Skill:%s can not release!"), *CurrentSkill->SkillName.ToString());
+        }
+    }
 }
 
 ALFPTurnManager* ALFPTacticsPlayerController::GetTurnManager() const
@@ -723,21 +736,21 @@ void ALFPTacticsPlayerController::HandleSkillTargetSelecting(ULFPSkillBase* Skil
     CurrentSelectedSkill = Skill;
 }
 
-void ALFPTacticsPlayerController::HandleSkillTargetSelected(ALFPHexTile* TargetTile)
-{
-    if (!SelectedUnit || !CurrentSelectedSkill || !TargetTile) return;
-
-    // 执行技能
-    if (SelectedUnit->ExecuteSkill(CurrentSelectedSkill, TargetTile))
-    {
-        //// 技能执行成功
-        //if (GridManager)
-        //{
-        //    GridManager->ClearHighlights();
-        //}
-
-        // 返回正常选择模式
-        //CurrentSelectionMode = ESelectionMode::UnitSelection;
-        CurrentSelectedSkill = nullptr;
-    }
-}
+//void ALFPTacticsPlayerController::HandleSkillTargetSelected(ALFPHexTile* TargetTile)
+//{
+//    if (!SelectedUnit || !CurrentSelectedSkill || !TargetTile) return;
+//
+//    // 执行技能
+//    if (SelectedUnit->ExecuteSkill(CurrentSelectedSkill, TargetTile))
+//    {
+//        //// 技能执行成功
+//        //if (GridManager)
+//        //{
+//        //    GridManager->ClearHighlights();
+//        //}
+//
+//        // 返回正常选择模式
+//        //CurrentSelectionMode = ESelectionMode::UnitSelection;
+//        CurrentSelectedSkill = nullptr;
+//    }
+//}

@@ -89,7 +89,7 @@ TArray<ULFPSkillBase*> ULFPSkillComponent::GetAvailableSkills() const
 
     for (ULFPSkillBase* Skill : Skills)
     {
-        if (Skill && Skill->CanExecute(OwnerUnit))
+        if (Skill)
         {
             AvailableSkills.Add(Skill);
         }
@@ -104,10 +104,10 @@ bool ULFPSkillComponent::ExecuteSkill(ULFPSkillBase* Skill, ALFPHexTile* TargetT
     if (!OwnerUnit || !Skill) return false;
 
     // 检查技能是否可用
-    if (!Skill->CanExecute(OwnerUnit)) return false;
+    if (!Skill->CanExecute()) return false;
 
     // 执行技能
-    Skill->Execute(OwnerUnit, TargetTile);
+    Skill->Execute(TargetTile);
 
     // 触发事件
     OnSkillExecuted.Broadcast(OwnerUnit, TargetTile);

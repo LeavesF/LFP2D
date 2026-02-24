@@ -52,11 +52,11 @@ public:
 
     // 技能执行
     UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Skill")
-    void Execute(ALFPTacticsUnit* Caster, ALFPHexTile* TargetTile = nullptr);
+    void Execute(ALFPHexTile* TargetTile = nullptr);
 
     // 检查技能是否可用
-    UFUNCTION(BlueprintCallable, Category = "Skill")
-    bool CanExecute(ALFPTacticsUnit* Caster) const;
+    UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Skill")
+    bool CanExecute(ALFPHexTile* TargetTile = nullptr);
 
     // 获取技能冷却状态
     UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Skill")
