@@ -6,6 +6,7 @@
 #include "LFP2D/Unit/LFPTacticsUnit.h"
 #include "LFP2D/HexGrid/LFPHexGridManager.h"
 #include "LFP2D/HexGrid/LFPHexTile.h"
+#include "LFP2D/Skill/LFPSkillBase.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "Kismet/GameplayStatics.h"
@@ -24,13 +25,13 @@ void ALFPAIController::OnPossess(APawn* InPawn)
     ControlledUnit = Cast<ALFPTacticsUnit>(InPawn);
     if (ControlledUnit)
     {
-        // ³õÊ¼»¯ºÚ°å
+        // ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½Ú°ï¿½
         if (BehaviorTree && BlackboardComponent)
         {
             BlackboardComponent->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
         }
 
-        // »ñÈ¡Íø¸ñ¹ÜÀíÆ÷
+        // ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         TArray<AActor*> GridManagers;
         UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALFPHexGridManager::StaticClass(), GridManagers);
         if (GridManagers.Num() > 0)
@@ -38,11 +39,11 @@ void ALFPAIController::OnPossess(APawn* InPawn)
             GridManager = Cast<ALFPHexGridManager>(GridManagers[0]);
         }
 
-        // °ó¶¨»ØºÏÊÂ¼þ
+        // ï¿½ó¶¨»Øºï¿½ï¿½Â¼ï¿½
         /*ControlledUnit->OnTurnStarted.AddDynamic(this, &ALFPAIController::StartUnitTurn);
         ControlledUnit->OnTurnEnded.AddDynamic(this, &ALFPAIController::EndUnitTurn);*/
 
-        // ÔËÐÐÐÐÎªÊ÷
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½
         RunBehaviorTree(BehaviorTree);
     }
 }
@@ -62,28 +63,28 @@ void ALFPAIController::StartUnitTurn()
 {
     if (!ControlledUnit || !BlackboardComponent) return;
 
-    // ÖØÖÃºÚ°åÖµ
+    // ï¿½ï¿½ï¿½ÃºÚ°ï¿½Öµ
     BlackboardComponent->SetValueAsObject("TargetUnit", nullptr);
     BlackboardComponent->SetValueAsObject("TargetTile", nullptr);
     BlackboardComponent->SetValueAsBool("IsInAttackRange", false);
     BlackboardComponent->SetValueAsBool("CanAttack", false);
     BlackboardComponent->SetValueAsBool("ShouldEndTurn", false);
 
-    // Ñ°ÕÒ³õÊ¼Ä¿±ê
+    // Ñ°ï¿½Ò³ï¿½Ê¼Ä¿ï¿½ï¿½
     ALFPTacticsUnit* BestTarget = FindBestTarget();
     BlackboardComponent->SetValueAsObject("TargetUnit", BestTarget);
 }
 
 void ALFPAIController::EndUnitTurn()
 {
-    // ÐÐÎªÊ÷»á×Ô¶¯´¦Àí½áÊøÂß¼­
+    // ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß¼ï¿½
 }
 
 ALFPTacticsUnit* ALFPAIController::FindBestTarget() const
 {
     if (!ControlledUnit || !GridManager) return nullptr;
 
-    // »ñÈ¡ËùÓÐÍæ¼Òµ¥Î»
+    // ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òµï¿½Î»
     TArray<AActor*> PlayerUnits;
     UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALFPTacticsUnit::StaticClass(), PlayerUnits);
 
@@ -107,11 +108,38 @@ ALFPTacticsUnit* ALFPAIController::FindBestTarget() const
     return BestTarget;
 }
 
+ALFPTacticsUnit* ALFPAIController::FindBestSkillTarget(ULFPSkillBase* Skill) const
+{
+    if (!ControlledUnit || !Skill) return nullptr;
+
+    TArray<AActor*> AllUnits;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALFPTacticsUnit::StaticClass(), AllUnits);
+
+    ALFPTacticsUnit* BestTarget = nullptr;
+    float BestHatred = -MAX_FLT;
+
+    for (AActor* Actor : AllUnits)
+    {
+        ALFPTacticsUnit* Unit = Cast<ALFPTacticsUnit>(Actor);
+        if (Unit && Unit->IsAlive() && Unit->IsAlly())
+        {
+            float Hatred = Skill->CalculateHatredValue(ControlledUnit, Unit);
+            if (Hatred > BestHatred)
+            {
+                BestHatred = Hatred;
+                BestTarget = Unit;
+            }
+        }
+    }
+
+    return BestTarget;
+}
+
 ALFPHexTile* ALFPAIController::FindBestMovementTile(ALFPTacticsUnit* Target) const
 {
     if (!ControlledUnit || !Target || !GridManager) return nullptr;
 
-    // »ñÈ¡ËùÓÐ¿ÉÒÆ¶¯Î»ÖÃ
+    // ï¿½ï¿½È¡ï¿½ï¿½ï¿½Ð¿ï¿½ï¿½Æ¶ï¿½Î»ï¿½ï¿½
     TArray<ALFPHexTile*> MovementRange = GridManager->GetTilesInRange(ControlledUnit->GetCurrentTile(), ControlledUnit->GetCurrentMovePoints());
 
     ALFPHexTile* BestTile = nullptr;
@@ -119,7 +147,7 @@ ALFPHexTile* ALFPAIController::FindBestMovementTile(ALFPTacticsUnit* Target) con
 
     for (ALFPHexTile* Tile : MovementRange)
     {
-        // Ìø¹ýÒÑÓÐµ¥Î»µÄ¸ñ×Ó
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ðµï¿½Î»ï¿½Ä¸ï¿½ï¿½ï¿½
         if (Tile->GetUnitOnTile()) continue;
 
         float PositionValue = CalculatePositionValue(Tile, Target);
@@ -137,27 +165,27 @@ float ALFPAIController::CalculateThreatValue(ALFPTacticsUnit* Target) const
 {
     if (!ControlledUnit || !Target) return 0.0f;
 
-    // »ù´¡ÍþÐ²Öµ = Ä¿±ê¹¥»÷Á¦ * (1 - Ä¿±êµ±Ç°ÑªÁ¿/×î´óÑªÁ¿)
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð²Öµ = Ä¿ï¿½ê¹¥ï¿½ï¿½ï¿½ï¿½ * (1 - Ä¿ï¿½êµ±Ç°Ñªï¿½ï¿½/ï¿½ï¿½ï¿½Ñªï¿½ï¿½)
     float ThreatValue = Target->GetAttackPower() * (1.0f - (float)Target->GetCurrentHealth() / Target->GetMaxHealth());
 
-    // ¾àÀëÒò×Ó (Ô½½üÍþÐ²Ô½´ó)
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (Ô½ï¿½ï¿½ï¿½ï¿½Ð²Ô½ï¿½ï¿½)
     int32 Distance = FLFPHexCoordinates::Distance(
         ControlledUnit->GetCurrentCoordinates(),
         Target->GetCurrentCoordinates()
     );
     float DistanceFactor = 1.0f / FMath::Max(Distance, 1);
 
-    // Ó¦ÓÃÐÐÎªÊý¾Ý
+    // Ó¦ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½
     if (BehaviorData)
     {
         if (BehaviorData->bPrioritizeWeakTargets)
         {
-            // Ôö¼Ó¶ÔµÍÑªÁ¿Ä¿±êµÄÈ¨ÖØ
+            // ï¿½ï¿½ï¿½Ó¶Ôµï¿½Ñªï¿½ï¿½Ä¿ï¿½ï¿½ï¿½È¨ï¿½ï¿½
             float HealthRatio = (float)Target->GetCurrentHealth() / Target->GetMaxHealth();
-            ThreatValue *= (2.0f - HealthRatio); // ÑªÁ¿Ô½µÍ£¬ÍþÐ²ÖµÔ½¸ß
+            ThreatValue *= (2.0f - HealthRatio); // Ñªï¿½ï¿½Ô½ï¿½Í£ï¿½ï¿½ï¿½Ð²ÖµÔ½ï¿½ï¿½
         }
 
-        // Ó¦ÓÃ¹¥»÷ÇãÏò
+        // Ó¦ï¿½Ã¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         ThreatValue *= BehaviorData->Aggressiveness;
     }
 
@@ -170,20 +198,20 @@ float ALFPAIController::CalculatePositionValue(ALFPHexTile* Tile, ALFPTacticsUni
 
     float PositionValue = 0.0f;
 
-    // 1. ¾àÀëÄ¿±êÔ½½üÔ½ºÃ
+    // 1. ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½Ô½ï¿½ï¿½Ô½ï¿½ï¿½
     int32 DistanceToTarget = FLFPHexCoordinates::Distance(
         Tile->GetCoordinates(),
         Target->GetCurrentCoordinates()
     );
     PositionValue += 10.0f / FMath::Max(DistanceToTarget, 1);
 
-    // 2. Èç¹ûÔÚ¹¥»÷·¶Î§ÄÚ¶îÍâ¼Ó·Ö
+    // 2. ï¿½ï¿½ï¿½ï¿½Ú¹ï¿½ï¿½ï¿½ï¿½ï¿½Î§ï¿½Ú¶ï¿½ï¿½ï¿½Ó·ï¿½
     if (DistanceToTarget <= ControlledUnit->GetAttackRange())
     {
         PositionValue += 20.0f;
     }
 
-    // 3. ¿¿½üÆäËûµÐÈËµ¥Î»£¨ÍÅ¶ÓÐ­×÷£©
+    // 3. ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ëµï¿½Î»ï¿½ï¿½ï¿½Å¶ï¿½Ð­ï¿½ï¿½ï¿½ï¿½
     TArray<AActor*> EnemyUnits;
     UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALFPTacticsUnit::StaticClass(), EnemyUnits);
 
@@ -204,13 +232,13 @@ float ALFPAIController::CalculatePositionValue(ALFPHexTile* Tile, ALFPTacticsUni
         }
     }
 
-    //// 4. ±ÜÃâÎ£ÏÕÎ»ÖÃ£¨Èç»ðÑæ¡¢¶¾ÎíµÈ£©
+    //// 4. ï¿½ï¿½ï¿½ï¿½Î£ï¿½ï¿½Î»ï¿½Ã£ï¿½ï¿½ï¿½ï¿½ï¿½æ¡¢ï¿½ï¿½ï¿½ï¿½ï¿½È£ï¿½
     //if (Tile->IsDangerous())
     //{
     //    PositionValue -= 30.0f;
     //}
 
-    //// 5. ¸ßµØÓÅÊÆ
+    //// 5. ï¿½ßµï¿½ï¿½ï¿½ï¿½ï¿½
     //if (Tile->IsHighGround())
     //{
     //    PositionValue += 15.0f;

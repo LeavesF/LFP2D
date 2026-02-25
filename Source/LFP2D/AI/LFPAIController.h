@@ -6,6 +6,7 @@
 #include "AIController.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "LFP2D/Skill/LFPSkillBase.h"
 #include "LFPAIController.generated.h"
 
 class ALFPTacticsUnit;
@@ -26,42 +27,46 @@ public:
     virtual void OnPossess(APawn* InPawn) override;
     virtual void OnUnPossess() override;
 
-    // ¿ªÊ¼µ¥Î»»ØºÏ
+    // ï¿½ï¿½Ê¼ï¿½ï¿½Î»ï¿½Øºï¿½
     UFUNCTION()
     void StartUnitTurn();
 
-    // ½áÊøµ¥Î»»ØºÏ
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½Øºï¿½
     UFUNCTION()
     void EndUnitTurn();
 
-    // »ñÈ¡ĞĞÎªÊ÷
+    // ï¿½ï¿½È¡ï¿½ï¿½Îªï¿½ï¿½
     UBehaviorTree* GetBehaviorTree() const { return BehaviorTree; }
 
-    // »ñÈ¡Íø¸ñ¹ÜÀíÆ÷
+    // ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     ALFPHexGridManager* GetGridManager() const { return GridManager; }
 
-    // Ñ°ÕÒ×î¼ÑÄ¿±ê
+    // Ñ°ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½
     UFUNCTION(BlueprintCallable, Category = "AI")
     ALFPTacticsUnit* FindBestTarget() const;
 
-    // Ñ°ÕÒ×î¼ÑÒÆ¶¯Î»ÖÃ
+    // æ ¹æ®æŠ€èƒ½çš„ä»‡æ¨å€¼å…¬å¼ï¼Œä»æ‰€æœ‰ç©å®¶å•ä½ä¸­æ‰¾åˆ°æœ€ä¼˜æ”»å‡»ç›®æ ‡
+    UFUNCTION(BlueprintCallable, Category = "AI")
+    ALFPTacticsUnit* FindBestSkillTarget(ULFPSkillBase* Skill) const;
+
+    // Ñ°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¶ï¿½Î»ï¿½ï¿½
     UFUNCTION(BlueprintCallable, Category = "AI")
     ALFPHexTile* FindBestMovementTile(ALFPTacticsUnit* Target) const;
 
-    // ¼ÆËãÍşĞ²Öµ
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğ²Öµ
     UFUNCTION(BlueprintCallable, Category = "AI")
     float CalculateThreatValue(ALFPTacticsUnit* Target) const;
 
-    // ¼ÆËãÎ»ÖÃ¼ÛÖµ
+    // ï¿½ï¿½ï¿½ï¿½Î»ï¿½Ã¼ï¿½Öµ
     UFUNCTION(BlueprintCallable, Category = "AI")
     float CalculatePositionValue(ALFPHexTile* Tile, ALFPTacticsUnit* Target) const;
 
 protected:
-    // ĞĞÎªÊ÷×Ê²ú
+    // ï¿½ï¿½Îªï¿½ï¿½ï¿½Ê²ï¿½
     UPROPERTY(EditDefaultsOnly, Category = "AI")
     UBehaviorTree* BehaviorTree;
 
-    // ºÚ°å×é¼ş
+    // ï¿½Ú°ï¿½ï¿½ï¿½ï¿½
     UPROPERTY(BlueprintReadOnly, Category = "AI")
     UBlackboardComponent* BlackboardComponent;
 
@@ -71,15 +76,15 @@ public:
     void SetControlledUnit(ALFPTacticsUnit* NewUnit);
 
 protected:
-    // µ±Ç°¿ØÖÆµÄµ¥Î»
+    // ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ÆµÄµï¿½Î»
     UPROPERTY()
     ALFPTacticsUnit* ControlledUnit;
 
-    // Íø¸ñ¹ÜÀíÆ÷
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     UPROPERTY()
     ALFPHexGridManager* GridManager;
 
-    // AI ĞĞÎªÊı¾İ
+    // AI ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
     ULFPEnemyBehaviorData* BehaviorData;
 };

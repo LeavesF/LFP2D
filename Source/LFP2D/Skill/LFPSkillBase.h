@@ -16,13 +16,13 @@ struct FLFPHexCoordinates;
 UENUM(BlueprintType)
 enum class ESkillTargetType : uint8
 {
-    Self,           // ¶Ô×Ô¼ºÊ©·Å
-    SingleAlly,     // µ¥¸öÓÑ·½
-    SingleEnemy,    // µ¥¸öµĞ·½
-    AreaAlly,       // ÇøÓòÓÑ·½
-    AreaEnemy,      // ÇøÓòµĞ·½
-    AreaAll,        // ÇøÓòËùÓĞµ¥Î»
-    Tile            // ÌØ¶¨¸ñ×Ó
+    Self,           // ï¿½ï¿½ï¿½Ô¼ï¿½Ê©ï¿½ï¿½
+    SingleAlly,     // ï¿½ï¿½ï¿½ï¿½ï¿½Ñ·ï¿½
+    SingleEnemy,    // ï¿½ï¿½ï¿½ï¿½ï¿½Ğ·ï¿½
+    AreaAlly,       // ï¿½ï¿½ï¿½ï¿½ï¿½Ñ·ï¿½
+    AreaEnemy,      // ï¿½ï¿½ï¿½ï¿½Ğ·ï¿½
+    AreaAll,        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğµï¿½Î»
+    Tile            // ï¿½Ø¶ï¿½ï¿½ï¿½ï¿½ï¿½
 };
 
 USTRUCT(BlueprintType)
@@ -50,23 +50,23 @@ class LFP2D_API ULFPSkillBase : public UObject
 public:
     ULFPSkillBase();
 
-    // ¼¼ÄÜÖ´ĞĞ
+    // ï¿½ï¿½ï¿½ï¿½Ö´ï¿½ï¿½
     UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Skill")
     void Execute(ALFPHexTile* TargetTile = nullptr);
 
-    // ¼ì²é¼¼ÄÜÊÇ·ñ¿ÉÓÃ
+    // ï¿½ï¿½é¼¼ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½
     UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Skill")
     bool CanExecute(ALFPHexTile* TargetTile = nullptr);
 
-    // »ñÈ¡¼¼ÄÜÀäÈ´×´Ì¬
+    // ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È´×´Ì¬
     UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Skill")
     FString GetCooldownStatus() const;
 
-    // »ñÈ¡¼¼ÄÜ·¶Î§ÄÚµÄËùÓĞÄ¿±ê¸ñ×Ó
+    // ï¿½ï¿½È¡ï¿½ï¿½ï¿½Ü·ï¿½Î§ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½ï¿½
     UFUNCTION(BlueprintCallable, Category = "Skill")
     TArray<ALFPHexTile*> GetTargetTiles(ALFPTacticsUnit* Caster) const;
 
-    // »ØºÏ¿ªÊ¼Ê±µÄÀäÈ´¸üĞÂ
+    // ï¿½ØºÏ¿ï¿½Ê¼Ê±ï¿½ï¿½ï¿½ï¿½È´ï¿½ï¿½ï¿½ï¿½
     UFUNCTION(BlueprintCallable, Category = "Skill")
     void OnTurnStart();
 
@@ -76,20 +76,26 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Skill")
     TArray<FLFPHexCoordinates> GetReleaseRange() { return ReleaseRangeCoords; }
 
+    // AI ç›®æ ‡é€‰æ‹©ï¼šè®¡ç®—å¯¹ç›®æ ‡çš„ä»‡æ¨å€¼ï¼ˆå€¼è¶Šé«˜ï¼Œè¶Šä¼˜å…ˆæ”»å‡»ï¼‰
+    // Casterï¼šä½¿ç”¨æŠ€èƒ½çš„æ•Œæ–¹å•ä½ï¼ˆè‡ªèº«å±æ€§/ä½ç½®ï¼‰
+    // Targetï¼šå€™é€‰çš„ç©å®¶å•ä½ï¼ˆç›®æ ‡å±æ€§/ä½ç½®ï¼‰
+    UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Skill|AI")
+    float CalculateHatredValue(ALFPTacticsUnit* Caster, ALFPTacticsUnit* Target) const;
+
     /*UFUNCTION(BlueprintCallable, Category = "Skill")
     void ShowReleaseRange(bool bShow = true);
 
     UFUNCTION(BlueprintCallable, Category = "Skill")
     void ShowEffectRange(bool bShow = true);*/
 public:
-    // »ù´¡ÊôĞÔ
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
     ALFPTacticsUnit* Owner;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
     ALFPTacticsPlayerController* OwnerController;
 
-    // ¼¼ÄÜÊôĞÔ
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
     FText SkillName;
 
@@ -100,15 +106,15 @@ public:
     UTexture2D* SkillIcon;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
-    int32 CooldownRounds; // ÀäÈ´»ØºÏÊı
+    int32 CooldownRounds; // ï¿½ï¿½È´ï¿½Øºï¿½ï¿½ï¿½
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Skill")
-    int32 CurrentCooldown; // µ±Ç°ÀäÈ´¼ÆÊı
+    int32 CurrentCooldown; // ï¿½ï¿½Ç°ï¿½ï¿½È´ï¿½ï¿½ï¿½ï¿½
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
     ESkillTargetType TargetType;
 
-    // ¼¼ÄÜ±êÇ©£¬ÓÃÓÚ·ÖÀàºÍ¹ıÂË
+    // ï¿½ï¿½ï¿½Ü±ï¿½Ç©ï¿½ï¿½ï¿½ï¿½ï¿½Ú·ï¿½ï¿½ï¿½Í¹ï¿½ï¿½ï¿½
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
     FGameplayTagContainer SkillTags;
 
@@ -116,16 +122,16 @@ public:
     FSkillRange Range;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
-    int32 ActionPointCost; // ĞĞ¶¯µãÏûºÄ
+    int32 ActionPointCost; // ï¿½Ğ¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
-    bool bIsDefaultAttack; // ÊÇ·ñÎªÄ¬ÈÏ¹¥»÷¼¼ÄÜ
+    bool bIsDefaultAttack; // ï¿½Ç·ï¿½ÎªÄ¬ï¿½Ï¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-    // ¼¼ÄÜÊÍ·Å·¶Î§
+    // ï¿½ï¿½ï¿½ï¿½ï¿½Í·Å·ï¿½Î§
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
     TArray<FLFPHexCoordinates> ReleaseRangeCoords;
 
-    // ¼¼ÄÜÉúĞ§·¶Î§
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğ§ï¿½ï¿½Î§
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
     TArray<FLFPHexCoordinates> EffectRangeCoords;
 };

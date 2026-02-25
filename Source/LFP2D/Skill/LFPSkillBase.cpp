@@ -18,10 +18,10 @@ bool ULFPSkillBase::CanExecute_Implementation(ALFPHexTile* TargetTile)
 {
     if (!Owner) return false;
 
-    // ¼ì²éÀäÈ´
+    // ï¿½ï¿½ï¿½ï¿½ï¿½È´
     //if (CurrentCooldown > 0) return false;
 
-    // ¼ì²éÐÐ¶¯µã
+    // ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½ï¿½ï¿½
     if (!Owner->HasEnoughActionPoints(ActionPointCost)) return false;
 
     return true;
@@ -48,9 +48,9 @@ TArray<ALFPHexTile*> ULFPSkillBase::GetTargetTiles(ALFPTacticsUnit* Caster) cons
     ALFPHexGridManager* GridManager = Caster->GetGridManager();
     if (!GridManager) return TargetTiles;
 
-    // ¸ù¾Ý¼¼ÄÜ·¶Î§ºÍÄ¿±êÀàÐÍ»ñÈ¡Ä¿±ê¸ñ×Ó
-    // ÕâÀïÐèÒªÊµÏÖ¾ßÌåµÄÂß¼­
-    // ÀýÈç£º»ñÈ¡¹¥»÷·¶Î§ÄÚµÄËùÓÐ¸ñ×Ó£¬¹ýÂËµô²»¿ÉÓÃµÄ¸ñ×ÓµÈ
+    // ï¿½ï¿½ï¿½Ý¼ï¿½ï¿½Ü·ï¿½Î§ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½ï¿½Í»ï¿½È¡Ä¿ï¿½ï¿½ï¿½ï¿½ï¿½
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÒªÊµï¿½Ö¾ï¿½ï¿½ï¿½ï¿½ï¿½ß¼ï¿½
+    // ï¿½ï¿½ï¿½ç£ºï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î§ï¿½Úµï¿½ï¿½ï¿½ï¿½Ð¸ï¿½ï¿½Ó£ï¿½ï¿½ï¿½ï¿½Ëµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÃµÄ¸ï¿½ï¿½Óµï¿½
 
     return TargetTiles;
 }
@@ -61,6 +61,23 @@ void ULFPSkillBase::OnTurnStart()
     {
         CurrentCooldown--;
     }
+}
+
+float ULFPSkillBase::CalculateHatredValue_Implementation(ALFPTacticsUnit* Caster, ALFPTacticsUnit* Target) const
+{
+    if (!Caster || !Target) return 0.0f;
+
+    // åŸºç¡€ä»‡æ¨ = ç›®æ ‡æ”»å‡»åŠ›ï¼ˆå¨èƒè¶Šå¤§è¶Šä¼˜å…ˆæ‰“ï¼‰
+    float Hatred = (float)Target->GetAttackPower();
+
+    // è·ç¦»ç³»æ•°ï¼ˆè¶Šè¿‘ä»‡æ¨è¶Šé«˜ï¼‰
+    int32 Dist = FLFPHexCoordinates::Distance(
+        Caster->GetCurrentCoordinates(),
+        Target->GetCurrentCoordinates()
+    );
+    float DistanceFactor = 1.0f / FMath::Max(Dist, 1);
+
+    return Hatred * DistanceFactor;
 }
 
 //void ULFPSkillBase::ShowReleaseRange(bool bShow)
