@@ -71,7 +71,10 @@ void ALFPTacticsUnit::BeginPlay()
 
     for (ULFPBetrayalCondition* Condition : BetrayalConditions)
     {
-        Condition->RegisterCondition(this);
+        if (Condition)
+        {
+            Condition->RegisterCondition(this);
+        }
     }
 
     FLFPHexCoordinates SpawnPoint = FLFPHexCoordinates(StartCoordinates_Q, StartCoordinates_R);
@@ -80,6 +83,8 @@ void ALFPTacticsUnit::BeginPlay()
 	// 初始化血量
     CurrentHealth = MaxHealth;
 	InitializeHealthBar();
+
+    PlannedSkillIconComponent->SetRelativeLocation(FVector(0, SkillIconTopDist, 0)); // 在血条上方
 
     // 设置移动时间线
     if (MoveCurve)
@@ -123,7 +128,10 @@ void ALFPTacticsUnit::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 	for (ULFPBetrayalCondition* Condition : BetrayalConditions)
 	{
-		Condition->UnRegisterCondition(this);
+		if (Condition)
+		{
+			Condition->UnRegisterCondition(this);
+		}
 	}
 }
 
