@@ -454,4 +454,8 @@ protected:
     // 技能图标 Widget 蓝图类
     UPROPERTY(EditDefaultsOnly, Category = "AI Plan")
     TSubclassOf<class ULFPPlannedSkillIconWidget> PlannedSkillIconWidgetClass;
+
+	// 技能图标距头顶距离
+	UPROPERTY(EditDefaultsOnly, Category = "AI Plan")
+    float SkillIconTopDist = 100.f;
 };
