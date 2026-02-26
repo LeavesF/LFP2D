@@ -14,45 +14,45 @@ UCLASS()
 class LFP2D_API ALFPTurnManager : public AActor
 {
 	GENERATED_BODY()
-	
+
 public:
     ALFPTurnManager();
 
-    // ¿ªÊ¼ÓÎÏ·»ØºÏÏµÍ³
+    // å¼€å§‹æ¸¸æˆå›åˆç³»ç»Ÿ
     void StartGame();
 
-    // ¿ªÊ¼ĞÂ»ØºÏ
+    // å¼€å§‹æ–°å›åˆ
     UFUNCTION(BlueprintCallable, Category = "Turn System")
     void BeginNewRound();
 
-    // ½áÊøµ±Ç°»ØºÏ
+    // ç»“æŸå½“å‰å›åˆ
     UFUNCTION(BlueprintCallable, Category = "Turn System")
     void EndCurrentRound();
 
-    // »ñÈ¡µ±Ç°ĞĞ¶¯µ¥Î»
+    // è·å–å½“å‰è¡ŒåŠ¨å•ä½
     UFUNCTION(BlueprintPure, Category = "Turn System")
     ALFPTacticsUnit* GetCurrentUnit() const { return CurrentUnit; }
 
-    // »ñÈ¡µ±Ç°»ØºÏÊı
+    // è·å–å½“å‰å›åˆæ•°
     UFUNCTION(BlueprintPure, Category = "Turn System")
     int32 GetCurrentRound() const { return CurrentRound; }
 
-    // »ñÈ¡µ±Ç°µ¥Î»ÁĞ±í
+    // è·å–å½“å‰å•ä½åˆ—è¡¨
     UFUNCTION(BlueprintPure, Category = "Turn System")
     TArray<ALFPTacticsUnit*> GetTurnOrderUnits() const { return TurnOrderUnits; }
 
-    // ´«µİ»ØºÏµ½ÏÂÒ»¸öµ¥Î»
+    // ä¼ é€’å›åˆåˆ°ä¸‹ä¸€ä¸ªå•ä½
     UFUNCTION(BlueprintCallable, Category = "Turn System")
     void PassTurn();
 
-    // µ±µ¥Î»Íê³ÉĞĞ¶¯
+    // å½“å•ä½å®Œæˆè¡ŒåŠ¨
     UFUNCTION(BlueprintCallable, Category = "Turn System")
     void OnUnitFinishedAction(ALFPTacticsUnit* Unit);
 
-    // ×¢²áµ¥Î»µ½»ØºÏÏµÍ³
+    // æ³¨å†Œå•ä½åˆ°å›åˆç³»ç»Ÿ
     void RegisterUnit(ALFPTacticsUnit* Unit);
 
-    // ´Ó»ØºÏÏµÍ³×¢Ïúµ¥Î»
+    // ä»å›åˆç³»ç»Ÿæ³¨é”€å•ä½
     void UnregisterUnit(ALFPTacticsUnit* Unit);
 
 public:
@@ -63,28 +63,28 @@ protected:
     virtual void BeginPlay() override;
 
 protected:
-    // ÅÅĞòµ¥Î»£¨ËÙ¶ÈÓÅÏÈ£©
+    // æŒ‰é€Ÿåº¦æ’åºå•ä½
     void SortUnitsBySpeed();
 
-    // ¿ªÊ¼µ¥Î»»ØºÏ
+    // å¼€å§‹å•ä½å›åˆ
     void BeginUnitTurn(ALFPTacticsUnit* Unit);
 
-    // ½áÊøµ¥Î»»ØºÏ
+    // ç»“æŸå•ä½å›åˆ
     void EndUnitTurn(ALFPTacticsUnit* Unit);
 
-    // µ¥Î»ÁĞ±í
+    // å•ä½åˆ—è¡¨
     UPROPERTY(VisibleAnywhere, Category = "Turn System")
     TArray<ALFPTacticsUnit*> TurnOrderUnits;
 
-    // µ±Ç°ĞĞ¶¯µ¥Î»
+    // å½“å‰è¡ŒåŠ¨å•ä½
     UPROPERTY(VisibleAnywhere, Category = "Turn System")
     ALFPTacticsUnit* CurrentUnit;
 
-    // µ±Ç°»ØºÏÊı
+    // å½“å‰å›åˆæ•°
     UPROPERTY(VisibleAnywhere, Category = "Turn System")
     int32 CurrentRound = 0;
 
-    // ÊÇ·ñÔÚ»ØºÏÖĞ
+    // æ˜¯å¦åœ¨å›åˆä¸­
     UPROPERTY(VisibleAnywhere, Category = "Turn System")
     bool bIsInRound = false;
 };

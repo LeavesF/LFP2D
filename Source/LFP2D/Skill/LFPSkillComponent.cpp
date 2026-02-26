@@ -36,13 +36,13 @@ void ULFPSkillComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 
 void ULFPSkillComponent::InitializeSkills()
 {
-    // Çå¿ÕÏÖÓĞ¼¼ÄÜ
+    // æ¸…ç©ºæ‰€æœ‰æŠ€èƒ½
     Skills.Empty();
 
     ALFPTacticsUnit* OwnerUnit = Cast<ALFPTacticsUnit>(GetOwner());
     if (!OwnerUnit || !SkillData) return;
 
-    // ´ÓÊı¾İ×Ê²ú´´½¨¼¼ÄÜÊµÀı
+    // ä»æ•°æ®èµ„äº§åˆ›å»ºæŠ€èƒ½å®ä¾‹
     for (TSubclassOf<ULFPSkillBase> SkillClass : SkillData->AvailableSkills)
     {
         if (SkillClass)
@@ -61,7 +61,7 @@ void ULFPSkillComponent::InitializeSkills()
                     }
                 }
                 //NewSkill->InitSkillRange();
-                // ÉèÖÃÄ¬ÈÏ¹¥»÷¼¼ÄÜ
+                // æ ‡è®°é»˜è®¤æ”»å‡»æŠ€èƒ½
                 if (NewSkill->bIsDefaultAttack)
                 {
                     DefaultAttackSkill = NewSkill;
@@ -70,12 +70,12 @@ void ULFPSkillComponent::InitializeSkills()
         }
     }
 
-    //// Èç¹ûÃ»ÓĞÄ¬ÈÏ¹¥»÷¼¼ÄÜ£¬´´½¨Ò»¸ö
+    //// å¦‚æœæ²¡æœ‰é»˜è®¤æ”»å‡»æŠ€èƒ½ï¼Œåˆ›å»ºä¸€ä¸ª
     //if (!DefaultAttackSkill)
     //{
     //    DefaultAttackSkill = NewObject<UAttackSkill>(this);
     //    DefaultAttackSkill->bIsDefaultAttack = true;
-    //    DefaultAttackSkill->SkillName = FText::FromString("ÆÕÍ¨¹¥»÷");
+    //    DefaultAttackSkill->SkillName = FText::FromString("æ™®é€šæ”»å‡»");
     //    Skills.Add(DefaultAttackSkill);
     //}
 }
@@ -103,13 +103,13 @@ bool ULFPSkillComponent::ExecuteSkill(ULFPSkillBase* Skill, ALFPHexTile* TargetT
     ALFPTacticsUnit* OwnerUnit = Cast<ALFPTacticsUnit>(GetOwner());
     if (!OwnerUnit || !Skill) return false;
 
-    // ¼ì²é¼¼ÄÜÊÇ·ñ¿ÉÓÃ
+    // æ£€æŸ¥æŠ€èƒ½æ˜¯å¦å¯ç”¨
     if (!Skill->CanExecute()) return false;
 
-    // Ö´ĞĞ¼¼ÄÜ
+    // æ‰§è¡ŒæŠ€èƒ½
     Skill->Execute(TargetTile);
 
-    // ´¥·¢ÊÂ¼ş
+    // å¹¿æ’­äº‹ä»¶
     OnSkillExecuted.Broadcast(OwnerUnit, TargetTile);
 
     return true;
@@ -122,7 +122,7 @@ ULFPSkillBase* ULFPSkillComponent::GetDefaultAttackSkill() const
 
 void ULFPSkillComponent::OnTurnStarted()
 {
-    // ¸üĞÂËùÓĞ¼¼ÄÜµÄÀäÈ´
+    // æ›´æ–°æ‰€æœ‰æŠ€èƒ½çš„å†·å´
     for (ULFPSkillBase* Skill : Skills)
     {
         if (Skill)

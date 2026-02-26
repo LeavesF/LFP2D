@@ -18,10 +18,10 @@ bool ULFPSkillBase::CanExecute_Implementation(ALFPHexTile* TargetTile)
 {
     if (!Owner) return false;
 
-    // �����ȴ
+    // 检查冷却
     //if (CurrentCooldown > 0) return false;
 
-    // ����ж���
+    // 检查行动力
     if (!Owner->HasEnoughActionPoints(ActionPointCost)) return false;
 
     return true;
@@ -48,9 +48,9 @@ TArray<ALFPHexTile*> ULFPSkillBase::GetTargetTiles(ALFPTacticsUnit* Caster) cons
     ALFPHexGridManager* GridManager = Caster->GetGridManager();
     if (!GridManager) return TargetTiles;
 
-    // ���ݼ��ܷ�Χ��Ŀ�����ͻ�ȡĿ�����
-    // ������Ҫʵ�־�����߼�
-    // ���磺��ȡ������Χ�ڵ����и��ӣ����˵������õĸ��ӵ�
+    // 根据技能范围和目标类型获取目标格子
+    // 这里需要实现具体的逻辑
+    // 例如：获取攻击范围内的所有格子，过滤掉不符合条件的格子等
 
     return TargetTiles;
 }

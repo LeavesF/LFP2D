@@ -17,7 +17,7 @@ EBTNodeResult::Type UBTTask_EndTurn::ExecuteTask(UBehaviorTreeComponent& OwnerCo
     ALFPAIController* AIController = Cast<ALFPAIController>(OwnerComp.GetAIOwner());
     if (!AIController) return EBTNodeResult::Failed;
 
-    // Í¨Öª»ØºÏ¹ÜÀíÆ÷½áÊø»ØºÏ
+    // é€šçŸ¥å›žåˆç®¡ç†å™¨ç»“æŸå›žåˆ
     if (ALFPTurnManager* TurnManager = AIController->GetControlledUnit()->GetTurnManager())
     {
         TurnManager->PassTurn();

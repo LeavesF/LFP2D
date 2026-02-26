@@ -7,7 +7,7 @@
 #include "LFP2D/Skill/LFPSkillBase.h"
 #include "LFPSkillComponent.generated.h"
 
-// Î¯ÍĞÇ©Ãû
+// å§”æ‰˜ç­¾å
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSkillExecutedSignature, ALFPTacticsUnit*, Caster, ALFPHexTile*, TargetTile);
 
 UCLASS(Blueprintable, ClassGroup=(Skill), meta=(BlueprintSpawnableComponent))
@@ -15,7 +15,7 @@ class LFP2D_API ULFPSkillComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
+public:
 	// Sets default values for this component's properties
 	ULFPSkillComponent();
 
@@ -23,44 +23,44 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-    // ³õÊ¼»¯¼¼ÄÜ
+    // åˆå§‹åŒ–æŠ€èƒ½
     UFUNCTION(BlueprintCallable, Category = "Skill")
     void InitializeSkills();
 
-    // »ñÈ¡ËùÓĞ¿ÉÓÃ¼¼ÄÜ
+    // è·å–æ‰€æœ‰å¯ç”¨æŠ€èƒ½
     UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Skill")
     TArray<ULFPSkillBase*> GetAvailableSkills() const;
 
-    // Ö´ĞĞ¼¼ÄÜ
+    // æ‰§è¡ŒæŠ€èƒ½
     UFUNCTION(BlueprintCallable, Category = "Skill")
     bool ExecuteSkill(ULFPSkillBase* Skill, ALFPHexTile* TargetTile);
 
-    // »ñÈ¡Ä¬ÈÏ¹¥»÷¼¼ÄÜ
+    // è·å–é»˜è®¤æ”»å‡»æŠ€èƒ½
     UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Skill")
     ULFPSkillBase* GetDefaultAttackSkill() const;
 
-    // »ØºÏ¿ªÊ¼´¦Àí
+    // å›åˆå¼€å§‹å¤„ç†
     UFUNCTION(BlueprintCallable, Category = "Skill")
     void OnTurnStarted();
 
-    // ¼¼ÄÜÖ´ĞĞÊÂ¼ş
+    // æŠ€èƒ½æ‰§è¡Œäº‹ä»¶
     UPROPERTY(BlueprintAssignable, Category = "Skill")
     FOnSkillExecutedSignature OnSkillExecuted;
 
 protected:
-    // ËùÓĞ¼¼ÄÜ
+    // æ‰€æœ‰æŠ€èƒ½
     UPROPERTY(EditAnywhere, Category = "Skill")
     TArray<ULFPSkillBase*> Skills;
 
-    // Ä¬ÈÏ¹¥»÷¼¼ÄÜ
+    // é»˜è®¤æ”»å‡»æŠ€èƒ½
     UPROPERTY(EditAnywhere, Category = "Skill")
     ULFPSkillBase* DefaultAttackSkill;
 
-    // ¼¼ÄÜÊı¾İ×Ê²ú
+    // æŠ€èƒ½æ•°æ®èµ„äº§
     UPROPERTY(EditAnywhere, Category = "Skill")
     class ULFPSkillDataAsset* SkillData;
 };

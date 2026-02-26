@@ -12,8 +12,8 @@ UCLASS()
 class LFP2D_API ALFPHexGridManager : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	ALFPHexGridManager();
 
@@ -21,7 +21,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -57,7 +57,7 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Hex Grid")
     void SetVerticalScale(float Scale) { VerticalScale = Scale; }
 
-	// µ÷ÊÔ¿ª¹Ø
+	// è°ƒè¯•æ§åˆ¶
 	UFUNCTION(BlueprintCallable, Category = "Hex Grid")
 	void SetDebugEnabled(bool bEnabled) { bDrawDebug = bEnabled; }
 protected:
@@ -86,28 +86,28 @@ private:
 
     void DrawDebugPath(const TArray<ALFPHexTile*>& Path, bool bPathFound);
 
-	// Áù±ßĞÎ·½Ïò¶¨Òå (¾²Ì¬³£Á¿)
+	// å…­è¾¹å½¢æ–¹å‘æ•°ç»„ï¼ˆé™æ€å¸¸é‡ï¼‰
 	static const TArray<FLFPHexCoordinates> HexDirections;
 
-    //// Ñ°Â·½Úµã½á¹¹£¨ÓÃÓÚA*Ëã·¨£©
+    //// å¯»è·¯èŠ‚ç‚¹ç»“æ„ä½“ï¼ˆç”¨äºA*ç®—æ³•ï¼‰
     //struct FPathNode
     //{
     //    ALFPHexTile* Tile;
-    //    float GScore; // ´ÓÆğµãµ½µ±Ç°½ÚµãµÄÊµ¼Ê´ú¼Û
-    //    float FScore; // GScore + Æô·¢Ê½¹À¼ÆÖµ
+    //    float GScore; // ä»èµ·ç‚¹åˆ°å½“å‰èŠ‚ç‚¹çš„å®é™…ä»£ä»·
+    //    float FScore; // GScore + å¯å‘å¼ä¼°è®¡å€¼
     //    FPathNode* Parent;
 
     //    FPathNode(ALFPHexTile* InTile, float InG, float InF, FPathNode* InParent)
     //        : Tile(InTile), GScore(InG), FScore(InF), Parent(InParent) {}
 
-    //    // ÓÃÓÚÓÅÏÈ¶ÓÁĞ±È½Ï
+    //    // ç”¨äºä¼˜å…ˆé˜Ÿåˆ—æ¯”è¾ƒ
     //    bool operator<(const FPathNode& Other) const
     //    {
-    //        return FScore > Other.FScore; // ×¢Òâ£ºÓÅÏÈ¶ÓÁĞÊÇ×î´ó¶Ñ£¬ËùÒÔÕâÀï·´×ª±È½Ï
+    //        return FScore > Other.FScore; // æ³¨æ„ï¼šä¼˜å…ˆé˜Ÿåˆ—æ˜¯æœ€å¤§å †ï¼Œæ‰€ä»¥åè½¬æ¯”è¾ƒ
     //    }
     //};
 
-    //// ×Ô¶¨ÒåÓÅÏÈ¶ÓÁĞ±È½Ïº¯Êı
+    //// è‡ªå®šä¹‰ä¼˜å…ˆé˜Ÿåˆ—æ¯”è¾ƒå‡½æ•°
     //struct FComparePathNode
     //{
     //    bool operator()(const FPathNode* A, const FPathNode* B) const
@@ -116,11 +116,11 @@ private:
     //    }
     //};
 
-    //// ´æ´¢ËùÓĞµÄÍø¸ñÍßÆ¬
+    //// å­˜å‚¨æ‰€æœ‰çš„å…­è§’æ ¼ç‰‡
     //UPROPERTY()
     //TArray<ALFPHexTile*> GridTiles;
 
-    //// ¸ù¾İTile»ñÈ¡×ø±êµÄ¹şÏ£º¯Êı
+    //// æ ¹æ®Tileè·å–åæ ‡çš„å“ˆå¸Œå‡½æ•°
     //FORCEINLINE uint32 GetTypeHash(const ALFPHexTile* Tile) const
     //{
     //    return PointerHash(Tile);
@@ -139,7 +139,7 @@ public:
     FLFPHexCoordinates RoundToHex(float q, float r);
 
 protected:
-    // ¼ÆËãÁù±ßĞÎ±ß½ç
+    // æ£€æµ‹ç‚¹æ˜¯å¦åœ¨å…­è¾¹å½¢è¾¹ç•Œå†…
     UFUNCTION(BlueprintPure, Category = "Hex Grid")
     bool IsPointInHexagon(const FVector2D& Point, const FVector2D& Center, float InHexSize);
 

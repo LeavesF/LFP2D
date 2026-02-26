@@ -35,14 +35,14 @@ void ALFPTacticsPlayerController::BeginPlay()
 {
     Super::BeginPlay();
 
-    // ÉèÖÃÊäÈëÄ£Ê½
+    // è®¾ç½®è¾“å…¥æ¨¡å¼
     FInputModeGameAndUI InputMode;
     InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
     InputMode.SetHideCursorDuringCapture(false);
     SetInputMode(InputMode);
     bShowMouseCursor = true;
 
-    // »ñÈ¡Íø¸ñ¹ÜÀíÆ÷
+    // è·å–ç½‘æ ¼ç®¡ç†å™¨
     TArray<AActor*> FoundActors;
     UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALFPHexGridManager::StaticClass(), FoundActors);
     if (FoundActors.Num() > 0)
@@ -50,7 +50,7 @@ void ALFPTacticsPlayerController::BeginPlay()
         GridManager = Cast<ALFPHexGridManager>(FoundActors[0]);
     }
 
-    // ÉèÖÃEnhanced Input
+    // è®¾ç½®Enhanced Input
     if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
     {
         if (DefaultInputMapping)
@@ -59,14 +59,14 @@ void ALFPTacticsPlayerController::BeginPlay()
         }
     }
 
-    // ³õÊ¼»¯UI
+    // åˆå§‹åŒ–UI
     if (TurnSpeedWidgetClass)
     {
         TurnSpeedListWidget = CreateWidget<ULFPTurnSpeedListWidget>(this, TurnSpeedWidgetClass);
         if (TurnSpeedListWidget)
         {
             TurnSpeedListWidget->AddToViewport();
-            TurnSpeedListWidget->InitializeTurnOrder(); // ³õÊ¼»¯µ¥Î»Ë³Ğò
+            TurnSpeedListWidget->InitializeTurnOrder(); // åˆå§‹åŒ–å•ä½é¡ºåº
         }
     }
 }
@@ -75,24 +75,24 @@ void ALFPTacticsPlayerController::SetupInputComponent()
 {
     Super::SetupInputComponent();
 
-    // ÉèÖÃEnhanced Input×é¼ş
+    // ç»‘å®šEnhanced Inputç»„ä»¶
     if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
     {
-        // Ñ¡Ôñ²Ù×÷
+        // é€‰æ‹©æ“ä½œ
         EnhancedInputComponent->BindAction(SelectAction, ETriggerEvent::Started, this, &ALFPTacticsPlayerController::OnSelectStarted);
         EnhancedInputComponent->BindAction(SelectAction, ETriggerEvent::Completed, this, &ALFPTacticsPlayerController::OnSelectCompleted);
 
-        // ¹¥»÷²Ù×÷
+        // æ”»å‡»æ“ä½œ
         EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Started, this, &ALFPTacticsPlayerController::OnAttackStarted);
 
-        // ÆäËû²Ù×÷
+        // å…¶ä»–æ“ä½œ
         EnhancedInputComponent->BindAction(ConfirmAction, ETriggerEvent::Completed, this, &ALFPTacticsPlayerController::OnConfirmAction);
         EnhancedInputComponent->BindAction(CancelAction, ETriggerEvent::Completed, this, &ALFPTacticsPlayerController::OnCancelAction);
         //EnhancedInputComponent->BindAction(RotateCameraAction, ETriggerEvent::Triggered, this, &ALFPTacticsPlayerController::OnRotateCamera);
         EnhancedInputComponent->BindAction(DebugToggleAction, ETriggerEvent::Started, this, &ALFPTacticsPlayerController::OnToggleDebug);
         EnhancedInputComponent->BindAction(SkipTurnAction, ETriggerEvent::Completed, this, &ALFPTacticsPlayerController::OnSkipTurnAction);
 
-        // Ïà»ú¿ØÖÆ
+        // ç›¸æœºæ“ä½œ
         EnhancedInputComponent->BindAction(CameraPanAction, ETriggerEvent::Triggered, this, &ALFPTacticsPlayerController::OnCameraPan);
         EnhancedInputComponent->BindAction(CameraDragAction, ETriggerEvent::Started, this, &ALFPTacticsPlayerController::OnCameraDragStarted);
         EnhancedInputComponent->BindAction(CameraDragAction, ETriggerEvent::Triggered, this, &ALFPTacticsPlayerController::OnCameraDragTriggered);
@@ -104,24 +104,24 @@ void ALFPTacticsPlayerController::SetupInputComponent()
 void ALFPTacticsPlayerController::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
-    
+
     if (bIsDragging)
     {
         DragTime += DeltaTime;
     }
 
-    // ¸üĞÂÏà»úÎ»ÖÃ
+    // æ›´æ–°ç›¸æœºä½ç½®
     if (GridManager)
     {
         FVector CameraLocation = GridManager->GetActorLocation() + CameraOffset;
         FRotator CameraRotation(CameraRotationPitchAngle, CameraRotationYawAngle, 0);
         SetControlRotation(CameraRotation);
 
-        // ¼ÆËãÏà»úÎ»ÖÃÆ«ÒÆ
+        // è®¡ç®—ç›¸æœºä½ç½®åç§»
         FVector DirectionOffset = CameraRotation.Vector() * CurrentZoom;
-        DirectionOffset.Z = CurrentZoom * 0.5f; // ¸ß¶ÈÓë¾àÀë³É±ÈÀı
+        DirectionOffset.Z = CurrentZoom * 0.5f; // é«˜åº¦ç”±ç¼©æ”¾æ¯”ä¾‹å†³å®š
 
-        // ÉèÖÃÏà»úÎ»ÖÃ
+        // è®¾ç½®ç›¸æœºä½ç½®
         APawn* ControlledPawn = GetPawn();
         if (ControlledPawn)
         {
@@ -130,18 +130,18 @@ void ALFPTacticsPlayerController::Tick(float DeltaTime)
                 ControlledPawn->GetActorLocation(),
                 TargetLocation,
                 DeltaTime,
-                5.0f // ²åÖµËÙ¶È
+                5.0f // æ’å€¼é€Ÿåº¦
             ));
         }
-        
-        // »ñÈ¡Êó±êÎ»ÖÃ
+
+        // è·å–é¼ æ ‡ä½ç½®
         float MouseX, MouseY;
         if (GetMousePosition(MouseX, MouseY))
         {
             FVector2D ScreenPosition(MouseX, MouseY);
-            // »ñÈ¡Êó±êÏÂµÄÁù±ßĞÎTile
+            // è·å–å…‰æ ‡ä¸‹çš„å…­è¾¹å½¢Tile
             ALFPHexTile* HoveredTile = GridManager->GetHexTileUnderCursor(ScreenPosition, this);
-            // ´¦ÀíÊó±êĞüÍ£Âß¼­
+            // å¤„ç†é¼ æ ‡æ‚¬åœé€»è¾‘
             if (HoveredTile != LastHoveredTile)
             {
                 if (LastHoveredTile)
@@ -160,7 +160,7 @@ void ALFPTacticsPlayerController::Tick(float DeltaTime)
         }
     }
 
-    // ¸üĞÂµØÍ¼¸ñ×Ó¸ßÁÁ
+    // æ›´æ–°åœ°å›¾è§†è§‰æ•ˆæœ
     if (LastControlState != CurrentControlState)
     {
         switch (CurrentControlState)
@@ -175,12 +175,12 @@ void ALFPTacticsPlayerController::Tick(float DeltaTime)
     }
 }
 
-// Ñ¡Ôñ¿ªÊ¼
+// é€‰æ‹©å¼€å§‹
 void ALFPTacticsPlayerController::OnSelectStarted(const FInputActionValue& Value)
 {
     bIsSelecting = true;
 
-    // »ñÈ¡Êó±êÎ»ÖÃ
+    // è·å–é¼ æ ‡ä½ç½®
     float MouseX, MouseY;
     if (GetMousePosition(MouseX, MouseY))
     {
@@ -188,18 +188,18 @@ void ALFPTacticsPlayerController::OnSelectStarted(const FInputActionValue& Value
     }
 }
 
-// Ñ¡ÔñÍê³É
+// é€‰æ‹©å®Œæˆ
 void ALFPTacticsPlayerController::OnSelectCompleted(const FInputActionValue& Value)
 {
     if (!bIsSelecting) return;
     bIsSelecting = false;
 
-    // »ñÈ¡Êó±êÎ»ÖÃ
+    // è·å–é¼ æ ‡ä½ç½®
     float MouseX, MouseY;
     GetMousePosition(MouseX, MouseY);
     FVector2D SelectionEnd = FVector2D(MouseX, MouseY);
 
-    // ¼òµ¥µÄµã»÷£¨²»ÊÇÍÏ×§£©
+    // ç®€å•çš„ç‚¹å‡»æ£€æµ‹ï¼ˆéæ‹–æ‹½ï¼‰
     if (FVector2D::Distance(SelectionStart, SelectionEnd) < 10.0f)
     {
         FHitResult HitResult;
@@ -207,7 +207,7 @@ void ALFPTacticsPlayerController::OnSelectCompleted(const FInputActionValue& Val
 
         if (HitResult.bBlockingHit)
         {
-            // ³¢ÊÔÑ¡Ôñµ¥Î»
+            // å°è¯•é€‰ä¸­å•ä½
             ALFPTacticsUnit* Unit = Cast<ALFPTacticsUnit>(HitResult.GetActor());
             if (Unit)
             {
@@ -215,7 +215,7 @@ void ALFPTacticsPlayerController::OnSelectCompleted(const FInputActionValue& Val
                 return;
             }
 
-            // ³¢ÊÔÑ¡Ôñ¸ñ×Ó
+            // å°è¯•é€‰ä¸­æ ¼å­
             ALFPHexTile* Tile = Cast<ALFPHexTile>(HitResult.GetActor());
             if (Tile)
             {
@@ -250,7 +250,7 @@ void ALFPTacticsPlayerController::OnConfirmAction(const FInputActionValue& Value
     {
         if (bIsAttacking)
         {
-            // »ñÈ¡Êó±êÎ»ÖÃ
+            // è·å–é¼ æ ‡ä½ç½®
             float MouseX, MouseY;
             GetMousePosition(MouseX, MouseY);
             FVector2D SelectionEnd = FVector2D(MouseX, MouseY);
@@ -260,7 +260,7 @@ void ALFPTacticsPlayerController::OnConfirmAction(const FInputActionValue& Value
 
             if (HitResult.bBlockingHit)
             {
-                // ³¢ÊÔÑ¡Ôñµ¥Î»
+                // å°è¯•é€‰ä¸­å•ä½
                 ALFPTacticsUnit* Unit = Cast<ALFPTacticsUnit>(HitResult.GetActor());
                 if (Unit)
                 {
@@ -280,7 +280,7 @@ void ALFPTacticsPlayerController::OnConfirmAction(const FInputActionValue& Value
     }
     else if (SelectedUnit)
     {
-        // Èç¹ûÃ»ÓĞÑ¡ÔñÄ¿±ê¸ñ×Ó£¬ÏÔÊ¾¿ÉÒÆ¶¯·¶Î§
+        // å¦‚æœæ²¡æœ‰é€‰ä¸­ç›®æ ‡æ ¼å­ï¼Œæ˜¾ç¤ºå¯ç§»åŠ¨èŒƒå›´
         //ShowMovementRange(true);
     }
 }
@@ -299,7 +299,7 @@ void ALFPTacticsPlayerController::OnCancelAction(const FInputActionValue& Value)
     bIsReleaseSkill = false;
     CurrentControlState = EPlayControlState::MoveState;
     ShowUnitRange(EUnitRange::UR_Move);
-    // È¡Ïûµ±Ç°Ñ¡Ôñ
+    // å–æ¶ˆå½“å‰é€‰æ‹©
     if (SelectedTile)
     {
         //HidePathToDefault();
@@ -307,7 +307,7 @@ void ALFPTacticsPlayerController::OnCancelAction(const FInputActionValue& Value)
     }
     else if (SelectedUnit)
     {
-        // È¡Ïûµ¥Î»µÄ¸ßÁÁ·¶Î§
+        // å–æ¶ˆå•ä½çš„é«˜äº®èŒƒå›´
         //ShowMovementRange(false);
         //SelectedUnit->SetSelected(false);
         //SelectedUnit = nullptr;
@@ -316,11 +316,11 @@ void ALFPTacticsPlayerController::OnCancelAction(const FInputActionValue& Value)
 
 //void ALFPTacticsPlayerController::OnRotateCamera(const FInputActionValue& Value)
 //{
-//    // »ñÈ¡ÖáÖµ
+//    // è·å–è¾“å…¥å€¼
 //    const FVector2D RotationValue = Value.Get<FVector2D>();
 //    if (FMath::Abs(RotationValue.X) > 0.1f)
 //    {
-//        CameraRotationYawAngle += RotationValue.X * 2.0f; // Ğı×ªËÙ¶È
+//        CameraRotationYawAngle += RotationValue.X * 2.0f; // æ—‹è½¬é€Ÿåº¦
 //    }
 //}
 
@@ -337,26 +337,26 @@ void ALFPTacticsPlayerController::OnSkipTurnAction(const FInputActionValue& Valu
 
 void ALFPTacticsPlayerController::OnCameraPan(const FInputActionValue& Value)
 {
-    // »ñÈ¡ÖáÖµ (WASD/·½Ïò¼ü)
+    // è·å–è¾“å…¥å€¼ï¼ˆWASD/æ–¹å‘é”®ï¼‰
     const FVector2D PanValue = Value.Get<FVector2D>();
 
-    // ¼ÆËãÒÆ¶¯·½Ïò (»ùÓÚµ±Ç°Ïà»úĞı×ª)
+    // è®¡ç®—ç§»åŠ¨æ–¹å‘ï¼ˆåŸºäºå½“å‰ç›¸æœºæ—‹è½¬ï¼‰
     FRotator CameraRotation(CameraRotationPitchAngle, CameraRotationYawAngle, 0);
     FVector Forward = CameraRotation.RotateVector(FVector::ForwardVector);
     FVector Right = CameraRotation.RotateVector(FVector::RightVector);
 
-    // ¼ÆËãÒÆ¶¯Æ«ÒÆ
+    // è®¡ç®—ç§»åŠ¨åç§»
     FVector PanDirection = (Forward * PanValue.Y) + (Right * PanValue.X);
     PanDirection.Z = 0;
     PanDirection.Normalize();
 
-    // Ó¦ÓÃÒÆ¶¯
+    // åº”ç”¨ç§»åŠ¨
     CameraOffset += PanDirection * CameraPanSpeed * GetWorld()->GetDeltaSeconds();
 }
 
 void ALFPTacticsPlayerController::OnCameraDragStarted(const FInputActionValue& Value)
 {
-    // ¼ÇÂ¼ÍÏ×§ÆğÊ¼Î»ÖÃ
+    // è®°å½•æ‹–æ‹½å¼€å§‹ä½ç½®
     bIsDragging = true;
     GetMousePosition(DragStartPosition.X, DragStartPosition.Y);
 }
@@ -365,29 +365,29 @@ void ALFPTacticsPlayerController::OnCameraDragTriggered(const FInputActionValue&
 {
     if (!bIsDragging) return;
 
-    // »ñÈ¡µ±Ç°Êó±êÎ»ÖÃ
+    // è·å–å½“å‰é¼ æ ‡ä½ç½®
     FVector2D CurrentMousePosition;
     GetMousePosition(CurrentMousePosition.X, CurrentMousePosition.Y);
 
-    // ¼ÆËãÊó±êÒÆ¶¯Æ«ÒÆ
+    // è®¡ç®—é¼ æ ‡ç§»åŠ¨åç§»
     FVector2D MouseDelta = CurrentMousePosition - DragStartPosition;
 
-    // ·´×ªYÖá (ÆÁÄ»YÏòÏÂÎªÕı£¬µ«ÊÀ½çYÏòÉÏÎªÕı)
+    // åè½¬Yè½´ï¼ˆå±å¹•Yè½´å‘ä¸‹ï¼Œä¸–ç•ŒYè½´å‘ä¸Šï¼‰
     MouseDelta.Y = -MouseDelta.Y;
 
-    // ¼ÆËãÒÆ¶¯·½Ïò (»ùÓÚµ±Ç°Ïà»úĞı×ª)
+    // è®¡ç®—ç§»åŠ¨æ–¹å‘ï¼ˆåŸºäºå½“å‰ç›¸æœºæ—‹è½¬ï¼‰
     FRotator CameraRotation(0, CameraRotationYawAngle, 0);
     FVector Right = CameraRotation.RotateVector(FVector::RightVector);
     FVector Forward = CameraRotation.RotateVector(FVector::ForwardVector);
 
-    // ¼ÆËãÒÆ¶¯Æ«ÒÆ
+    // è®¡ç®—ç§»åŠ¨åç§»
     FVector PanDirection = (Right * -MouseDelta.X) + (Forward * -MouseDelta.Y);
     //PanDirection.Normalize();
 
-    // Ó¦ÓÃÒÆ¶¯
+    // åº”ç”¨ç§»åŠ¨
     CameraOffset += PanDirection * CameraDragSpeed;
 
-    // ¸üĞÂÆğÊ¼Î»ÖÃÎªµ±Ç°Î»ÖÃ
+    // æ›´æ–°èµ·å§‹ä½ç½®ä¸ºå½“å‰ä½ç½®
     DragStartPosition = CurrentMousePosition;
 }
 
@@ -404,14 +404,14 @@ void ALFPTacticsPlayerController::OnCameraZoom(const FInputActionValue& Value)
 
 void ALFPTacticsPlayerController::SelectUnit(ALFPTacticsUnit* Unit)
 {
-    // È¡ÏûÖ®Ç°Ñ¡ÖĞµÄµ¥Î»
+    // å–æ¶ˆä¹‹å‰é€‰ä¸­çš„å•ä½
     if (SelectedUnit && SelectedUnit != Unit)
     {
         SelectedUnit->SetSelected(false);
         ShowUnitRange(EUnitRange::UR_Default);
     }
 
-    // Ñ¡ÔñĞÂµ¥Î»
+    // é€‰æ‹©æ–°å•ä½
     SelectedUnit = Unit;
     if (SelectedUnit)
     {
@@ -427,7 +427,7 @@ void ALFPTacticsPlayerController::SelectTile(ALFPHexTile* Tile)
     switch (CurrentControlState)
     {
     case EPlayControlState::MoveState:
-        // ¼ì²éÊÇ·ñÔÚ¿ÉÒÆ¶¯·¶Î§ÄÚ
+        // æ£€æŸ¥æ˜¯å¦åœ¨å¯ç§»åŠ¨èŒƒå›´å†…
         if (MovementRangeTiles.Contains(Tile))
         {
             SelectedTile = Tile;
@@ -436,7 +436,7 @@ void ALFPTacticsPlayerController::SelectTile(ALFPHexTile* Tile)
         else
         {
             SelectedTile = Tile;
-            // ÏÈÒş²ØÖ®Ç°¿ÉÄÜÏÔÊ¾µÄÂ·¾¶
+            // æ¸…é™¤ä¹‹å‰é«˜äº®æ˜¾ç¤ºçš„è·¯å¾„
             HidePathToRange();
         }
         break;
@@ -459,10 +459,10 @@ void ALFPTacticsPlayerController::ConfirmMove()
         return;
     }
     //HidePathToDefault();
-    // ÒÆ¶¯Ç°È¡Ïû¸ßÁÁ
+    // ç§»åŠ¨å‰å–æ¶ˆé«˜äº®
     ShowUnitRange(EUnitRange::UR_Default);
 
-    // ÒÆ¶¯µ¥Î»
+    // ç§»åŠ¨å•ä½
     MoveUnit(SelectedUnit, SelectedTile);
 
     CurrentPath.Empty();
@@ -490,20 +490,20 @@ void ALFPTacticsPlayerController::ShowUnitRange(EUnitRange UnitRange)
         break;
     case EUnitRange::UR_Move:
 	{
-        // »ñÈ¡¿ÉÒÆ¶¯·¶Î§
+        // è·å–å¯ç§»åŠ¨èŒƒå›´
 		ALFPHexTile* UnitTile = GridManager->GetTileAtCoordinates(SelectedUnit->GetCurrentCoordinates());
 		if (UnitTile)
 		{
 			CacheRangeTiles= MovementRangeTiles = GridManager->GetTilesInRange(UnitTile, SelectedUnit->GetMovementRange());
-			// ¸ßÁÁÏÔÊ¾ÕâĞ©¸ñ×Ó
+			// é«˜äº®æ˜¾ç¤ºè¿™äº›æ ¼å­
             GridManager->UpdateGridSpriteWithTiles(CurrentControlState, MovementRangeTiles);
 		}
         break;
 	}
     case EUnitRange::UR_Attack:
-		// »ñÈ¡¿É¹¥»÷·¶Î§
+		// è·å–å¯æ”»å‡»èŒƒå›´
         CacheRangeTiles = SelectedUnit->GetAttackRangeTiles();
-		// ¸ßÁÁÏÔÊ¾ÕâĞ©¸ñ×Ó
+		// é«˜äº®æ˜¾ç¤ºè¿™äº›æ ¼å­
 		for (ALFPHexTile* Tile : CacheRangeTiles)
 		{
 			Tile->SetRangeSprite(EUnitRange::UR_Attack);
@@ -518,15 +518,15 @@ void ALFPTacticsPlayerController::ShowPathToSelectedTile()
 {
     if (!SelectedUnit || !SelectedTile || !GridManager) return;
 
-    // ÏÈÒş²ØÖ®Ç°¿ÉÄÜÏÔÊ¾µÄÂ·¾¶
+    // æ¸…é™¤ä¹‹å‰æ˜¾ç¤ºçš„è·¯å¾„
     HidePathToRange();
-    // ¼ÆËãÂ·¾¶
+    // å¯»æ‰¾è·¯å¾„
     ALFPHexTile* UnitTile = GridManager->GetTileAtCoordinates(SelectedUnit->GetCurrentCoordinates());
     if (UnitTile)
     {
         CurrentPath = GridManager->FindPath(UnitTile, SelectedTile);
 
-        // ¸ßÁÁÏÔÊ¾Â·¾¶£¨ÀıÈçÓÃ²»Í¬ÑÕÉ«£©
+        // é«˜äº®æ˜¾ç¤ºè·¯å¾„ï¼ˆè®¾ç½®ä¸åŒé¢œè‰²ï¼‰
         for (ALFPHexTile* Tile : CurrentPath)
         {
             Tile->SetPathHighlight(true);
@@ -565,13 +565,13 @@ void ALFPTacticsPlayerController::MoveUnit(ALFPTacticsUnit* Unit, ALFPHexTile* T
 {
     if (!Unit || !TargetTile || !Unit->CanAct()) return;
 
-    // ¼ÆËãÒÆ¶¯ÏûºÄ£¨¼ÙÉèÃ¿´ÎÒÆ¶¯ÏûºÄ1µãĞĞ¶¯µã£©
+    // è®¡ç®—ç§»åŠ¨ä»£ä»·
     const int32 MoveCost = 1;
 
-    // Ö´ĞĞÒÆ¶¯
+    // æ‰§è¡Œç§»åŠ¨
     Unit->MoveToTile(TargetTile);
 
-    // Í¨Öª»ØºÏ¹ÜÀíÆ÷µ¥Î»Íê³ÉĞĞ¶¯
+    // é€šçŸ¥å›åˆç®¡ç†å™¨å•ä½å®Œæˆè¡ŒåŠ¨
     /*if (ALFPTurnManager* TurnManager = GetTurnManager())
     {
         TurnManager->OnUnitFinishedAction(Unit);
@@ -585,7 +585,7 @@ bool ALFPTacticsPlayerController::AttackTarget(ALFPTacticsUnit* Attacker, ALFPTa
         return false;
     }
 
-    // ¼ÆËã¹¥»÷ÏûºÄ
+    // è®¡ç®—æ”»å‡»ä»£ä»·
     const int32 AttackCost = 1;
 
     bIsAttacking = false;
@@ -596,12 +596,12 @@ bool ALFPTacticsPlayerController::AttackTarget(ALFPTacticsUnit* Attacker, ALFPTa
         return false;
     }
 
-    // Ö´ĞĞ¹¥»÷Âß¼­
+    // æ‰§è¡Œæ”»å‡»é€»è¾‘
     bool bAttackSucceed = Attacker->AttackTarget(Target);
 
     if (bAttackSucceed)
     {
-		// ÏûºÄĞĞ¶¯µã
+		// æ¶ˆè€—è¡ŒåŠ¨åŠ›
 		Attacker->ConsumeActionPoints(AttackCost);
         ShowUnitRange(EUnitRange::UR_Default);
     }
@@ -610,7 +610,7 @@ bool ALFPTacticsPlayerController::AttackTarget(ALFPTacticsUnit* Attacker, ALFPTa
         ShowUnitRange(EUnitRange::UR_Move);
     }
 
-    // Í¨Öª»ØºÏ¹ÜÀíÆ÷µ¥Î»Íê³ÉĞĞ¶¯
+    // é€šçŸ¥å›åˆç®¡ç†å™¨å•ä½å®Œæˆè¡ŒåŠ¨
     if (!Attacker->HasEnoughActionPoints(1))
     {
 		if (bAttackSucceed)
@@ -618,7 +618,7 @@ bool ALFPTacticsPlayerController::AttackTarget(ALFPTacticsUnit* Attacker, ALFPTa
             SkipTurn(Attacker);
 		}
     }
-    
+
     return bAttackSucceed;
 }
 
@@ -626,14 +626,14 @@ void ALFPTacticsPlayerController::SkipTurn(ALFPTacticsUnit* Unit)
 {
     if (!Unit || !Unit->CanAct()) return;
 
-    // ±ê¼ÇÎªÒÑĞĞ¶¯
+    // æ ‡è®°ä¸ºå·²è¡ŒåŠ¨
     Unit->SetHasActed(true);
 
-    // ¿ÉÑ¡£ºÏûºÄ1µãĞĞ¶¯µã×÷ÎªÌø¹ı´ú¼Û
+    // å¯é€‰ï¼šæ¶ˆè€—1ä¸ªè¡ŒåŠ¨åŠ›ä½œä¸ºè·³è¿‡ä»£ä»·
     // Unit->ConsumeMovePoints(1);
     bIsAttacking = false;
     CurrentControlState = EPlayControlState::MoveState;
-    // Í¨Öª»ØºÏ¹ÜÀíÆ÷µ¥Î»Íê³ÉĞĞ¶¯
+    // é€šçŸ¥å›åˆç®¡ç†å™¨å•ä½å®Œæˆè¡ŒåŠ¨
     if (ALFPTurnManager* TurnManager = GetTurnManager())
     {
         TurnManager->OnUnitFinishedAction(Unit);
@@ -676,7 +676,7 @@ void ALFPTacticsPlayerController::HandleSkillSelection()
 {
     if (!SelectedUnit) return;
 
-    // ÏÔÊ¾¼¼ÄÜÑ¡ÔñUI
+    // æ˜¾ç¤ºæŠ€èƒ½é€‰æ‹©UI
     if (SkillSelectionWidgetClass)
     {
         if (!SkillSelectionWidget)
@@ -688,7 +688,7 @@ void ALFPTacticsPlayerController::HandleSkillSelection()
                 SkillSelectionWidget->InitializeSkills(SelectedUnit, this);
                 SkillSelectionWidget->AddToViewport();
 
-                // ½øÈë¼¼ÄÜÑ¡ÔñÄ£Ê½
+                //// è¿›å…¥æŠ€èƒ½é€‰æ‹©æ¨¡å¼
                 //CurrentSelectionMode = ESelectionMode::SkillSelection;
             }
         }
@@ -697,10 +697,10 @@ void ALFPTacticsPlayerController::HandleSkillSelection()
             SkillSelectionWidget->Show();
             SkillSelectionWidget->InitializeSkills(SelectedUnit, this);
 
-            // ½øÈë¼¼ÄÜÑ¡ÔñÄ£Ê½
+            //// è¿›å…¥æŠ€èƒ½é€‰æ‹©æ¨¡å¼
             //CurrentSelectionMode = ESelectionMode::SkillSelection;
         }
-        
+
     }
 }
 
@@ -716,7 +716,7 @@ void ALFPTacticsPlayerController::HandleSkillTargetSelecting(ULFPSkillBase* Skil
 {
     if (!SelectedUnit || !Skill) return;
 
-    // »ñÈ¡¼¼ÄÜ·¶Î§ÄÚµÄÄ¿±ê¸ñ×Ó
+    // è·å–æŠ€èƒ½èŒƒå›´å†…çš„ç›®æ ‡æ ¼å­
     Skill->UpdateSkillRange();
     TArray<FLFPHexCoordinates> TargetTilesCoord = Skill->GetReleaseRange();
     if (GridManager)
@@ -725,13 +725,13 @@ void ALFPTacticsPlayerController::HandleSkillTargetSelecting(ULFPSkillBase* Skil
         CurrentControlState = EPlayControlState::SkillReleaseState;
         GridManager->UpdateGridSpriteWithCoords(CurrentControlState, TargetTilesCoord);
     }
-    //// ¸ßÁÁ¿ÉÄ¿±ê¸ñ×Ó
+    //// é«˜äº®ç›®æ ‡æ ¼å­
     //if (GridManager)
     //{
     //    GridManager->HighlightTiles(TargetTiles, FLinearColor::Red);
     //}
 
-    // ½øÈëÄ¿±êÑ¡ÔñÄ£Ê½
+    // è¿›å…¥ç›®æ ‡é€‰æ‹©æ¨¡å¼
     //CurrentSelectionMode = ESelectionMode::TargetSelection;
     CurrentSelectedSkill = Skill;
 }
@@ -740,16 +740,16 @@ void ALFPTacticsPlayerController::HandleSkillTargetSelecting(ULFPSkillBase* Skil
 //{
 //    if (!SelectedUnit || !CurrentSelectedSkill || !TargetTile) return;
 //
-//    // Ö´ĞĞ¼¼ÄÜ
+//    // æ‰§è¡ŒæŠ€èƒ½
 //    if (SelectedUnit->ExecuteSkill(CurrentSelectedSkill, TargetTile))
 //    {
-//        //// ¼¼ÄÜÖ´ĞĞ³É¹¦
+//        //// æŠ€èƒ½æ‰§è¡ŒæˆåŠŸ
 //        //if (GridManager)
 //        //{
 //        //    GridManager->ClearHighlights();
 //        //}
 //
-//        // ·µ»ØÕı³£Ñ¡ÔñÄ£Ê½
+//        //// è¿”å›å•ä½é€‰æ‹©æ¨¡å¼
 //        //CurrentSelectionMode = ESelectionMode::UnitSelection;
 //        CurrentSelectedSkill = nullptr;
 //    }

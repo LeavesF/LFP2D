@@ -13,7 +13,7 @@
 class ALFPTacticsUnit;
 
 /**
- * 
+ *
  */
 UCLASS()
 class LFP2D_API ULFPHealthBarWidget : public UUserWidget
@@ -22,65 +22,65 @@ class LFP2D_API ULFPHealthBarWidget : public UUserWidget
 public:
 	virtual void NativeConstruct() override;
 
-	// °ó¶¨µ½µ¥Î»
+	// ç»‘å®šåˆ°å•ä½
 	UFUNCTION(BlueprintCallable, Category = "Health Bar")
 	void BindToUnit(ALFPTacticsUnit* Unit);
 
-	// ½â°óµ¥Î»
+	// è§£ç»‘å•ä½
 	UFUNCTION(BlueprintCallable, Category = "Health Bar")
 	void UnbindFromUnit();
 
-	// ¸üĞÂÑªÌõÏÔÊ¾
+	// æ›´æ–°è¡€æ¡æ˜¾ç¤º
 	UFUNCTION(BlueprintCallable, Category = "Health Bar")
 	void UpdateHealthBar(int32 CurrentHealth, int32 MaxHealth);
 
 protected:
-	// ÑªÁ¿±ä»¯ÊÂ¼ş´¦Àí
+	// è¡€é‡å˜åŒ–äº‹ä»¶å¤„ç†
 	UFUNCTION()
 	void OnHealthChanged(int32 CurrentHealth, int32 MaxHealth);
 
-	// µ¥Î»ËÀÍöÊÂ¼ş´¦Àí
+	// å•ä½æ­»äº¡äº‹ä»¶å¤„ç†
 	UFUNCTION()
 	void OnUnitDeath();
 
-	// ÑªÌõ¿Ø¼ş
+	// è¡€æ¡æ§ä»¶
 	UPROPERTY(BlueprintReadOnly, Category = "Health Bar", meta = (BindWidget))
 	UProgressBar* HealthProgressBar;
 
-	// ÑªÁ¿ÎÄ±¾
+	// è¡€é‡æ–‡æœ¬
 	UPROPERTY(BlueprintReadOnly, Category = "Health Bar", meta = (BindWidget))
 	UTextBlock* HealthText;
 
-	// ËùÊôµ¥Î»
+	// ç»‘å®šçš„å•ä½
 	UPROPERTY(BlueprintReadOnly, Category = "Health Bar")
 	ALFPTacticsUnit* BoundUnit;
 
-	// ÑªÌõÑÕÉ«
+	// è¡€æ¡é¢œè‰²
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health Bar")
 	FLinearColor FullHealthColor = FLinearColor::Green;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health Bar")
 	FLinearColor LowHealthColor = FLinearColor::Red;
 
-	// µÍÑªÁ¿ãĞÖµ (°Ù·Ö±È)
+	// ä½è¡€é‡é˜ˆå€¼ï¼ˆç™¾åˆ†æ¯”ï¼‰
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health Bar", meta = (ClampMin = "0", ClampMax = "1"))
 	float LowHealthThreshold = 0.3f;
 
-	// ÕóÓªÑÕÉ«
+	// é˜µè¥é¢œè‰²
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health Bar")
-	FLinearColor PlayerColor = FLinearColor(0.1f, 1.0f, 0.1f); // À¶É«
+	FLinearColor PlayerColor = FLinearColor(0.1f, 1.0f, 0.1f); // ç»¿è‰²
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health Bar")
-	FLinearColor EnemyColor = FLinearColor(1.0f, 0.1f, 0.1f); // ºìÉ«
+	FLinearColor EnemyColor = FLinearColor(1.0f, 0.1f, 0.1f); // çº¢è‰²
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health Bar")
-	FLinearColor NeutralColor = FLinearColor(0.5f, 0.5f, 0.5f); // »ÒÉ«
+	FLinearColor NeutralColor = FLinearColor(0.5f, 0.5f, 0.5f); // ç°è‰²
 
-	// ±ß¿òÍ¼Ïñ
+	// è¾¹æ¡†å›¾ç‰‡
 	/*UPROPERTY(BlueprintReadOnly, Category = "Health Bar", meta = (BindWidget))
 	UImage* BorderImage;*/
 
-	// ¸üĞÂÕóÓªÑÕÉ«
+	// æ›´æ–°é˜µè¥é¢œè‰²
 	UFUNCTION(BlueprintCallable, Category = "Health Bar")
 	void UpdateAffiliationColor(EUnitAffiliation Affiliation);
 };

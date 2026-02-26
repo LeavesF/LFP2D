@@ -19,11 +19,11 @@ void ALFPTurnManager::BeginPlay()
 
 void ALFPTurnManager::StartGame()
 {
-    // ÊÕ¼¯ËùÓĞµ¥Î»
+    // æ”¶é›†æ‰€æœ‰å•ä½
     TArray<AActor*> FoundActors;
     UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALFPTacticsUnit::StaticClass(), FoundActors);
 
-    // ×ª»»Îª¾ßÌåµÄµ¥Î»ÀàĞÍ
+    // è½¬æ¢ä¸ºæˆ˜æœ¯å•ä½æ•°ç»„
     for (AActor* Actor : FoundActors)
     {
         if (ALFPTacticsUnit* Unit = Cast<ALFPTacticsUnit>(Actor))
@@ -32,7 +32,7 @@ void ALFPTurnManager::StartGame()
         }
     }
 
-    // ¶ÌÔİÑÓ³Ùºó¿ªÊ¼µÚÒ»»ØºÏ
+    // æ·»åŠ å»¶è¿Ÿåå¼€å§‹ç¬¬ä¸€å›åˆ
     FTimerHandle TimerHandle;
     GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ALFPTurnManager::BeginNewRound, 0.5f, false);
 }
@@ -42,7 +42,7 @@ void ALFPTurnManager::BeginNewRound()
     CurrentRound++;
     bIsInRound = true;
 
-    // ÖØÖÃËùÓĞµ¥Î»
+    // é‡ç½®æ‰€æœ‰å•ä½
     for (ALFPTacticsUnit* Unit : TurnOrderUnits)
     {
         if (Unit && Unit->IsValidLowLevel())
@@ -51,10 +51,10 @@ void ALFPTurnManager::BeginNewRound()
         }
     }
 
-    // °´ËÙ¶ÈÅÅĞòµ¥Î»
+    // æŒ‰é€Ÿåº¦æ’åºå•ä½
     SortUnitsBySpeed();
 
-    // ¿ªÊ¼µÚÒ»¸öµ¥Î»µÄ»ØºÏ
+    // å¼€å§‹ç¬¬ä¸€ä¸ªå•ä½çš„å›åˆ
     if (TurnOrderUnits.Num() > 0)
     {
         BeginUnitTurn(TurnOrderUnits[0]);
@@ -65,7 +65,7 @@ void ALFPTurnManager::EndCurrentRound()
 {
     bIsInRound = false;
 
-    // Í¨ÖªËùÓĞÍæ¼Ò»ØºÏ½áÊø
+    // é€šçŸ¥ç©å®¶æœ¬å›åˆç»“æŸ
     for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
     {
         if (ALFPTacticsPlayerController* PC = Cast<ALFPTacticsPlayerController>(*It))
@@ -74,15 +74,15 @@ void ALFPTurnManager::EndCurrentRound()
         }
     }
 
-    // ¶ÌÔİÑÓ³Ùºó¿ªÊ¼ĞÂ»ØºÏ
+    // æ·»åŠ å»¶è¿Ÿåå¼€å§‹æ–°å›åˆ
     FTimerHandle TimerHandle;
     GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ALFPTurnManager::BeginNewRound, 0.5f, false);
 }
 
 void ALFPTurnManager::SortUnitsBySpeed()
 {
-    // °´ËÙ¶È½µĞòÅÅĞò£¨ËÙ¶È¸ßµÄÏÈĞĞ¶¯£©
-    // Todo: ËÙ¶ÈÏàÍ¬Ê±£¬Íæ¼ÒÏÈÓÚAI
+    // æŒ‰é€Ÿåº¦é™åºæ’åºï¼ˆé€Ÿåº¦é«˜çš„å…ˆè¡ŒåŠ¨ï¼‰
+    // Todo: é€Ÿåº¦ç›¸åŒæ—¶éšæœºæ’åºï¼ˆç©å®¶ä¼˜å…ˆäºAIï¼‰
     TurnOrderUnits.Sort([](const ALFPTacticsUnit& A, const ALFPTacticsUnit& B) {
         return A.GetSpeed() > B.GetSpeed();
         });
@@ -96,7 +96,7 @@ void ALFPTurnManager::BeginUnitTurn(ALFPTacticsUnit* Unit)
 
     ALFPTacticsPlayerController* PC = GetWorld()->GetFirstPlayerController<ALFPTacticsPlayerController>();
 
-    // Èç¹ûÊÇAIµ¥Î»£¬ÓÉAI¿ØÖÆÆ÷½Ó¹Ü
+    // å¦‚æœæ˜¯AIå•ä½ï¼Œè®©AIæ§åˆ¶å™¨æ¥ç®¡
     if (Unit->IsEnemy())
     {
         if (ALFPAIController* AIController = Unit->GetAIController())
@@ -105,8 +105,8 @@ void ALFPTurnManager::BeginUnitTurn(ALFPTacticsUnit* Unit)
             {
                 PC->HideSkillSelection();
             }
-            // AI¿ØÖÆÆ÷½«´¦Àí»ØºÏ¿ªÊ¼
-            // Í¨Öªµ¥Î»»ØºÏ¿ªÊ¼
+            // AIæ§åˆ¶å™¨ä¼šå¤„ç†å›åˆå¼€å§‹
+            // é€šçŸ¥å•ä½å›åˆå¼€å§‹
             if (Unit)
             {
                 Unit->OnTurnStarted();
@@ -114,13 +114,13 @@ void ALFPTurnManager::BeginUnitTurn(ALFPTacticsUnit* Unit)
             return;
         }
     }
-    // Í¨Öªµ¥Î»»ØºÏ¿ªÊ¼
+    // é€šçŸ¥å•ä½å›åˆå¼€å§‹
     if (Unit)
     {
         Unit->OnTurnStarted();
     }
 
-    // Í¨ÖªÍæ¼Ò¿ØÖÆÆ÷
+    // é€šçŸ¥ç©å®¶æ§åˆ¶å™¨
     if (PC)
     {
         PC->OnTurnStarted(Unit);
@@ -136,7 +136,7 @@ void ALFPTurnManager::EndUnitTurn(ALFPTacticsUnit* Unit)
         Unit->OnTurnEnded();
     }
 
-    // Í¨ÖªÍæ¼Ò¿ØÖÆÆ÷
+    // é€šçŸ¥ç©å®¶æ§åˆ¶å™¨
     if (ALFPTacticsPlayerController* PC = GetWorld()->GetFirstPlayerController<ALFPTacticsPlayerController>())
     {
         PC->OnTurnEnded(Unit);
@@ -150,14 +150,14 @@ void ALFPTurnManager::PassTurn()
         return;
     }
 
-    // ½áÊøµ±Ç°µ¥Î»»ØºÏ
+    // ç»“æŸå½“å‰å•ä½å›åˆ
     EndUnitTurn(CurrentUnit);
 
-    // ÕÒµ½ÏÂÒ»¸öÎ´ĞĞ¶¯µÄµ¥Î»
+    // æ‰¾åˆ°ä¸‹ä¸€ä¸ªæœªè¡ŒåŠ¨çš„å•ä½
     int32 CurrentIndex = TurnOrderUnits.Find(CurrentUnit);
     int32 NextIndex = (CurrentIndex + 1) % TurnOrderUnits.Num();
 
-    // ¼ì²éËùÓĞµ¥Î»ÊÇ·ñ¶¼ĞĞ¶¯¹ı
+    // æ£€æŸ¥æ‰€æœ‰å•ä½æ˜¯å¦è¡ŒåŠ¨å®Œæ¯•
     bool TurnOrderUnitsActed = true;
     for (ALFPTacticsUnit* Unit : TurnOrderUnits)
     {
@@ -170,12 +170,12 @@ void ALFPTurnManager::PassTurn()
 
     if (TurnOrderUnitsActed)
     {
-        // ËùÓĞµ¥Î»ĞĞ¶¯Íê±Ï£¬½áÊø»ØºÏ
+        // æ‰€æœ‰å•ä½è¡ŒåŠ¨å®Œæ¯•ï¼Œç»“æŸå›åˆ
         EndCurrentRound();
     }
     else
     {
-        // Ñ°ÕÒÏÂÒ»¸ö¿ÉĞĞ¶¯µ¥Î»
+        // å¯»æ‰¾ä¸‹ä¸€ä¸ªæœªè¡ŒåŠ¨å•ä½
         for (int32 i = 0; i < TurnOrderUnits.Num(); i++)
         {
             int32 Index = (NextIndex + i) % TurnOrderUnits.Num();
@@ -188,7 +188,7 @@ void ALFPTurnManager::PassTurn()
             }
         }
 
-        // Ã»ÓĞÕÒµ½¿ÉĞĞ¶¯µ¥Î»£¬½áÊø»ØºÏ
+        // æ²¡æœ‰æ‰¾åˆ°æœªè¡ŒåŠ¨å•ä½ï¼Œç»“æŸå›åˆ
         EndCurrentRound();
     }
 }
@@ -199,7 +199,7 @@ void ALFPTurnManager::OnUnitFinishedAction(ALFPTacticsUnit* Unit)
     {
         Unit->SetHasActed(true);
 
-        // ×Ô¶¯´«µİ»ØºÏ
+        // è‡ªåŠ¨ä¼ é€’å›åˆ
         PassTurn();
     }
 }
@@ -210,7 +210,7 @@ void ALFPTurnManager::RegisterUnit(ALFPTacticsUnit* Unit)
     {
         TurnOrderUnits.Add(Unit);
 
-        // Èç¹ûÓÎÏ·ÒÑ¾­¿ªÊ¼£¬ÖØĞÂÅÅĞò
+        // å¦‚æœæ¸¸æˆå·²ç»å¼€å§‹ï¼Œé‡æ–°æ’åº
         if (bIsInRound)
         {
             SortUnitsBySpeed();
@@ -224,11 +224,10 @@ void ALFPTurnManager::UnregisterUnit(ALFPTacticsUnit* Unit)
     {
         TurnOrderUnits.Remove(Unit);
 
-        // Èç¹ûµ±Ç°µ¥Î»±»ÒÆ³ı£¬´«µİ»ØºÏ
+        // å¦‚æœå½“å‰å•ä½è¢«ç§»é™¤ï¼Œä¼ é€’å›åˆ
         if (Unit == CurrentUnit)
         {
             PassTurn();
         }
     }
 }
-

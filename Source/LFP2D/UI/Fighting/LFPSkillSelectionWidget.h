@@ -16,19 +16,19 @@ class ALFPTacticsUnit;
 class ULFPSkillButtonWidget;
 class ALFPTacticsPlayerController;
 /**
- * 
+ *
  */
- // ¼¼ÄÜÅÅĞò·½·¨Ã¶¾Ù
+ // æŠ€èƒ½æ’åºæ–¹æ³•æšä¸¾
 UENUM(BlueprintType)
 enum class ESkillSortMethod : uint8
 {
-    ByName,     // °´Ãû³ÆÅÅĞò
-    ByCooldown, // °´ÀäÈ´Ê±¼äÅÅĞò
-    ByCost,     // °´ÏûºÄÅÅĞò
-    ByType      // °´ÀàĞÍÅÅĞò
+    ByName,     // æŒ‰åç§°æ’åº
+    ByCooldown, // æŒ‰å†·å´æ—¶é—´æ’åº
+    ByCost,     // æŒ‰æ¶ˆè€—æ’åº
+    ByType      // æŒ‰ç±»å‹æ’åº
 };
 
-// ¼¼ÄÜÑ¡ÔñÎ¯ÍĞ
+// æŠ€èƒ½é€‰æ‹©å§”æ‰˜
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSkillChosenSignature, ULFPSkillBase*, SelectedSkill);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSkillConfirmedSignature, ULFPSkillBase*, SelectedSkill);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSelectionCanceledSignature);
@@ -37,36 +37,36 @@ UCLASS()
 class LFP2D_API ULFPSkillSelectionWidget : public UUserWidget
 {
 	GENERATED_BODY()
-	
+
 public:
-    // ¹¹Ôìº¯Êı
+    // æ„é€ å‡½æ•°
     ULFPSkillSelectionWidget(const FObjectInitializer& ObjectInitializer);
 
-    // ³õÊ¼»¯¼¼ÄÜÁĞ±í
+    // åˆå§‹åŒ–æŠ€èƒ½åˆ—è¡¨
     UFUNCTION(BlueprintCallable, Category = "Skill Selection")
     void InitializeSkills(ALFPTacticsUnit* Unit, ALFPTacticsPlayerController* PC);
 
-    // ÏÔÊ¾¼¼ÄÜÑ¡Ôñ´°¿Ú
+    // æ˜¾ç¤ºæŠ€èƒ½é€‰æ‹©çª—å£
     UFUNCTION(BlueprintCallable, Category = "Skill Selection")
     void Show();
 
-    // Òş²Ø¼¼ÄÜÑ¡Ôñ´°¿Ú
+    // éšè—æŠ€èƒ½é€‰æ‹©çª—å£
     UFUNCTION(BlueprintCallable, Category = "Skill Selection")
     void Hide();
 
-    // ÉèÖÃ¼¼ÄÜ¹ıÂËÆ÷
+    // è®¾ç½®æŠ€èƒ½è¿‡æ»¤å™¨
     UFUNCTION(BlueprintCallable, Category = "Skill Selection")
     void SetSkillFilter(const FGameplayTagContainer& FilterTags);
 
-    // Çå³ı¼¼ÄÜ¹ıÂËÆ÷
+    // æ¸…é™¤æŠ€èƒ½è¿‡æ»¤å™¨
     UFUNCTION(BlueprintCallable, Category = "Skill Selection")
     void ClearSkillFilter();
 
-    // ÅÅĞò¼¼ÄÜ
+    // æ’åºåŠŸèƒ½
     UFUNCTION(BlueprintCallable, Category = "Skill Selection")
     void SortSkills(ESkillSortMethod SortMethod);
 
-    // Ë¢ĞÂ¼¼ÄÜ°´Å¥×´Ì¬
+    // åˆ·æ–°æŠ€èƒ½æŒ‰é’®çŠ¶æ€
     UFUNCTION(BlueprintCallable, Category = "Skill Selection")
     void RefreshSkillButtons();
 
@@ -76,153 +76,153 @@ protected:
     virtual FReply NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
 
 private:
-    // ¼¼ÄÜÑ¡ÔñÊÂ¼ş´¦Àí
+    // æŠ€èƒ½é€‰ä¸­äº‹ä»¶å¤„ç†
     UFUNCTION()
     void OnSkillSelected(ULFPSkillBase* Skill);
 
-    // ¼¼ÄÜĞüÍ£ÊÂ¼ş´¦Àí
+    // é¼ æ ‡æ‚¬åœäº‹ä»¶å¤„ç†
     UFUNCTION()
     void OnSkillHovered(ULFPSkillBase* Skill);
 
-    // ¼¼ÄÜÈ¡ÏûĞüÍ£ÊÂ¼ş´¦Àí
+    // é¼ æ ‡å–æ¶ˆæ‚¬åœäº‹ä»¶å¤„ç†
     UFUNCTION()
     void OnSkillUnhovered();
 
-    // È·ÈÏ°´Å¥µã»÷ÊÂ¼ş
+    // ç¡®è®¤æŒ‰é’®ç‚¹å‡»äº‹ä»¶
     UFUNCTION()
     void OnConfirmClicked();
 
-    // È¡Ïû°´Å¥µã»÷ÊÂ¼ş
+    // å–æ¶ˆæŒ‰é’®ç‚¹å‡»äº‹ä»¶
     UFUNCTION()
     void OnCancelClicked();
 
-    // ¸üĞÂ¼¼ÄÜÏêÇéÏÔÊ¾
+    // æ›´æ–°æŠ€èƒ½è¯¦æƒ…æ˜¾ç¤º
     UFUNCTION()
     void UpdateSkillDetails(ULFPSkillBase* Skill);
 
-    // ¸üĞÂµ¥Î»ĞÅÏ¢ÏÔÊ¾
+    // æ›´æ–°å•ä½ä¿¡æ¯æ˜¾ç¤º
     UFUNCTION()
     void UpdateUnitInfo();
 
-    // ¸üĞÂÈ·ÈÏ°´Å¥×´Ì¬
+    // æ›´æ–°ç¡®è®¤æŒ‰é’®çŠ¶æ€
     UFUNCTION()
     void UpdateConfirmButtonState();
 
-    // »ñÈ¡¹ıÂËºóµÄ¼¼ÄÜÁĞ±í
+    // è·å–è¿‡æ»¤åçš„æŠ€èƒ½åˆ—è¡¨
     UFUNCTION()
     TArray<ULFPSkillBase*> GetFilteredSkills(ALFPTacticsUnit* Unit) const;
 
 public:
-    // Î¯ÍĞ£º¼¼ÄÜ±»Ñ¡ÖĞ£¨µ«Î´È·ÈÏ£©
+    // å§”æ‰˜ï¼šæŠ€èƒ½è¢«é€‰ä¸­ï¼ˆä½†æœªç¡®è®¤ï¼‰
     UPROPERTY(BlueprintAssignable, Category = "Skill Selection")
     FSkillChosenSignature OnSkillChosen;
 
-    // Î¯ÍĞ£º¼¼ÄÜ±»È·ÈÏÑ¡Ôñ
+    // å§”æ‰˜ï¼šæŠ€èƒ½è¢«ç¡®è®¤é€‰æ‹©
     UPROPERTY(BlueprintAssignable, Category = "Skill Selection")
     FSkillConfirmedSignature OnSkillConfirmed;
 
-    // Î¯ÍĞ£ºÑ¡Ôñ±»È¡Ïû
+    // å§”æ‰˜ï¼šé€‰æ‹©å–æ¶ˆ
     UPROPERTY(BlueprintAssignable, Category = "Skill Selection")
     FSelectionCanceledSignature OnSelectionCanceled;
 
 protected:
-    // ¼¼ÄÜÍø¸ñÈİÆ÷
+    // æŠ€èƒ½ç½‘æ ¼é¢æ¿
     UPROPERTY(BlueprintReadOnly, Category = "Skill Selection", meta = (BindWidget))
     UUniformGridPanel* SkillGrid;
 
-    // ¼¼ÄÜÏêÇéÃæ°å
+    // æŠ€èƒ½è¯¦æƒ…é¢æ¿
     UPROPERTY(BlueprintReadOnly, Category = "Skill Selection", meta = (BindWidget))
     UWidget* SkillDetailsPanel;
 
-    // ¼¼ÄÜÃû³ÆÎÄ±¾
+    // æŠ€èƒ½åç§°æ–‡æœ¬
     UPROPERTY(BlueprintReadOnly, Category = "Skill Selection", meta = (BindWidget))
     UTextBlock* SkillNameText;
 
-    // ¼¼ÄÜÃèÊöÎÄ±¾
+    // æŠ€èƒ½æè¿°æ–‡æœ¬
     UPROPERTY(BlueprintReadOnly, Category = "Skill Selection", meta = (BindWidget))
     UTextBlock* SkillDescriptionText;
 
-    // ¼¼ÄÜ·¶Î§ÎÄ±¾
+    // æŠ€èƒ½èŒƒå›´æ–‡æœ¬
     UPROPERTY(BlueprintReadOnly, Category = "Skill Selection", meta = (BindWidget))
     UTextBlock* SkillRangeText;
 
-    // ¼¼ÄÜÀäÈ´ÎÄ±¾
+    // æŠ€èƒ½å†·å´æ–‡æœ¬
     UPROPERTY(BlueprintReadOnly, Category = "Skill Selection", meta = (BindWidget))
     UTextBlock* SkillCooldownText;
 
-    //// ¼¼ÄÜÍ¼±ê
+    //// æŠ€èƒ½å›¾æ ‡
     //UPROPERTY(BlueprintReadOnly, Category = "Skill Selection", meta = (BindWidget))
     //UImage* SkillIcon;
 
-    //// µ¥Î»Ãû³ÆÎÄ±¾
+    //// å•ä½åç§°æ–‡æœ¬
     //UPROPERTY(BlueprintReadOnly, Category = "Skill Selection", meta = (BindWidget))
     //UTextBlock* UnitNameText;
 
-    //// ĞĞ¶¯µãÎÄ±¾
+    //// è¡ŒåŠ¨åŠ›æ–‡æœ¬
     //UPROPERTY(BlueprintReadOnly, Category = "Skill Selection", meta = (BindWidget))
     //UTextBlock* ActionPointsText;
 
-    //// ÑªÁ¿ÎÄ±¾
+    //// è¡€é‡æ–‡æœ¬
     //UPROPERTY(BlueprintReadOnly, Category = "Skill Selection", meta = (BindWidget))
     //UTextBlock* HealthText;
 
-    //// È·ÈÏ°´Å¥
+    //// ç¡®è®¤æŒ‰é’®
     //UPROPERTY(BlueprintReadOnly, Category = "Skill Selection", meta = (BindWidget))
     //UButton* ConfirmButton;
 
-    //// È¡Ïû°´Å¥
+    //// å–æ¶ˆæŒ‰é’®
     //UPROPERTY(BlueprintReadOnly, Category = "Skill Selection", meta = (BindWidget))
     //UButton* CancelButton;
 
-    //// È·ÈÏÌáÊ¾ÎÄ±¾
+    //// ç¡®è®¤æç¤ºæ–‡æœ¬
     //UPROPERTY(BlueprintReadOnly, Category = "Skill Selection", meta = (BindWidget))
     //UTextBlock* ConfirmHintText;
 
-    //// ÎŞ¼¼ÄÜÌáÊ¾ÎÄ±¾
+    //// æ— æŠ€èƒ½æç¤ºæ–‡æœ¬
     //UPROPERTY(BlueprintReadOnly, Category = "Skill Selection", meta = (BindWidget))
     //UTextBlock* NoSkillsText;
 
-    // ¼¼ÄÜ°´Å¥Àà
+    // æŠ€èƒ½æŒ‰é’®ç±»
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill Selection")
     TSubclassOf<ULFPSkillButtonWidget> SkillButtonClass;
 
-    //// ĞüÍ£ÒôĞ§
+    //// æ‚¬åœéŸ³æ•ˆ
     //UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill Selection")
     //USoundBase* HoverSound;
 
-    //// Ñ¡ÔñÒôĞ§
+    //// é€‰æ‹©éŸ³æ•ˆ
     //UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill Selection")
     //USoundBase* SelectSound;
 
-    //// È·ÈÏÒôĞ§
+    //// ç¡®è®¤éŸ³æ•ˆ
     //UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill Selection")
     //USoundBase* ConfirmSound;
 
-    //// È¡ÏûÒôĞ§
+    //// å–æ¶ˆéŸ³æ•ˆ
     //UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill Selection")
     //USoundBase* CancelSound;
 
 protected:
-    // µ±Ç°Ñ¡ÖĞµÄ¼¼ÄÜ
+    // å½“å‰é€‰ä¸­çš„æŠ€èƒ½
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill Attributes")
     ULFPSkillBase* SelectedSkill;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill Attributes")
     ALFPTacticsPlayerController* TacticsPC;
 
-    // ËùÊôµ¥Î»
+    // å…³è”å•ä½
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill Attributes")
     ALFPTacticsUnit* OwnerUnit;
 
-    // ËùÓĞ¼¼ÄÜ°´Å¥
+    // æ‰€æœ‰æŠ€èƒ½æŒ‰é’®
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill Attributes")
     TArray<ULFPSkillButtonWidget*> SkillButtons;
 
-    // ¼¼ÄÜ¹ıÂË±êÇ©
+    // æŠ€èƒ½è¿‡æ»¤æ ‡ç­¾
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill Attributes")
     FGameplayTagContainer SkillFilterTags;
 
-    // ×î´óÁĞÊı
+    // æœ€å¤§åˆ—æ•°
     UPROPERTY(EditAnywhere, Category = "Skill Selection")
     int32 MaxColumns;
 };

@@ -7,14 +7,14 @@
 #include "LFP2D/Unit/LFPTacticsUnit.h"
 #include "DrawDebugHelpers.h"
 
-// Áù±ßĞÎ·½ÏòÏòÁ¿ (Æ½¶¥Áù±ßĞÎ²¼¾Ö)
+// å…­è¾¹å½¢æ–¹å‘å¸¸é‡ï¼ˆå¹³é¡¶å…­è¾¹å½¢å¸ƒå±€ï¼‰
 const TArray<FLFPHexCoordinates> ALFPHexGridManager::HexDirections = {
-	FLFPHexCoordinates(1, 0),   // ¶«
-	FLFPHexCoordinates(1, -1),  // ¶«±±
-	FLFPHexCoordinates(0, -1),  // Î÷±±
-	FLFPHexCoordinates(-1, 0),  // Î÷
-	FLFPHexCoordinates(-1, 1),  // Î÷ÄÏ
-	FLFPHexCoordinates(0, 1)    // ¶«ÄÏ
+	FLFPHexCoordinates(1, 0),   // ä¸œ
+	FLFPHexCoordinates(1, -1),  // ä¸œåŒ—
+	FLFPHexCoordinates(0, -1),  // è¥¿åŒ—
+	FLFPHexCoordinates(-1, 0),  // è¥¿
+	FLFPHexCoordinates(-1, 1),  // è¥¿å—
+	FLFPHexCoordinates(0, 1)    // ä¸œå—
 };
 
 // Sets default values
@@ -41,7 +41,7 @@ void ALFPHexGridManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// µ÷ÊÔ»æÖÆÍø¸ñ
+	// è°ƒè¯•ç»˜åˆ¶ç½‘æ ¼
 	if (bDrawDebug)
 	{
 		for (auto& TilePair : GridMap)
@@ -51,7 +51,7 @@ void ALFPHexGridManager::Tick(float DeltaTime)
 				FVector Center = TilePair.Value->GetActorLocation();
 				DrawDebugHexagon(Center, FColor::Green);
 
-				// ÏÔÊ¾×ø±ê
+				// æ˜¾ç¤ºåæ ‡
 				FLFPHexCoordinates Coords = TilePair.Value->GetCoordinates();
 				FString CoordText = FString::Printf(TEXT("(%d,%d)"), Coords.Q, Coords.R);
 				DrawDebugString(GetWorld(), Center + FVector(0, 0, 20), CoordText, nullptr, FColor::White, 0, true);
@@ -62,7 +62,7 @@ void ALFPHexGridManager::Tick(float DeltaTime)
 
 void ALFPHexGridManager::GenerateGrid(int32 Width, int32 Height)
 {
-	// Çå³ıÏÖÓĞÍø¸ñ
+	// æ¸…é™¤æ—§çš„ç½‘æ ¼
 	for (auto& Tile : GridMap)
 	{
 		if (Tile.Value)
@@ -72,21 +72,21 @@ void ALFPHexGridManager::GenerateGrid(int32 Width, int32 Height)
 	}
 	GridMap.Empty();
 
-	// Éú³ÉĞÂÍø¸ñ
+	// ç”Ÿæˆæ–°ç½‘æ ¼
 	for (int32 r = 0; r < Height; r++)
 	{
 		for (int32 q = 0; q < Width; q++)
 		{
-			// ´´½¨Æ«ÒÆ×ø±ê - Æ½¶¥Áù±ßĞÎ²¼¾Ö
+			// è®¡ç®—åç§»åæ ‡ - å¹³é¡¶å…­è¾¹å½¢å¸ƒå±€
 			int32 offsetQ = q - FMath::FloorToInt(r / 2.0f);
 
-			// ´´½¨Áù±ßĞÎ×ø±ê
+			// åˆ›å»ºç«‹æ–¹åæ ‡
 			FLFPHexCoordinates HexCoord(offsetQ, r);
 
-			// Éú³ÉÊÀ½çÎ»ÖÃ£¨Ê¹ÓÃ´¹Ö±Ëõ·Å£©
+			// è®¡ç®—ä¸–ç•Œä½ç½®ï¼ˆä½¿ç”¨å‚ç›´ç¼©æ”¾ï¼‰
 			FVector WorldLocation = HexCoord.ToWorldLocation(HexSize, VerticalScale) + GetActorLocation();
 
-			// Éú³É¸ñ×Ó
+			// ç”Ÿæˆæ ¼å­
 			FActorSpawnParameters SpawnParams;
 			SpawnParams.Owner = this;
 			ALFPHexTile* NewTile = GetWorld()->SpawnActor<ALFPHexTile>(
@@ -101,7 +101,7 @@ void ALFPHexGridManager::GenerateGrid(int32 Width, int32 Height)
 				NewTile->SetCoordinates(HexCoord);
 				NewTile->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
 
-				// Ìí¼Óµ½Íø¸ñÓ³Éä (Ê¹ÓÃQ,R×÷Îª¼ü)
+				// æ·»åŠ åˆ°ç½‘æ ¼æ˜ å°„ï¼ˆä½¿ç”¨Q,Rä½œä¸ºé”®ï¼‰
 				FIntPoint Key(HexCoord.Q, HexCoord.R);
 				GridMap.Add(Key, NewTile);
 			}
@@ -129,7 +129,7 @@ TArray<ALFPHexTile*> ALFPHexGridManager::GetNeighbors(const FLFPHexCoordinates& 
 
 TArray<ALFPHexTile*> ALFPHexGridManager::GetTilesInRange(ALFPHexTile* Center, int32 MaxRange, int32 MinRange)
 {
-	//// Todo: ÓÃMapÓÅ»¯
+	//// Todo: ç”¨Mapä¼˜åŒ–
 	//TPair<ALFPHexTile*, int32> Key(Center, MaxRange);
 	//if (MaxRangeCache.Contains(Key))
 	//{
@@ -139,7 +139,7 @@ TArray<ALFPHexTile*> ALFPHexGridManager::GetTilesInRange(ALFPHexTile* Center, in
 	TArray<ALFPHexTile*> ReachableTiles;
 	if (!Center || MaxRange <= 0) return ReachableTiles;
 
-	// BFSÊı¾İ½á¹¹
+	// BFSæ•°æ®ç»“æ„
 	TMap<ALFPHexTile*, int32> MoveCosts;
 	TQueue<ALFPHexTile*> TileQueue;
 
@@ -153,20 +153,20 @@ TArray<ALFPHexTile*> ALFPHexGridManager::GetTilesInRange(ALFPHexTile* Center, in
 		TileQueue.Dequeue(CurrentTile);
 		int32 CurrentCost = MoveCosts[CurrentTile];
 
-		// »ñÈ¡ËùÓĞÁÚ¾Ó
+		// è·å–æ‰€æœ‰é‚»å±…
 		for (ALFPHexTile* Neighbor : GetNeighbors(CurrentTile->GetCoordinates()))
 		{
 			if (!Neighbor || !Neighbor->IsWalkable() || Neighbor->IsOccupied()) continue;
 
-			// ¼ÆËãĞÂÒÆ¶¯´ú¼Û
+			// è®¡ç®—ç§»åŠ¨ä»£ä»·
 			const int32 NewCost = CurrentCost + 1;
 
-			// Èç¹ûÉĞÎ´·ÃÎÊ»òÕÒµ½¸ü¶ÌÂ·¾¶
+			// å¦‚æœæœªè®¿é—®æˆ–æ‰¾åˆ°æ›´çŸ­è·¯å¾„
 			if (!MoveCosts.Contains(Neighbor) || NewCost < MoveCosts[Neighbor])
 			{
 				MoveCosts.Add(Neighbor, NewCost);
 
-				// Èç¹ûÔÚÒÆ¶¯·¶Î§ÄÚ
+				// åœ¨ç§»åŠ¨èŒƒå›´å†…
 				if (NewCost <= MaxRange)
 				{
 					ReachableTiles.Add(Neighbor);
@@ -193,27 +193,27 @@ TArray<ALFPHexTile*> ALFPHexGridManager::FindPath(ALFPHexTile* Start, ALFPHexTil
 {
 	TArray<ALFPHexTile*> Path;
 
-	// ÑéÖ¤ÊäÈëÓĞĞ§ĞÔ
+	// éªŒè¯è¾“å…¥æœ‰æ•ˆæ€§
 	if (!Start || !End || !End->IsWalkable())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("FindPath: Invalid start or end tile"));
 		return Path;
 	}
 
-	// ÆğµãÖÕµãÏàÍ¬µÄÇé¿ö
+	// å¦‚æœèµ·ç‚¹å’Œç»ˆç‚¹ç›¸åŒ
 	if (Start == End) {
 		Path.Add(Start);
 		UE_LOG(LogTemp, Log, TEXT("FindPath: Start and end are the same tile"));
 		return Path;
 	}
 
-	// Ñ°Â·Êı¾İ½á¹¹
+	// å¯»è·¯æ•°æ®ç»“æ„
 	TMap<ALFPHexTile*, ALFPHexTile*> ParentMap;
-	TMap<ALFPHexTile*, float> GScoreMap;  // Êµ¼ÊÒÆ¶¯´ú¼Û
+	TMap<ALFPHexTile*, float> GScoreMap;  // å®é™…ç§»åŠ¨ä»£ä»·
 	TSet<ALFPHexTile*> OpenSet;
 	TSet<ALFPHexTile*> ClosedSet;
 
-	// ³õÊ¼»¯Æğµã
+	// åˆå§‹åŒ–èµ·ç‚¹
 	OpenSet.Add(Start);
 	GScoreMap.Add(Start, 0.0f);
 	ParentMap.Add(Start, nullptr);
@@ -222,7 +222,7 @@ TArray<ALFPHexTile*> ALFPHexGridManager::FindPath(ALFPHexTile* Start, ALFPHexTil
 
 	while (!OpenSet.IsEmpty())
 	{
-		// »ñÈ¡¿ª·Å¼¯ÖĞFÖµ×îĞ¡µÄ½Úµã
+		// è·å–å¼€æ”¾é›†ä¸­Få€¼æœ€å°çš„èŠ‚ç‚¹
 		ALFPHexTile* Current = nullptr;
 		float LowestF = TNumericLimits<float>::Max();
 
@@ -239,7 +239,7 @@ TArray<ALFPHexTile*> ALFPHexGridManager::FindPath(ALFPHexTile* Start, ALFPHexTil
 			}
 		}
 
-		// µ½´ïÖÕµã
+		// åˆ°è¾¾ç»ˆç‚¹
 		if (Current == End)
 		{
 			bPathFound = true;
@@ -253,21 +253,21 @@ TArray<ALFPHexTile*> ALFPHexGridManager::FindPath(ALFPHexTile* Start, ALFPHexTil
 			break;
 		}
 
-		// ÒÆ¶¯½Úµãµ½¹Ø±Õ¼¯
+		// ç§»åŠ¨èŠ‚ç‚¹åˆ°å…³é—­é›†
 		OpenSet.Remove(Current);
 		ClosedSet.Add(Current);
 
-		// ¼ì²éËùÓĞÁÚ¾Ó
+		// éå†æ‰€æœ‰é‚»å±…
 		for (const FLFPHexCoordinates& Dir : HexDirections)
 		{
 			FLFPHexCoordinates NeighborCoords = Current->GetCoordinates();
 			NeighborCoords.Q += Dir.Q;
 			NeighborCoords.R += Dir.R;
-			NeighborCoords.S = -NeighborCoords.Q - NeighborCoords.R;  // ¸üĞÂÁ¢·½×ø±ê
+			NeighborCoords.S = -NeighborCoords.Q - NeighborCoords.R;  // é‡æ–°è®¡ç®—ç«‹æ–¹åæ ‡
 
 			ALFPHexTile* Neighbor = GetTileAtCoordinates(NeighborCoords);
 
-			// Ìø¹ıÎŞĞ§ÁÚ¾Ó
+			// è·³è¿‡æ— æ•ˆé‚»å±…
 			if (!Neighbor ||
 				!Neighbor->IsWalkable() ||
 				Neighbor->IsOccupied() ||
@@ -276,10 +276,10 @@ TArray<ALFPHexTile*> ALFPHexGridManager::FindPath(ALFPHexTile* Start, ALFPHexTil
 				continue;
 			}
 
-			// ¼ÆËãĞÂGÖµ£¨¼ÙÉèËùÓĞ¸ñ×Ó´ú¼ÛÏàÍ¬£©
+			// è®¡ç®—æ–°Gå€¼ï¼ˆè¿™é‡Œæ‰€æœ‰æ ¼å­ç§»åŠ¨ä»£ä»·ç›¸åŒï¼‰
 			const float TentativeG = GScoreMap[Current] + 1.0f;
 
-			// ·¢ÏÖĞÂ½Úµã»òÕÒµ½¸üÓÅÂ·¾¶
+			// å‘ç°æ–°èŠ‚ç‚¹æˆ–æ‰¾åˆ°æ›´çŸ­è·¯å¾„
 			if (!OpenSet.Contains(Neighbor) || TentativeG < GScoreMap[Neighbor])
 			{
 				ParentMap.Add(Neighbor, Current);
@@ -293,7 +293,7 @@ TArray<ALFPHexTile*> ALFPHexGridManager::FindPath(ALFPHexTile* Start, ALFPHexTil
 	}
 
 	Path.Remove(Start);
-	// µ÷ÊÔ»æÖÆÂ·¾¶
+	// è°ƒè¯•ç»˜åˆ¶è·¯å¾„
 	//DrawDebugPath(Path, bPathFound);
 
 	if (bPathFound) {
@@ -309,26 +309,26 @@ TArray<ALFPHexTile*> ALFPHexGridManager::FindPath(ALFPHexTile* Start, ALFPHexTil
 void ALFPHexGridManager::DrawDebugHexagon(const FVector& Center, FColor Color) const
 {
 	const float AngleStep = 60.0f;
-	const float HorizontalRadius = HexSize; // Ë®Æ½·½Ïò°ë¾¶²»±ä
-	const float VerticalRadius = HexSize * VerticalScale; // ´¹Ö±·½Ïò°ë¾¶Ëõ·Å
+	const float HorizontalRadius = HexSize; // æ°´å¹³æ–¹å‘åŠå¾„ä¸å˜
+	const float VerticalRadius = HexSize * VerticalScale; // å‚ç›´æ–¹å‘åŠå¾„ç¼©æ”¾
 
-	// Ìí¼Ó 30¡ã Æ«ÒÆ£¬Ê¹Áù±ßĞÎÕıÈ·¶ÔÆë
+	// æ·»åŠ  30Â° åç§»ï¼Œä½¿å…­è¾¹å½¢æ­£ç¡®æœå‘
 	const float AngleOffset = 30.0f;
 
 	TArray<FVector> Points;
 	for (int32 i = 0; i < 6; i++)
 	{
-		// Ìí¼Ó 30¡ã Æ«ÒÆ
+		// æ·»åŠ  30Â° åç§»
 		float Angle = FMath::DegreesToRadians(AngleStep * i + AngleOffset);
 		FVector Point(
 			Center.X + HorizontalRadius * FMath::Cos(Angle),
-			Center.Y + VerticalRadius * FMath::Sin(Angle), // Ó¦ÓÃ´¹Ö±Ëõ·Å
+			Center.Y + VerticalRadius * FMath::Sin(Angle), // åº”ç”¨å‚ç›´ç¼©æ”¾
 			Center.Z
 		);
 		Points.Add(Point);
 	}
 
-	// Á¬½ÓµãĞÎ³ÉÁù±ßĞÎ
+	// è¿æ¥ç‚¹å½¢æˆå…­è¾¹å½¢
 	for (int32 i = 0; i < 6; i++)
 	{
 		int32 NextIndex = (i + 1) % 6;
@@ -340,11 +340,11 @@ void ALFPHexGridManager::DrawDebugPath(const TArray<ALFPHexTile*>& Path, bool bP
 {
 	if (!GetWorld()) return;
 
-	const float DebugDuration = 5.0f; // ÏÔÊ¾5Ãë
+	const float DebugDuration = 5.0f; // æ˜¾ç¤º5ç§’
 
-	// »æÖÆÆğµãºÍÖÕµã
+	// ç»˜åˆ¶èµ·ç‚¹å’Œç»ˆç‚¹
 	if (Path.Num() > 0) {
-		// Æğµã£ºÂÌÉ«ÇòÌå
+		// èµ·ç‚¹ï¼šç»¿è‰²çƒä½“
 		DrawDebugSphere(
 			GetWorld(),
 			Path[0]->GetActorLocation() + FVector(0, 0, 20),
@@ -353,7 +353,7 @@ void ALFPHexGridManager::DrawDebugPath(const TArray<ALFPHexTile*>& Path, bool bP
 	}
 
 	if (bPathFound && Path.Num() > 1) {
-		// ÖÕµã£ºÀ¶É«ÇòÌå
+		// ç»ˆç‚¹ï¼šè“è‰²çƒä½“
 		DrawDebugSphere(
 			GetWorld(),
 			Path.Last()->GetActorLocation() + FVector(0, 0, 20),
@@ -361,13 +361,13 @@ void ALFPHexGridManager::DrawDebugPath(const TArray<ALFPHexTile*>& Path, bool bP
 		);
 	}
 
-	// »æÖÆÂ·¾¶Á¬Ïß
+	// ç»˜åˆ¶è·¯å¾„çº¿æ®µ
 	for (int32 i = 0; i < Path.Num() - 1; i++)
 	{
 		FVector StartLoc = Path[i]->GetActorLocation() + FVector(0, 0, 15);
 		FVector EndLoc = Path[i + 1]->GetActorLocation() + FVector(0, 0, 15);
 
-		// Â·¾¶Ïß£º»ÆÉ«
+		// è·¯å¾„çº¿ï¼šé»„è‰²
 		DrawDebugLine(
 			GetWorld(),
 			StartLoc,
@@ -376,10 +376,10 @@ void ALFPHexGridManager::DrawDebugPath(const TArray<ALFPHexTile*>& Path, bool bP
 			false,
 			DebugDuration,
 			0,
-			3.0f // Ïß¿í
+			3.0f // çº¿å®½
 		);
 
-		// Â·¾¶µã£º»ÆÉ«ÇòÌå
+		// è·¯å¾„ç‚¹ï¼šé»„è‰²çƒä½“
 		DrawDebugSphere(
 			GetWorld(),
 			StartLoc,
@@ -387,7 +387,7 @@ void ALFPHexGridManager::DrawDebugPath(const TArray<ALFPHexTile*>& Path, bool bP
 		);
 	}
 
-	// Èç¹ûÕÒµ½Â·¾¶µ«ÔÚ»æÖÆÇ°¾Í±»Çå¿ÕÁË£¨±ÈÈç³¤¶ÈÎª1£©
+	// å¦‚æœæ‰¾åˆ°è·¯å¾„ï¼ˆä½†å‰é¢å·²ç»ç»˜åˆ¶è¿‡äº†ï¼Œæ¯”å¦‚é•¿åº¦ä¸º1æ—¶ï¼‰
 	if (bPathFound && Path.Num() == 1) {
 		DrawDebugSphere(
 			GetWorld(),
@@ -396,9 +396,9 @@ void ALFPHexGridManager::DrawDebugPath(const TArray<ALFPHexTile*>& Path, bool bP
 		);
 	}
 
-	// »æÖÆÊ§°ÜÌáÊ¾
+	// å¯»è·¯å¤±è´¥æç¤º
 	if (!bPathFound) {
-		// ÔÚÆğµãÎ»ÖÃ»æÖÆºìÉ«X
+		// åœ¨èµ·å§‹ä½ç½®ç»˜åˆ¶çº¢è‰²X
 		FVector StartLoc = Path.Num() > 0 ?
 			Path[0]->GetActorLocation() :
 			(GetActorLocation() + FVector(0, 0, 100));
@@ -418,7 +418,7 @@ void ALFPHexGridManager::DrawDebugPath(const TArray<ALFPHexTile*>& Path, bool bP
 	}
 }
 
-// Ö÷Èë¿Úº¯Êı£ºÍ¨¹ıÆÁÄ»Î»ÖÃ»ñÈ¡Áù±ßĞÎTile
+// ä»¥ä¸‹æ˜¯ç”¨å‘½ä¸­æ£€æµ‹è·å–å…‰æ ‡ä¸‹Tileçš„å‡½æ•°
 ALFPHexTile* ALFPHexGridManager::GetHexTileUnderCursor(const FVector2D& ScreenPosition, APlayerController* PlayerController)
 {
 	FHitResult Hit;
@@ -429,19 +429,19 @@ ALFPHexTile* ALFPHexGridManager::GetHexTileUnderCursor(const FVector2D& ScreenPo
 		return nullptr;
 	}
 
-	// ×ª»»Îª¾Ö²¿×ø±ê£¨Ïà¶ÔÓÚÍø¸ñ¹ÜÀíÆ÷
+	// è½¬æ¢ä¸ºæœ¬åœ°åæ ‡ï¼ˆå‡å»ç½‘æ ¼åŸç‚¹ï¼‰
 	FVector2D LocalLocation;
 	LocalLocation.X = Hit.Location.X - GetActorLocation().X;
 	LocalLocation.Y = Hit.Location.Y - GetActorLocation().Y;
 
-	// ¼ÆËãÁù±ßĞÎ×ø±ê
+	// è®¡ç®—å…­è¾¹å½¢åæ ‡
 	FLFPHexCoordinates HexCoords = FLFPHexCoordinates::FromWorldLocation(
 		LocalLocation,
 		HexSize,
 		VerticalScale
 	);
 
-	// ÔÚGridMapÖĞ²éÕÒ
+	// åœ¨GridMapä¸­æŸ¥æ‰¾
 	FIntPoint Key(HexCoords.Q, HexCoords.R);
 	if (GridMap.Contains(Key))
 		return GridMap[Key];
@@ -449,79 +449,79 @@ ALFPHexTile* ALFPHexGridManager::GetHexTileUnderCursor(const FVector2D& ScreenPo
 	return nullptr;
 }
 
-// ÊÀ½ç×ø±ê×ª»»ÎªÁù±ßĞÎÍø¸ñ×ø±ê
+// ä¸–ç•Œåæ ‡è½¬æ¢ä¸ºå…­è¾¹å½¢ç½‘æ ¼åæ ‡
 FVector2D ALFPHexGridManager::WorldToHexGridPosition(const FVector& WorldPosition, float InHexSize, float InVerticalScale)
 {
-	// ¼â¶¥Áù±ßĞÎ²¼¾Ö²ÎÊı
-	const float HorizontalSpacing = InHexSize * 1.5f * InVerticalScale; // Ë®Æ½¼ä¾à (Ó¦ÓÃ´¹Ö±Ëõ·Å)
-	const float VerticalSpacing = InHexSize * FMath::Sqrt(3.0f); // ´¹Ö±¼ä¾à
+	// å°–é¡¶å…­è¾¹å½¢å¸ƒå±€å‚æ•°
+	const float HorizontalSpacing = InHexSize * 1.5f * InVerticalScale; // æ°´å¹³é—´è·ï¼ˆåº”ç”¨å‚ç›´ç¼©æ”¾ï¼‰
+	const float VerticalSpacing = InHexSize * FMath::Sqrt(3.0f); // å‚ç›´é—´è·
 
-	// Íø¸ñÔ­µãÎ»ÖÃ
+	// è®¡ç®—åŸç‚¹ä½ç½®
 	FVector GridOrigin = GetActorLocation();
 
-	// ¼ÆËãÏà¶ÔÓÚÍø¸ñÔ­µãµÄÎ»ÖÃ
+	// è®¡ç®—ç›¸å¯¹äºç½‘æ ¼åŸç‚¹çš„ä½ç½®
 	float RelX = WorldPosition.X - GridOrigin.X;
 	float RelY = WorldPosition.Y - GridOrigin.Y;
 
-	// ×ª»»ÎªÁù±ßĞÎÍø¸ñ×ø±ê£¨ÎŞÁ¿¸Ù£©
+	// è½¬æ¢ä¸ºå…­è¾¹å½¢ç½‘æ ¼åæ ‡ï¼ˆè¿‘ä¼¼ï¼‰
 	return FVector2D(
 		RelX / HorizontalSpacing,
 		RelY / VerticalSpacing
 	);
 }
 
-// ÏñËØÎ»ÖÃ×ª»»ÎªÁù±ßĞÎ×ø±ê
+// åƒç´ ä½ç½®è½¬æ¢ä¸ºå…­è¾¹å½¢åæ ‡
 FLFPHexCoordinates ALFPHexGridManager::PixelToHexCoordinates(const FVector2D& PixelPosition, float InHexSize)
 {
-    // ÌáÈ¡×ø±êÖµ
+    // è·å–åƒç´ å€¼
     float x = PixelPosition.X;
     float y = PixelPosition.Y;
-    
-    // ×ª»»ÎªÁ¢·½Ìå×ø±ê - ¼â¶¥²¼¾Ö¹«Ê½
+
+    // è½¬æ¢ä¸ºç«‹æ–¹åæ ‡ - å°–é¡¶å…­è¾¹å½¢å…¬å¼
     float q = (2.0f / 3.0f) * x;
     float r = (-1.0f / 3.0f) * x + (FMath::Sqrt(3.0f) / 3.0f) * y;
-    
-    // Ê¹ÓÃÓÅ»¯µÄÁù±ßĞÎ×ø±êËÄÉáÎåÈë
+
+    // ä½¿ç”¨ä¼˜åŒ–åçš„å››èˆäº”å…¥åˆ°æœ€è¿‘åæ ‡
     return RoundToHex(q, r);
 }
 
-// ¼ì²éµãÊÇ·ñÔÚÁù±ßĞÎÄÚ
+// åˆ¤æ–­ç‚¹æ˜¯å¦åœ¨å…­è¾¹å½¢å†…
 bool ALFPHexGridManager::IsPointInHexagon(const FVector2D& Point, const FVector2D& Center, float InHexSize)
 {
-	// ½«µã×ª»»ÎªÏà¶ÔÓÚÁù±ßĞÎÖĞĞÄµÄÎ»ÖÃ
+	// åæ ‡è½¬æ¢ä¸ºç›¸å¯¹äºå…­è¾¹å½¢ä¸­å¿ƒçš„å•ä½å‘é‡
 	FVector2D relPoint = Point - Center;
 
-	// ¼â¶¥Áù±ßĞÎµÄ¶¥µãÎ»ÖÃ£¨´Ó0¶È¿ªÊ¼£©
+	// å°–é¡¶å…­è¾¹å½¢çš„é¡¶ç‚¹ä½ç½®ï¼ˆä»0åº¦å¼€å§‹ï¼‰
 	static const TArray<FVector2D> vertices = [] {
 		TArray<FVector2D> result;
 		for (int i = 0; i < 6; i++) {
-			float angle_deg = 60 * i; // ¼â¶¥Áù±ßĞÎ´Ó0¶È¿ªÊ¼
+			float angle_deg = 60 * i; // å°–é¡¶å…­è¾¹å½¢ä»0åº¦å¼€å§‹
 			float angle_rad = FMath::DegreesToRadians(angle_deg);
 			result.Add(FVector2D(FMath::Cos(angle_rad), FMath::Sin(angle_rad)));
 		}
 		return result;
 		}();
 
-	// ¼ì²éµãÊÇ·ñÔÚÁù±ßĞÎÄÚ£¨Ê¹ÓÃÉäÏß·¨£©
+	// åˆ¤æ–­ç‚¹æ˜¯å¦åœ¨å…­è¾¹å½¢å†…ï¼ˆä½¿ç”¨å°„çº¿æ³•ï¼‰
 	int crossings = 0;
 	for (int i = 0; i < 6; i++) {
 		int j = (i + 1) % 6;
 		FVector2D v1 = vertices[i] * InHexSize;
 		FVector2D v2 = vertices[j] * InHexSize;
 
-		// ¼ì²é±ßÊÇ·ñ¿çÔ½µãµÄy×ø±ê
+		// æ£€æµ‹è¾¹æ˜¯å¦è·¨è¶Šyåæ ‡
 		if ((v1.Y > relPoint.Y) != (v2.Y > relPoint.Y)) {
-			// ¼ÆËã½»µãx×ø±ê
+			// è®¡ç®—äº¤ç‚¹xåæ ‡
 			float intersectX = (v2.X - v1.X) * (relPoint.Y - v1.Y) / (v2.Y - v1.Y) + v1.X;
 
-			// Èç¹û½»µãÔÚµãµÄÓÒ²à
+			// å¦‚æœäº¤ç‚¹åœ¨ç‚¹çš„å³ä¾§
 			if (relPoint.X < intersectX) {
 				crossings++;
 			}
 		}
 	}
 
-	// ÆæÊı´Î¿çÔ½±íÊ¾µãÔÚÄÚ²¿
+	// å¥‡æ•°æ¬¡è·¨è¶Šè¡¨ç¤ºåœ¨å†…éƒ¨
 	return (crossings % 2 == 1);
 }
 
@@ -531,7 +531,7 @@ void ALFPHexGridManager::UpdateGridSpriteWithTiles(EPlayControlState CurrentCont
 	switch (CurrentControlState)
 	{
 	case EPlayControlState::MoveState:
-		// ¸ßÁÁÏÔÊ¾ÕâĞ©¸ñ×Ó
+		// é«˜äº®æ˜¾ç¤ºè¿™äº›æ ¼å­
 		for (ALFPHexTile* Tile : Tiles)
 		{
 			Tile->SetRangeSprite(EUnitRange::UR_Move);
@@ -554,7 +554,7 @@ void ALFPHexGridManager::UpdateGridSpriteWithCoords(EPlayControlState CurrentCon
 	switch (CurrentControlState)
 	{
 	case EPlayControlState::MoveState:
-		// ¸ßÁÁÏÔÊ¾ÕâĞ©¸ñ×Ó
+		// é«˜äº®æ˜¾ç¤ºè¿™äº›æ ¼å­
 		for (FLFPHexCoordinates Coord : Coords)
 		{
 			ALFPHexTile* Tile = GetTileAtCoordinates(Coord);
@@ -590,25 +590,25 @@ void ALFPHexGridManager::ResetGridSprite()
 	}
 }
 
-// ÓÅ»¯µÄÁù±ßĞÎ×ø±êËÄÉáÎåÈë
+// ä¼˜åŒ–åçš„å››èˆäº”å…¥åˆ°æœ€è¿‘å…­è¾¹å½¢åæ ‡
 FLFPHexCoordinates ALFPHexGridManager::RoundToHex(float q, float r)
 {
-	// ×ª»»ÎªÁ¢·½Ìå×ø±ê
+	// è½¬æ¢ä¸ºç«‹æ–¹åæ ‡
 	float cube_x = q;
 	float cube_z = r;
 	float cube_y = -cube_x - cube_z;
 
-	// ËÄÉáÎåÈëµ½×î½üµÄÕûÊı
+	// åˆ†åˆ«å››èˆäº”å…¥åˆ°æœ€è¿‘æ•´æ•°
 	int32 rx = FMath::RoundToInt(cube_x);
 	int32 ry = FMath::RoundToInt(cube_y);
 	int32 rz = FMath::RoundToInt(cube_z);
 
-	// ¼ì²éËÄÉáÎåÈëÎó²î
+	// è®¡ç®—å››èˆäº”å…¥è¯¯å·®
 	float x_diff = FMath::Abs(rx - cube_x);
 	float y_diff = FMath::Abs(ry - cube_y);
 	float z_diff = FMath::Abs(rz - cube_z);
 
-	// µ÷Õû×î´óÎó²îµÄ×ø±ê
+	// ä¿®æ­£æœ€å¤§è¯¯å·®çš„åˆ†é‡
 	if (x_diff > y_diff && x_diff > z_diff) {
 		rx = -ry - rz;
 	}

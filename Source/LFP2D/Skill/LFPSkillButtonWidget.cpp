@@ -15,23 +15,23 @@ ULFPSkillButtonWidget::ULFPSkillButtonWidget(const FObjectInitializer& ObjectIni
     bIsSelected = false;
     bIsEnabled = true;
 
-    // Ä¬ÈÏÑÕÉ«ÉèÖÃ
-    CooldownTextColor = FSlateColor(FLinearColor(0.8f, 0.2f, 0.2f)); // ºìÉ«
-    AvailableTextColor = FSlateColor(FLinearColor(0.2f, 0.8f, 0.2f)); // ÂÌÉ«
+    // é»˜è®¤é¢œè‰²è®¾ç½®
+    CooldownTextColor = FSlateColor(FLinearColor(0.8f, 0.2f, 0.2f)); // çº¢è‰²
+    AvailableTextColor = FSlateColor(FLinearColor(0.2f, 0.8f, 0.2f)); // ç»¿è‰²
 }
 
 void ULFPSkillButtonWidget::NativeConstruct()
 {
     Super::NativeConstruct();
 
-    // È·±£×é¼þÒÑ°ó¶¨
+    // ç¡®ä¿æŽ§ä»¶å·²ç»‘å®š
     if (SkillButton)
     {
-        // °ó¶¨µã»÷ÊÂ¼þ
+        // ç»‘å®šç‚¹å‡»äº‹ä»¶
         SkillButton->OnClicked.AddDynamic(this, &ULFPSkillButtonWidget::OnButtonClicked);
     }
 
-    //// ³õÊ¼Òþ²ØÑ¡ÖÐ±ß¿òºÍ½ûÓÃÕÚÕÖ
+    //// åˆå§‹åŒ–ï¼šéšè—é€‰ä¸­è¾¹æ¡†å’Œç¦ç”¨é®ç½©
     //if (SelectionBorder)
     //{
     //    SelectionBorder->SetVisibility(ESlateVisibility::Hidden);
@@ -49,13 +49,13 @@ void ULFPSkillButtonWidget::Initialize(ULFPSkillBase* Skill)
 
     AssociatedSkill = Skill;
 
-    // ¸üÐÂ°´Å¥ÏÔÊ¾
+    // æ›´æ–°æŒ‰é’®æ˜¾ç¤º
     UpdateAppearance();
 }
 
 void ULFPSkillButtonWidget::RefreshState()
 {
-    // ¸üÐÂ°´Å¥ÏÔÊ¾
+    // æ›´æ–°æŒ‰é’®æ˜¾ç¤º
     UpdateAppearance();
 }
 
@@ -68,13 +68,13 @@ void ULFPSkillButtonWidget::SetButtonEnabled(bool bEnabled)
         SkillButton->SetIsEnabled(bEnabled);
     }
 
-    // ¸üÐÂ½ûÓÃÕÚÕÖÏÔÊ¾
+    // æ›´æ–°ç¦ç”¨é®ç½©æ˜¾ç¤º
     if (DisabledOverlay)
     {
         DisabledOverlay->SetVisibility(bEnabled ? ESlateVisibility::Hidden : ESlateVisibility::Visible);
     }
 
-    // Ó¦ÓÃÏàÓ¦µÄ°´Å¥ÑùÊ½
+    // åº”ç”¨å¯¹åº”çš„æŒ‰é’®æ ·å¼
     if (SkillButton)
     {
         if (!bEnabled)
@@ -96,13 +96,13 @@ void ULFPSkillButtonWidget::SetSelected(bool bSelected)
 {
     bIsSelected = bSelected;
 
-    // ¸üÐÂÑ¡ÖÐ±ß¿òÏÔÊ¾
+    // æ›´æ–°é€‰ä¸­è¾¹æ¡†æ˜¾ç¤º
     if (SelectionBorder)
     {
         SelectionBorder->SetVisibility(bSelected ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
     }
 
-    // Ó¦ÓÃÏàÓ¦µÄ°´Å¥ÑùÊ½
+    // åº”ç”¨å¯¹åº”çš„æŒ‰é’®æ ·å¼
     if (SkillButton && bIsEnabled)
     {
         if (bSelected)
@@ -122,13 +122,13 @@ void ULFPSkillButtonWidget::OnButtonClicked()
 
     //OwnerUnit->ExecuteSkill(AssociatedSkill);
     TacticsPC->HandleSkillTargetSelecting(AssociatedSkill);
-    //// ²¥·Åµã»÷ÒôÐ§
+    //// æ’­æ”¾ç‚¹å‡»éŸ³æ•ˆ
     //if (ClickSound)
     //{
     //    UGameplayStatics::PlaySound2D(this, ClickSound);
     //}
 
-    //// ´¥·¢µã»÷Î¯ÍÐ
+    //// å¹¿æ’­ç‚¹å‡»å§”æ‰˜
     //if (OnButtonClickedDelegate.IsBound())
     //{
     //    OnButtonClickedDelegate.Broadcast(AssociatedSkill);
@@ -141,13 +141,13 @@ void ULFPSkillButtonWidget::NativeOnMouseEnter(const FGeometry& InGeometry, cons
 
     if (!bIsEnabled) return;
 
-    // ²¥·ÅÐüÍ£ÒôÐ§
+    // æ’­æ”¾æ‚¬åœéŸ³æ•ˆ
     if (HoverSound)
     {
         UGameplayStatics::PlaySound2D(this, HoverSound);
     }
 
-    // ´¥·¢ÐüÍ£Î¯ÍÐ
+    // å¹¿æ’­æ‚¬åœå§”æ‰˜
     if (OnButtonHoveredDelegate.IsBound())
     {
         OnButtonHoveredDelegate.Broadcast(AssociatedSkill);
@@ -158,7 +158,7 @@ void ULFPSkillButtonWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent
 {
     Super::NativeOnMouseLeave(InMouseEvent);
 
-    // ´¥·¢È¡ÏûÐüÍ£Î¯ÍÐ
+    // å¹¿æ’­å–æ¶ˆæ‚¬åœå§”æ‰˜
     if (OnButtonUnhoveredDelegate.IsBound())
     {
         OnButtonUnhoveredDelegate.Broadcast();
@@ -174,14 +174,14 @@ void ULFPSkillButtonWidget::UpdateAppearance()
     }
     SetVisibility(ESlateVisibility::Visible);
 
-    // ¸üÐÂ¼¼ÄÜÃû³Æ
+    // æ›´æ–°æŠ€èƒ½åç§°
     if (SkillNameText)
     {
         SkillNameText->SetText(AssociatedSkill->SkillName);
         //SkillNameText->SetVisibility(ESlateVisibility::HitTestInvisible);
     }
 
-    // ¸üÐÂ¼¼ÄÜÍ¼±ê
+    // æ›´æ–°æŠ€èƒ½å›¾æ ‡
     if (SkillIcon && AssociatedSkill->SkillIcon)
     {
         SkillIcon->SetBrushFromTexture(AssociatedSkill->SkillIcon);
@@ -192,10 +192,10 @@ void ULFPSkillButtonWidget::UpdateAppearance()
         SkillIcon->SetVisibility(ESlateVisibility::Collapsed);
     }
 
-    // ¸üÐÂÀäÈ´ÏÔÊ¾
+    // æ›´æ–°å†·å´æ˜¾ç¤º
     UpdateCooldownDisplay();
 
-    // ¸üÐÂÏûºÄÏÔÊ¾
+    // æ›´æ–°æ¶ˆè€—æ˜¾ç¤º
     if (CostText)
     {
         FString CostString = FString::Printf(TEXT("%d AP"), AssociatedSkill->ActionPointCost);
@@ -203,8 +203,8 @@ void ULFPSkillButtonWidget::UpdateAppearance()
         CostText->SetVisibility(ESlateVisibility::HitTestInvisible);
     }
 
-    // ¸üÐÂ°´Å¥¿ÉÓÃ×´Ì¬
-    //bool bCanExecute = AssociatedSkill->CanExecute(nullptr); // ´«Èënullptr£¬ÒòÎªÎÒÃÇ²»¼ì²é¾ßÌåµ¥Î»
+    // æ›´æ–°æŒ‰é’®å¯ç”¨çŠ¶æ€
+    //bool bCanExecute = AssociatedSkill->CanExecute(nullptr); // ä¼ å…¥nullptrï¼Œå› ä¸ºæˆ‘ä»¬ä¸æ£€æŸ¥å…·ä½“å•ä½
     //SetButtonEnabled(bCanExecute);
     SetButtonEnabled(true);
 }
@@ -215,7 +215,7 @@ void ULFPSkillButtonWidget::UpdateCooldownDisplay()
 
     if (AssociatedSkill->CurrentCooldown > 0)
     {
-        // ÏÔÊ¾ÀäÈ´ÐÅÏ¢
+        // æ˜¾ç¤ºå†·å´ä¿¡æ¯
         FString CooldownString = FString::Printf(TEXT("%d"), AssociatedSkill->CurrentCooldown);
         CooldownText->SetText(FText::FromString(CooldownString));
         CooldownText->SetVisibility(ESlateVisibility::HitTestInvisible);
@@ -223,7 +223,7 @@ void ULFPSkillButtonWidget::UpdateCooldownDisplay()
     }
     else if (AssociatedSkill->CooldownRounds > 0)
     {
-        // ÏÔÊ¾ÀäÈ´»ØºÏÊý£¨µ«µ±Ç°²»ÔÚÀäÈ´ÖÐ£©
+        // æ˜¾ç¤ºå†·å´å›žåˆæ•°ï¼ˆå½“å‰ä¸åœ¨å†·å´ä¸­ï¼‰
         FString CooldownString = FString::Printf(TEXT("%dR"), AssociatedSkill->CooldownRounds);
         CooldownText->SetText(FText::FromString(CooldownString));
         CooldownText->SetVisibility(ESlateVisibility::HitTestInvisible);
@@ -231,7 +231,7 @@ void ULFPSkillButtonWidget::UpdateCooldownDisplay()
     }
     else
     {
-        // ÎÞÀäÈ´£¬Òþ²ØÀäÈ´ÎÄ±¾
+        // æ— å†·å´ï¼Œéšè—å†·å´æ–‡æœ¬
         CooldownText->SetVisibility(ESlateVisibility::Collapsed);
     }
 }

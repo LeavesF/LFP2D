@@ -9,44 +9,44 @@
 #include "Components/Image.h"
 #include "LFPSkillButtonWidget.generated.h"
 
-// Ç°ÏòÉùÃ÷
+// å‰å‘å£°æ˜
 class ULFPSkillBase;
 class ALFPTacticsUnit;
 class ALFPTacticsPlayerController;
 
-// ¼¼ÄÜ°´Å¥Î¯ÍĞ
+// æŠ€èƒ½æŒ‰é’®å§”æ‰˜
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSkillButtonClickedSignature, ULFPSkillBase*, Skill);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSkillButtonHoveredSignature, ULFPSkillBase*, Skill);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSkillButtonUnhoveredSignature);
 /**
- * 
+ *
  */
 UCLASS()
 class LFP2D_API ULFPSkillButtonWidget : public UUserWidget
 {
 	GENERATED_BODY()
-	
+
 public:
-    // ¹¹Ôìº¯Êı
+    // æ„é€ å‡½æ•°
     ULFPSkillButtonWidget(const FObjectInitializer& ObjectInitializer);
 
-    // ³õÊ¼»¯¼¼ÄÜ°´Å¥
+    // åˆå§‹åŒ–æŠ€èƒ½æŒ‰é’®
     UFUNCTION(BlueprintCallable, Category = "Skill Button")
     void Initialize(ULFPSkillBase* Skill);
 
-    // Ë¢ĞÂ°´Å¥×´Ì¬
+    // åˆ·æ–°æŒ‰é’®çŠ¶æ€
     UFUNCTION(BlueprintCallable, Category = "Skill Button")
     void RefreshState();
 
-    // »ñÈ¡¹ØÁªµÄ¼¼ÄÜ
+    // è·å–å…³è”çš„æŠ€èƒ½
     UFUNCTION(BlueprintPure, Category = "Skill Button")
     ULFPSkillBase* GetSkill() const { return AssociatedSkill; }
 
-    // ÉèÖÃ°´Å¥ÊÇ·ñ¿ÉÓÃ
+    // è®¾ç½®æŒ‰é’®æ˜¯å¦å¯ç”¨
     UFUNCTION(BlueprintCallable, Category = "Skill Button")
     void SetButtonEnabled(bool bEnabled);
 
-    // ÉèÖÃ°´Å¥Ñ¡ÖĞ×´Ì¬
+    // è®¾ç½®æŒ‰é’®é€‰ä¸­çŠ¶æ€
     UFUNCTION(BlueprintCallable, Category = "Skill Button")
     void SetSelected(bool bSelected);
 
@@ -56,85 +56,85 @@ protected:
     virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
 
 private:
-    // °´Å¥µã»÷ÊÂ¼ş´¦Àí
+    // æŒ‰é’®ç‚¹å‡»äº‹ä»¶å¤„ç†
     UFUNCTION()
     void OnButtonClicked();
 
-    // ¸üĞÂ°´Å¥Íâ¹Û
+    // æ›´æ–°æŒ‰é’®å¤–è§‚
     UFUNCTION()
     void UpdateAppearance();
 
-    // ¸üĞÂÀäÈ´ÏÔÊ¾
+    // æ›´æ–°å†·å´æ˜¾ç¤º
     UFUNCTION()
     void UpdateCooldownDisplay();
 
 public:
-    // Î¯ÍĞ£º°´Å¥±»µã»÷
+    // å§”æ‰˜ï¼šæŒ‰é’®è¢«ç‚¹å‡»
     UPROPERTY(BlueprintAssignable, Category = "Skill Button")
     FSkillButtonClickedSignature OnButtonClickedDelegate;
 
-    // Î¯ÍĞ£º°´Å¥±»ĞüÍ£
+    // å§”æ‰˜ï¼šæŒ‰é’®è¢«æ‚¬åœ
     UPROPERTY(BlueprintAssignable, Category = "Skill Button")
     FSkillButtonHoveredSignature OnButtonHoveredDelegate;
 
-    // Î¯ÍĞ£º°´Å¥È¡ÏûĞüÍ£
+    // å§”æ‰˜ï¼šæŒ‰é’®å–æ¶ˆæ‚¬åœ
     UPROPERTY(BlueprintAssignable, Category = "Skill Button")
     FSkillButtonUnhoveredSignature OnButtonUnhoveredDelegate;
 
 public:
-    // °´Å¥×é¼ş
+    // æŒ‰é’®ç»„ä»¶
     UPROPERTY(BlueprintReadOnly, Category = "Skill Button", meta = (BindWidget))
     UButton* SkillButton;
 
-    // ¼¼ÄÜÃû³ÆÎÄ±¾
+    // æŠ€èƒ½åç§°æ–‡æœ¬
     UPROPERTY(BlueprintReadOnly, Category = "Skill Button", meta = (BindWidget))
     UTextBlock* SkillNameText;
 
-    // ¼¼ÄÜÍ¼±ê
+    // æŠ€èƒ½å›¾æ ‡
     UPROPERTY(BlueprintReadOnly, Category = "Skill Button", meta = (BindWidget))
     UImage* SkillIcon;
 
-    // ÀäÈ´ÎÄ±¾
+    // å†·å´æ–‡æœ¬
     UPROPERTY(BlueprintReadOnly, Category = "Skill Button", meta = (BindWidget))
     UTextBlock* CooldownText;
 
-    // ÏûºÄÎÄ±¾
+    // æ¶ˆè€—æ–‡æœ¬
     UPROPERTY(BlueprintReadOnly, Category = "Skill Button", meta = (BindWidget))
     UTextBlock* CostText;
 
-    // Ñ¡ÖĞ¸ßÁÁ±ß¿ò
+    // é€‰ä¸­é«˜äº®è¾¹æ¡†
     UPROPERTY(BlueprintReadOnly, Category = "Skill Button", meta = (BindWidget))
     UImage* SelectionBorder;
 
-    // ²»¿ÉÓÃÕÚÕÖ
+    // ç¦ç”¨é®ç½©å±‚
     UPROPERTY(BlueprintReadOnly, Category = "Skill Button", meta = (BindWidget))
     UImage* DisabledOverlay;
 
-    // Ä¬ÈÏ°´Å¥ÑùÊ½
+    // é»˜è®¤æŒ‰é’®æ ·å¼
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill Button")
     FButtonStyle DefaultButtonStyle;
 
-    // Ñ¡ÖĞ°´Å¥ÑùÊ½
+    // é€‰ä¸­æŒ‰é’®æ ·å¼
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill Button")
     FButtonStyle SelectedButtonStyle;
 
-    // ²»¿ÉÓÃ°´Å¥ÑùÊ½
+    // ä¸å¯ç”¨æŒ‰é’®æ ·å¼
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill Button")
     FButtonStyle DisabledButtonStyle;
 
-    // ÀäÈ´ÖĞÎÄ±¾ÑÕÉ«
+    // å†·å´ä¸­æ–‡æœ¬é¢œè‰²
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill Button")
     FSlateColor CooldownTextColor;
 
-    // ¿ÉÓÃÎÄ±¾ÑÕÉ«
+    // å¯ç”¨æ–‡æœ¬é¢œè‰²
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill Button")
     FSlateColor AvailableTextColor;
 
-    // µã»÷ÒôĞ§
+    // ç‚¹å‡»éŸ³æ•ˆ
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill Button")
     USoundBase* ClickSound;
 
-    // ĞüÍ£ÒôĞ§
+    // æ‚¬åœéŸ³æ•ˆ
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill Button")
     USoundBase* HoverSound;
 
@@ -144,11 +144,11 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill Attributes")
     ALFPTacticsPlayerController* TacticsPC;
 
-    // ¹ØÁªµÄ¼¼ÄÜ
+    // å…³è”çš„æŠ€èƒ½
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill Attributes")
     ULFPSkillBase* AssociatedSkill;
 
-    // ÊÇ·ñ±»Ñ¡ÖĞ
+    // æ˜¯å¦é€‰ä¸­
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill Attributes")
     bool bIsSelected;
 };

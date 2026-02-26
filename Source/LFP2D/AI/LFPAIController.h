@@ -14,7 +14,7 @@ class ALFPHexGridManager;
 class ALFPHexTile;
 class ULFPEnemyBehaviorData;
 /**
- * 
+ *
  */
 UCLASS()
 class LFP2D_API ALFPAIController : public AAIController
@@ -27,21 +27,21 @@ public:
     virtual void OnPossess(APawn* InPawn) override;
     virtual void OnUnPossess() override;
 
-    // ��ʼ��λ�غ�
+    // 开始单位回合
     UFUNCTION()
     void StartUnitTurn();
 
-    // ������λ�غ�
+    // 结束单位回合
     UFUNCTION()
     void EndUnitTurn();
 
-    // ��ȡ��Ϊ��
+    // 获取行为树
     UBehaviorTree* GetBehaviorTree() const { return BehaviorTree; }
 
-    // ��ȡ���������
+    // 获取网格管理器
     ALFPHexGridManager* GetGridManager() const { return GridManager; }
 
-    // Ѱ�����Ŀ��
+    // 寻找最佳目标
     UFUNCTION(BlueprintCallable, Category = "AI")
     ALFPTacticsUnit* FindBestTarget() const;
 
@@ -49,24 +49,24 @@ public:
     UFUNCTION(BlueprintCallable, Category = "AI")
     ALFPTacticsUnit* FindBestSkillTarget(ULFPSkillBase* Skill) const;
 
-    // Ѱ������ƶ�λ��
+    // 寻找最佳移动位置
     UFUNCTION(BlueprintCallable, Category = "AI")
     ALFPHexTile* FindBestMovementTile(ALFPTacticsUnit* Target) const;
 
-    // ������вֵ
+    // 计算威胁值
     UFUNCTION(BlueprintCallable, Category = "AI")
     float CalculateThreatValue(ALFPTacticsUnit* Target) const;
 
-    // ����λ�ü�ֵ
+    // 计算位置价值
     UFUNCTION(BlueprintCallable, Category = "AI")
     float CalculatePositionValue(ALFPHexTile* Tile, ALFPTacticsUnit* Target) const;
 
 protected:
-    // ��Ϊ���ʲ�
+    // 行为树资产
     UPROPERTY(EditDefaultsOnly, Category = "AI")
     UBehaviorTree* BehaviorTree;
 
-    // �ڰ����
+    // 黑板组件
     UPROPERTY(BlueprintReadOnly, Category = "AI")
     UBlackboardComponent* BlackboardComponent;
 
@@ -76,15 +76,15 @@ public:
     void SetControlledUnit(ALFPTacticsUnit* NewUnit);
 
 protected:
-    // ��ǰ���Ƶĵ�λ
+    // 当前控制的单位
     UPROPERTY()
     ALFPTacticsUnit* ControlledUnit;
 
-    // ���������
+    // 网格管理器
     UPROPERTY()
     ALFPHexGridManager* GridManager;
 
-    // AI ��Ϊ����
+    // AI 行为数据
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
     ULFPEnemyBehaviorData* BehaviorData;
 };

@@ -16,13 +16,13 @@ struct FLFPHexCoordinates;
 UENUM(BlueprintType)
 enum class ESkillTargetType : uint8
 {
-    Self,           // ���Լ�ʩ��
-    SingleAlly,     // �����ѷ�
-    SingleEnemy,    // �����з�
-    AreaAlly,       // �����ѷ�
-    AreaEnemy,      // ����з�
-    AreaAll,        // �������е�λ
-    Tile            // �ض�����
+    Self,
+    SingleAlly,
+    SingleEnemy,
+    AreaAlly,
+    AreaEnemy,
+    AreaAll,
+    Tile
 };
 
 USTRUCT(BlueprintType)
@@ -40,33 +40,28 @@ struct FSkillRange
     bool bRequireLineOfSight = true;
 };
 /**
- * 
+ *
  */
 UCLASS(Abstract, Blueprintable, BlueprintType)
 class LFP2D_API ULFPSkillBase : public UObject
 {
 	GENERATED_BODY()
-	
+
 public:
     ULFPSkillBase();
 
-    // ����ִ��
     UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Skill")
     void Execute(ALFPHexTile* TargetTile = nullptr);
 
-    // ��鼼���Ƿ����
     UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Skill")
     bool CanExecute(ALFPHexTile* TargetTile = nullptr);
 
-    // ��ȡ������ȴ״̬
     UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Skill")
     FString GetCooldownStatus() const;
 
-    // ��ȡ���ܷ�Χ�ڵ�����Ŀ�����
     UFUNCTION(BlueprintCallable, Category = "Skill")
     TArray<ALFPHexTile*> GetTargetTiles(ALFPTacticsUnit* Caster) const;
 
-    // �غϿ�ʼʱ����ȴ����
     UFUNCTION(BlueprintCallable, Category = "Skill")
     void OnTurnStart();
 
@@ -88,14 +83,12 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Skill")
     void ShowEffectRange(bool bShow = true);*/
 public:
-    // ��������
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
     ALFPTacticsUnit* Owner;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
     ALFPTacticsPlayerController* OwnerController;
 
-    // ��������
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
     FText SkillName;
 
@@ -106,15 +99,14 @@ public:
     UTexture2D* SkillIcon;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
-    int32 CooldownRounds; // ��ȴ�غ���
+    int32 CooldownRounds;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Skill")
-    int32 CurrentCooldown; // ��ǰ��ȴ����
+    int32 CurrentCooldown;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
     ESkillTargetType TargetType;
 
-    // ���ܱ�ǩ�����ڷ���͹���
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
     FGameplayTagContainer SkillTags;
 
@@ -122,16 +114,14 @@ public:
     FSkillRange Range;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
-    int32 ActionPointCost; // �ж�������
+    int32 ActionPointCost;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
-    bool bIsDefaultAttack; // �Ƿ�ΪĬ�Ϲ�������
+    bool bIsDefaultAttack;
 
-    // �����ͷŷ�Χ
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
     TArray<FLFPHexCoordinates> ReleaseRangeCoords;
 
-    // ������Ч��Χ
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
     TArray<FLFPHexCoordinates> EffectRangeCoords;
 };

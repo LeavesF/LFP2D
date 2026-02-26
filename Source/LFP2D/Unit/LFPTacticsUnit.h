@@ -9,12 +9,12 @@
 #include "PaperSpriteComponent.h"
 #include "LFPTacticsUnit.generated.h"
 
-// Î¯ÍĞÇ©Ãû
+// å§”æ‰˜ç­¾å
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnHealthChangedSignature, int32, CurrentHealth, int32, MaxHealth);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUnitDeathSignature);
 
-// µ¥Î»ÕóÓªÃ¶¾Ù
+// å•ä½é˜µè¥æšä¸¾
 UENUM(BlueprintType)
 enum class EUnitAffiliation : uint8
 {
@@ -34,11 +34,11 @@ UCLASS()
 class LFP2D_API ALFPTacticsUnit : public APawn
 {
 	GENERATED_BODY()
-	
+
 public:
     ALFPTacticsUnit();
 
-    // ÉèÖÃ/»ñÈ¡µ±Ç°×ø±ê
+    // è®¾ç½®/è·å–å½“å‰åæ ‡
     UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
     void SetCurrentCoordinates(const FLFPHexCoordinates& NewCoords);
 
@@ -47,42 +47,42 @@ public:
 
     UFUNCTION(BlueprintPure, Category = "Tactics Unit")
     ALFPHexTile* GetCurrentTile();
-    //// »ñÈ¡¿ÉÒÆ¶¯·¶Î§
+    //// è·å–å¯ç§»åŠ¨èŒƒå›´
     //UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
     //TArray<ALFPHexTile*> GetMovementRangeTiles();
 
-    // ¿ÉÒÆ¶¯·¶Î§¸ñ×Ó
+    // å¯ç§»åŠ¨èŒƒå›´ç¼“å­˜
     UPROPERTY(VisibleInstanceOnly, Category = "Unit State")
     TArray<ALFPHexTile*> MovementRangeTiles;
 
-    // ÒÆ¶¯µ½Ä¿±ê¸ñ×Ó
+    // ç§»åŠ¨åˆ°ç›®æ ‡æ ¼å­
     UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
     bool MoveToTile(ALFPHexTile* NewTargetTile);
 
-    // ÉèÖÃÑ¡ÖĞ×´Ì¬
+    // è®¾ç½®é€‰ä¸­çŠ¶æ€
     UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
     void SetSelected(bool bSelected);
 
     UFUNCTION(BlueprintPure, Category = "Tactics Unit")
     bool IsSelected() const { return bIsSelected; }
 
-    // »ñÈ¡ÒÆ¶¯·¶Î§
+    // è·å–ç§»åŠ¨èŒƒå›´
     UFUNCTION(BlueprintPure, Category = "Tactics Unit")
     int32 GetMovementRange() const { return CurrentMovePoints; }
 
-    // ÏûºÄÒÆ¶¯µã
+    // æ¶ˆè€—ç§»åŠ¨åŠ›
     UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
     void ConsumeMovePoints(int32 Amount);
 
-	// ÏûºÄĞĞ¶¯µã
+	// æ¶ˆè€—è¡ŒåŠ¨åŠ›
 	UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
 	void ConsumeActionPoints(int32 Amount);
 
-    // ¼ì²éÊÇ·ñÓĞ×ã¹»ÒÆ¶¯µã
+    // æ£€æŸ¥æ˜¯å¦æœ‰è¶³å¤Ÿç§»åŠ¨åŠ›
     UFUNCTION(BlueprintPure, Category = "Tactics Unit")
     bool HasEnoughMovePoints(int32 Required) const;
 
-    // ¼ì²éÊÇ·ñÓĞ×ã¹»ĞĞ¶¯µã
+    // æ£€æŸ¥æ˜¯å¦æœ‰è¶³å¤Ÿè¡ŒåŠ¨åŠ›
     UFUNCTION(BlueprintPure, Category = "Tactics Unit")
     bool HasEnoughActionPoints(int32 Required) const;
 
@@ -105,18 +105,18 @@ protected:
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
     virtual void Tick(float DeltaTime) override;
 
-    // ÒÆ¶¯¶¯»­¸üĞÂ
+    // ç§»åŠ¨åŠ¨ç”»æ›´æ–°
     UFUNCTION()
     void UpdateMoveAnimation(float Value);
 
-    // Íê³ÉÒÆ¶¯
+    // å®Œæˆç§»åŠ¨
     void FinishMove();
 
-    // ¶ÔÆë¸ñ×Ó
+    // å¸é™„åˆ°ç½‘æ ¼
     void SnapToGrid();
 
 protected:
-    // µ¥Î»ÊôĞÔ
+    // å•ä½å±æ€§
     UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Unit Stats")
     int32 MovementRange = 5;
 
@@ -132,7 +132,7 @@ protected:
 	UPROPERTY(VisibleInstanceOnly, Category = "Unit State")
 	int32 CurrentActionPoints;
 
-    // µ±Ç°×ø±ê
+    // å½“å‰åæ ‡
     UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Unit Stats")
     int32 StartCoordinates_Q = 0;
 
@@ -141,11 +141,11 @@ protected:
 
     FLFPHexCoordinates CurrentCoordinates;
 
-    // Ñ¡ÖĞ×´Ì¬
+    // é€‰ä¸­çŠ¶æ€
     UPROPERTY(VisibleInstanceOnly, Category = "Unit State")
     bool bIsSelected = false;
 
-    // ÒÆ¶¯×´Ì¬
+    // ç§»åŠ¨çŠ¶æ€
     UPROPERTY(Transient)
     ALFPHexTile* TargetTile;
 
@@ -153,14 +153,14 @@ protected:
     int32 CurrentPathIndex;
     float MoveProgress;
 
-    // ¶¯»­
+    // åŠ¨ç”»
     FTimerHandle MoveTimerHandle;
     FTimeline MoveTimeline;
 
     UPROPERTY(EditDefaultsOnly, Category = "Animation")
     UCurveFloat* MoveCurve;
 
-    // ×é¼ş
+    // ç»„ä»¶
     UPROPERTY(VisibleAnywhere, Category = "Components")
     USceneComponent* RootSceneComponent;
 
@@ -168,7 +168,7 @@ protected:
     UPaperSpriteComponent* SpriteComponent;
 
 public:
-    // »ØºÏÏµÍ³º¯Êı
+    // å›åˆç³»ç»Ÿç›¸å…³
     UFUNCTION(BlueprintCallable, Category = "Turn System")
     void ResetForNewRound();
 
@@ -187,7 +187,7 @@ public:
     UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Turn System")
     UTexture2D* GetUnitIcon() const { return UnitIconTexture; }
 
-    // »ØºÏÊÂ¼ş
+    // å›åˆäº‹ä»¶
     UFUNCTION()
     void OnTurnStarted();
 
@@ -195,9 +195,9 @@ public:
     void OnTurnEnded();
 
 public:
-    // »ØºÏÏµÍ³ÊôĞÔ
+    // å›åˆç³»ç»Ÿå±æ€§
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Stats")
-    int32 Speed = 5; // ËÙ¶ÈÖµ£¨¾ö¶¨ĞĞ¶¯Ë³Ğò£©
+    int32 Speed = 5; // é€Ÿåº¦å€¼ï¼Œå†³å®šè¡ŒåŠ¨é¡ºåº
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Unit State")
     bool bHasActed = false;
@@ -218,139 +218,139 @@ public:
     UFUNCTION(BlueprintImplementableEvent, Category = "Mouse Input")
     void OnMouseClick();
 
-	// ÔÚµ¥Î»ÀàÖĞÌí¼ÓÑªÁ¿±ä»¯ÊÂ¼ş
+	// åœ¨å•ä½ä¸Šå¹¿æ’­è¡€é‡å˜åŒ–äº‹ä»¶
 public:
-	// ÊÂ¼ş£ºÑªÁ¿±ä»¯
+	// äº‹ä»¶ï¼šè¡€é‡å˜åŒ–
 	UPROPERTY(BlueprintAssignable, Category = "Unit Events")
 	FOnHealthChangedSignature OnHealthChangedDelegate;
 
-	// ÊÂ¼ş£ºµ¥Î»ËÀÍö
+	// äº‹ä»¶ï¼šå•ä½æ­»äº¡
 	UPROPERTY(BlueprintAssignable, Category = "Unit Events")
     FOnUnitDeathSignature OnDeathDelegate;
 
-	// »ñÈ¡µ±Ç°ÑªÁ¿
+	// è·å–å½“å‰è¡€é‡
 	UFUNCTION(BlueprintPure, Category = "Unit Combat")
 	int32 GetCurrentHealth() const { return CurrentHealth; }
 
-	// »ñÈ¡×î´óÑªÁ¿
+	// è·å–æœ€å¤§è¡€é‡
 	UFUNCTION(BlueprintPure, Category = "Unit Combat")
 	int32 GetMaxHealth() const { return MaxHealth; }
 
-    // »ñÈ¡¹¥»÷Á¦
+    // è·å–æ”»å‡»åŠ›
     UFUNCTION(BlueprintPure, Category = "Unit Combat")
     int32 GetAttackPower() const { return AttackPower; }
 
-	// »ñÈ¡ÕóÓª±êÊ¶
+	// è·å–é˜µè¥æ ‡è¯†
 	UFUNCTION(BlueprintPure, Category = "Unit Combat")
     EUnitAffiliation GetAffiliation() const { return Affiliation; }
 
-	// ÑªÌõ×é¼ş
+	// è¡€æ¡ç»„ä»¶
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	class UWidgetComponent* HealthBarComponent;
 
-	// ³õÊ¼»¯ÑªÌõ
+	// åˆå§‹åŒ–è¡€æ¡
 	UFUNCTION(BlueprintCallable, Category = "Unit Display")
 	void InitializeHealthBar();
 
 public:
-    // ÑªÁ¿ÊôĞÔ
+    // è¡€é‡å±æ€§
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Stats")
     int32 MaxHealth = 100;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Unit Stats")
     int32 CurrentHealth = 100;
 
-    // ¹¥»÷Á¦ÊôĞÔ
+    // æ”»å‡»åŠ›å±æ€§
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Stats")
     int32 AttackPower = 10;
 
-    // ·ÀÓùÁ¦ÊôĞÔ
+    // é˜²å¾¡åŠ›å±æ€§
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Stats")
     int32 Defense = 5;
 
-    // ÕóÓª±êÊ¶
+    // é˜µè¥æ ‡è¯†
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Stats")
     EUnitAffiliation Affiliation = EUnitAffiliation::UA_Player;
 
-    // ==== ĞÂÔöº¯Êı ====
+    // ==== æˆ˜æ–—ç›¸å…³ ====
 
-    // Ó¦ÓÃÉËº¦
+    // åº”ç”¨ä¼¤å®³
     UFUNCTION(BlueprintCallable, Category = "Unit Combat")
     void TakeDamage(int32 Damage);
 
-    // ÖÎÁÆµ¥Î»
+    // æ²»ç–—å•ä½
     UFUNCTION(BlueprintCallable, Category = "Unit Combat")
     void Heal(int32 Amount);
 
-    // ¼ì²éÊÇ·ñ´æ»î
+    // æ£€æŸ¥æ˜¯å¦å­˜æ´»
     UFUNCTION(BlueprintPure, Category = "Unit Combat")
     bool IsAlive() const { return CurrentHealth > 0; }
 
-    // ¼ì²éÊÇ·ñÎªµĞ·½µ¥Î»
+    // æ£€æŸ¥æ˜¯å¦ä¸ºæ•Œæ–¹å•ä½
     UFUNCTION(BlueprintPure, Category = "Unit Combat")
     bool IsEnemy() const { return Affiliation == EUnitAffiliation::UA_Enemy; }
 
-    // ¼ì²éÊÇ·ñÎªÓÑ·½µ¥Î»
+    // æ£€æŸ¥æ˜¯å¦ä¸ºå‹æ–¹å•ä½
     UFUNCTION(BlueprintPure, Category = "Unit Combat")
     bool IsAlly() const { return Affiliation == EUnitAffiliation::UA_Player; }
 
-    // ¼ì²éÊÇ·ñÎªÖĞÁ¢µ¥Î»
+    // æ£€æŸ¥æ˜¯å¦ä¸ºä¸­ç«‹å•ä½
     UFUNCTION(BlueprintPure, Category = "Unit Combat")
     bool IsNeutral() const { return Affiliation == EUnitAffiliation::UA_Neutral; }
 
-    // ¹¥»÷Ä¿±êµ¥Î»
+    // æ”»å‡»ç›®æ ‡å•ä½
     UFUNCTION(BlueprintCallable, Category = "Unit Combat")
     bool AttackTarget(ALFPTacticsUnit* Target);
 
     void ApplyDamageToTarget(ALFPTacticsUnit* Target);
 
-    // ËÀÍö´¦Àí
+    // æ­»äº¡å¤„ç†
     UFUNCTION(BlueprintImplementableEvent, Category = "Unit Combat")
     void OnDeath();
 
-    // ÉËº¦´¦Àí
+    // å—ä¼¤å¤„ç†
     UFUNCTION(BlueprintImplementableEvent, Category = "Unit Combat")
     void OnTakeDamage(int32 DamageTaken);
 
-    // ÖÎÁÆ´¦Àí
+    // æ²»ç–—å¤„ç†
     UFUNCTION(BlueprintImplementableEvent, Category = "Unit Combat")
     void OnHeal(int32 HealAmount);
 
-    // ¹¥»÷¶¯»­
+    // æ’­æ”¾æ”»å‡»åŠ¨ç”»
     UFUNCTION(BlueprintImplementableEvent, Category = "Unit Combat")
     void PlayAttackAnimation(ALFPTacticsUnit* Target);
 
-    // »ñÈ¡¹¥»÷·¶Î§
+    // è·å–æ”»å‡»èŒƒå›´
     UFUNCTION(BlueprintCallable, Category = "Unit Combat")
     TArray<ALFPHexTile*> GetAttackRangeTiles();
 
-    // »ñÈ¡¹¥»÷·¶Î§´óĞ¡
+    // è·å–æ”»å‡»èŒƒå›´å¤§å°
     UFUNCTION(BlueprintCallable, Category = "Unit Combat")
     int32 GetAttackRange() { return AttackRange; }
 
-    // ¼ì²éÄ¿±êÊÇ·ñÔÚ¹¥»÷·¶Î§ÄÚ
+    // æ£€æŸ¥ç›®æ ‡æ˜¯å¦åœ¨æ”»å‡»èŒƒå›´å†…
     UFUNCTION(BlueprintPure, Category = "Unit Combat")
     bool IsTargetInAttackRange(ALFPTacticsUnit* Target) const;
 
-    // ÕóÓªÑÕÉ«
+    // é˜µè¥é¢œè‰²
     UFUNCTION(BlueprintPure, Category = "Unit Display")
     FLinearColor GetAffiliationColor() const;
 
     void UpdateHealthUI();
 
 protected:
-    // ËÀÍö´¦Àí
+    // å¤„ç†æ­»äº¡
     void HandleDeath();
 
-    // ¹¥»÷·¶Î§
+    // æ”»å‡»èŒƒå›´
     UPROPERTY(EditAnywhere, Category = "Unit Combat")
     int32 AttackRange = 2;
 
-    // ¹¥»÷·¶Î§Ä£Ê½
+    // è¿‘æˆ˜æ”»å‡»æ¨¡å¼
     UPROPERTY(EditAnywhere, Category = "Unit Combat")
     bool bMeleeAttack = true;
 
-    // ËÀÍö×´Ì¬
+    // æ­»äº¡çŠ¶æ€
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Unit State", meta = (AllowPrivateAccess = "true"))
     bool bIsDead = false;
 
@@ -362,28 +362,28 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Betrayal")
 	TArray<ULFPBetrayalCondition*> BetrayalConditions;
 
-    // Ìí¼ÓAI¿ØÖÆÆ÷Ö§³ÖºÍÊÂ¼ş
+    // æ•Œæ–¹AIæ§åˆ¶å™¨æ”¯æŒå’Œäº‹ä»¶
 public:
-    // »ñÈ¡AI¿ØÖÆÆ÷
+    // è·å–AIæ§åˆ¶å™¨
     UFUNCTION(BlueprintPure, Category = "AI")
     ALFPAIController* GetAIController() const { return AIController; }
 
-    //// ÊÂ¼ş£ºÒÆ¶¯Íê³É
+    //// äº‹ä»¶ï¼šç§»åŠ¨å®Œæˆ
     //UPROPERTY(BlueprintAssignable, Category = "Events")
     //FSimpleMulticastDelegate OnMoveCompleteDelegate;
 
-    //// ÊÂ¼ş£º¹¥»÷Íê³É
+    //// äº‹ä»¶ï¼šæ”»å‡»å®Œæˆ
     //UPROPERTY(BlueprintAssignable, Category = "Events")
     //FSimpleMulticastDelegate OnAttackCompleteDelegate;
 
-    //// ÔÚÒÆ¶¯º¯ÊıÖĞ´¥·¢ÊÂ¼ş
+    //// åœ¨ç§»åŠ¨å®Œæˆåè§¦å‘äº‹ä»¶
     //UFUNCTION()
     //void NotifyMoveComplete()
     //{
     //    OnMoveCompleteDelegate.Broadcast();
     //}
 
-    //// ÔÚ¹¥»÷º¯ÊıÖĞ´¥·¢ÊÂ¼ş
+    //// åœ¨æ”»å‡»å®Œæˆåè§¦å‘äº‹ä»¶
     //UFUNCTION()
     //void NotifyAttackComplete()
     //{
@@ -391,24 +391,24 @@ public:
     //}
 
 protected:
-    // AI¿ØÖÆÆ÷
+    // AIæ§åˆ¶å™¨
     UPROPERTY()
     ALFPAIController* AIController;
 
 public:
-    // Ñ°ÕÒ×î¼ÑÄ¿±ê
+    // å¯»æ‰¾æœ€ä½³ç›®æ ‡
     UFUNCTION(BlueprintCallable, Category = "AI")
     virtual ALFPTacticsUnit* FindBestTarget();
 
-    // Ñ°ÕÒ×î¼ÑÒÆ¶¯Î»ÖÃ
+    // å¯»æ‰¾æœ€ä½³ç§»åŠ¨ä½ç½®
     UFUNCTION(BlueprintCallable, Category = "AI")
     virtual ALFPHexTile* FindBestMovementTile(ALFPTacticsUnit* Target);
 
-    // ¼ÆËãÍşĞ²Öµ
+    // è®¡ç®—å¨èƒå€¼
     UFUNCTION(BlueprintCallable, Category = "AI")
     virtual float CalculateThreatValue(ALFPTacticsUnit* Target);
 
-    // ¼ÆËãÎ»ÖÃ¼ÛÖµ
+    // è®¡ç®—ä½ç½®ä»·å€¼
     UFUNCTION(BlueprintCallable, Category = "AI")
     virtual float CalculatePositionValue(ALFPHexTile* Tile, ALFPTacticsUnit* Target);
 

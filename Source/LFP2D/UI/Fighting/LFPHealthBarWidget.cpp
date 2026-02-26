@@ -8,10 +8,10 @@ void ULFPHealthBarWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	// È·±£¿Ø¼þÒÑ°ó¶¨
+	// ç¡®ä¿æŽ§ä»¶å·²ç»‘å®š
 	if (HealthProgressBar && HealthText)
 	{
-		// ³õÊ¼Òþ²ØÑªÌõ
+		// åˆå§‹åŒ–æ»¡è¡€æ¡
 		//SetVisibility(ESlateVisibility::Hidden);
 	}
 }
@@ -20,23 +20,23 @@ void ULFPHealthBarWidget::BindToUnit(ALFPTacticsUnit* Unit)
 {
 	if (!Unit || BoundUnit == Unit) return;
 
-	// ½â°óÏÖÓÐµ¥Î»
+	// è§£ç»‘æ—§å•ä½
 	UnbindFromUnit();
 
-	// °ó¶¨ÐÂµ¥Î»
+	// ç»‘å®šæ–°å•ä½
 	BoundUnit = Unit;
 
-	// °ó¶¨ÊÂ¼þ
+	// è®¢é˜…äº‹ä»¶
 	BoundUnit->OnHealthChangedDelegate.AddDynamic(this, &ULFPHealthBarWidget::OnHealthChanged);
 	BoundUnit->OnDeathDelegate.AddDynamic(this, &ULFPHealthBarWidget::OnUnitDeath);
 
-	// ³õÊ¼¸üÐÂ
+	// åˆå§‹åŒ–æ•°æ®
 	UpdateHealthBar(BoundUnit->GetCurrentHealth(), BoundUnit->GetMaxHealth());
 
-	// ÏÔÊ¾ÑªÌõ
+	// æ˜¾ç¤ºè¡€æ¡
 	SetVisibility(ESlateVisibility::Visible);
 
-	// ¸üÐÂÕóÓªÑÕÉ«
+	// æ›´æ–°é˜µè¥é¢œè‰²
 	if (BoundUnit)
 	{
 		UpdateAffiliationColor(BoundUnit->GetAffiliation());
@@ -47,13 +47,13 @@ void ULFPHealthBarWidget::UnbindFromUnit()
 {
 	if (BoundUnit)
 	{
-		// ½â°óÊÂ¼þ
+		// å–æ¶ˆè®¢é˜…äº‹ä»¶
 		BoundUnit->OnHealthChangedDelegate.RemoveDynamic(this, &ULFPHealthBarWidget::OnHealthChanged);
 		BoundUnit->OnDeathDelegate.RemoveDynamic(this, &ULFPHealthBarWidget::OnUnitDeath);
 		BoundUnit = nullptr;
 	}
 
-	// Òþ²ØÑªÌõ
+	// éšè—è¡€æ¡
 	SetVisibility(ESlateVisibility::Hidden);
 }
 
@@ -61,13 +61,13 @@ void ULFPHealthBarWidget::UpdateHealthBar(int32 CurrentHealth, int32 MaxHealth)
 {
 	if (!HealthProgressBar || !HealthText) return;
 
-	// ¼ÆËãÑªÁ¿°Ù·Ö±È
+	// è®¡ç®—è¡€é‡ç™¾åˆ†æ¯”
 	float HealthPercent = (MaxHealth > 0) ? (float)CurrentHealth / MaxHealth : 0.0f;
 
-	// ¸üÐÂ½ø¶ÈÌõ
+	// æ›´æ–°è¿›åº¦æ¡
 	HealthProgressBar->SetPercent(HealthPercent);
 
-	// ¸üÐÂÎÄ±¾
+	// æ›´æ–°æ–‡æœ¬
 	FString HealthString = FString::Printf(TEXT("%d / %d"), CurrentHealth, MaxHealth);
 	HealthText->SetText(FText::FromString(HealthString));
 }
@@ -79,10 +79,10 @@ void ULFPHealthBarWidget::OnHealthChanged(int32 CurrentHealth, int32 MaxHealth)
 
 void ULFPHealthBarWidget::OnUnitDeath()
 {
-	// µ¥Î»ËÀÍöÊ±Òþ²ØÑªÌõ
+	// å•ä½æ­»äº¡æ—¶éšè—è¡€æ¡
 	SetVisibility(ESlateVisibility::Hidden);
 
-	// ¿ÉÑ¡£ºÏÔÊ¾ËÀÍöÐ§¹û»òÎÄ±¾
+	// å¯é€‰ï¼šæ˜¾ç¤ºæ­»äº¡æ•ˆæžœæˆ–æ–‡æœ¬
 	if (HealthText)
 	{
 		HealthText->SetText(FText::FromString(TEXT("DEAD")));

@@ -23,14 +23,14 @@ void ULFPSkillSelectionWidget::NativeConstruct()
 {
     Super::NativeConstruct();
 
-    //// È·±£×é¼şÒÑ°ó¶¨
+    //// ç¡®ä¿æ§ä»¶å·²ç»‘å®š
     //if (!SkillGrid || !UnitNameText || !ActionPointsText)
     //{
     //    UE_LOG(LogTemp, Error, TEXT("Skill selection widget components not properly bound!"));
     //    return;
     //}
 
-    // ³õÊ¼Òş²ØÏêÇéÃæ°å
+    // åˆå§‹åŒ–æŠ€èƒ½è¯¦æƒ…é¢æ¿
     if (SkillDetailsPanel)
     {
         SkillDetailsPanel->SetVisibility(ESlateVisibility::Collapsed);
@@ -44,17 +44,17 @@ void ULFPSkillSelectionWidget::InitializeSkills(ALFPTacticsUnit* Unit, ALFPTacti
     OwnerUnit = Unit;
     TacticsPC = PC;
 
-    // Çå¿ÕÏÖÓĞ¼¼ÄÜ°´Å¥
+    // æ¸…ç©ºæ‰€æœ‰æŠ€èƒ½æŒ‰é’®
     SkillGrid->ClearChildren();
     SkillButtons.Empty();
 
-    // ¸üĞÂµ¥Î»ĞÅÏ¢
+    // æ›´æ–°å•ä½ä¿¡æ¯
     UpdateUnitInfo();
 
-    // »ñÈ¡¿ÉÓÃ¼¼ÄÜ
+    // è·å–å¯ç”¨æŠ€èƒ½
     TArray<ULFPSkillBase*> AvailableSkills = Unit->GetAvailableSkills();
 
-    // ´´½¨¼¼ÄÜ°´Å¥
+    // åˆ›å»ºæŠ€èƒ½æŒ‰é’®
     int32 Row = 0;
     int32 Column = 0;
 
@@ -62,24 +62,24 @@ void ULFPSkillSelectionWidget::InitializeSkills(ALFPTacticsUnit* Unit, ALFPTacti
     {
         if (!Skill) continue;
 
-        // ´´½¨¼¼ÄÜ°´Å¥
+        // åˆ›å»ºæŠ€èƒ½æŒ‰é’®
         if (SkillButtonClass)
         {
             ULFPSkillButtonWidget* SkillButton = CreateWidget<ULFPSkillButtonWidget>(this, SkillButtonClass);
             if (SkillButton)
             {
-                // ³õÊ¼»¯°´Å¥
+                // åˆå§‹åŒ–æŒ‰é’®
                 SkillButton->Initialize(Skill);
                 SkillButton->OwnerUnit = OwnerUnit;
                 SkillButton->TacticsPC = TacticsPC;
-                // °ó¶¨µã»÷ÊÂ¼ş
+                // ç»‘å®šç‚¹å‡»äº‹ä»¶
                 //SkillButton->OnSkillSelected.AddDynamic(this, &ULFPSkillSelectionWidget::OnSkillSelected);
 
-                // Ìí¼Óµ½Íø¸ñ
+                // æ·»åŠ åˆ°ç½‘æ ¼
                 SkillGrid->AddChildToUniformGrid(SkillButton, Row, Column);
                 SkillButtons.Add(SkillButton);
 
-                // ¸üĞÂĞĞÁĞÎ»ÖÃ
+                // æ›´æ–°ç½‘æ ¼ä½ç½®
                 Column++;
                 if (Column >= MaxColumns)
                 {
@@ -90,13 +90,13 @@ void ULFPSkillSelectionWidget::InitializeSkills(ALFPTacticsUnit* Unit, ALFPTacti
         }
     }
 
-    //// Èç¹ûÃ»ÓĞ¿ÉÓÃ¼¼ÄÜ£¬ÏÔÊ¾ÌáÊ¾
+    //// å¦‚æœæ²¡æœ‰å¯ç”¨æŠ€èƒ½ï¼Œæ˜¾ç¤ºæç¤º
     //if (AvailableSkills.Num() == 0)
     //{
     //    if (NoSkillsText)
     //    {
     //        NoSkillsText->SetVisibility(ESlateVisibility::Visible);
-    //        NoSkillsText->SetText(FText::FromString("Ã»ÓĞ¿ÉÓÃ¼¼ÄÜ"));
+    //        NoSkillsText->SetText(FText::FromString("æ²¡æœ‰å¯ç”¨æŠ€èƒ½"));
     //    }
     //}
     //else
@@ -114,16 +114,16 @@ void ULFPSkillSelectionWidget::OnSkillSelected(ULFPSkillBase* Skill)
 
     SelectedSkill = Skill;
 
-    // ¸üĞÂ¼¼ÄÜÏêÇé
+    // æ›´æ–°æŠ€èƒ½è¯¦æƒ…
     UpdateSkillDetails(Skill);
 
-    // ÏÔÊ¾ÏêÇéÃæ°å
+    // æ˜¾ç¤ºè¯¦æƒ…é¢æ¿
     if (SkillDetailsPanel)
     {
         SkillDetailsPanel->SetVisibility(ESlateVisibility::Visible);
     }
 
-    // Í¨ÖªÍâ²¿¼¼ÄÜ±»Ñ¡ÖĞ
+    // é€šçŸ¥å¤–éƒ¨æŠ€èƒ½è¢«é€‰ä¸­
     if (OnSkillChosen.IsBound())
     {
         OnSkillChosen.Broadcast(Skill);
@@ -138,11 +138,11 @@ void ULFPSkillSelectionWidget::UpdateSkillDetails(ULFPSkillBase* Skill)
         return;
     }
 
-    // ¸üĞÂ¼¼ÄÜĞÅÏ¢
+    // æ›´æ–°æŠ€èƒ½ä¿¡æ¯
     SkillNameText->SetText(Skill->SkillName);
     SkillDescriptionText->SetText(Skill->SkillDescription);
 
-    //// ÉèÖÃ¼¼ÄÜÍ¼±ê
+    //// è®¾ç½®æŠ€èƒ½å›¾æ ‡
     //if (Skill->SkillIcon)
     //{
     //    SkillIcon->SetBrushFromTexture(Skill->SkillIcon);
@@ -153,18 +153,18 @@ void ULFPSkillSelectionWidget::UpdateSkillDetails(ULFPSkillBase* Skill)
     //    SkillIcon->SetVisibility(ESlateVisibility::Collapsed);
     //}
 
-    // ¸üĞÂ¼¼ÄÜ·¶Î§ĞÅÏ¢
-    FString RangeText = FString::Printf(TEXT("·¶Î§: %d-%d"),
+    // æ›´æ–°æŠ€èƒ½èŒƒå›´ä¿¡æ¯
+    FString RangeText = FString::Printf(TEXT("èŒƒå›´: %d-%d"),
         Skill->Range.MinRange, Skill->Range.MaxRange);
 
     if (Skill->Range.bRequireLineOfSight)
     {
-        RangeText += TEXT(" (ĞèÒªÊÓÏß)");
+        RangeText += TEXT(" (éœ€è¦è§†çº¿)");
     }
 
     SkillRangeText->SetText(FText::FromString(RangeText));
 
-    // ¸üĞÂÀäÈ´ĞÅÏ¢
+    // æ›´æ–°å†·å´ä¿¡æ¯
     FString CooldownText;
     if (Skill->CooldownRounds > 0)
     {
@@ -185,10 +185,10 @@ void ULFPSkillSelectionWidget::UpdateSkillDetails(ULFPSkillBase* Skill)
 
     SkillCooldownText->SetText(FText::FromString(CooldownText));
 
-    // ¸üĞÂĞĞ¶¯µãÏûºÄ
+    // æ›´æ–°è¡ŒåŠ¨åŠ›æ¶ˆè€—
     FString APText = FString::Printf(TEXT("Consume: %dAP"), Skill->ActionPointCost);
 
-    // ¸üĞÂÈ·ÈÏ°´Å¥×´Ì¬
+    // æ›´æ–°ç¡®è®¤æŒ‰é’®çŠ¶æ€
     UpdateConfirmButtonState();
 }
 
@@ -196,15 +196,15 @@ void ULFPSkillSelectionWidget::UpdateUnitInfo()
 {
     //if (!OwnerUnit || !UnitNameText || !ActionPointsText || !HealthText) return;
 
-    //// ¸üĞÂµ¥Î»Ãû³Æ
+    //// æ›´æ–°å•ä½åç§°
     //UnitNameText->SetText(FText::FromString(OwnerUnit->GetName()));
 
-    //// ¸üĞÂĞĞ¶¯µã
+    //// æ›´æ–°è¡ŒåŠ¨åŠ›
     //FString APText = FString::Printf(TEXT("AP: %d/%d"),
     //    OwnerUnit->GetCurrentMovePoints(), OwnerUnit->GetMaxMovePoints());
     //ActionPointsText->SetText(FText::FromString(APText));
 
-    //// ¸üĞÂÑªÁ¿
+    //// æ›´æ–°è¡€é‡
     //FString HealthTextStr = FString::Printf(TEXT("HP: %d/%d"),
     //    OwnerUnit->GetCurrentHealth(), OwnerUnit->GetMaxHealth());
     //HealthText->SetText(FText::FromString(HealthTextStr));
@@ -214,13 +214,13 @@ void ULFPSkillSelectionWidget::UpdateConfirmButtonState()
 {
     if (!OwnerUnit || !SelectedSkill) return;
 
-    // ¼ì²é¼¼ÄÜÊÇ·ñ¿ÉÓÃ
+    // æ£€æŸ¥æŠ€èƒ½æ˜¯å¦å¯ç”¨
     bool bCanExecute = SelectedSkill->CanExecute();
 
-    //// ¸üĞÂÈ·ÈÏ°´Å¥×´Ì¬
+    //// æ›´æ–°ç¡®è®¤æŒ‰é’®çŠ¶æ€
     //ConfirmButton->SetIsEnabled(bCanExecute);
 
-    //// ¸üĞÂÌáÊ¾ÎÄ±¾
+    //// æ›´æ–°æç¤ºæ–‡æœ¬
     //if (ConfirmHintText)
     //{
     //    if (bCanExecute)
@@ -255,32 +255,32 @@ void ULFPSkillSelectionWidget::OnConfirmClicked()
 {
     if (!SelectedSkill || !OwnerUnit) return;
 
-    // ¼ì²é¼¼ÄÜÊÇ·ñ¿ÉÓÃ
+    // æ£€æŸ¥æŠ€èƒ½æ˜¯å¦å¯ç”¨
     if (!SelectedSkill->CanExecute())
     {
-        // ²¥·Å´íÎóÒôĞ§»òÌáÊ¾
+        // æ’­æ”¾é”™è¯¯éŸ³æ•ˆæˆ–æç¤º
         return;
     }
 
-    // Í¨ÖªÍâ²¿È·ÈÏ¼¼ÄÜÑ¡Ôñ
+    // é€šçŸ¥å¤–éƒ¨ç¡®è®¤æŠ€èƒ½é€‰æ‹©
     if (OnSkillConfirmed.IsBound())
     {
         OnSkillConfirmed.Broadcast(SelectedSkill);
     }
 
-    // ¹Ø±Õ´°¿Ú
+    // å…³é—­çª—å£
     RemoveFromParent();
 }
 
 void ULFPSkillSelectionWidget::OnCancelClicked()
 {
-    // Í¨ÖªÍâ²¿È¡Ïû¼¼ÄÜÑ¡Ôñ
+    // é€šçŸ¥å¤–éƒ¨å–æ¶ˆæŠ€èƒ½é€‰æ‹©
     if (OnSelectionCanceled.IsBound())
     {
         OnSelectionCanceled.Broadcast();
     }
 
-    // ¹Ø±Õ´°¿Ú
+    // å…³é—­çª—å£
     RemoveFromParent();
 }
 
@@ -288,10 +288,10 @@ void ULFPSkillSelectionWidget::RefreshSkillButtons()
 {
     if (!OwnerUnit) return;
 
-    // ¸üĞÂµ¥Î»ĞÅÏ¢
+    // æ›´æ–°å•ä½ä¿¡æ¯
     UpdateUnitInfo();
 
-    // ¸üĞÂËùÓĞ¼¼ÄÜ°´Å¥×´Ì¬
+    // åˆ·æ–°æ‰€æœ‰æŠ€èƒ½æŒ‰é’®çŠ¶æ€
     for (ULFPSkillButtonWidget* Button : SkillButtons)
     {
         if (Button)
@@ -300,7 +300,7 @@ void ULFPSkillSelectionWidget::RefreshSkillButtons()
         }
     }
 
-    // Èç¹ûµ±Ç°ÓĞÑ¡ÖĞµÄ¼¼ÄÜ£¬¸üĞÂÆäÏêÇé
+    // å¦‚æœå½“å‰æœ‰é€‰ä¸­çš„æŠ€èƒ½ï¼Œæ›´æ–°å…¶è¯¦æƒ…
     if (SelectedSkill)
     {
         UpdateSkillDetails(SelectedSkill);
@@ -309,7 +309,7 @@ void ULFPSkillSelectionWidget::RefreshSkillButtons()
 
 FReply ULFPSkillSelectionWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
 {
-    // ´¦Àí¼üÅÌÊäÈë
+    // å¤„ç†é”®ç›˜è¾“å…¥
     if (InKeyEvent.GetKey() == EKeys::Escape)
     {
         OnCancelClicked();
@@ -328,11 +328,11 @@ void ULFPSkillSelectionWidget::NativeTick(const FGeometry& MyGeometry, float InD
 {
     Super::NativeTick(MyGeometry, InDeltaTime);
 
-    // ¶¨ÆÚË¢ĞÂ¼¼ÄÜ°´Å¥×´Ì¬£¨¿ÉÑ¡£¬¸ù¾İĞèÒªµ÷ÕûÆµÂÊ£©
+    // å®šæœŸåˆ·æ–°æŠ€èƒ½æŒ‰é’®çŠ¶æ€ï¼ˆé™ä½é¢‘ç‡ï¼‰
     static float RefreshTimer = 0.0f;
     RefreshTimer += InDeltaTime;
 
-    if (RefreshTimer >= 0.5f) // Ã¿0.5ÃëË¢ĞÂÒ»´Î
+    if (RefreshTimer >= 0.5f) // æ¯0.5ç§’åˆ·æ–°ä¸€æ¬¡
     {
         RefreshTimer = 0.0f;
         RefreshSkillButtons();
@@ -343,17 +343,17 @@ void ULFPSkillSelectionWidget::Show()
 {
     SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 
-    //// »ñÈ¡Íæ¼Ò¿ØÖÆÆ÷²¢ÉèÖÃÊäÈëÄ£Ê½
+    //// è·å–ç©å®¶æ§åˆ¶å™¨å¹¶è®¾ç½®è¾“å…¥æ¨¡å¼
     //APlayerController* PC = GetOwningPlayer();
     //if (PC)
     //{
-    //    // ÉèÖÃUI-onlyÊäÈëÄ£Ê½
+    //    // è®¾ç½®ä¸ºUI-onlyè¾“å…¥æ¨¡å¼
     //    FInputModeUIOnly InputMode;
     //    InputMode.SetWidgetToFocus(TakeWidget());
     //    InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
     //    PC->SetInputMode(InputMode);
 
-    //    // ÏÔÊ¾Êó±ê¹â±ê
+    //    // æ˜¾ç¤ºé¼ æ ‡å…‰æ ‡
     //    PC->bShowMouseCursor = true;
     //}
 }
@@ -362,24 +362,24 @@ void ULFPSkillSelectionWidget::Hide()
 {
     SetVisibility(ESlateVisibility::Collapsed);
 
-    //// »Ö¸´ÓÎÏ·ÊäÈëÄ£Ê½
+    //// æ¢å¤æ¸¸æˆè¾“å…¥æ¨¡å¼
     //APlayerController* PC = GetOwningPlayer();
     //if (PC)
     //{
     //    FInputModeGameOnly InputMode;
     //    PC->SetInputMode(InputMode);
 
-    //    // Òş²ØÊó±ê¹â±ê
+    //    // éšè—é¼ æ ‡å…‰æ ‡
     //    PC->bShowMouseCursor = false;
     //}
 }
 
 void ULFPSkillSelectionWidget::SetSkillFilter(const FGameplayTagContainer& FilterTags)
 {
-    // ±£´æ¹ıÂËÌõ¼ş
+    // ä¿å­˜è¿‡æ»¤æ¡ä»¶
     SkillFilterTags = FilterTags;
 
-    // ÖØĞÂ³õÊ¼»¯¼¼ÄÜÁĞ±í
+    // é‡æ–°åˆå§‹åŒ–æŠ€èƒ½åˆ—è¡¨
     if (OwnerUnit)
     {
         //InitializeSkills(OwnerUnit, this);
@@ -388,10 +388,10 @@ void ULFPSkillSelectionWidget::SetSkillFilter(const FGameplayTagContainer& Filte
 
 void ULFPSkillSelectionWidget::ClearSkillFilter()
 {
-    // Çå¿Õ¹ıÂËÌõ¼ş
+    // æ¸…é™¤è¿‡æ»¤æ¡ä»¶
     SkillFilterTags.Reset();
 
-    // ÖØĞÂ³õÊ¼»¯¼¼ÄÜÁĞ±í
+    // é‡æ–°åˆå§‹åŒ–æŠ€èƒ½åˆ—è¡¨
     if (OwnerUnit)
     {
         //InitializeSkills(OwnerUnit, this);
@@ -404,16 +404,16 @@ TArray<ULFPSkillBase*> ULFPSkillSelectionWidget::GetFilteredSkills(ALFPTacticsUn
 
     if (!Unit) return FilteredSkills;
 
-    // »ñÈ¡ËùÓĞ¿ÉÓÃ¼¼ÄÜ
+    // è·å–æ‰€æœ‰å¯ç”¨æŠ€èƒ½
     TArray<ULFPSkillBase*> AllSkills = Unit->GetAvailableSkills();
 
-    // Èç¹ûÃ»ÓĞ¹ıÂËÌõ¼ş£¬·µ»ØËùÓĞ¼¼ÄÜ
+    // å¦‚æœæ²¡æœ‰è¿‡æ»¤æ¡ä»¶ï¼Œè¿”å›æ‰€æœ‰æŠ€èƒ½
     if (SkillFilterTags.IsEmpty())
     {
         return AllSkills;
     }
 
-    // Ó¦ÓÃ¹ıÂËÌõ¼ş
+    // åº”ç”¨è¿‡æ»¤æ¡ä»¶
     for (ULFPSkillBase* Skill : AllSkills)
     {
         if (Skill && Skill->SkillTags.HasAny(SkillFilterTags))
@@ -429,7 +429,7 @@ void ULFPSkillSelectionWidget::SortSkills(ESkillSortMethod SortMethod)
 {
     if (!OwnerUnit) return;
 
-    // »ñÈ¡µ±Ç°ÏÔÊ¾µÄ¼¼ÄÜ
+    // è·å–å½“å‰æ˜¾ç¤ºçš„æŠ€èƒ½
     TArray<ULFPSkillBase*> CurrentSkills;
     for (ULFPSkillButtonWidget* Button : SkillButtons)
     {
@@ -439,7 +439,7 @@ void ULFPSkillSelectionWidget::SortSkills(ESkillSortMethod SortMethod)
         }
     }
 
-    // ¸ù¾İÅÅĞò·½·¨ÅÅĞò
+    // æ ¹æ®æ’åºæ–¹æ³•æ’åº
     switch (SortMethod)
     {
     case ESkillSortMethod::ByName:
@@ -461,14 +461,14 @@ void ULFPSkillSelectionWidget::SortSkills(ESkillSortMethod SortMethod)
         break;
 
     case ESkillSortMethod::ByType:
-        // ĞèÒª¼¼ÄÜÀàĞÍÊôĞÔ£¬ÕâÀï¼ÙÉèÓĞSkillTypeÊôĞÔ
+        // éœ€è¦æ·»åŠ æŠ€èƒ½ç±»å‹å±æ€§ï¼Œå¦‚SkillTypeå­—æ®µ
         // CurrentSkills.Sort([](const ULFPSkillBase& A, const ULFPSkillBase& B) {
         //     return A.SkillType < B.SkillType;
         // });
         break;
     }
 
-    // ÖØĞÂÅÅÁĞ¼¼ÄÜ°´Å¥
+    // é‡æ–°æ’åˆ—æ‰€æœ‰æŠ€èƒ½æŒ‰é’®
     if (SkillGrid)
     {
         SkillGrid->ClearChildren();
@@ -478,7 +478,7 @@ void ULFPSkillSelectionWidget::SortSkills(ESkillSortMethod SortMethod)
 
         for (ULFPSkillBase* Skill : CurrentSkills)
         {
-            // ÕÒµ½¶ÔÓ¦µÄ°´Å¥
+            // æ‰¾åˆ°å¯¹åº”çš„æŒ‰é’®
             for (ULFPSkillButtonWidget* Button : SkillButtons)
             {
                 if (Button && Button->GetSkill() == Skill)
@@ -503,16 +503,16 @@ void ULFPSkillSelectionWidget::OnSkillHovered(ULFPSkillBase* Skill)
 {
     if (!Skill) return;
 
-    // ¸üĞÂ¼¼ÄÜÏêÇé
+    // æ›´æ–°æŠ€èƒ½è¯¦æƒ…
     UpdateSkillDetails(Skill);
 
-    // ÏÔÊ¾ÏêÇéÃæ°å
+    // æ˜¾ç¤ºè¯¦æƒ…é¢æ¿
     if (SkillDetailsPanel)
     {
         SkillDetailsPanel->SetVisibility(ESlateVisibility::Visible);
     }
 
-    //// ²¥·ÅĞüÍ£ÒôĞ§
+    //// æ’­æ”¾æ‚¬åœéŸ³æ•ˆ
     //if (HoverSound)
     //{
     //    PlaySound(HoverSound);
@@ -521,14 +521,14 @@ void ULFPSkillSelectionWidget::OnSkillHovered(ULFPSkillBase* Skill)
 
 void ULFPSkillSelectionWidget::OnSkillUnhovered()
 {
-    // Èç¹ûÖ®Ç°ÓĞÑ¡ÖĞµÄ¼¼ÄÜ£¬ÏÔÊ¾Ñ¡ÖĞ¼¼ÄÜµÄÏêÇé
+    // å¦‚æœä¹‹å‰æœ‰é€‰ä¸­çš„æŠ€èƒ½ï¼Œæ˜¾ç¤ºé€‰ä¸­æŠ€èƒ½çš„è¯¦æƒ…
     if (SelectedSkill)
     {
         UpdateSkillDetails(SelectedSkill);
     }
     else
     {
-        // Òş²ØÏêÇéÃæ°å
+        // éšè—è¯¦æƒ…é¢æ¿
         if (SkillDetailsPanel)
         {
             SkillDetailsPanel->SetVisibility(ESlateVisibility::Collapsed);

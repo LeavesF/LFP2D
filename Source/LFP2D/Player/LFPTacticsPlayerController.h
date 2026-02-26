@@ -21,13 +21,13 @@ class ALFPTurnManager;
 class ULFPTurnSpeedListWidget;
 class ULFPSkillSelectionWidget;
 /**
- * 
+ *
  */
 UCLASS()
 class LFP2D_API ALFPTacticsPlayerController : public APlayerController
 {
 	GENERATED_BODY()
-	
+
 public:
     ALFPTacticsPlayerController();
 
@@ -37,7 +37,7 @@ protected:
     virtual void Tick(float DeltaTime) override;
 
 public:
-    // Enhanced Input °ó¶¨º¯Êı
+    // Enhanced Inputç»‘å®šå‡½æ•°
     void OnSelectStarted(const FInputActionValue& Value);
     void OnSelectCompleted(const FInputActionValue& Value);
     void OnAttackStarted(const FInputActionValue& Value);
@@ -53,7 +53,7 @@ public:
     void OnCameraDragCompleted(const FInputActionValue& Value);
     void OnCameraZoom(const FInputActionValue& Value);
 
-    // ÓÎÏ·Á÷³Ìº¯Êı
+    // æ¸¸æˆæµç¨‹å‡½æ•°
     void SelectUnit(ALFPTacticsUnit* Unit);
     void SelectTile(ALFPHexTile* Tile);
     void ConfirmMove();
@@ -62,11 +62,11 @@ public:
     void HidePathToDefault();
     void HidePathToRange();
 
-    // µ÷ÊÔ¹¦ÄÜ
+    // è°ƒè¯•åŠŸèƒ½
     void ToggleDebugDisplay();
 
 protected:
-    // ÊäÈëÏµÍ³×Ê²ú
+    // è¾“å…¥ç³»ç»Ÿèµ„äº§
     UPROPERTY(EditAnywhere, Category = "Input")
     TObjectPtr<UInputMappingContext> DefaultInputMapping;
 
@@ -101,32 +101,32 @@ protected:
     UInputAction* CameraZoomAction;
 
 
-    // ÒıÓÃÍø¸ñ¹ÜÀíÆ÷
+    // ç½‘æ ¼ç®¡ç†å™¨å¼•ç”¨
     UPROPERTY()
     ALFPHexGridManager* GridManager;
 
-    // µ±Ç°Ñ¡ÖĞµÄµ¥Î»
+    // å½“å‰é€‰ä¸­çš„å•ä½
     UPROPERTY()
     ALFPTacticsUnit* SelectedUnit;
 
     UPROPERTY()
     ALFPTacticsUnit* TargetUnit;
 
-    // µ±Ç°Ñ¡ÖĞµÄ¸ñ×Ó£¨ÓÃÓÚÒÆ¶¯Ä¿±ê£©
+    // å½“å‰é€‰ä¸­çš„æ ¼å­ï¼ˆå³ç§»åŠ¨ç›®æ ‡ï¼‰
     UPROPERTY()
     ALFPHexTile* SelectedTile;
 
     UPROPERTY()
     ALFPHexTile* LastHoveredTile;
 
-    // µ±Ç°ÏÔÊ¾µÄ¿ÉÒÆ¶¯·¶Î§
+    // å½“å‰æ˜¾ç¤ºçš„å¯ç§»åŠ¨èŒƒå›´
     TArray<ALFPHexTile*> MovementRangeTiles;
 
     TArray<ALFPHexTile*> CacheRangeTiles;
-    // µ±Ç°ÏÔÊ¾µÄÂ·¾¶
+    // å½“å‰æ˜¾ç¤ºçš„è·¯å¾„
     TArray<ALFPHexTile*> CurrentPath;
 
-    // ×´Ì¬±êÖ¾
+    // çŠ¶æ€æ ‡å¿—
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "State")
     bool bIsSelecting;
 
@@ -138,7 +138,7 @@ protected:
 
     FVector2D SelectionStart;
 
-    // Ïà»ú¿ØÖÆ
+    // ç›¸æœºå‚æ•°
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera")
     float CameraRotationPitchAngle;
 
@@ -146,7 +146,7 @@ protected:
     float CameraRotationYawAngle;
     FVector CameraOffset;
 
-    // ÍÏ×§×´Ì¬
+    // æ‹–æ‹½çŠ¶æ€
     bool bIsDragging;
     FVector2D DragStartPosition;
 
@@ -156,17 +156,17 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	float DragThresholdTime = 0.5f;
 
-    // µ÷ÊÔ±êÖ¾
+    // è°ƒè¯•æ ‡å¿—
     bool bDebugEnabled;
 
-    // Ïà»úÒÆ¶¯ËÙ¶È
+    // ç›¸æœºç§»åŠ¨é€Ÿåº¦
     UPROPERTY(EditAnywhere, Category = "Camera")
     float CameraPanSpeed = 500.0f;
 
     UPROPERTY(EditAnywhere, Category = "Camera")
     float CameraDragSpeed = 10.0f;
 
-    // Ïà»úËõ·Å
+    // ç›¸æœºç¼©æ”¾
     UPROPERTY(EditAnywhere, Category = "Camera")
     float CameraZoomSpeed = 100.0f;
 
@@ -193,7 +193,7 @@ public:
     /*UFUNCTION(BlueprintCallable, Category = "Skill")
     void HandleSkillTargetSelected(ALFPHexTile* TargetTile);*/
 
-    // »ØºÏÊÂ¼ş
+    // å›åˆäº‹ä»¶
     UFUNCTION(BlueprintImplementableEvent, Category = "Turn Events")
     void OnTurnStarted(ALFPTacticsUnit* Unit);
 
@@ -206,7 +206,7 @@ public:
     UFUNCTION(BlueprintImplementableEvent, Category = "Turn Events")
     void OnRoundEnded(int32 RoundNumber);
 
-    // µ¥Î»ĞĞ¶¯
+    // å•ä½è¡ŒåŠ¨
     UFUNCTION(BlueprintCallable, Category = "Unit Actions")
     void MoveUnit(ALFPTacticsUnit* Unit, ALFPHexTile* TargetTile);
 
@@ -216,7 +216,7 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Unit Actions")
     void SkipTurn(ALFPTacticsUnit* Unit);
 
-// UIÏà¹Ø
+// UIç›¸å…³
 protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
     TSubclassOf<class UUserWidget> TurnSpeedWidgetClass;

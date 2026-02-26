@@ -21,32 +21,32 @@ ALFPTacticsUnit::ALFPTacticsUnit()
 {
     PrimaryActorTick.bCanEverTick = true;
 
-    // ´´½¨¸ù×é¼ş
+    // åˆ›å»ºæ ¹ç»„ä»¶
     RootSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
     RootComponent = RootSceneComponent;
 
-    // ´´½¨¾«Áé×é¼ş
+    // åˆ›å»ºç²¾çµç»„ä»¶
     SpriteComponent = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("SpriteComponent"));
     SpriteComponent->SetupAttachment(RootComponent);
-    SpriteComponent->SetRelativeLocation(FVector(0, 0, 0)); // ÔÚ¸ñ×ÓÉÏ·½
+    SpriteComponent->SetRelativeLocation(FVector(0, 0, 0)); // åœ¨æ ¹ç»„ä»¶ä¸Šæ–¹
 
-    // Ä¬ÈÏÖµ
+    // é»˜è®¤å€¼
     CurrentMovePoints = MaxMovePoints;
     CurrentActionPoints = MaxActionPoints;
     CurrentPathIndex = -1;
     MoveProgress = 0.0f;
 
-	// ´´½¨ÑªÌõ×é¼ş
+	// åˆ›å»ºè¡€æ¡ç»„ä»¶
 	HealthBarComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBarComponent"));
 	HealthBarComponent->SetupAttachment(RootComponent);
 	HealthBarComponent->SetWidgetSpace(EWidgetSpace::Screen);
 	HealthBarComponent->SetDrawAtDesiredSize(true);
-	// ÉèÖÃÏà¶ÔÎ»ÖÃ£¨ÔÚµ¥Î»ÉÏ·½£©
+	// è®¾ç½®ç›¸å¯¹ä½ç½®ï¼ˆåœ¨å•ä½ä¸Šæ–¹ï¼‰
 	HealthBarComponent->SetRelativeLocation(FVector(0, 150, 0));
 
-    // ´´½¨¼¼ÄÜ×é¼ş
+    // åˆ›å»ºæŠ€èƒ½ç»„ä»¶
     SkillComponent = CreateDefaultSubobject<ULFPSkillComponent>(TEXT("SkillComponent"));
-    // ´´½¨Ê±¼äÏß×é¼ş
+    // è¿è¡Œæ—¶åˆ›å»ºç»„ä»¶
     //MoveTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("MoveTimeline"));
 }
 
@@ -54,7 +54,7 @@ void ALFPTacticsUnit::BeginPlay()
 {
     Super::BeginPlay();
 
-    // ×¢²áµ½»ØºÏ¹ÜÀíÆ÷
+    // æ³¨å†Œåˆ°å›åˆç®¡ç†å™¨
     if (ALFPTurnManager* TurnManager = GetTurnManager())
     {
         TurnManager->RegisterUnit(this);
@@ -68,11 +68,11 @@ void ALFPTacticsUnit::BeginPlay()
     FLFPHexCoordinates SpawnPoint = FLFPHexCoordinates(StartCoordinates_Q, StartCoordinates_R);
     SetCurrentCoordinates(SpawnPoint);
 
-	// ³õÊ¼»¯ÑªÌõ
+	// åˆå§‹åŒ–è¡€é‡
     CurrentHealth = MaxHealth;
 	InitializeHealthBar();
 
-    // ÉèÖÃÒÆ¶¯Ê±¼äÏß
+    // è®¾ç½®ç§»åŠ¨æ—¶é—´çº¿
     if (MoveCurve)
     {
         FOnTimelineFloat TimelineCallback;
@@ -84,7 +84,7 @@ void ALFPTacticsUnit::BeginPlay()
         //MoveTimeline->SetTimelineFinishedFunc(TimelineFinishedCallback);
     }
 
-    // Èç¹ûÊÇµĞ·½µ¥Î»£¬´´½¨AI¿ØÖÆÆ÷
+    // å¦‚æœæ˜¯æ•Œæ–¹å•ä½ï¼Œåˆ›å»ºAIæ§åˆ¶å™¨
     if (IsEnemy())
     {
         FActorSpawnParameters SpawnParams;
@@ -120,7 +120,7 @@ void ALFPTacticsUnit::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void ALFPTacticsUnit::SetCurrentCoordinates(const FLFPHexCoordinates& NewCoords)
 {
-    // ¸üĞÂÎ»ÖÃ
+    // æ¸…é™¤æ—§ä½ç½®
     if (ALFPHexGridManager* GridManager = GetGridManager())
     {
         if (ALFPHexTile* LastTile = GridManager->GetTileAtCoordinates(CurrentCoordinates))
@@ -161,7 +161,7 @@ ALFPHexTile* ALFPTacticsUnit::GetCurrentTile()
 //    }
 //}
 
-//// »ñÈ¡¿ÉÒÆ¶¯·¶Î§
+//// è·å–å¯ç§»åŠ¨èŒƒå›´
 //TArray<ALFPHexTile*> ALFPTacticsUnit::GetMovementRangeTiles()
 //{
 //    if (MovementRangeTiles.Num() > 0)
@@ -171,7 +171,7 @@ ALFPHexTile* ALFPTacticsUnit::GetCurrentTile()
 //    {
 //        if (ALFPHexTile* UnitTile = GridManager->GetTileAtCoordinates(CurrentCoordinates))
 //        {
-//            // ¼ÆËãÒÆ¶¯·¶Î§
+//            // è®¡ç®—ç§»åŠ¨èŒƒå›´
 //            MovementRangeTiles = GridManager->GetMovementRange(UnitTile, MovementRange);
 //        }
 //    }
@@ -185,32 +185,32 @@ bool ALFPTacticsUnit::MoveToTile(ALFPHexTile* NewTargetTile)
     ALFPHexGridManager* GridManager = GetGridManager();
     if (!GridManager) return false;
 
-    // »ñÈ¡µ±Ç°ËùÔÚµÄ¸ñ×Ó
+    // è·å–å½“å‰æ‰€åœ¨çš„æ ¼å­
     ALFPHexTile* CurrentTile = GridManager->GetTileAtCoordinates(CurrentCoordinates);
     if (!CurrentTile) return false;
 
-    // ¼ÆËãÂ·¾¶
+    // å¯»æ‰¾è·¯å¾„
     MovePath = GridManager->FindPath(CurrentTile, NewTargetTile);
     if (MovePath.Num() == 0|| MovePath.Num()>CurrentMovePoints) return false;
 
-    // ÉèÖÃÒÆ¶¯×´Ì¬
+    // è®¾ç½®ç§»åŠ¨çŠ¶æ€
     CurrentTile->SetIsOccupied(false);
     TargetTile = NewTargetTile;
     CurrentPathIndex = 0;
     MoveProgress = 0.0f;
     MovementRangeTiles.Empty();
 
-    // ÏûºÄĞĞ¶¯µã
+    // æ¶ˆè€—è¡ŒåŠ¨åŠ›
     //ConsumeMovePoints(1);
 
-    // ¿ªÊ¼ÒÆ¶¯¶¯»­
+    // å¼€å§‹ç§»åŠ¨åŠ¨ç”»
     //if (MoveTimeline)
     //{
     //    MoveTimeline->PlayFromStart();
     //}
     //else
     //{
-    //    // Èç¹ûÃ»ÓĞÊ±¼äÏß£¬Ö±½ÓÍê³ÉÒÆ¶¯
+    //    // å¦‚æœæ²¡æœ‰æ—¶é—´çº¿ï¼Œç›´æ¥å®Œæˆç§»åŠ¨
     //    FinishMove();
     //}
     FinishMove();
@@ -222,21 +222,21 @@ void ALFPTacticsUnit::UpdateMoveAnimation(float Value)
 {
     if (CurrentPathIndex < 0 || CurrentPathIndex >= MovePath.Num() - 1) return;
 
-    // »ñÈ¡µ±Ç°ºÍÏÂÒ»¸ö¸ñ×Ó
+    // è·å–å½“å‰å’Œä¸‹ä¸€ä¸ªæ ¼å­
     ALFPHexTile* CurrentTile = MovePath[CurrentPathIndex];
     ALFPHexTile* NextTile = MovePath[CurrentPathIndex + 1];
 
     if (!CurrentTile || !NextTile) return;
 
-    // ¼ÆËãÎ»ÖÃ
+    // è®¡ç®—ä½ç½®
     FVector StartPos = CurrentTile->GetActorLocation() + FVector(0, 0, 50);
     FVector EndPos = NextTile->GetActorLocation() + FVector(0, 0, 50);
 
-    // Ó¦ÓÃÇúÏßÖµ
+    // åº”ç”¨æ’å€¼
     FVector NewLocation = FMath::Lerp(StartPos, EndPos, Value);
     SetActorLocation(NewLocation);
 
-    // ¸üĞÂ³¯Ïò
+    // æ›´æ–°æœå‘
     FVector Direction = (EndPos - StartPos).GetSafeNormal();
     if (!Direction.IsNearlyZero())
     {
@@ -244,19 +244,19 @@ void ALFPTacticsUnit::UpdateMoveAnimation(float Value)
         SpriteComponent->SetWorldRotation(NewRotation);
     }
 
-    // ¼ì²éÊÇ·ñÒÆ¶¯µ½ÏÂÒ»¶Î
+    // æ£€æŸ¥æ˜¯å¦ç§»åŠ¨åˆ°ä¸‹ä¸€æ®µ
     if (Value >= 1.0f)
     {
         CurrentPathIndex++;
         MoveProgress = 0.0f;
 
-        // ¸üĞÂµ±Ç°×ø±ê
+        // æ›´æ–°å½“å‰åæ ‡
         if (CurrentPathIndex < MovePath.Num())
         {
             SetCurrentCoordinates(MovePath[CurrentPathIndex]->GetCoordinates());
         }
 
-        // Èç¹û»¹ÓĞÂ·¾¶£¬ÖØĞÂ¿ªÊ¼Ê±¼äÏß
+        // å¦‚æœè¿˜æœ‰ä¸‹ä¸€æ®µè·¯å¾„ï¼Œé‡æ–°å¼€å§‹æ—¶é—´çº¿
         if (CurrentPathIndex < MovePath.Num() - 1)
         {
             //MoveTimeline->PlayFromStart();
@@ -270,7 +270,7 @@ void ALFPTacticsUnit::UpdateMoveAnimation(float Value)
 
 void ALFPTacticsUnit::FinishMove()
 {
-    // ¸üĞÂµ½Ä¿±êÎ»ÖÃ
+    // æ›´æ–°åˆ°ç›®æ ‡ä½ç½®
     if (TargetTile)
     {
         SetCurrentCoordinates(TargetTile->GetCoordinates());
@@ -278,7 +278,7 @@ void ALFPTacticsUnit::FinishMove()
         //SetActorLocation(TargetTile->GetActorLocation() + FVector(0, 0, 50));
     }
 
-    // ÖØÖÃÒÆ¶¯×´Ì¬
+    // æ¸…é™¤ç§»åŠ¨çŠ¶æ€
     TargetTile = nullptr;
     MovePath.Empty();
     CurrentPathIndex = -1;
@@ -291,7 +291,7 @@ void ALFPTacticsUnit::ResetForNewRound()
     CurrentActionPoints = MaxActionPoints;
     bHasActed = false;
 
-    // ¿ÉÑ¡£ºÌí¼ÓÊÓ¾õ·´À¡
+    // é‡ç½®ç²¾çµè§†è§‰æ•ˆæœ
     if (SpriteComponent)
     {
         SpriteComponent->SetSpriteColor(FLinearColor::White);
@@ -320,7 +320,7 @@ void ALFPTacticsUnit::OnMouseEnter()
 void ALFPTacticsUnit::SetSelected(bool bSelected)
 {
     bIsSelected = bSelected;
-    // ÊÓ¾õ·´À¡£º¸ßÁÁµ¥Î»
+    // è§†è§‰åé¦ˆï¼šé«˜äº®é€‰ä¸­å•ä½
     if (bSelected)
     {
         SpriteComponent->SetSpriteColor(FLinearColor::Yellow);
@@ -357,7 +357,7 @@ void ALFPTacticsUnit::ConsumeMovePoints(int32 Amount)
 {
     CurrentMovePoints = FMath::Max(0, CurrentMovePoints - Amount);
 
-    // Èç¹ûÃ»ÓĞĞĞ¶¯µãÁË£¬±ê¼ÇÎªÒÑĞĞ¶¯
+    // å¦‚æœæ²¡æœ‰è¡ŒåŠ¨åŠ›äº†ï¼Œæ ‡è®°ä¸ºå·²è¡ŒåŠ¨
     if (CurrentMovePoints <= 0)
     {
         //bHasActed = true;
@@ -407,7 +407,7 @@ void ALFPTacticsUnit::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
-    // ¸üĞÂÊ±¼äÏß
+    // æ›´æ–°æ—¶é—´çº¿
     /*if (MoveTimeline && MoveTimeline->IsPlaying())
     {
         MoveTimeline->TickComponent(DeltaTime, LEVELTICK_TimeOnly, nullptr);
@@ -418,11 +418,11 @@ void ALFPTacticsUnit::InitializeHealthBar()
 {
 	if (HealthBarComponent)
 	{
-		// »ñÈ¡ÑªÌõ¿Ø¼ş
+		// è·å–è¡€æ¡æ§ä»¶
 		ULFPHealthBarWidget* HealthBarWidget = Cast<ULFPHealthBarWidget>(HealthBarComponent->GetWidget());
 		if (HealthBarWidget)
 		{
-			// °ó¶¨µ½µ¥Î»
+			// ç»‘å®šåˆ°å•ä½
 			HealthBarWidget->BindToUnit(this);
 		}
 	}
@@ -432,18 +432,18 @@ void ALFPTacticsUnit::TakeDamage(int32 Damage)
 {
     if (bIsDead) return;
 
-	// ¼ÆËãÊµ¼ÊÉËº¦£¨¿¼ÂÇ·ÀÓù£©
+	// è®¡ç®—å®é™…ä¼¤å®³ï¼ˆè€ƒè™‘é˜²å¾¡ï¼‰
 	int32 ActualDamage = FMath::Max(Damage - Defense, 1);
 	int32 OldHealth = CurrentHealth;
 	CurrentHealth = FMath::Max(CurrentHealth - ActualDamage, 0);
 
-	// ´¥·¢ÑªÁ¿±ä»¯ÊÂ¼ş
+	// å¹¿æ’­è¡€é‡å˜åŒ–äº‹ä»¶
 	OnHealthChangedDelegate.Broadcast(CurrentHealth, MaxHealth);
 
-	// À¶Í¼ÊÂ¼ş
+	// è“å›¾äº‹ä»¶
 	OnTakeDamage(ActualDamage);
 
-	// ¼ì²éËÀÍö
+	// æ£€æŸ¥æ­»äº¡
 	if (CurrentHealth <= 0)
 	{
 		HandleDeath();
@@ -457,10 +457,10 @@ void ALFPTacticsUnit::Heal(int32 Amount)
 	int32 OldHealth = CurrentHealth;
 	CurrentHealth = FMath::Min(CurrentHealth + Amount, MaxHealth);
 
-	// ´¥·¢ÑªÁ¿±ä»¯ÊÂ¼ş
+	// å¹¿æ’­è¡€é‡å˜åŒ–äº‹ä»¶
 	OnHealthChangedDelegate.Broadcast(CurrentHealth, MaxHealth);
 
-	// À¶Í¼ÊÂ¼ş
+	// è“å›¾äº‹ä»¶
 	OnHeal(Amount);
 }
 
@@ -471,7 +471,7 @@ bool ALFPTacticsUnit::AttackTarget(ALFPTacticsUnit* Target)
         return false;
     }
 
-    // ¼ì²é¹¥»÷·¶Î§
+    // æ£€æŸ¥æ”»å‡»èŒƒå›´
     if (!IsTargetInAttackRange(Target))
     {
         UE_LOG(LogTemp, Warning, TEXT("Target is out of attack range!"));
@@ -485,10 +485,10 @@ bool ALFPTacticsUnit::AttackTarget(ALFPTacticsUnit* Target)
 
     ApplyDamageToTarget(Target);
 
-    //// ²¥·Å¹¥»÷¶¯»­
+    //// æ’­æ”¾æ”»å‡»åŠ¨ç”»
     //PlayAttackAnimation(Target);
 
-    //// Êµ¼ÊÉËº¦¼ÆËã£¨ÑÓ³Ùµ½¶¯»­½áÊø£©
+    //// å®é™…ä¼¤å®³è®¡ç®—ï¼ˆå»¶è¿Ÿåˆ°æ”»å‡»åŠ¨ç”»åï¼‰
     //FTimerDelegate TimerDelegate;
     //TimerDelegate.BindUFunction(this, FName("ApplyDamageToTarget"), Target);
     //GetWorld()->GetTimerManager().SetTimer(AttackTimerHandle, TimerDelegate, 0.5f, false);
@@ -500,17 +500,17 @@ void ALFPTacticsUnit::ApplyDamageToTarget(ALFPTacticsUnit* Target)
 {
     if (!Target || Target->bIsDead) return;
 
-    // »ù´¡ÉËº¦¼ÆËã
+    // åŸºç¡€ä¼¤å®³è®¡ç®—
     int32 Damage = AttackPower;
 
-    // Ìí¼ÓËæ»ú²¨¶¯ (10% ·¶Î§)
+    // ä¼¤å®³éšæœºæµ®åŠ¨ï¼ˆ10% èŒƒå›´ï¼‰
     float RandomFactor = FMath::RandRange(0.9f, 1.1f);
     Damage = FMath::RoundToInt(Damage * RandomFactor);
 
-    // Ó¦ÓÃÉËº¦
+    // åº”ç”¨ä¼¤å®³
     Target->TakeDamage(Damage);
 
-    // ÏûºÄĞĞ¶¯µã
+    // æ¶ˆè€—è¡ŒåŠ¨åŠ›
     ConsumeMovePoints(1);
 }
 
@@ -518,29 +518,29 @@ void ALFPTacticsUnit::HandleDeath()
 {
     bIsDead = true;
 
-	// ´¥·¢ËÀÍöÊÂ¼ş
+	// å¹¿æ’­æ­»äº¡äº‹ä»¶
     OnDeathDelegate.Broadcast();
 
-    // À¶Í¼ÊÂ¼ş
+    // è“å›¾äº‹ä»¶
     OnDeath();
 
-    // ´ÓÍø¸ñÉÏÒÆ³ı
+    // ä»æ ¼å­ä¸Šç§»é™¤
     ALFPHexTile* CurrentTile = GetCurrentTile();
     if (CurrentTile)
     {
         CurrentTile->SetUnitOnTile(nullptr);
     }
 
-    // ´Ó»ØºÏÏµÍ³ÖĞÒÆ³ı
+    // ä»å›åˆç³»ç»Ÿä¸­ç§»é™¤
     if (ALFPTurnManager* TurnManager = GetTurnManager())
     {
         TurnManager->UnregisterUnit(this);
     }
 
-    // ½ûÓÃÅö×²
+    // ç¦ç”¨ç¢°æ’
     SetActorEnableCollision(false);
 
-    // ÑÓ³ÙÏú»Ù
+    // å»¶è¿Ÿé”€æ¯
     FTimerHandle TimerHandle;
     GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]()
         {
@@ -567,13 +567,13 @@ void ALFPTacticsUnit::ChangeAffiliation(EUnitAffiliation NewAffiliation)
             }*/
         }
     }
-	// ´¥·¢ÊÂ¼ş
+	// å¹¿æ’­äº‹ä»¶
     //OnAffiliationChanged.Broadcast(OldAffiliation, NewAffiliation);
 }
 
 ALFPTacticsUnit* ALFPTacticsUnit::FindBestTarget()
 {
-    // »ñÈ¡ËùÓĞÍæ¼Òµ¥Î»
+    // è·å–æ‰€æœ‰ç©å®¶å•ä½
     TArray<AActor*> PlayerUnits;
     UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALFPTacticsUnit::StaticClass(), PlayerUnits);
 
@@ -604,7 +604,7 @@ ALFPHexTile* ALFPTacticsUnit::FindBestMovementTile(ALFPTacticsUnit* Target)
     {
         return nullptr;
     }
-    // »ñÈ¡ËùÓĞ¿ÉÒÆ¶¯Î»ÖÃ
+    // è·å–æ‰€æœ‰å¯ç§»åŠ¨ä½ç½®
     MovementRangeTiles = GridManager->GetTilesInRange(GetCurrentTile(), GetCurrentMovePoints());
 
     ALFPHexTile* BestTile = nullptr;
@@ -612,7 +612,7 @@ ALFPHexTile* ALFPTacticsUnit::FindBestMovementTile(ALFPTacticsUnit* Target)
 
     for (ALFPHexTile* Tile : MovementRangeTiles)
     {
-        // Ìø¹ıÒÑÓĞµ¥Î»µÄ¸ñ×Ó
+        // è·³è¿‡æœ‰å•ä½çš„æ ¼å­
         if (Tile->GetUnitOnTile()) continue;
 
         float PositionValue = CalculatePositionValue(Tile, Target);
@@ -628,27 +628,27 @@ ALFPHexTile* ALFPTacticsUnit::FindBestMovementTile(ALFPTacticsUnit* Target)
 
 float ALFPTacticsUnit::CalculateThreatValue(ALFPTacticsUnit* Target)
 {
-    // »ù´¡ÍşĞ²Öµ = Ä¿±ê¹¥»÷Á¦ * (1 - Ä¿±êµ±Ç°ÑªÁ¿/×î´óÑªÁ¿)
+    // å¨èƒå€¼ = ç›®æ ‡æ”»å‡»åŠ›
     float ThreatValue = Target->GetAttackPower();
 
-    // ¾àÀëÒò×Ó (Ô½½üÍşĞ²Ô½´ó)
+    // è·ç¦»å› ç´ ï¼ˆè¶Šè¿‘å¨èƒè¶Šå¤§ï¼‰
     int32 Distance = FLFPHexCoordinates::Distance(
         GetCurrentCoordinates(),
         Target->GetCurrentCoordinates()
     );
     float DistanceFactor = 1.0f / FMath::Max(Distance, 1);
 
-    //// Ó¦ÓÃĞĞÎªÊı¾İ
+    //// åº”ç”¨è¡Œä¸ºæ•°æ®
     //if (BehaviorData)
     //{
     //    if (BehaviorData->bPrioritizeWeakTargets)
     //    {
-    //        // Ôö¼Ó¶ÔµÍÑªÁ¿Ä¿±êµÄÈ¨ÖØ
+    //        // å¢åŠ å¯¹ä½è¡€é‡ç›®æ ‡çš„æƒé‡
     //        float HealthRatio = (float)Target->GetCurrentHealth() / Target->GetMaxHealth();
-    //        ThreatValue *= (2.0f - HealthRatio); // ÑªÁ¿Ô½µÍ£¬ÍşĞ²ÖµÔ½¸ß
+    //        // è¡€é‡è¶Šä½ï¼Œå¨èƒå€¼è¶Šé«˜
     //    }
 
-    //    // Ó¦ÓÃ¹¥»÷ÇãÏò
+    //    // åº”ç”¨æ”»å‡»æ€§ç³»æ•°
     //    ThreatValue *= BehaviorData->Aggressiveness;
     //}
 
@@ -661,20 +661,20 @@ float ALFPTacticsUnit::CalculatePositionValue(ALFPHexTile* Tile, ALFPTacticsUnit
 
     float PositionValue = 0.0f;
 
-    // 1. ¾àÀëÄ¿±êÔ½½üÔ½ºÃ
+    // 1. ç¦»ç›®æ ‡è¶Šè¿‘è¶Šå¥½
     int32 DistanceToTarget = FLFPHexCoordinates::Distance(
         Tile->GetCoordinates(),
         Target->GetCurrentCoordinates()
     );
     PositionValue += 10.0f / FMath::Max(DistanceToTarget, 1);
 
-    // 2. Èç¹ûÔÚ¹¥»÷·¶Î§ÄÚ¶îÍâ¼Ó·Ö
+    // 2. å¦‚æœåœ¨æ”»å‡»èŒƒå›´å†…é¢å¤–åŠ åˆ†
     if (DistanceToTarget <= GetAttackRange())
     {
         PositionValue += 20.0f;
     }
 
-    //// 3. ¿¿½üÆäËûµĞÈËµ¥Î»£¨ÍÅ¶ÓĞ­×÷£©
+    //// 3. é è¿‘å…¶ä»–æ•Œæ–¹å•ä½ï¼ˆå›¢é˜Ÿåä½œåŠ åˆ†ï¼‰
     //TArray<AActor*> EnemyUnits;
     //UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALFPTacticsUnit::StaticClass(), EnemyUnits);
 
@@ -695,13 +695,13 @@ float ALFPTacticsUnit::CalculatePositionValue(ALFPHexTile* Tile, ALFPTacticsUnit
     //    }
     //}
 
-    //// 4. ±ÜÃâÎ£ÏÕÎ»ÖÃ£¨Èç»ğÑæ¡¢¶¾ÎíµÈ£©
+    //// 4. é¿å…å±é™©ä½ç½®ï¼ˆé™·é˜±ã€ç«ç„°ç­‰ï¼‰
     //if (Tile->IsDangerous())
     //{
     //    PositionValue -= 30.0f;
     //}
 
-    //// 5. ¸ßµØÓÅÊÆ
+    //// 5. é«˜åœ°åŠ åˆ†
     //if (Tile->IsHighGround())
     //{
     //    PositionValue += 15.0f;
@@ -716,10 +716,10 @@ TArray<ALFPHexTile*> ALFPTacticsUnit::GetAttackRangeTiles()
 
     if (ALFPHexGridManager* GridManager = GetGridManager())
     {
-        // ½üÕ½¹¥»÷·¶Î§
+        // è¿‘æˆ˜æ”»å‡»èŒƒå›´
         if (bMeleeAttack)
         {
-            // »ñÈ¡ÏàÁÚ¸ñ×Ó
+            // è·å–ç›¸é‚»æ ¼å­
             TArray<FLFPHexCoordinates> Neighbors = CurrentCoordinates.GetNeighbors();
             for (const FLFPHexCoordinates& Coord : Neighbors)
             {
@@ -730,10 +730,10 @@ TArray<ALFPHexTile*> ALFPTacticsUnit::GetAttackRangeTiles()
                 }
             }
         }
-        // Ô¶³Ì¹¥»÷·¶Î§
+        // è¿œç¨‹æ”»å‡»èŒƒå›´
         else
         {
-            // »ñÈ¡¹¥»÷·¶Î§ÄÚµÄËùÓĞ¸ñ×Ó
+            // è·å–æ”»å‡»èŒƒå›´å†…çš„æ‰€æœ‰æ ¼å­
             TArray<ALFPHexTile*> TilesInRange = GridManager->GetTilesInRange(GetCurrentTile(), AttackRange);
 
             for (ALFPHexTile* Tile : TilesInRange)
@@ -750,18 +750,18 @@ bool ALFPTacticsUnit::IsTargetInAttackRange(ALFPTacticsUnit* Target) const
 {
     if (!Target || !Target->GetCurrentTile()) return false;
 
-    // ¼ÆËã¾àÀë
+    // è®¡ç®—è·ç¦»
     int32 Distance = FLFPHexCoordinates::Distance(
         CurrentCoordinates,
         Target->GetCurrentCoordinates()
     );
 
-    // ½üÕ½¹¥»÷¼ì²é
+    // è¿‘æˆ˜æ”»å‡»åˆ¤å®š
     if (bMeleeAttack)
     {
-        return Distance == 1; // ÏàÁÚ¸ñ×Ó
+        return Distance == 1; // ç›¸é‚»æ ¼å­
     }
-    // Ô¶³Ì¹¥»÷¼ì²é
+    // è¿œç¨‹æ”»å‡»åˆ¤å®š
     else
     {
         return Distance >= 2 && Distance <= AttackRange;
@@ -773,11 +773,11 @@ FLinearColor ALFPTacticsUnit::GetAffiliationColor() const
     switch (Affiliation)
     {
     case EUnitAffiliation::UA_Player:
-        return FLinearColor(0.0f, 0.5f, 1.0f, 1.0f); // À¶É«
+        return FLinearColor(0.0f, 0.5f, 1.0f, 1.0f); // è“è‰²
     case EUnitAffiliation::UA_Enemy:
-        return FLinearColor(1.0f, 0.1f, 0.1f, 1.0f); // ºìÉ«
+        return FLinearColor(1.0f, 0.1f, 0.1f, 1.0f); // çº¢è‰²
     case EUnitAffiliation::UA_Neutral:
-        return FLinearColor(0.5f, 0.5f, 0.5f, 1.0f); // »ÒÉ«
+        return FLinearColor(0.5f, 0.5f, 0.5f, 1.0f); // ç°è‰²
     default:
         return FLinearColor::White;
     }
@@ -785,8 +785,8 @@ FLinearColor ALFPTacticsUnit::GetAffiliationColor() const
 
 void ALFPTacticsUnit::UpdateHealthUI()
 {
-    // ÔÚÊµ¼ÊÏîÄ¿ÖĞ£¬ÕâÀï»á¸üĞÂµ¥Î»µÄÑªÌõUI
-    // ÀıÈç£ºHealthBarWidget->SetPercent((float)CurrentHealth / MaxHealth);
+    // åœ¨å®é™…é¡¹ç›®ä¸­ï¼Œå¯ä»¥æ›´æ–°å•ä½çš„è¡€é‡UI
+    // ä¾‹å¦‚ï¼šHealthBarWidget->SetPercent((float)CurrentHealth / MaxHealth);
 }
 
 TArray<ULFPSkillBase*> ALFPTacticsUnit::GetAvailableSkills()

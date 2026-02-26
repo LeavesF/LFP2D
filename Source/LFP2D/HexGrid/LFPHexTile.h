@@ -18,24 +18,24 @@ struct FLFPHexCoordinates
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HexCoordinates")
-	int32 Q; // ÖáÏò×ø±ê q
+	int32 Q; // ç«‹æ–¹åæ ‡ q
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HexCoordinates")
-	int32 R; // ÖáÏò×ø±ê r
+	int32 R; // ç«‹æ–¹åæ ‡ r
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HexCoordinates")
-	int32 S; // Á¢·½×ø±ê s£¨¼ÆËãµÃ³ö£©
+	int32 S; // ç«‹æ–¹åæ ‡ sï¼ˆè‡ªåŠ¨è®¡ç®—ï¼‰
 
 	FLFPHexCoordinates() : Q(0), R(0), S(0) {}
 
 	FLFPHexCoordinates(int32 q, int32 r) : Q(q), R(r), S(-q - r) {}
 
-	// ×ø±ê×ª»»·½·¨
+	// åæ ‡è½¬æ¢å‡½æ•°
 	FVector ToWorldLocation(float Size, float VerticalScale = 1.0f) const
 	{
-		// Æ½¶¥Áù±ßĞÎ²¼¾Ö
-		const float HorizontalSpacing = Size * FMath::Sqrt(3.f); // Ë®Æ½¼ä¾à
-		const float VerticalSpacing = Size * 1.5f * VerticalScale; // ´¹Ö±¼ä¾àÓ¦ÓÃËõ·Å
+		// å¹³é¡¶å…­è¾¹å½¢å¸ƒå±€
+		const float HorizontalSpacing = Size * FMath::Sqrt(3.f); // æ°´å¹³é—´è·
+		const float VerticalSpacing = Size * 1.5f * VerticalScale; // å‚ç›´é—´è·ï¼ˆåº”ç”¨ç¼©æ”¾ï¼‰
 
 		float X = HorizontalSpacing * (Q + R * 0.5f);
 		float Y = VerticalSpacing * R;
@@ -43,7 +43,7 @@ public:
 		return FVector(X, Y, 0);
 	}
 
-	// ¾àÀë¼ÆËã
+	// è®¡ç®—è·ç¦»
 	static int32 Distance(const FLFPHexCoordinates& A, const FLFPHexCoordinates& B)
 	{
 		return (FMath::Abs(A.Q - B.Q) +
@@ -51,17 +51,17 @@ public:
 			FMath::Abs(A.S - B.S)) / 2;
 	}
 
-	// »ñÈ¡ËùÓĞÏàÁÚ×ø±ê
+	// è·å–æ‰€æœ‰ç›¸é‚»åæ ‡
 	TArray<FLFPHexCoordinates> GetNeighbors() const
 	{
-		// ¼â¶¥Áù±ßĞÎµÄÁÚ¾Ó·½Ïò
+		// å…­è¾¹å½¢çš„é‚»å±…æ–¹å‘
 		static const TArray<FLFPHexCoordinates> Directions = {
-			FLFPHexCoordinates(+1,  0), // ÓÒ
-			FLFPHexCoordinates(+1, -1), // ÓÒÉÏ
-			FLFPHexCoordinates(0, -1), // ×óÉÏ
-			FLFPHexCoordinates(-1,  0), // ×ó
-			FLFPHexCoordinates(-1, +1), // ×óÏÂ
-			FLFPHexCoordinates(0, +1)  // ÓÒÏÂ
+			FLFPHexCoordinates(+1,  0), // ä¸œ
+			FLFPHexCoordinates(+1, -1), // ä¸œåŒ—
+			FLFPHexCoordinates(0, -1), // è¥¿åŒ—
+			FLFPHexCoordinates(-1,  0), // è¥¿
+			FLFPHexCoordinates(-1, +1), // è¥¿å—
+			FLFPHexCoordinates(0, +1)  // ä¸œå—
 		};
 
 		TArray<FLFPHexCoordinates> Neighbors;
@@ -74,7 +74,7 @@ public:
 
 	static FLFPHexCoordinates FromWorldLocation(const FVector2D& WorldLocation, float HexSize, float VerticalScale)
 	{
-		// Æ½¶¥Áù±ßĞÎ×ø±ê×ª»»¹«Ê½
+		// å¹³é¡¶å…­è¾¹å½¢åæ ‡è½¬æ¢å…¬å¼
 		const float Sqrt3 = FMath::Sqrt(3.f);
 
 		float unit_x = HexSize * Sqrt3;
@@ -106,21 +106,21 @@ public:
 			anchors[0].Y = anchors[2].Y = (index_y + 1) * unit_y;
 			anchors[1].Y = index_y * unit_y;
 		}
-		// ÕÒ³ö¾àÀë×ø±ê×î½üµÄÒ»¸öµã
+		// æ‰¾å‡ºè·ç¦»ç‚¹æœ€è¿‘çš„ä¸€ä¸ªé”šç‚¹
 		for (int i = 0; i < 3; i++)
 		{
-			//Çó³ö¾àÀëµÄÆ½·½
+			// è®¡ç®—æ¬§å¼è·ç¦»
 			UE_LOG(LogTemp, Warning, TEXT("anchor:(%f,%f)"), anchors[i].X, anchors[i].Y);
 			distance = FVector2D::Distance(FVector2D(WorldLocation_X, WorldLocation_Y), FVector2D(anchors[i].X, anchors[i].Y));
 			UE_LOG(LogTemp, Warning, TEXT("distance:(%f)"), distance);
-			//Èç¹ûÒÑ¾­¿Ï¶¨±»²¶»ñ
+			// å¦‚æœå·²ç»ååˆ†ç¡®å®šäº†
 			if (distance < minDistanceLimit)
 			{
 				index = i;
 				break;
 			}
 
-			//¸üĞÂ×îĞ¡¾àÀëÖµºÍË÷Òı
+			// è®°å½•æœ€å°è·ç¦»å’Œç´¢å¼•
 			if (distance < minDistance)
 			{
 				minDistance = distance;
@@ -130,12 +130,12 @@ public:
 
 		int32 q = FMath::RoundToFloat((anchors[index].X / Sqrt3 - anchors[index].Y / 3.f) / HexSize);
 		int32 r = FMath::RoundToFloat(anchors[index].Y * 2.f / 3.f / HexSize);
-		
+
 		return FLFPHexCoordinates(q, r);
 	}
 };
 
-// µ¥Î»ÏÔÊ¾Ã¶¾Ù
+// å•ä½æ˜¾ç¤ºæšä¸¾
 UENUM(BlueprintType)
 enum class EUnitRange : uint8
 {
@@ -145,7 +145,7 @@ enum class EUnitRange : uint8
 	UR_SkillEffect    UMETA(DisplayName = "SkillEffect")
 };
 
-// ÓÎÍæ¿ØÖÆ×´Ì¬
+// ç©å®¶æ“ä½œçŠ¶æ€
 UENUM(BlueprintType)
 enum class EPlayControlState : uint8
 {
@@ -157,8 +157,8 @@ UCLASS()
 class LFP2D_API ALFPHexTile : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	ALFPHexTile();
 
@@ -166,14 +166,14 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Hex Tile")
 	FLFPHexCoordinates GetCoordinates() { return Coordinates; }
-	// ÉèÖÃ×ø±êÊı¾İ
+	// è®¾ç½®å…­è¾¹å½¢åæ ‡
 	void SetCoordinates(const FLFPHexCoordinates& NewCoords) { Coordinates = NewCoords; }
 
 	bool IsWalkable() { return bIsWalkable; }
@@ -187,14 +187,14 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Hex Tile")
 	void SetUnitOnTile(ALFPTacticsUnit* Unit) { CurrentUnit = Unit; }
-	// ÉèÖÃ¸ñ×Ó×´Ì¬
+	// è®¾ç½®æ ¼å­çŠ¶æ€
 
 	void SetState(bool bWalkable, bool bOccupied);
 
-	// ÉèÖÃ¸ñ×Ó×´Ì¬
+	// è®¾ç½®æ ¼å­çŠ¶æ€
 	//void SetSelected(bool bSelect);
 
-	// ¸ßÁÁÏÔÊ¾
+	// é«˜äº®æ˜¾ç¤º
 	void Highlight(bool bActive);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
@@ -210,19 +210,19 @@ protected:
 	TObjectPtr<ALFPTacticsUnit> CurrentUnit;
 
 public:
-	// ÉèÖÃRangeSprite¹¦ÄÜ
+	// è®¾ç½®RangeSpriteå±‚çº§
 	UFUNCTION(BlueprintCallable, Category = "Hex Tile")
 	void SetRangeSprite(EUnitRange UnitRange = EUnitRange::UR_Default);
 
-	// Ìí¼ÓÂ·¾¶¸ßÁÁ¹¦ÄÜ
+	// è®¾ç½®è·¯å¾„é«˜äº®å±‚çº§
 	UFUNCTION(BlueprintCallable, Category = "Hex Tile")
 	void SetPathHighlight(bool bActive);
 
-	// Ìí¼ÓÒÆ¶¯·¶Î§¸ßÁÁ¹¦ÄÜ
+	// è®¾ç½®ç§»åŠ¨èŒƒå›´é«˜äº®å±‚çº§
 	UFUNCTION(BlueprintCallable, Category = "Hex Tile")
 	void SetMovementHighlight(bool bActive);
 
-	// Ìí¼Ó¹¥»÷·¶Î§¸ßÁÁ¹¦ÄÜ
+	// è®¾ç½®æ”»å‡»èŒƒå›´é«˜äº®å±‚çº§
 	UFUNCTION(BlueprintCallable, Category = "Hex Tile")
 	void SetAttackHighlight(bool bActive);
 
@@ -243,7 +243,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Sprites")
 	TObjectPtr<UPaperSprite> SkillEffectRangeSprite;
-	
+
 /////////////////	Math	///////////////
 public:
 	UFUNCTION(BlueprintCallable, Category = "Hex Math")
