@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "LFP2D/Turn/LFPTurnManager.h"
+#include "LFP2D/Turn/LFPBattleTypes.h"
 #include "LFPTurnSpeedListWidget.generated.h"
 
 class UHorizontalBox;
@@ -23,25 +24,33 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Turn UI")
 	void InitializeTurnOrder();
 
-	// ÉèÖÃ»ØºÏÊı
+	// ï¿½ï¿½ï¿½Ã»Øºï¿½ï¿½ï¿½
 	UFUNCTION(BlueprintCallable, Category = "Turn UI")
 	void SetRoundNumber(int32 Round);
 
-	// ¸üĞÂĞĞ¶¯µ¥Î»ÁĞ±í
+	// ï¿½ï¿½ï¿½ï¿½ï¿½Ğ¶ï¿½ï¿½ï¿½Î»ï¿½Ğ±ï¿½
 	UFUNCTION(BlueprintCallable, Category = "Turn UI")
 	void UpdateTurnOrder();
 
 	UFUNCTION()
 	void OnTurnChanged();
 
+	// é˜¶æ®µå˜åŒ–å“åº”
+	UFUNCTION()
+	void OnPhaseChanged(EBattlePhase NewPhase);
+
 protected:
-	// ÓÃÓÚÏÔÊ¾»ØºÏÊıµÄÎÄ±¾
+	// æ˜¾ç¤ºå›åˆæ•°çš„æ–‡æœ¬
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* RoundText;
-	// ÓÃÓÚ·ÅÖÃµ¥Î»Í·ÏñµÄË®Æ½¿ò
+
+	// é˜¶æ®µæ–‡æœ¬ï¼ˆå¯é€‰ç»‘å®šï¼‰
+	UPROPERTY(meta = (BindWidgetOptional))
+	UTextBlock* PhaseText;
+	// ï¿½ï¿½ï¿½Ú·ï¿½ï¿½Ãµï¿½Î»Í·ï¿½ï¿½ï¿½Ë®Æ½ï¿½ï¿½
 	UPROPERTY(meta = (BindWidget))
 	UHorizontalBox* UnitIconsContainer;
-	// µ¥Î»Í·ÏñµÄ¿Ø¼şÀ¶Í¼Àà£¨ÔÚÀ¶Í¼ÖĞÉèÖÃ£©
+	// ï¿½ï¿½Î»Í·ï¿½ï¿½Ä¿Ø¼ï¿½ï¿½ï¿½Í¼ï¿½à£¨ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½ï¿½ï¿½ï¿½Ã£ï¿½
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turn UI")
 	TSubclassOf<UUserWidget> UnitIconClass;
 

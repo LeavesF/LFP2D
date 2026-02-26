@@ -7,6 +7,7 @@
 #include "LFP2D/HexGrid/LFPHexGridManager.h"
 #include "LFP2D/HexGrid/LFPHexTile.h"
 #include "LFP2D/Skill/LFPSkillBase.h"
+#include "LFP2D/Skill/LFPSkillComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "Kismet/GameplayStatics.h"
@@ -39,10 +40,6 @@ void ALFPAIController::OnPossess(APawn* InPawn)
             GridManager = Cast<ALFPHexGridManager>(GridManagers[0]);
         }
 
-        // 绑定回合事件
-        /*ControlledUnit->OnTurnStarted.AddDynamic(this, &ALFPAIController::StartUnitTurn);
-        ControlledUnit->OnTurnEnded.AddDynamic(this, &ALFPAIController::EndUnitTurn);*/
-
         // 启动行为树
         RunBehaviorTree(BehaviorTree);
     }
@@ -50,12 +47,6 @@ void ALFPAIController::OnPossess(APawn* InPawn)
 
 void ALFPAIController::OnUnPossess()
 {
-    if (ControlledUnit)
-    {
-        /*ControlledUnit->OnTurnStarted.RemoveDynamic(this, &ALFPAIController::StartUnitTurn);
-        ControlledUnit->OnTurnEnded.RemoveDynamic(this, &ALFPAIController::EndUnitTurn);*/
-    }
-
     Super::OnUnPossess();
 }
 
@@ -232,19 +223,195 @@ float ALFPAIController::CalculatePositionValue(ALFPHexTile* Tile, ALFPTacticsUni
         }
     }
 
-    //// 4. 避免危险位置（陷阱、火焰等）
-    //if (Tile->IsDangerous())
-    //{
-    //    PositionValue -= 30.0f;
-    //}
-
-    //// 5. 高地加分
-    //if (Tile->IsHighGround())
-    //{
-    //    PositionValue += 15.0f;
-    //}
-
     return PositionValue;
+}
+
+// ==== 规划阶段方法 ====
+
+FEnemyActionPlan ALFPAIController::CreateActionPlan()
+{
+    FEnemyActionPlan Plan;
+    Plan.EnemyUnit = ControlledUnit;
+
+    if (!ControlledUnit || !GridManager)
+    {
+        return Plan;
+    }
+
+    // 1. 选择技能
+    ULFPSkillBase* ChosenSkill = SelectBestSkill();
+    if (!ChosenSkill)
+    {
+        return Plan;
+    }
+    Plan.PlannedSkill = ChosenSkill;
+
+    // 2. 根据技能的仇恨值选择目标
+    ALFPTacticsUnit* Target = FindBestSkillTarget(ChosenSkill);
+    if (!Target)
+    {
+        return Plan;
+    }
+    Plan.TargetUnit = Target;
+
+    // 3. 目标格子 = 目标单位当前所在格子
+    ALFPHexTile* TargetTile = Target->GetCurrentTile();
+    if (!TargetTile)
+    {
+        return Plan;
+    }
+    Plan.TargetTile = TargetTile;
+
+    // 4. 寻找最佳施法站位
+    ALFPHexTile* CasterPos = FindBestCasterPosition(ChosenSkill, TargetTile);
+    if (!CasterPos)
+    {
+        // 找不到合适的施法位置，尝试原地
+        CasterPos = ControlledUnit->GetCurrentTile();
+    }
+    Plan.CasterPositionTile = CasterPos;
+
+    // 5. 移动到施法位置
+    if (CasterPos && CasterPos != ControlledUnit->GetCurrentTile())
+    {
+        ControlledUnit->MoveToTile(CasterPos);
+    }
+
+    // 6. 计算技能生效范围（EffectRangeCoords 相对于目标格子偏移）
+    FLFPHexCoordinates TargetCoords = TargetTile->GetCoordinates();
+    for (const FLFPHexCoordinates& Offset : ChosenSkill->EffectRangeCoords)
+    {
+        FLFPHexCoordinates AbsCoord(
+            TargetCoords.Q + Offset.Q,
+            TargetCoords.R + Offset.R
+        );
+        if (ALFPHexTile* EffectTile = GridManager->GetTileAtCoordinates(AbsCoord))
+        {
+            Plan.EffectAreaTiles.Add(EffectTile);
+        }
+    }
+
+    // 如果没有定义 EffectRangeCoords，至少包含目标格子本身
+    if (Plan.EffectAreaTiles.Num() == 0)
+    {
+        Plan.EffectAreaTiles.Add(TargetTile);
+    }
+
+    Plan.bIsValid = true;
+    return Plan;
+}
+
+ULFPSkillBase* ALFPAIController::SelectBestSkill()
+{
+    if (!ControlledUnit) return nullptr;
+
+    TArray<ULFPSkillBase*> Skills = ControlledUnit->GetAvailableSkills();
+    ULFPSkillBase* BestSkill = nullptr;
+    float BestScore = -MAX_FLT;
+
+    for (ULFPSkillBase* Skill : Skills)
+    {
+        if (!Skill) continue;
+        if (!Skill->CanExecute()) continue;
+
+        // 找该技能的最佳目标
+        ALFPTacticsUnit* PotentialTarget = FindBestSkillTarget(Skill);
+        if (!PotentialTarget) continue;
+
+        // 检查是否存在可达的施法位置
+        ALFPHexTile* PotentialTargetTile = PotentialTarget->GetCurrentTile();
+        if (!PotentialTargetTile) continue;
+
+        ALFPHexTile* CasterPos = FindBestCasterPosition(Skill, PotentialTargetTile);
+        if (!CasterPos) continue;
+
+        // 评分：仇恨值作为基础分
+        float Score = Skill->CalculateHatredValue(ControlledUnit, PotentialTarget);
+
+        // 非默认攻击技能额外加分（鼓励使用特殊技能）
+        if (!Skill->bIsDefaultAttack)
+        {
+            Score *= 1.5f;
+        }
+
+        if (Score > BestScore)
+        {
+            BestScore = Score;
+            BestSkill = Skill;
+        }
+    }
+
+    // Fallback 到默认攻击
+    if (!BestSkill)
+    {
+        BestSkill = ControlledUnit->GetDefaultAttackSkill();
+    }
+
+    return BestSkill;
+}
+
+ALFPHexTile* ALFPAIController::FindBestCasterPosition(ULFPSkillBase* Skill, ALFPHexTile* TargetTile)
+{
+    if (!ControlledUnit || !Skill || !TargetTile || !GridManager) return nullptr;
+
+    // 获取移动范围内的所有格子
+    ALFPHexTile* CurrentTile = ControlledUnit->GetCurrentTile();
+    TArray<ALFPHexTile*> MovementRange = GridManager->GetTilesInRange(
+        CurrentTile,
+        ControlledUnit->GetCurrentMovePoints()
+    );
+
+    // 也包含当前格子（可能不需要移动）
+    MovementRange.AddUnique(CurrentTile);
+
+    ALFPHexTile* BestTile = nullptr;
+    float BestValue = -MAX_FLT;
+
+    FLFPHexCoordinates TargetCoords = TargetTile->GetCoordinates();
+
+    for (ALFPHexTile* Tile : MovementRange)
+    {
+        if (!Tile) continue;
+
+        // 跳过被其他单位占据的格子（但允许自己当前所在格）
+        ALFPTacticsUnit* Occupant = Tile->GetUnitOnTile();
+        if (Occupant && Occupant != ControlledUnit) continue;
+
+        // 检查从该格子到目标格子的距离是否在技能释放范围内
+        int32 DistToTarget = FLFPHexCoordinates::Distance(
+            Tile->GetCoordinates(),
+            TargetCoords
+        );
+
+        if (DistToTarget < Skill->Range.MinRange || DistToTarget > Skill->Range.MaxRange)
+        {
+            continue;
+        }
+
+        // 评估位置价值
+        float Value = 0.0f;
+
+        // 在技能范围内加分
+        Value += 30.0f;
+
+        // 离目标越近越好（在范围内的前提下）
+        Value += 10.0f / FMath::Max(DistToTarget, 1);
+
+        // 离当前位置越近越好（减少移动消耗）
+        int32 MoveDistance = FLFPHexCoordinates::Distance(
+            CurrentTile->GetCoordinates(),
+            Tile->GetCoordinates()
+        );
+        Value -= MoveDistance * 2.0f;
+
+        if (Value > BestValue)
+        {
+            BestValue = Value;
+            BestTile = Tile;
+        }
+    }
+
+    return BestTile;
 }
 
 ALFPTacticsUnit* ALFPAIController::GetControlledUnit()

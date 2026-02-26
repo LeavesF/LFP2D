@@ -4,11 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "LFP2D/Turn/LFPBattleTypes.h"
 #include "LFPTurnManager.generated.h"
 
 class ALFPTacticsUnit;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnTurnChangedSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPhaseChangedSignature, EBattlePhase, NewPhase);
 
 UCLASS()
 class LFP2D_API ALFPTurnManager : public AActor
@@ -55,9 +57,26 @@ public:
     // 从回合系统注销单位
     void UnregisterUnit(ALFPTacticsUnit* Unit);
 
+    // ==== 阶段系统 ====
+
+    // 获取当前战斗阶段
+    UFUNCTION(BlueprintPure, Category = "Turn System")
+    EBattlePhase GetCurrentPhase() const { return CurrentPhase; }
+
+    // 查询某敌人的行动计划
+    UFUNCTION(BlueprintPure, Category = "Turn System")
+    const FEnemyActionPlan& GetPlanForEnemy(ALFPTacticsUnit* Enemy) const;
+
+    // 获取所有敌人计划
+    UFUNCTION(BlueprintPure, Category = "Turn System")
+    const TArray<FEnemyActionPlan>& GetAllEnemyPlans() const { return EnemyActionPlans; }
+
 public:
     UPROPERTY(BlueprintAssignable, Category = "Turn System")
     FOnTurnChangedSignature OnTurnChanged;
+
+    UPROPERTY(BlueprintAssignable, Category = "Turn System")
+    FOnPhaseChangedSignature OnPhaseChanged;
 
 protected:
     virtual void BeginPlay() override;
@@ -72,6 +91,29 @@ protected:
     // 结束单位回合
     void EndUnitTurn(ALFPTacticsUnit* Unit);
 
+    // 设置阶段并广播
+    void SetPhase(EBattlePhase NewPhase);
+
+    // ==== 敌人规划阶段 ====
+
+    // 开始敌人规划阶段
+    void BeginEnemyPlanningPhase();
+
+    // 处理下一个敌人的规划
+    void ProcessNextEnemyPlan();
+
+    // 结束敌人规划阶段
+    void EndEnemyPlanningPhase();
+
+    // ==== 行动阶段 ====
+
+    // 开始行动阶段
+    void BeginActionPhase();
+
+    // 执行敌人的预定计划
+    void ExecuteEnemyPlan(ALFPTacticsUnit* Unit);
+
+protected:
     // 单位列表
     UPROPERTY(VisibleAnywhere, Category = "Turn System")
     TArray<ALFPTacticsUnit*> TurnOrderUnits;
@@ -87,4 +129,22 @@ protected:
     // 是否在回合中
     UPROPERTY(VisibleAnywhere, Category = "Turn System")
     bool bIsInRound = false;
+
+    // 当前战斗阶段
+    UPROPERTY(VisibleAnywhere, Category = "Turn System")
+    EBattlePhase CurrentPhase = EBattlePhase::BP_RoundEnd;
+
+    // 本轮所有敌人行动计划
+    UPROPERTY(VisibleAnywhere, Category = "Turn System")
+    TArray<FEnemyActionPlan> EnemyActionPlans;
+
+    // 规划阶段的敌人排序
+    UPROPERTY()
+    TArray<ALFPTacticsUnit*> PlanningOrderEnemies;
+
+    // 当前正在规划的敌人索引
+    int32 CurrentPlanningEnemyIndex = 0;
+
+    // 空计划（用于查询未找到时返回）
+    static FEnemyActionPlan EmptyPlan;
 };

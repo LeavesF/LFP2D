@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "LFP2D/HexGrid/LFPHexTile.h"
+#include "LFP2D/Turn/LFPBattleTypes.h"
 #include "InputActionValue.h"
 #include "LFPTacticsPlayerController.generated.h"
 
@@ -245,4 +246,29 @@ public:
 public:
     UFUNCTION(BlueprintCallable, Category = "Battle System")
     void ExecuteSkill(ULFPSkillBase* CurrentSkill);
+
+    // ==== 敌人计划预览 ====
+public:
+    // 显示敌人的技能效果预览（鼠标悬停时）
+    UFUNCTION(BlueprintCallable, Category = "Enemy Preview")
+    void ShowEnemyPlanPreview(ALFPTacticsUnit* EnemyUnit);
+
+    // 隐藏敌人的技能效果预览
+    UFUNCTION(BlueprintCallable, Category = "Enemy Preview")
+    void HideEnemyPlanPreview();
+
+    // 阶段变化响应
+    UFUNCTION()
+    void OnPhaseChanged(EBattlePhase NewPhase);
+
+protected:
+    // 当前预览的敌人
+    UPROPERTY()
+    ALFPTacticsUnit* PreviewedEnemy = nullptr;
+
+    // 预览高亮的格子缓存
+    TArray<ALFPHexTile*> PreviewEffectTiles;
+
+    // 当前战斗阶段（本地缓存）
+    EBattlePhase CachedBattlePhase = EBattlePhase::BP_RoundEnd;
 };

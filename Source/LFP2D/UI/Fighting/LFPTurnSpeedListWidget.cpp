@@ -12,7 +12,7 @@ void ULFPTurnSpeedListWidget::InitializeTurnOrder()
 {
 	if (!TurnManagerRef)
 	{
-		// ²éÕÒ»ØºÏ¹ÜÀíÆ÷
+		// ï¿½ï¿½ï¿½Ò»ØºÏ¹ï¿½ï¿½ï¿½ï¿½ï¿½
 		TArray<AActor*> FoundManagers;
 		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALFPTurnManager::StaticClass(), FoundManagers);
 		if (FoundManagers.Num() > 0)
@@ -23,10 +23,13 @@ void ULFPTurnSpeedListWidget::InitializeTurnOrder()
 
 	if (TurnManagerRef)
 	{
-		// °ó¶¨»ØºÏ±ä»¯ÊÂ¼ş
+		// ç»‘å®šå›åˆå˜åŒ–äº‹ä»¶
 		TurnManagerRef->OnTurnChanged.AddDynamic(this, &ULFPTurnSpeedListWidget::OnTurnChanged);
 
-		// Á¢¼´¸üĞÂUI
+		// ç»‘å®šé˜¶æ®µå˜åŒ–äº‹ä»¶
+		TurnManagerRef->OnPhaseChanged.AddDynamic(this, &ULFPTurnSpeedListWidget::OnPhaseChanged);
+
+		// åˆå§‹æ›´æ–°UI
 		UpdateTurnOrder();
 	}
 }
@@ -44,10 +47,10 @@ void ULFPTurnSpeedListWidget::UpdateTurnOrder()
 	{
 		return;
 	}
-	// ÉèÖÃ»ØºÏÎÄ±¾
+	// ï¿½ï¿½ï¿½Ã»Øºï¿½ï¿½Ä±ï¿½
 	RoundText->SetText(FText::FromString(FString::Printf(TEXT("Round %d"), TurnManagerRef->GetCurrentRound())));
 
-	// ¸´ÓÃÏÖÓĞÍ¼±ê¶ø²»ÊÇÏú»ÙÖØ½¨
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø½ï¿½
 	TArray<UWidget*> ExistingIcons = UnitIconsContainer->GetAllChildren();
 
 	TArray<ALFPTacticsUnit*> TurnOrderUnits = TurnManagerRef->GetTurnOrderUnits();
@@ -58,17 +61,17 @@ void ULFPTurnSpeedListWidget::UpdateTurnOrder()
 
 		if (i < ExistingIcons.Num())
 		{
-			// ¸´ÓÃÏÖÓĞÍ¼±ê
+			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½
 			Icon = Cast<ULFPTurnSpeedIconWidget>(ExistingIcons[i]);
 		}
 		else
 		{
-			// ´´½¨ĞÂÍ¼±ê
+			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½
 			Icon = CreateWidget<ULFPTurnSpeedIconWidget>(this, UnitIconClass);
 			UnitIconsContainer->AddChild(Icon);
 		}
 
-		// ¸üĞÂÍ¼±êÄÚÈİ
+		// ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		ALFPTacticsUnit* Unit = TurnOrderUnits[i];
 		if (Icon && Unit)
 		{
@@ -77,7 +80,7 @@ void ULFPTurnSpeedListWidget::UpdateTurnOrder()
 		}
 	}
 
-	// ÒÆ³ı¶àÓàÍ¼±ê
+	// ï¿½Æ³ï¿½ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½
 	for (int32 i = TurnOrderUnits.Num(); i < ExistingIcons.Num(); i++)
 	{
 		ExistingIcons[i]->RemoveFromParent();
@@ -85,9 +88,9 @@ void ULFPTurnSpeedListWidget::UpdateTurnOrder()
 
 
 	//if (!UnitIconsContainer || !UnitIconClass) return;
-	//// Çå¿ÕÏÖÓĞÍ¼±ê
+	//// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½
 	//UnitIconsContainer->ClearChildren();
-	//// ÎªÃ¿¸öµ¥Î»Ìí¼ÓÍ¼±ê
+	//// ÎªÃ¿ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½
 	//for (int32 i = 0; i < Units.Num(); i++)
 	//{
 	//	ALFPTacticsUnit* Unit = Units[i];
@@ -96,23 +99,23 @@ void ULFPTurnSpeedListWidget::UpdateTurnOrder()
 	//		UUserWidget* IconWidget = CreateWidget<UUserWidget>(this, UnitIconClass);
 	//		if (IconWidget)
 	//		{
-	//			// ÉèÖÃÍ¼±ê£¨ÕâÀï¼ÙÉèÔÚUnitIconClassÖĞÓĞÒ»¸öImage¿Ø¼şÃûÎª"UnitIcon"£¬²¢ÇÒÓĞÒ»¸öº¯Êı»ò¹«¿ªÊôĞÔÉèÖÃ¸ßÁÁ£©
+	//			// ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ê£¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½UnitIconClassï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Imageï¿½Ø¼ï¿½ï¿½ï¿½Îª"UnitIcon"ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ò¹«¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã¸ï¿½ï¿½ï¿½ï¿½ï¿½
 	//			UImage* IconImage = Cast<UImage>(IconWidget->GetWidgetFromName(TEXT("UnitIcon")));
 	//			if (IconImage)
 	//			{
-	//				// ÉèÖÃÍ¼Æ¬£¬ÕâÀïĞèÒªµ¥Î»ÓĞÍ·Ïñ×ÊÔ´£¬¿ÉÒÔÔÚµ¥Î»ÀàÖĞ»ñÈ¡
-	//				// ÀıÈç£ºIconImage->SetBrushFromTexture(Unit->GetUnitIcon());
-	//				// ÔİÊ±ÓÃÕ¼Î»£¬¾ßÌåĞèÒªÄúÔÚµ¥Î»ÀàÖĞÌí¼Ó»ñÈ¡Í·ÏñµÄº¯Êı
+	//				// ï¿½ï¿½ï¿½ï¿½Í¼Æ¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½Î»ï¿½ï¿½Í·ï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½Î»ï¿½ï¿½ï¿½Ğ»ï¿½È¡
+	//				// ï¿½ï¿½ï¿½ç£ºIconImage->SetBrushFromTexture(Unit->GetUnitIcon());
+	//				// ï¿½ï¿½Ê±ï¿½ï¿½Õ¼Î»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½Úµï¿½Î»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó»ï¿½È¡Í·ï¿½ï¿½Äºï¿½ï¿½ï¿½
 	//			}
-	//			// ¸ßÁÁµ±Ç°µ¥Î»
+	//			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç°ï¿½ï¿½Î»
 	//			UWidget* Highlight = IconWidget->GetWidgetFromName(TEXT("Highlight"));
 	//			if (Highlight)
 	//			{
 	//				Highlight->SetVisibility(i == CurrentUnitIndex ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
 	//			}
-	//			// Ìí¼Óµ½Ë®Æ½¿ò
+	//			// ï¿½ï¿½ï¿½Óµï¿½Ë®Æ½ï¿½ï¿½
 	//			UHorizontalBoxSlot* Slot = UnitIconsContainer->AddChildToHorizontalBox(IconWidget);
-	//			Slot->SetPadding(FMargin(5, 0, 5, 0)); // ÉèÖÃ¼ä¾à
+	//			Slot->SetPadding(FMargin(5, 0, 5, 0)); // ï¿½ï¿½ï¿½Ã¼ï¿½ï¿½
 	//			Slot->SetHorizontalAlignment(HAlign_Center);
 	//			Slot->SetVerticalAlignment(VAlign_Center);
 	//		}
@@ -122,9 +125,33 @@ void ULFPTurnSpeedListWidget::UpdateTurnOrder()
 
 void ULFPTurnSpeedListWidget::OnTurnChanged()
 {
-	// È¡ÏûÖ®Ç°µÄÑÓ³Ù¸üĞÂ
+	// å–æ¶ˆä¹‹å‰çš„å»¶è¿Ÿæ›´æ–°
 	GetWorld()->GetTimerManager().ClearTimer(UpdateTimerHandle);
 
-	// ÑÓ³ÙÒ»Ö¡¸üĞÂ£¬±ÜÃâÍ¬Ò»Ö¡ÄÚ¶à´Î¸üĞÂ
+	// å»¶è¿Ÿä¸€å¸§æ›´æ–°ï¼Œé¿å…åŒä¸€å¸§å†…å¤šæ¬¡æ›´æ–°
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULFPTurnSpeedListWidget::UpdateTurnOrder);
+}
+
+void ULFPTurnSpeedListWidget::OnPhaseChanged(EBattlePhase NewPhase)
+{
+	if (!PhaseText) return;
+
+	FString PhaseString;
+	switch (NewPhase)
+	{
+	case EBattlePhase::BP_EnemyPlanning:
+		PhaseString = TEXT("Enemy Planning");
+		break;
+	case EBattlePhase::BP_ActionPhase:
+		PhaseString = TEXT("Action Phase");
+		break;
+	case EBattlePhase::BP_RoundEnd:
+		PhaseString = TEXT("Round End");
+		break;
+	default:
+		PhaseString = TEXT("");
+		break;
+	}
+
+	PhaseText->SetText(FText::FromString(PhaseString));
 }

@@ -4,7 +4,11 @@
 #include "LFP2D/Turn/LFPTurnManager.h"
 #include "LFP2D/Unit/LFPTacticsUnit.h"
 #include "LFP2D/Player/LFPTacticsPlayerController.h"
+#include "LFP2D/AI/LFPAIController.h"
+#include "LFP2D/Skill/LFPSkillBase.h"
 #include "Kismet/GameplayStatics.h"
+
+FEnemyActionPlan ALFPTurnManager::EmptyPlan;
 
 ALFPTurnManager::ALFPTurnManager()
 {
@@ -54,16 +58,18 @@ void ALFPTurnManager::BeginNewRound()
     // 按速度排序单位
     SortUnitsBySpeed();
 
-    // 开始第一个单位的回合
-    if (TurnOrderUnits.Num() > 0)
-    {
-        BeginUnitTurn(TurnOrderUnits[0]);
-    }
+    // 清空上一轮的敌人计划
+    EnemyActionPlans.Empty();
+
+    // 进入敌人规划阶段
+    BeginEnemyPlanningPhase();
 }
 
 void ALFPTurnManager::EndCurrentRound()
 {
     bIsInRound = false;
+
+    SetPhase(EBattlePhase::BP_RoundEnd);
 
     // 通知玩家本回合结束
     for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
@@ -88,6 +94,114 @@ void ALFPTurnManager::SortUnitsBySpeed()
         });
 }
 
+// ==== 阶段管理 ====
+
+void ALFPTurnManager::SetPhase(EBattlePhase NewPhase)
+{
+    CurrentPhase = NewPhase;
+    OnPhaseChanged.Broadcast(NewPhase);
+}
+
+// ==== 敌人规划阶段 ====
+
+void ALFPTurnManager::BeginEnemyPlanningPhase()
+{
+    SetPhase(EBattlePhase::BP_EnemyPlanning);
+
+    // 过滤出存活的敌方单位，按速度排序
+    PlanningOrderEnemies.Empty();
+    for (ALFPTacticsUnit* Unit : TurnOrderUnits)
+    {
+        if (Unit && Unit->IsAlive() && Unit->IsEnemy())
+        {
+            PlanningOrderEnemies.Add(Unit);
+        }
+    }
+
+    // 敌方单位已按速度排序（继承自 TurnOrderUnits 的排序）
+
+    CurrentPlanningEnemyIndex = 0;
+
+    if (PlanningOrderEnemies.Num() == 0)
+    {
+        // 没有敌方单位，直接进入行动阶段
+        EndEnemyPlanningPhase();
+        return;
+    }
+
+    // 隐藏玩家技能选择UI
+    if (ALFPTacticsPlayerController* PC = GetWorld()->GetFirstPlayerController<ALFPTacticsPlayerController>())
+    {
+        PC->HideSkillSelection();
+    }
+
+    ProcessNextEnemyPlan();
+}
+
+void ALFPTurnManager::ProcessNextEnemyPlan()
+{
+    if (CurrentPlanningEnemyIndex >= PlanningOrderEnemies.Num())
+    {
+        // 所有敌人规划完毕
+        EndEnemyPlanningPhase();
+        return;
+    }
+
+    ALFPTacticsUnit* Enemy = PlanningOrderEnemies[CurrentPlanningEnemyIndex];
+
+    // 跳过死亡单位
+    if (!Enemy || !Enemy->IsAlive())
+    {
+        CurrentPlanningEnemyIndex++;
+        ProcessNextEnemyPlan();
+        return;
+    }
+
+    ALFPAIController* AIController = Enemy->GetAIController();
+    if (!AIController)
+    {
+        CurrentPlanningEnemyIndex++;
+        ProcessNextEnemyPlan();
+        return;
+    }
+
+    // 创建行动计划（包括移动到施法位置）
+    FEnemyActionPlan Plan = AIController->CreateActionPlan();
+
+    // 存储计划
+    EnemyActionPlans.Add(Plan);
+    Enemy->SetActionPlan(Plan);
+
+    // 推进到下一个敌人，加延时让玩家观察
+    CurrentPlanningEnemyIndex++;
+    FTimerHandle TimerHandle;
+    GetWorld()->GetTimerManager().SetTimer(
+        TimerHandle,
+        this,
+        &ALFPTurnManager::ProcessNextEnemyPlan,
+        0.5f,
+        false
+    );
+}
+
+void ALFPTurnManager::EndEnemyPlanningPhase()
+{
+    BeginActionPhase();
+}
+
+// ==== 行动阶段 ====
+
+void ALFPTurnManager::BeginActionPhase()
+{
+    SetPhase(EBattlePhase::BP_ActionPhase);
+
+    // 开始第一个单位的回合
+    if (TurnOrderUnits.Num() > 0)
+    {
+        BeginUnitTurn(TurnOrderUnits[0]);
+    }
+}
+
 void ALFPTurnManager::BeginUnitTurn(ALFPTacticsUnit* Unit)
 {
     OnTurnChanged.Broadcast();
@@ -96,37 +210,55 @@ void ALFPTurnManager::BeginUnitTurn(ALFPTacticsUnit* Unit)
 
     ALFPTacticsPlayerController* PC = GetWorld()->GetFirstPlayerController<ALFPTacticsPlayerController>();
 
-    // 如果是AI单位，让AI控制器接管
-    if (Unit->IsEnemy())
+    // 敌方单位在行动阶段：执行预定计划
+    if (Unit->IsEnemy() && CurrentPhase == EBattlePhase::BP_ActionPhase)
     {
-        if (ALFPAIController* AIController = Unit->GetAIController())
+        if (PC)
         {
-            if (PC)
-            {
-                PC->HideSkillSelection();
-            }
-            // AI控制器会处理回合开始
-            // 通知单位回合开始
-            if (Unit)
-            {
-                Unit->OnTurnStarted();
-            }
-            return;
+            PC->HideSkillSelection();
         }
+
+        Unit->OnTurnStarted();
+
+        ExecuteEnemyPlan(Unit);
+        return;
     }
-    // 通知单位回合开始
+
+    // 玩家单位：保持原有逻辑
     if (Unit)
     {
         Unit->OnTurnStarted();
     }
 
-    // 通知玩家控制器
     if (PC)
     {
         PC->OnTurnStarted(Unit);
         PC->SelectUnit(Unit);
         PC->HandleSkillSelection();
     }
+}
+
+void ALFPTurnManager::ExecuteEnemyPlan(ALFPTacticsUnit* Unit)
+{
+    const FEnemyActionPlan& Plan = GetPlanForEnemy(Unit);
+
+    if (Plan.bIsValid && Plan.PlannedSkill)
+    {
+        // 在原定目标格子释放技能（即使目标已死亡）
+        Unit->ExecuteSkill(Plan.PlannedSkill, Plan.TargetTile);
+        Unit->ConsumeActionPoints(Plan.PlannedSkill->ActionPointCost);
+    }
+
+    // 清除头顶技能图标
+    Unit->ClearActionPlan();
+
+    // 短延时后结束回合（让玩家看到技能效果）
+    FTimerHandle TimerHandle;
+    GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this, Unit]()
+    {
+        Unit->SetHasActed(true);
+        PassTurn();
+    }, 0.5f, false);
 }
 
 void ALFPTurnManager::EndUnitTurn(ALFPTacticsUnit* Unit)
@@ -161,7 +293,7 @@ void ALFPTurnManager::PassTurn()
     bool TurnOrderUnitsActed = true;
     for (ALFPTacticsUnit* Unit : TurnOrderUnits)
     {
-        if (!Unit->HasActed())
+        if (Unit && Unit->IsAlive() && !Unit->HasActed())
         {
             TurnOrderUnitsActed = false;
             break;
@@ -181,7 +313,7 @@ void ALFPTurnManager::PassTurn()
             int32 Index = (NextIndex + i) % TurnOrderUnits.Num();
             ALFPTacticsUnit* NextUnit = TurnOrderUnits[Index];
 
-            if (NextUnit && !NextUnit->HasActed())
+            if (NextUnit && NextUnit->IsAlive() && !NextUnit->HasActed())
             {
                 BeginUnitTurn(NextUnit);
                 return;
@@ -230,4 +362,16 @@ void ALFPTurnManager::UnregisterUnit(ALFPTacticsUnit* Unit)
             PassTurn();
         }
     }
+}
+
+const FEnemyActionPlan& ALFPTurnManager::GetPlanForEnemy(ALFPTacticsUnit* Enemy) const
+{
+    for (const FEnemyActionPlan& Plan : EnemyActionPlans)
+    {
+        if (Plan.EnemyUnit == Enemy)
+        {
+            return Plan;
+        }
+    }
+    return EmptyPlan;
 }

@@ -7,6 +7,7 @@
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "LFP2D/Skill/LFPSkillBase.h"
+#include "LFP2D/Turn/LFPBattleTypes.h"
 #include "LFPAIController.generated.h"
 
 class ALFPTacticsUnit;
@@ -60,6 +61,20 @@ public:
     // 计算位置价值
     UFUNCTION(BlueprintCallable, Category = "AI")
     float CalculatePositionValue(ALFPHexTile* Tile, ALFPTacticsUnit* Target) const;
+
+    // ==== 规划阶段方法 ====
+
+    // 创建行动计划（选技能、选目标、移动到施法位置）
+    UFUNCTION(BlueprintCallable, Category = "AI|Planning")
+    FEnemyActionPlan CreateActionPlan();
+
+    // 选择最佳技能（virtual 可覆盖）
+    UFUNCTION(BlueprintCallable, Category = "AI|Planning")
+    virtual ULFPSkillBase* SelectBestSkill();
+
+    // 寻找最佳施法站位（技能释放范围内、移动范围内）
+    UFUNCTION(BlueprintCallable, Category = "AI|Planning")
+    ALFPHexTile* FindBestCasterPosition(ULFPSkillBase* Skill, ALFPHexTile* TargetTile);
 
 protected:
     // 行为树资产

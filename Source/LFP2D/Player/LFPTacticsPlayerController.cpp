@@ -69,6 +69,12 @@ void ALFPTacticsPlayerController::BeginPlay()
             TurnSpeedListWidget->InitializeTurnOrder(); // 初始化单位顺序
         }
     }
+
+    // 绑定阶段变化委托
+    if (ALFPTurnManager* TurnManager = GetTurnManager())
+    {
+        TurnManager->OnPhaseChanged.AddDynamic(this, &ALFPTacticsPlayerController::OnPhaseChanged);
+    }
 }
 
 void ALFPTacticsPlayerController::SetupInputComponent()
@@ -156,6 +162,30 @@ void ALFPTacticsPlayerController::Tick(float DeltaTime)
                 }
 
                 LastHoveredTile = HoveredTile;
+            }
+
+            // 敌人计划预览：检测悬停的格子上是否有带行动计划的敌人
+            if (CachedBattlePhase == EBattlePhase::BP_EnemyPlanning || CachedBattlePhase == EBattlePhase::BP_ActionPhase)
+            {
+                ALFPTacticsUnit* HoveredEnemy = nullptr;
+                if (LastHoveredTile)
+                {
+                    ALFPTacticsUnit* UnitOnTile = LastHoveredTile->GetUnitOnTile();
+                    if (UnitOnTile && UnitOnTile->IsEnemy() && UnitOnTile->HasActionPlan())
+                    {
+                        HoveredEnemy = UnitOnTile;
+                    }
+                }
+
+                if (HoveredEnemy && HoveredEnemy != PreviewedEnemy)
+                {
+                    HideEnemyPlanPreview();
+                    ShowEnemyPlanPreview(HoveredEnemy);
+                }
+                else if (!HoveredEnemy && PreviewedEnemy)
+                {
+                    HideEnemyPlanPreview();
+                }
             }
         }
     }
@@ -754,3 +784,60 @@ void ALFPTacticsPlayerController::HandleSkillTargetSelecting(ULFPSkillBase* Skil
 //        CurrentSelectedSkill = nullptr;
 //    }
 //}
+
+// ==== 敌人计划预览和阶段感知 ====
+
+void ALFPTacticsPlayerController::ShowEnemyPlanPreview(ALFPTacticsUnit* EnemyUnit)
+{
+    if (!EnemyUnit || !EnemyUnit->HasActionPlan()) return;
+
+    PreviewedEnemy = EnemyUnit;
+    const FEnemyActionPlan& Plan = EnemyUnit->CurrentActionPlan;
+
+    // 高亮技能效果范围格子
+    PreviewEffectTiles = Plan.EffectAreaTiles;
+    for (ALFPHexTile* Tile : PreviewEffectTiles)
+    {
+        if (Tile)
+        {
+            Tile->SetRangeSprite(EUnitRange::UR_SkillEffect);
+        }
+    }
+}
+
+void ALFPTacticsPlayerController::HideEnemyPlanPreview()
+{
+    // 恢复预览格子为默认状态
+    for (ALFPHexTile* Tile : PreviewEffectTiles)
+    {
+        if (Tile)
+        {
+            Tile->SetRangeSprite(EUnitRange::UR_Default);
+        }
+    }
+    PreviewEffectTiles.Empty();
+    PreviewedEnemy = nullptr;
+}
+
+void ALFPTacticsPlayerController::OnPhaseChanged(EBattlePhase NewPhase)
+{
+    CachedBattlePhase = NewPhase;
+
+    // 阶段切换时清理预览状态
+    HideEnemyPlanPreview();
+
+    switch (NewPhase)
+    {
+    case EBattlePhase::BP_EnemyPlanning:
+        // 敌人规划阶段：隐藏技能选择UI
+        HideSkillSelection();
+        break;
+
+    case EBattlePhase::BP_ActionPhase:
+        // 行动阶段：恢复正常
+        break;
+
+    case EBattlePhase::BP_RoundEnd:
+        break;
+    }
+}

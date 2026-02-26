@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "LFP2D/HexGrid/LFPHexTile.h"
+#include "LFP2D/Turn/LFPBattleTypes.h"
 #include "Components/TimelineComponent.h"
 #include "PaperSpriteComponent.h"
 #include "LFPTacticsUnit.generated.h"
@@ -422,4 +423,35 @@ public:
 public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
     TObjectPtr<ULFPSkillComponent> SkillComponent;
+
+    // ==== 行动计划（敌人规划阶段使用） ====
+public:
+    // 当前行动计划
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI Plan")
+    FEnemyActionPlan CurrentActionPlan;
+
+    // 设置行动计划并显示头顶图标
+    UFUNCTION(BlueprintCallable, Category = "AI Plan")
+    void SetActionPlan(const FEnemyActionPlan& Plan);
+
+    // 清除行动计划并隐藏图标
+    UFUNCTION(BlueprintCallable, Category = "AI Plan")
+    void ClearActionPlan();
+
+    // 是否有有效的行动计划
+    UFUNCTION(BlueprintPure, Category = "AI Plan")
+    bool HasActionPlan() const { return CurrentActionPlan.bIsValid; }
+
+    // 显示/隐藏头顶技能图标
+    UFUNCTION(BlueprintCallable, Category = "AI Plan")
+    void ShowPlannedSkillIcon(bool bShow);
+
+protected:
+    // 头顶计划技能图标组件
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+    class UWidgetComponent* PlannedSkillIconComponent;
+
+    // 技能图标 Widget 蓝图类
+    UPROPERTY(EditDefaultsOnly, Category = "AI Plan")
+    TSubclassOf<class ULFPPlannedSkillIconWidget> PlannedSkillIconWidgetClass;
 };

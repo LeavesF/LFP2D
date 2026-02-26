@@ -11,6 +11,7 @@
 #include "LFP2D/HexGrid/LFPHexGridManager.h"
 #include "LFP2D/Turn/LFPTurnManager.h"
 #include "LFP2D/UI/Fighting/LFPHealthBarWidget.h"
+#include "LFP2D/UI/Fighting/LFPPlannedSkillIconWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/TimelineComponent.h"
 #include "Components/WidgetComponent.h"
@@ -46,6 +47,14 @@ ALFPTacticsUnit::ALFPTacticsUnit()
 
     // 创建技能组件
     SkillComponent = CreateDefaultSubobject<ULFPSkillComponent>(TEXT("SkillComponent"));
+
+    // 创建头顶计划技能图标组件
+    PlannedSkillIconComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("PlannedSkillIconComponent"));
+    PlannedSkillIconComponent->SetupAttachment(RootComponent);
+    PlannedSkillIconComponent->SetWidgetSpace(EWidgetSpace::Screen);
+    PlannedSkillIconComponent->SetDrawAtDesiredSize(true);
+    PlannedSkillIconComponent->SetRelativeLocation(FVector(0, 250, 0)); // 在血条上方
+    PlannedSkillIconComponent->SetVisibility(false); // 默认隐藏
     // 运行时创建组件
     //MoveTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("MoveTimeline"));
 }
@@ -296,6 +305,9 @@ void ALFPTacticsUnit::ResetForNewRound()
     {
         SpriteComponent->SetSpriteColor(FLinearColor::White);
     }
+
+    // 清除上一轮的行动计划
+    ClearActionPlan();
 }
 
 void ALFPTacticsUnit::OnTurnStarted()
@@ -814,4 +826,42 @@ ULFPSkillBase* ALFPTacticsUnit::GetDefaultAttackSkill()
         return SkillComponent->GetDefaultAttackSkill();
     }
     return nullptr;
+}
+
+// ==== 行动计划 ====
+
+void ALFPTacticsUnit::SetActionPlan(const FEnemyActionPlan& Plan)
+{
+    CurrentActionPlan = Plan;
+    if (Plan.bIsValid)
+    {
+        ShowPlannedSkillIcon(true);
+    }
+}
+
+void ALFPTacticsUnit::ClearActionPlan()
+{
+    CurrentActionPlan.Reset();
+    ShowPlannedSkillIcon(false);
+}
+
+void ALFPTacticsUnit::ShowPlannedSkillIcon(bool bShow)
+{
+    if (!PlannedSkillIconComponent) return;
+
+    PlannedSkillIconComponent->SetVisibility(bShow);
+
+    if (bShow && CurrentActionPlan.PlannedSkill && CurrentActionPlan.PlannedSkill->SkillIcon)
+    {
+        // 确保 Widget 已创建
+        if (PlannedSkillIconWidgetClass && !PlannedSkillIconComponent->GetWidget())
+        {
+            PlannedSkillIconComponent->SetWidgetClass(PlannedSkillIconWidgetClass);
+        }
+
+        if (ULFPPlannedSkillIconWidget* IconWidget = Cast<ULFPPlannedSkillIconWidget>(PlannedSkillIconComponent->GetWidget()))
+        {
+            IconWidget->SetSkillIcon(CurrentActionPlan.PlannedSkill->SkillIcon);
+        }
+    }
 }
