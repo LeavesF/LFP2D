@@ -1,0 +1,300 @@
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTService_UpdateConditions.cpp:1:// Fill out your copyright notice in the Description page of Project Settings.
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTService_UpdateConditions.cpp:26:    // ¸üĞÂ¹¥»÷·¶Î§×´Ì¬
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTService_UpdateConditions.cpp:30:    // ¸üĞÂÄÜ·ñ¹¥»÷×´Ì¬
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTService_UpdateConditions.cpp:34:    // ¸üĞÂÊÇ·ñÓ¦¸Ã½áÊø»ØºÏ
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTService_UpdateConditions.h:1:// Fill out your copyright notice in the Description page of Project Settings.
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.cpp:1:// Fill out your copyright notice in the Description page of Project Settings.
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.cpp:28:    // °ó¶¨¹¥»÷Íê³ÉÊÂ¼ş
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.cpp:29:    //ControlledUnit->OnAttackComplete.AddDynamic(this, &UBTTask_AttackTarget::OnAttackComplete);
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.cpp:32:    // ¿ªÊ¼¹¥»÷
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.cpp:40:    // ÇåÀí
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.h:1:// Fill out your copyright notice in the Description page of Project Settings.
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_EndTurn.cpp:1:// Fill out your copyright notice in the Description page of Project Settings.
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_EndTurn.cpp:20:    // Í¨Öª»ØºÏ¹ÜÀíÆ÷½áÊø»ØºÏ
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_EndTurn.h:1:// Fill out your copyright notice in the Description page of Project Settings.
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindMovementTile.cpp:1:// Fill out your copyright notice in the Description page of Project Settings.
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindMovementTile.h:1:// Fill out your copyright notice in the Description page of Project Settings.
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.cpp:1:// Fill out your copyright notice in the Description page of Project Settings.
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.cpp:24:    // ä»é»‘æ¿ä¸­è¯»å–è¦ä½¿ç”¨çš„æŠ€èƒ½
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.cpp:29:    // æ ¹æ®æŠ€èƒ½ä»‡æ¨å€¼å…¬å¼æ‰¾åˆ°æœ€ä¼˜ç›®æ ‡
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.h:1:// Fill out your copyright notice in the Description page of Project Settings.
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.h:25:    // é»‘æ¿é”®ï¼ˆè¾“å…¥ï¼‰ï¼šè¦ä½¿ç”¨çš„æŠ€èƒ½å¯¹è±¡ï¼ˆObject ç±»å‹ï¼ŒæŒ‡å‘ ULFPSkillBaseï¼‰
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.h:29:    // é»‘æ¿é”®ï¼ˆè¾“å‡ºï¼‰ï¼šä»‡æ¨å€¼æœ€é«˜çš„ç›®æ ‡å•ä½ï¼ˆObject ç±»å‹ï¼ŒæŒ‡å‘ ALFPTacticsUnitï¼‰
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindTarget.cpp:1:// Fill out your copyright notice in the Description page of Project Settings.
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindTarget.h:1:// Fill out your copyright notice in the Description page of Project Settings.
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_MoveToTile.cpp:1:// Fill out your copyright notice in the Description page of Project Settings.
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_MoveToTile.cpp:28:    // °ó¶¨ÒÆ¶¯Íê³ÉÊÂ¼ş
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_MoveToTile.cpp:29:    //ControlledUnit->OnMoveComplete.AddDynamic(this, &UBTTask_MoveToTile::OnMoveComplete);
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_MoveToTile.cpp:32:    // ¿ªÊ¼ÒÆ¶¯
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_MoveToTile.cpp:40:    // ÇåÀí
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_MoveToTile.h:1:// Fill out your copyright notice in the Description page of Project Settings.
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPAIController.cpp:1:// Fill out your copyright notice in the Description page of Project Settings.
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPAIController.cpp:28:        // ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½Ú°ï¿½
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPAIController.cpp:34:        // ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPAIController.cpp:42:        // ï¿½ó¶¨»Øºï¿½ï¿½Â¼ï¿½
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPAIController.cpp:46:        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPAIController.cpp:66:    // ï¿½ï¿½ï¿½ÃºÚ°ï¿½Öµ
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPAIController.cpp:73:    // Ñ°ï¿½Ò³ï¿½Ê¼Ä¿ï¿½ï¿½
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPAIController.cpp:80:    // ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß¼ï¿½
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPAIController.cpp:87:    // ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òµï¿½Î»
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPAIController.cpp:142:    // ï¿½ï¿½È¡ï¿½ï¿½ï¿½Ğ¿ï¿½ï¿½Æ¶ï¿½Î»ï¿½ï¿½
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPAIController.cpp:150:        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğµï¿½Î»ï¿½Ä¸ï¿½ï¿½ï¿½
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPAIController.cpp:168:    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğ²Öµ = Ä¿ï¿½ê¹¥ï¿½ï¿½ï¿½ï¿½ * (1 - Ä¿ï¿½êµ±Ç°Ñªï¿½ï¿½/ï¿½ï¿½ï¿½Ñªï¿½ï¿½)
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPAIController.cpp:171:    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (Ô½ï¿½ï¿½ï¿½ï¿½Ğ²Ô½ï¿½ï¿½)
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPAIController.cpp:178:    // Ó¦ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPAIController.cpp:183:            // ï¿½ï¿½ï¿½Ó¶Ôµï¿½Ñªï¿½ï¿½Ä¿ï¿½ï¿½ï¿½È¨ï¿½ï¿½
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPAIController.cpp:185:            ThreatValue *= (2.0f - HealthRatio); // Ñªï¿½ï¿½Ô½ï¿½Í£ï¿½ï¿½ï¿½Ğ²ÖµÔ½ï¿½ï¿½
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPAIController.cpp:188:        // Ó¦ï¿½Ã¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPAIController.cpp:201:    // 1. ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½Ô½ï¿½ï¿½Ô½ï¿½ï¿½
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPAIController.cpp:208:    // 2. ï¿½ï¿½ï¿½ï¿½Ú¹ï¿½ï¿½ï¿½ï¿½ï¿½Î§ï¿½Ú¶ï¿½ï¿½ï¿½Ó·ï¿½
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPAIController.cpp:214:    // 3. ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ëµï¿½Î»ï¿½ï¿½ï¿½Å¶ï¿½Ğ­ï¿½ï¿½ï¿½ï¿½
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPAIController.cpp:235:    //// 4. ï¿½ï¿½ï¿½ï¿½Î£ï¿½ï¿½Î»ï¿½Ã£ï¿½ï¿½ï¿½ï¿½ï¿½æ¡¢ï¿½ï¿½ï¿½ï¿½ï¿½È£ï¿½
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPAIController.cpp:236:    //if (Tile->IsDangerous())
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPAIController.cpp:237:    //{
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPAIController.cpp:238:    //    PositionValue -= 30.0f;
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPAIController.cpp:239:    //}
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPAIController.cpp:241:    //// 5. ï¿½ßµï¿½ï¿½ï¿½ï¿½ï¿½
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPAIController.cpp:242:    //if (Tile->IsHighGround())
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPAIController.cpp:243:    //{
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPAIController.cpp:244:    //    PositionValue += 15.0f;
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPAIController.cpp:245:    //}
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPAIController.h:1:// Fill out your copyright notice in the Description page of Project Settings.
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPAIController.h:30:    // ï¿½ï¿½Ê¼ï¿½ï¿½Î»ï¿½Øºï¿½
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPAIController.h:34:    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½Øºï¿½
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPAIController.h:38:    // ï¿½ï¿½È¡ï¿½ï¿½Îªï¿½ï¿½
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPAIController.h:41:    // ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPAIController.h:44:    // Ñ°ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPAIController.h:48:    // æ ¹æ®æŠ€èƒ½çš„ä»‡æ¨å€¼å…¬å¼ï¼Œä»æ‰€æœ‰ç©å®¶å•ä½ä¸­æ‰¾åˆ°æœ€ä¼˜æ”»å‡»ç›®æ ‡
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPAIController.h:52:    // Ñ°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¶ï¿½Î»ï¿½ï¿½
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPAIController.h:56:    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğ²Öµ
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPAIController.h:60:    // ï¿½ï¿½ï¿½ï¿½Î»ï¿½Ã¼ï¿½Öµ
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPAIController.h:65:    // ï¿½ï¿½Îªï¿½ï¿½ï¿½Ê²ï¿½
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPAIController.h:69:    // ï¿½Ú°ï¿½ï¿½ï¿½ï¿½
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPAIController.h:79:    // ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ÆµÄµï¿½Î»
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPAIController.h:83:    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPAIController.h:87:    // AI ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPEnemyBehaviorData.cpp:1:// Fill out your copyright notice in the Description page of Project Settings.
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPEnemyBehaviorData.h:1:// Fill out your copyright notice in the Description page of Project Settings.
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPEnemyBehaviorData.h:18:    // ¹¥»÷ÇãÏò (0-1)
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPEnemyBehaviorData.h:22:    // ·ÀÓùÇãÏò (0-1)
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPEnemyBehaviorData.h:26:    // ÍÅ¶ÓĞ­×÷ÇãÏò (0-1)
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPEnemyBehaviorData.h:30:    // ÊÇ·ñÓÅÏÈ¹¥»÷µÍÑªÁ¿Ä¿±ê
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPEnemyBehaviorData.h:34:    // ÊÇ·ñ±ÜÃâÎ£ÏÕµØĞÎ
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/LFPEnemyBehaviorData.h:38:    // ÊÇ·ñÑ°Çó¸ßµØÓÅÊÆ
+d:/UE/UE_Project/LFP2D/Source/LFP2D/Core/LFPTurnGameMode.cpp:1:// Fill out your copyright notice in the Description page of Project Settings.
+d:/UE/UE_Project/LFP2D/Source/LFP2D/Core/LFPTurnGameMode.cpp:9:    // Éú³É»ØºÏ¹ÜÀíÆ÷
+d:/UE/UE_Project/LFP2D/Source/LFP2D/Core/LFPTurnGameMode.h:1:// Fill out your copyright notice in the Description page of Project Settings.
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:1:// Fill out your copyright notice in the Description page of Project Settings.
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:10:// Áù±ßĞÎ·½ÏòÏòÁ¿ (Æ½¶¥Áù±ßĞÎ²¼¾Ö)
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:12:	FLFPHexCoordinates(1, 0),   // ¶«
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:13:	FLFPHexCoordinates(1, -1),  // ¶«±±
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:14:	FLFPHexCoordinates(0, -1),  // Î÷±±
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:15:	FLFPHexCoordinates(-1, 0),  // Î÷
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:16:	FLFPHexCoordinates(-1, 1),  // Î÷ÄÏ
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:17:	FLFPHexCoordinates(0, 1)    // ¶«ÄÏ
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:20:// Sets default values
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:23: 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:31:// Called when the game starts or when spawned
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:39:// Called every frame
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:44:	// µ÷ÊÔ»æÖÆÍø¸ñ
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:54:				// ÏÔÊ¾×ø±ê
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:65:	// Çå³ıÏÖÓĞÍø¸ñ
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:75:	// Éú³ÉĞÂÍø¸ñ
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:80:			// ´´½¨Æ«ÒÆ×ø±ê - Æ½¶¥Áù±ßĞÎ²¼¾Ö
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:83:			// ´´½¨Áù±ßĞÎ×ø±ê
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:86:			// Éú³ÉÊÀ½çÎ»ÖÃ£¨Ê¹ÓÃ´¹Ö±Ëõ·Å£©
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:89:			// Éú³É¸ñ×Ó
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:104:				// Ìí¼Óµ½Íø¸ñÓ³Éä (Ê¹ÓÃQ,R×÷Îª¼ü)
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:132:	//// Todo: ÓÃMapÓÅ»¯
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:133:	//TPair<ALFPHexTile*, int32> Key(Center, MaxRange);
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:134:	//if (MaxRangeCache.Contains(Key))
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:135:	//{
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:136:	//	return MaxRangeCache[Key];
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:137:	//}
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:142:	// BFSÊı¾İ½á¹¹
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:156:		// »ñÈ¡ËùÓĞÁÚ¾Ó
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:161:			// ¼ÆËãĞÂÒÆ¶¯´ú¼Û
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:164:			// Èç¹ûÉĞÎ´·ÃÎÊ»òÕÒµ½¸ü¶ÌÂ·¾¶
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:169:				// Èç¹ûÔÚÒÆ¶¯·¶Î§ÄÚ
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:196:	// ÑéÖ¤ÊäÈëÓĞĞ§ĞÔ
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:203:	// ÆğµãÖÕµãÏàÍ¬µÄÇé¿ö
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:210:	// Ñ°Â·Êı¾İ½á¹¹
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:212:	TMap<ALFPHexTile*, float> GScoreMap;  // Êµ¼ÊÒÆ¶¯´ú¼Û
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:216:	// ³õÊ¼»¯Æğµã
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:225:		// »ñÈ¡¿ª·Å¼¯ÖĞFÖµ×îĞ¡µÄ½Úµã
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:242:		// µ½´ïÖÕµã
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:256:		// ÒÆ¶¯½Úµãµ½¹Ø±Õ¼¯
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:260:		// ¼ì²éËùÓĞÁÚ¾Ó
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:266:			NeighborCoords.S = -NeighborCoords.Q - NeighborCoords.R;  // ¸üĞÂÁ¢·½×ø±ê
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:270:			// Ìø¹ıÎŞĞ§ÁÚ¾Ó
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:279:			// ¼ÆËãĞÂGÖµ£¨¼ÙÉèËùÓĞ¸ñ×Ó´ú¼ÛÏàÍ¬£©
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:282:			// ·¢ÏÖĞÂ½Úµã»òÕÒµ½¸üÓÅÂ·¾¶
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:296:	// µ÷ÊÔ»æÖÆÂ·¾¶
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:297:	//DrawDebugPath(Path, bPathFound);
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:312:	const float HorizontalRadius = HexSize; // Ë®Æ½·½Ïò°ë¾¶²»±ä
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:313:	const float VerticalRadius = HexSize * VerticalScale; // ´¹Ö±·½Ïò°ë¾¶Ëõ·Å
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:315:	// Ìí¼Ó 30¡ã Æ«ÒÆ£¬Ê¹Áù±ßĞÎÕıÈ·¶ÔÆë
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:321:		// Ìí¼Ó 30¡ã Æ«ÒÆ
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:325:			Center.Y + VerticalRadius * FMath::Sin(Angle), // Ó¦ÓÃ´¹Ö±Ëõ·Å
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:331:	// Á¬½ÓµãĞÎ³ÉÁù±ßĞÎ
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:343:	const float DebugDuration = 5.0f; // ÏÔÊ¾5Ãë
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:345:	// »æÖÆÆğµãºÍÖÕµã
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:347:		// Æğµã£ºÂÌÉ«ÇòÌå
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:356:		// ÖÕµã£ºÀ¶É«ÇòÌå
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:364:	// »æÖÆÂ·¾¶Á¬Ïß
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:370:		// Â·¾¶Ïß£º»ÆÉ«
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:379:			3.0f // Ïß¿í
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:382:		// Â·¾¶µã£º»ÆÉ«ÇòÌå
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:390:	// Èç¹ûÕÒµ½Â·¾¶µ«ÔÚ»æÖÆÇ°¾Í±»Çå¿ÕÁË£¨±ÈÈç³¤¶ÈÎª1£©
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:399:	// »æÖÆÊ§°ÜÌáÊ¾
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:401:		// ÔÚÆğµãÎ»ÖÃ»æÖÆºìÉ«X
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:421:// Ö÷Èë¿Úº¯Êı£ºÍ¨¹ıÆÁÄ»Î»ÖÃ»ñÈ¡Áù±ßĞÎTile
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:432:	// ×ª»»Îª¾Ö²¿×ø±ê£¨Ïà¶ÔÓÚÍø¸ñ¹ÜÀíÆ÷
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:437:	// ¼ÆËãÁù±ßĞÎ×ø±ê
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:444:	// ÔÚGridMapÖĞ²éÕÒ
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:452:// ÊÀ½ç×ø±ê×ª»»ÎªÁù±ßĞÎÍø¸ñ×ø±ê
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:455:	// ¼â¶¥Áù±ßĞÎ²¼¾Ö²ÎÊı
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:456:	const float HorizontalSpacing = InHexSize * 1.5f * InVerticalScale; // Ë®Æ½¼ä¾à (Ó¦ÓÃ´¹Ö±Ëõ·Å)
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:457:	const float VerticalSpacing = InHexSize * FMath::Sqrt(3.0f); // ´¹Ö±¼ä¾à
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:459:	// Íø¸ñÔ­µãÎ»ÖÃ
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:462:	// ¼ÆËãÏà¶ÔÓÚÍø¸ñÔ­µãµÄÎ»ÖÃ
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:466:	// ×ª»»ÎªÁù±ßĞÎÍø¸ñ×ø±ê£¨ÎŞÁ¿¸Ù£©
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:473:// ÏñËØÎ»ÖÃ×ª»»ÎªÁù±ßĞÎ×ø±ê
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:476:    // ÌáÈ¡×ø±êÖµ
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:480:    // ×ª»»ÎªÁ¢·½Ìå×ø±ê - ¼â¶¥²¼¾Ö¹«Ê½
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:484:    // Ê¹ÓÃÓÅ»¯µÄÁù±ßĞÎ×ø±êËÄÉáÎåÈë
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:488:// ¼ì²éµãÊÇ·ñÔÚÁù±ßĞÎÄÚ
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:491:	// ½«µã×ª»»ÎªÏà¶ÔÓÚÁù±ßĞÎÖĞĞÄµÄÎ»ÖÃ
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:494:	// ¼â¶¥Áù±ßĞÎµÄ¶¥µãÎ»ÖÃ£¨´Ó0¶È¿ªÊ¼£©
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:498:			float angle_deg = 60 * i; // ¼â¶¥Áù±ßĞÎ´Ó0¶È¿ªÊ¼
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:505:	// ¼ì²éµãÊÇ·ñÔÚÁù±ßĞÎÄÚ£¨Ê¹ÓÃÉäÏß·¨£©
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:512:		// ¼ì²é±ßÊÇ·ñ¿çÔ½µãµÄy×ø±ê
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:514:			// ¼ÆËã½»µãx×ø±ê
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:517:			// Èç¹û½»µãÔÚµãµÄÓÒ²à
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:524:	// ÆæÊı´Î¿çÔ½±íÊ¾µãÔÚÄÚ²¿
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:534:		// ¸ßÁÁÏÔÊ¾ÕâĞ©¸ñ×Ó
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:557:		// ¸ßÁÁÏÔÊ¾ÕâĞ©¸ñ×Ó
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:593:// ÓÅ»¯µÄÁù±ßĞÎ×ø±êËÄÉáÎåÈë
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:596:	// ×ª»»ÎªÁ¢·½Ìå×ø±ê
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:601:	// ËÄÉáÎåÈëµ½×î½üµÄÕûÊı
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:606:	// ¼ì²éËÄÉáÎåÈëÎó²î
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.cpp:611:	// µ÷Õû×î´óÎó²îµÄ×ø±ê
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.h:1:// Fill out your copyright notice in the Description page of Project Settings.
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.h:17:	// Sets default values for this actor's properties
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.h:21:	// Called when the game starts or when spawned
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.h:25:	// Called every frame
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.h:60:	// µ÷ÊÔ¿ª¹Ø
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.h:89:	// Áù±ßĞÎ·½Ïò¶¨Òå (¾²Ì¬³£Á¿)
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.h:92:    //// Ñ°Â·½Úµã½á¹¹£¨ÓÃÓÚA*Ëã·¨£©
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.h:93:    //struct FPathNode
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.h:94:    //{
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.h:95:    //    ALFPHexTile* Tile;
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.h:96:    //    float GScore; // ´ÓÆğµãµ½µ±Ç°½ÚµãµÄÊµ¼Ê´ú¼Û
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.h:97:    //    float FScore; // GScore + Æô·¢Ê½¹À¼ÆÖµ
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.h:98:    //    FPathNode* Parent;
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.h:100:    //    FPathNode(ALFPHexTile* InTile, float InG, float InF, FPathNode* InParent)
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.h:101:    //        : Tile(InTile), GScore(InG), FScore(InF), Parent(InParent) {}
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.h:103:    //    // ÓÃÓÚÓÅÏÈ¶ÓÁĞ±È½Ï
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.h:104:    //    bool operator<(const FPathNode& Other) const
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.h:105:    //    {
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.h:106:    //        return FScore > Other.FScore; // ×¢Òâ£ºÓÅÏÈ¶ÓÁĞÊÇ×î´ó¶Ñ£¬ËùÒÔÕâÀï·´×ª±È½Ï
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.h:107:    //    }
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.h:108:    //};
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.h:110:    //// ×Ô¶¨ÒåÓÅÏÈ¶ÓÁĞ±È½Ïº¯Êı
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.h:111:    //struct FComparePathNode
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.h:112:    //{
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.h:113:    //    bool operator()(const FPathNode* A, const FPathNode* B) const
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.h:114:    //    {
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.h:115:    //        return A->FScore > B->FScore;
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.h:116:    //    }
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.h:117:    //};
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.h:119:    //// ´æ´¢ËùÓĞµÄÍø¸ñÍßÆ¬
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.h:120:    //UPROPERTY()
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.h:121:    //TArray<ALFPHexTile*> GridTiles;
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.h:123:    //// ¸ù¾İTile»ñÈ¡×ø±êµÄ¹şÏ£º¯Êı
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.h:124:    //FORCEINLINE uint32 GetTypeHash(const ALFPHexTile* Tile) const
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.h:125:    //{
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.h:126:    //    return PointerHash(Tile);
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.h:127:    //}
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexGridManager.h:142:    // ¼ÆËãÁù±ßĞÎ±ß½ç
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexTile.cpp:1:// Fill out your copyright notice in the Description page of Project Settings.
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexTile.cpp:7:// Sets default values
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexTile.cpp:10: 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexTile.cpp:13:	// ´´½¨¸ù³¡¾°×é¼ş
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexTile.cpp:17:	// ´´½¨²¢¸½¼Ó¾«Áé×é¼şµ½¸ù×é¼ş
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexTile.cpp:22:// Called when the game starts or when spawned
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexTile.cpp:29:// Called every frame
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexTile.cpp:38:	// Todo
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexTile.cpp:114://void ALFPHexTile::SetSelected(bool bSelect)
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexTile.cpp:115://{
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexTile.cpp:116://	bIsSelect = bSelect;
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexTile.cpp:117://}
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexTile.h:1:// Fill out your copyright notice in the Description page of Project Settings.
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexTile.h:21:	int32 Q; // ÖáÏò×ø±ê q
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexTile.h:24:	int32 R; // ÖáÏò×ø±ê r
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexTile.h:27:	int32 S; // Á¢·½×ø±ê s£¨¼ÆËãµÃ³ö£©
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexTile.h:33:	// ×ø±ê×ª»»·½·¨
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexTile.h:36:		// Æ½¶¥Áù±ßĞÎ²¼¾Ö
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexTile.h:37:		const float HorizontalSpacing = Size * FMath::Sqrt(3.f); // Ë®Æ½¼ä¾à
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexTile.h:38:		const float VerticalSpacing = Size * 1.5f * VerticalScale; // ´¹Ö±¼ä¾àÓ¦ÓÃËõ·Å
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexTile.h:46:	// ¾àÀë¼ÆËã
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexTile.h:54:	// »ñÈ¡ËùÓĞÏàÁÚ×ø±ê
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexTile.h:57:		// ¼â¶¥Áù±ßĞÎµÄÁÚ¾Ó·½Ïò
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexTile.h:59:			FLFPHexCoordinates(+1,  0), // ÓÒ
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexTile.h:60:			FLFPHexCoordinates(+1, -1), // ÓÒÉÏ
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexTile.h:61:			FLFPHexCoordinates(0, -1), // ×óÉÏ
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexTile.h:62:			FLFPHexCoordinates(-1,  0), // ×ó
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexTile.h:63:			FLFPHexCoordinates(-1, +1), // ×óÏÂ
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexTile.h:64:			FLFPHexCoordinates(0, +1)  // ÓÒÏÂ
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexTile.h:77:		// Æ½¶¥Áù±ßĞÎ×ø±ê×ª»»¹«Ê½
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexTile.h:109:		// ÕÒ³ö¾àÀë×ø±ê×î½üµÄÒ»¸öµã
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexTile.h:112:			//Çó³ö¾àÀëµÄÆ½·½
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexTile.h:116:			//Èç¹ûÒÑ¾­¿Ï¶¨±»²¶»ñ
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexTile.h:123:			//¸üĞÂ×îĞ¡¾àÀëÖµºÍË÷Òı
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexTile.h:138:// µ¥Î»ÏÔÊ¾Ã¶¾Ù
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexTile.h:148:// ÓÎÍæ¿ØÖÆ×´Ì¬
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexTile.h:162:	// Sets default values for this actor's properties
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexTile.h:166:	// Called when the game starts or when spawned
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexTile.h:170:	// Called every frame
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexTile.h:176:	// ÉèÖÃ×ø±êÊı¾İ
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexTile.h:190:	// ÉèÖÃ¸ñ×Ó×´Ì¬
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexTile.h:194:	// ÉèÖÃ¸ñ×Ó×´Ì¬
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexTile.h:195:	//void SetSelected(bool bSelect);
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexTile.h:197:	// ¸ßÁÁÏÔÊ¾
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexTile.h:208:	//bool bIsSelect = false;
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexTile.h:213:	// ÉèÖÃRangeSprite¹¦ÄÜ
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexTile.h:217:	// Ìí¼ÓÂ·¾¶¸ßÁÁ¹¦ÄÜ
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexTile.h:221:	// Ìí¼ÓÒÆ¶¯·¶Î§¸ßÁÁ¹¦ÄÜ
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexTile.h:225:	// Ìí¼Ó¹¥»÷·¶Î§¸ßÁÁ¹¦ÄÜ
+d:/UE/UE_Project/LFP2D/Source/LFP2D/HexGrid/LFPHexTile.h:247://///////////////	Math	///////////////
+d:/UE/UE_Project/LFP2D/Source/LFP2D/LFP2D.cpp:1:// Copyright Epic Games, Inc. All Rights Reserved.
+d:/UE/UE_Project/LFP2D/Source/LFP2D/LFP2D.h:1:// Copyright Epic Games, Inc. All Rights Reserved.
+d:/UE/UE_Project/LFP2D/Source/LFP2D/Player/LFPTacticsPlayerController.cpp:1:// Fill out your copyright notice in the Description page of Project Settings.
+d:/UE/UE_Project/LFP2D/Source/LFP2D/Player/LFPTacticsPlayerController.cpp:13://#include "Blueprint/AIBlueprintHelperLibrary.h"
+d:/UE/UE_Project/LFP2D/Source/LFP2D/Player/LFPTacticsPlayerController.cpp:38:    // ÉèÖÃÊäÈëÄ£Ê½
+d:/UE/UE_Project/LFP2D/Source/LFP2D/Player/LFPTacticsPlayerController.cpp:45:    // »ñÈ¡Íø¸ñ¹ÜÀíÆ÷
+d:/UE/UE_Project/LFP2D/Source/LFP2D/Player/LFPTacticsPlayerController.cpp:53:    // ÉèÖÃEnhanced Input
+d:/UE/UE_Project/LFP2D/Source/LFP2D/Player/LFPTacticsPlayerController.cpp:62:    // ³õÊ¼»¯UI
+d:/UE/UE_Project/LFP2D/Source/LFP2D/Player/LFPTacticsPlayerController.cpp:69:            TurnSpeedListWidget->InitializeTurnOrder(); // ³õÊ¼»¯µ¥Î»Ë³Ğò
+d:/UE/UE_Project/LFP2D/Source/LFP2D/Player/LFPTacticsPlayerController.cpp:78:    // ÉèÖÃEnhanced Input×é¼ş
+d:/UE/UE_Project/LFP2D/Source/LFP2D/Player/LFPTacticsPlayerController.cpp:81:        // Ñ¡Ôñ²Ù×÷
+d:/UE/UE_Project/LFP2D/Source/LFP2D/Player/LFPTacticsPlayerController.cpp:85:        // ¹¥»÷²Ù×÷
+d:/UE/UE_Project/LFP2D/Source/LFP2D/Player/LFPTacticsPlayerController.cpp:88:        // ÆäËû²Ù×÷
+d:/UE/UE_Project/LFP2D/Source/LFP2D/Player/LFPTacticsPlayerController.cpp:91:        //EnhancedInputComponent->BindAction(RotateCameraAction, ETriggerEvent::Triggered, this, &ALFPTacticsPlayerController::OnRotateCamera);
+d:/UE/UE_Project/LFP2D/Source/LFP2D/Player/LFPTacticsPlayerController.cpp:95:        // Ïà»ú¿ØÖÆ
+d:/UE/UE_Project/LFP2D/Source/LFP2D/Player/LFPTacticsPlayerController.cpp:113:    // ¸üĞÂÏà»úÎ»ÖÃ
+d:/UE/UE_Project/LFP2D/Source/LFP2D/Player/LFPTacticsPlayerController.cpp:120:        // ¼ÆËãÏà»úÎ»ÖÃÆ«ÒÆ
+d:/UE/UE_Project/LFP2D/Source/LFP2D/Player/LFPTacticsPlayerController.cpp:122:        DirectionOffset.Z = CurrentZoom * 0.5f; // ¸ß¶ÈÓë¾àÀë³É±ÈÀı
+d:/UE/UE_Project/LFP2D/Source/LFP2D/Player/LFPTacticsPlayerController.cpp:124:        // ÉèÖÃÏà»úÎ»ÖÃ
+d:/UE/UE_Project/LFP2D/Source/LFP2D/Player/LFPTacticsPlayerController.cpp:133:                5.0f // ²åÖµËÙ¶È
+d:/UE/UE_Project/LFP2D/Source/LFP2D/Player/LFPTacticsPlayerController.cpp:137:        // »ñÈ¡Êó±êÎ»ÖÃ
+d:/UE/UE_Project/LFP2D/Source/LFP2D/Player/LFPTacticsPlayerController.cpp:142:            // »ñÈ¡Êó±êÏÂµÄÁù±ßĞÎTile
+d:/UE/UE_Project/LFP2D/Source/LFP2D/Player/LFPTacticsPlayerController.cpp:144:            // ´¦ÀíÊó±êĞüÍ£Âß¼­
+d:/UE/UE_Project/LFP2D/Source/LFP2D/Player/LFPTacticsPlayerController.cpp:149:                    //LastHoveredTile->OnMouseExit();
+d:/UE/UE_Project/LFP2D/Source/LFP2D/Player/LFPTacticsPlayerController.cpp:155:                    //HoveredTile->OnMouseEnter();
+d:/UE/UE_Project/LFP2D/Source/LFP2D/Player/LFPTacticsPlayerController.cpp:163:    // ¸üĞÂµØÍ¼¸ñ×Ó¸ßÁÁ
+d:/UE/UE_Project/LFP2D/Source/LFP2D/Player/LFPTacticsPlayerController.cpp:178:// Ñ¡Ôñ¿ªÊ¼
+d:/UE/UE_Project/LFP2D/Source/LFP2D/Player/LFPTacticsPlayerController.cpp:183:    // »ñÈ¡Êó±êÎ»ÖÃ
+d:/UE/UE_Project/LFP2D/Source/LFP2D/Player/LFPTacticsPlayerController.cpp:191:// Ñ¡ÔñÍê³É
+d:/UE/UE_Project/LFP2D/Source/LFP2D/Player/LFPTacticsPlayerController.cpp:197:    // »ñÈ¡Êó±êÎ»ÖÃ
+d:/UE/UE_Project/LFP2D/Source/LFP2D/Player/LFPTacticsPlayerController.cpp:202:    // ¼òµ¥µÄµã»÷£¨²»ÊÇÍÏ×§£©

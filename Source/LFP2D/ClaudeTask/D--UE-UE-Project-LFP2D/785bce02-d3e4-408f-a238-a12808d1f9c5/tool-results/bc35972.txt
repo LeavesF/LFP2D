@@ -1,0 +1,300 @@
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTService_UpdateConditions.cpp:1:// Fill out your copyright notice in the Description page of Project Settings.
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTService_UpdateConditions.cpp:4:#include "LFP2D/AI/BehaviorTree/BTService_UpdateConditions.h"
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTService_UpdateConditions.cpp:5:#include "LFP2D/AI/LFPAIController.h"
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTService_UpdateConditions.cpp:6:#include "LFP2D/Unit/LFPTacticsUnit.h"
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTService_UpdateConditions.cpp:7:#include "BehaviorTree/BlackboardComponent.h"
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTService_UpdateConditions.cpp:9:UBTService_UpdateConditions::UBTService_UpdateConditions()
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTService_UpdateConditions.cpp:10:{
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTService_UpdateConditions.cpp:11:    NodeName = "Update Conditions";
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTService_UpdateConditions.cpp:12:    bNotifyTick = true;
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTService_UpdateConditions.cpp:13:}
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTService_UpdateConditions.cpp:15:void UBTService_UpdateConditions::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTService_UpdateConditions.cpp:16:{
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTService_UpdateConditions.cpp:17:    ALFPAIController* AIController = Cast<ALFPAIController>(OwnerComp.GetAIOwner());
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTService_UpdateConditions.cpp:18:    if (!AIController) return;
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTService_UpdateConditions.cpp:20:    ALFPTacticsUnit* ControlledUnit = Cast<ALFPTacticsUnit>(AIController->GetPawn());
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTService_UpdateConditions.cpp:21:    if (!ControlledUnit) return;
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTService_UpdateConditions.cpp:23:    UBlackboardComponent* Blackboard = OwnerComp.GetBlackboardComponent();
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTService_UpdateConditions.cpp:24:    ALFPTacticsUnit* TargetUnit = Cast<ALFPTacticsUnit>(Blackboard->GetValueAsObject(TargetUnitKey.SelectedKeyName));
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTService_UpdateConditions.cpp:26:    // ���¹�����Χ״̬
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTService_UpdateConditions.cpp:27:    bool bInAttackRange = TargetUnit && ControlledUnit->IsTargetInAttackRange(TargetUnit);
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTService_UpdateConditions.cpp:28:    Blackboard->SetValueAsBool("IsInAttackRange", bInAttackRange);
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTService_UpdateConditions.cpp:30:    // �����ܷ񹥻�״̬
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTService_UpdateConditions.cpp:31:    bool bCanAttack = TargetUnit && bInAttackRange && ControlledUnit->CanAct();
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTService_UpdateConditions.cpp:32:    Blackboard->SetValueAsBool("CanAttack", bCanAttack);
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTService_UpdateConditions.cpp:34:    // �����Ƿ�Ӧ�ý����غ�
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTService_UpdateConditions.cpp:35:    bool bShouldEndTurn = !TargetUnit || (ControlledUnit->HasActed() && !bCanAttack);
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTService_UpdateConditions.cpp:36:    Blackboard->SetValueAsBool("ShouldEndTurn", bShouldEndTurn);
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTService_UpdateConditions.cpp:37:}
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTService_UpdateConditions.h:1:// Fill out your copyright notice in the Description page of Project Settings.
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTService_UpdateConditions.h:3:#pragma once
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTService_UpdateConditions.h:5:#include "CoreMinimal.h"
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTService_UpdateConditions.h:6:#include "BehaviorTree/BTService.h"
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTService_UpdateConditions.h:7:#include "BTService_UpdateConditions.generated.h"
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTService_UpdateConditions.h:9:/**
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTService_UpdateConditions.h:10: * 
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTService_UpdateConditions.h:11: */
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTService_UpdateConditions.h:12:UCLASS()
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTService_UpdateConditions.h:13:class LFP2D_API UBTService_UpdateConditions : public UBTService
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTService_UpdateConditions.h:14:{
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTService_UpdateConditions.h:15:	GENERATED_BODY()
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTService_UpdateConditions.h:16:	
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTService_UpdateConditions.h:17:public:
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTService_UpdateConditions.h:18:    UBTService_UpdateConditions();
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTService_UpdateConditions.h:20:    virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTService_UpdateConditions.h:22:    UPROPERTY(EditAnywhere, Category = "Blackboard")
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTService_UpdateConditions.h:23:    FBlackboardKeySelector TargetUnitKey;
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTService_UpdateConditions.h:24:};
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.cpp:1:// Fill out your copyright notice in the Description page of Project Settings.
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.cpp:4:#include "LFP2D/AI/BehaviorTree/BTTask_AttackTarget.h"
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.cpp:5:#include "LFP2D/AI/LFPAIController.h"
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.cpp:6:#include "LFP2D/Unit/LFPTacticsUnit.h"
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.cpp:7:#include "BehaviorTree/BlackboardComponent.h"
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.cpp:9:UBTTask_AttackTarget::UBTTask_AttackTarget()
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.cpp:10:{
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.cpp:11:    bNotifyTaskFinished = true;
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.cpp:12:    NodeName = "Attack Target";
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.cpp:13:}
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.cpp:15:EBTNodeResult::Type UBTTask_AttackTarget::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.cpp:16:{
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.cpp:17:    ALFPAIController* AIController = Cast<ALFPAIController>(OwnerComp.GetAIOwner());
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.cpp:18:    if (!AIController) return EBTNodeResult::Failed;
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.cpp:20:    ALFPTacticsUnit* ControlledUnit = Cast<ALFPTacticsUnit>(AIController->GetPawn());
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.cpp:21:    if (!ControlledUnit) return EBTNodeResult::Failed;
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.cpp:23:    UBlackboardComponent* Blackboard = OwnerComp.GetBlackboardComponent();
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.cpp:24:    ALFPTacticsUnit* TargetUnit = Cast<ALFPTacticsUnit>(Blackboard->GetValueAsObject(GetSelectedBlackboardKey()));
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.cpp:26:    if (!TargetUnit) return EBTNodeResult::Failed;
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.cpp:28:    // �󶨹�������¼�
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.cpp:29:    //ControlledUnit->OnAttackComplete.AddDynamic(this, &UBTTask_AttackTarget::OnAttackComplete);
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.cpp:30:    BTComponent = &OwnerComp;
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.cpp:32:    // ��ʼ����
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.cpp:33:    ControlledUnit->AttackTarget(TargetUnit);
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.cpp:35:    return EBTNodeResult::InProgress;
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.cpp:36:}
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.cpp:38:void UBTTask_AttackTarget::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTNodeResult::Type TaskResult)
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.cpp:39:{
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.cpp:40:    // ����
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.cpp:41:    /*if (ALFPTacticsUnit* ControlledUnit = Cast<ALFPTacticsUnit>(OwnerComp.GetAIOwner()->GetPawn()))
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.cpp:42:    {
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.cpp:43:        ControlledUnit->OnAttackComplete.RemoveDynamic(this, &UBTTask_AttackTarget::OnAttackComplete);
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.cpp:44:    }*/
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.cpp:45:}
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.cpp:47:void UBTTask_AttackTarget::OnAttackComplete()
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.cpp:48:{
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.cpp:49:    if (BTComponent)
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.cpp:50:    {
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.cpp:51:        FinishLatentTask(*BTComponent, EBTNodeResult::Succeeded);
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.cpp:52:    }
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.cpp:53:}
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.h:1:// Fill out your copyright notice in the Description page of Project Settings.
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.h:3:#pragma once
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.h:5:#include "CoreMinimal.h"
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.h:6:#include "BehaviorTree/Tasks/BTTask_BlackboardBase.h"
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.h:7:#include "BTTask_AttackTarget.generated.h"
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.h:9:/**
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.h:10: * 
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.h:11: */
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.h:12:UCLASS()
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.h:13:class LFP2D_API UBTTask_AttackTarget : public UBTTask_BlackboardBase
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.h:14:{
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.h:15:	GENERATED_BODY()
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.h:16:	
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.h:17:public:
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.h:18:    UBTTask_AttackTarget();
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.h:20:    virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.h:21:    virtual void OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTNodeResult::Type TaskResult) override;
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.h:23:private:
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.h:24:    UFUNCTION()
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.h:25:    void OnAttackComplete();
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.h:27:    UPROPERTY()
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.h:28:    UBehaviorTreeComponent* BTComponent;
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_AttackTarget.h:29:};
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_EndTurn.cpp:1:// Fill out your copyright notice in the Description page of Project Settings.
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_EndTurn.cpp:4:#include "LFP2D/AI/BehaviorTree/BTTask_EndTurn.h"
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_EndTurn.cpp:5:#include "LFP2D/AI/LFPAIController.h"
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_EndTurn.cpp:6:#include "LFP2D/Turn/LFPTurnManager.h"
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_EndTurn.cpp:7:#include "LFP2D/Unit/LFPTacticsUnit.h"
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_EndTurn.cpp:8:#include "BehaviorTree/BlackboardComponent.h"
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_EndTurn.cpp:10:UBTTask_EndTurn::UBTTask_EndTurn()
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_EndTurn.cpp:11:{
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_EndTurn.cpp:12:    NodeName = "End Turn";
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_EndTurn.cpp:13:}
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_EndTurn.cpp:15:EBTNodeResult::Type UBTTask_EndTurn::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_EndTurn.cpp:16:{
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_EndTurn.cpp:17:    ALFPAIController* AIController = Cast<ALFPAIController>(OwnerComp.GetAIOwner());
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_EndTurn.cpp:18:    if (!AIController) return EBTNodeResult::Failed;
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_EndTurn.cpp:20:    // ֪ͨ�غϹ����������غ�
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_EndTurn.cpp:21:    if (ALFPTurnManager* TurnManager = AIController->GetControlledUnit()->GetTurnManager())
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_EndTurn.cpp:22:    {
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_EndTurn.cpp:23:        TurnManager->PassTurn();
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_EndTurn.cpp:24:    }
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_EndTurn.cpp:26:    return EBTNodeResult::Succeeded;
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_EndTurn.cpp:27:}
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_EndTurn.h:1:// Fill out your copyright notice in the Description page of Project Settings.
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_EndTurn.h:3:#pragma once
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_EndTurn.h:5:#include "CoreMinimal.h"
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_EndTurn.h:6:#include "BehaviorTree/Tasks/BTTask_BlackboardBase.h"
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_EndTurn.h:7:#include "BTTask_EndTurn.generated.h"
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_EndTurn.h:9:/**
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_EndTurn.h:10: * 
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_EndTurn.h:11: */
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_EndTurn.h:12:UCLASS()
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_EndTurn.h:13:class LFP2D_API UBTTask_EndTurn : public UBTTask_BlackboardBase
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_EndTurn.h:14:{
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_EndTurn.h:15:	GENERATED_BODY()
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_EndTurn.h:16:	
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_EndTurn.h:17:public:
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_EndTurn.h:18:	UBTTask_EndTurn();
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_EndTurn.h:20:	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_EndTurn.h:21:};
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindMovementTile.cpp:1:// Fill out your copyright notice in the Description page of Project Settings.
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindMovementTile.cpp:4:#include "LFP2D/AI/BehaviorTree/BTTask_FindMovementTile.h"
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindMovementTile.cpp:5:#include "LFP2D/AI/LFPAIController.h"
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindMovementTile.cpp:6:#include "LFP2D/HexGrid/LFPHexTile.h"
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindMovementTile.cpp:7:#include "LFP2D/Unit/LFPTacticsUnit.h"
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindMovementTile.cpp:8:#include "BehaviorTree/BlackboardComponent.h"
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindMovementTile.cpp:10:UBTTask_FindMovementTile::UBTTask_FindMovementTile()
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindMovementTile.cpp:11:{
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindMovementTile.cpp:12:    NodeName = "Find Movement Tile";
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindMovementTile.cpp:13:}
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindMovementTile.cpp:15:EBTNodeResult::Type UBTTask_FindMovementTile::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindMovementTile.cpp:16:{
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindMovementTile.cpp:17:    ALFPAIController* AIController = Cast<ALFPAIController>(OwnerComp.GetAIOwner());
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindMovementTile.cpp:18:    if (!AIController) return EBTNodeResult::Failed;
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindMovementTile.cpp:20:    UBlackboardComponent* Blackboard = OwnerComp.GetBlackboardComponent();
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindMovementTile.cpp:21:    ALFPTacticsUnit* TargetUnit = Cast<ALFPTacticsUnit>(Blackboard->GetValueAsObject(TargetUnitKey.SelectedKeyName));
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindMovementTile.cpp:23:    if (!TargetUnit) return EBTNodeResult::Failed;
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindMovementTile.cpp:25:    ALFPHexTile* BestTile = AIController->FindBestMovementTile(TargetUnit);
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindMovementTile.cpp:26:    if (BestTile)
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindMovementTile.cpp:27:    {
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindMovementTile.cpp:28:        Blackboard->SetValueAsObject(GetSelectedBlackboardKey(), BestTile);
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindMovementTile.cpp:29:        return EBTNodeResult::Succeeded;
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindMovementTile.cpp:30:    }
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindMovementTile.cpp:32:    return EBTNodeResult::Failed;
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindMovementTile.cpp:33:}
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindMovementTile.h:1:// Fill out your copyright notice in the Description page of Project Settings.
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindMovementTile.h:3:#pragma once
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindMovementTile.h:5:#include "CoreMinimal.h"
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindMovementTile.h:6:#include "BehaviorTree/Tasks/BTTask_BlackboardBase.h"
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindMovementTile.h:7:#include "BTTask_FindMovementTile.generated.h"
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindMovementTile.h:9:/**
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindMovementTile.h:10: * 
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindMovementTile.h:11: */
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindMovementTile.h:12:UCLASS()
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindMovementTile.h:13:class LFP2D_API UBTTask_FindMovementTile : public UBTTask_BlackboardBase
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindMovementTile.h:14:{
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindMovementTile.h:15:	GENERATED_BODY()
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindMovementTile.h:16:	
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindMovementTile.h:17:public:
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindMovementTile.h:18:    UBTTask_FindMovementTile();
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindMovementTile.h:20:    virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindMovementTile.h:22:    UPROPERTY(EditAnywhere, Category = "Blackboard")
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindMovementTile.h:23:    FBlackboardKeySelector TargetUnitKey;
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindMovementTile.h:24:};
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.cpp:1:// Fill out your copyright notice in the Description page of Project Settings.
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.cpp:4:#include "LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.h"
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.cpp:5:#include "LFP2D/AI/LFPAIController.h"
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.cpp:6:#include "LFP2D/Unit/LFPTacticsUnit.h"
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.cpp:7:#include "LFP2D/Skill/LFPSkillBase.h"
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.cpp:8:#include "BehaviorTree/BlackboardComponent.h"
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.cpp:10:UBTTask_FindSkillTarget::UBTTask_FindSkillTarget()
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.cpp:11:{
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.cpp:12:    NodeName = "Find Skill Target";
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.cpp:13:    bCreateNodeInstance = true;
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.cpp:14:}
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.cpp:16:EBTNodeResult::Type UBTTask_FindSkillTarget::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.cpp:17:{
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.cpp:18:    ALFPAIController* AIController = Cast<ALFPAIController>(OwnerComp.GetAIOwner());
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.cpp:19:    if (!AIController) return EBTNodeResult::Failed;
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.cpp:21:    UBlackboardComponent* Blackboard = OwnerComp.GetBlackboardComponent();
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.cpp:22:    if (!Blackboard) return EBTNodeResult::Failed;
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.cpp:24:    // 从黑板中读取要使用的技能
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.cpp:25:    UObject* SkillObj = Blackboard->GetValueAsObject(SkillKey.SelectedKeyName);
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.cpp:26:    ULFPSkillBase* Skill = Cast<ULFPSkillBase>(SkillObj);
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.cpp:27:    if (!Skill) return EBTNodeResult::Failed;
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.cpp:29:    // 根据技能仇恨值公式找到最优目标
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.cpp:30:    ALFPTacticsUnit* BestTarget = AIController->FindBestSkillTarget(Skill);
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.cpp:31:    if (!BestTarget) return EBTNodeResult::Failed;
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.cpp:33:    Blackboard->SetValueAsObject(TargetUnitKey.SelectedKeyName, BestTarget);
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.cpp:34:    return EBTNodeResult::Succeeded;
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.cpp:35:}
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.h:1:// Fill out your copyright notice in the Description page of Project Settings.
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.h:3:#pragma once
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.h:5:#include "CoreMinimal.h"
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.h:6:#include "BehaviorTree/BTTaskNode.h"
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.h:7:#include "BehaviorTree/BehaviorTreeTypes.h"
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.h:8:#include "BTTask_FindSkillTarget.generated.h"
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.h:10:/**
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.h:11: * 根据技能的仇恨值公式为 AI 选择最优攻击目标。
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.h:12: * 输入：黑板中的技能对象（ULFPSkillBase）
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.h:13: * 输出：仇恨值最高的玩家单位（写入黑板 TargetUnitKey）
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.h:14: */
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.h:15:UCLASS()
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.h:16:class LFP2D_API UBTTask_FindSkillTarget : public UBTTaskNode
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.h:17:{
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.h:18:    GENERATED_BODY()
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.h:20:public:
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.h:21:    UBTTask_FindSkillTarget();
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.h:23:    virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.h:25:    // 黑板键（输入）：要使用的技能对象（Object 类型，指向 ULFPSkillBase）
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.h:26:    UPROPERTY(EditAnywhere, Category = "Blackboard")
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.h:27:    FBlackboardKeySelector SkillKey;
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.h:29:    // 黑板键（输出）：仇恨值最高的目标单位（Object 类型，指向 ALFPTacticsUnit）
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.h:30:    UPROPERTY(EditAnywhere, Category = "Blackboard")
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.h:31:    FBlackboardKeySelector TargetUnitKey;
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindSkillTarget.h:32:};
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindTarget.cpp:1:// Fill out your copyright notice in the Description page of Project Settings.
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindTarget.cpp:4:#include "LFP2D/AI/BehaviorTree/BTTask_FindTarget.h"
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindTarget.cpp:5:#include "LFP2D/AI/LFPAIController.h"
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindTarget.cpp:6:#include "LFP2D/Unit/LFPTacticsUnit.h"
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindTarget.cpp:7:#include "BehaviorTree/BlackboardComponent.h"
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindTarget.cpp:9:UBTTask_FindTarget::UBTTask_FindTarget()
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindTarget.cpp:10:{
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindTarget.cpp:11:    NodeName = "Find Target";
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindTarget.cpp:12:    bCreateNodeInstance = true;
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindTarget.cpp:13:}
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindTarget.cpp:15:EBTNodeResult::Type UBTTask_FindTarget::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindTarget.cpp:16:{
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindTarget.cpp:17:    ALFPAIController* AIController = Cast<ALFPAIController>(OwnerComp.GetAIOwner());
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindTarget.cpp:18:    if (!AIController) return EBTNodeResult::Failed;
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindTarget.cpp:20:    ALFPTacticsUnit* BestTarget = AIController->FindBestTarget();
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindTarget.cpp:21:    if (BestTarget)
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindTarget.cpp:22:    {
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindTarget.cpp:23:        OwnerComp.GetBlackboardComponent()->SetValueAsObject(GetSelectedBlackboardKey(), BestTarget);
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindTarget.cpp:24:        return EBTNodeResult::Succeeded;
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindTarget.cpp:25:    }
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindTarget.cpp:27:    return EBTNodeResult::Failed;
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindTarget.cpp:28:}
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindTarget.h:1:// Fill out your copyright notice in the Description page of Project Settings.
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindTarget.h:3:#pragma once
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindTarget.h:5:#include "CoreMinimal.h"
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindTarget.h:6:#include "BehaviorTree/Tasks/BTTask_BlackboardBase.h"
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindTarget.h:7:#include "BTTask_FindTarget.generated.h"
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindTarget.h:9:/**
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindTarget.h:10: * 
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindTarget.h:11: */
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindTarget.h:12:UCLASS()
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindTarget.h:13:class LFP2D_API UBTTask_FindTarget : public UBTTask_BlackboardBase
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindTarget.h:14:{
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindTarget.h:15:	GENERATED_BODY()
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindTarget.h:16:	
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindTarget.h:17:public:
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindTarget.h:18:	UBTTask_FindTarget();
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindTarget.h:20:	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_FindTarget.h:21:};
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_MoveToTile.cpp:1:// Fill out your copyright notice in the Description page of Project Settings.
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_MoveToTile.cpp:4:#include "LFP2D/AI/BehaviorTree/BTTask_MoveToTile.h"
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_MoveToTile.cpp:5:#include "LFP2D/AI/LFPAIController.h"
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_MoveToTile.cpp:6:#include "LFP2D/Unit/LFPTacticsUnit.h"
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_MoveToTile.cpp:7:#include "BehaviorTree/BlackboardComponent.h"
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_MoveToTile.cpp:9:UBTTask_MoveToTile::UBTTask_MoveToTile()
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_MoveToTile.cpp:10:{
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_MoveToTile.cpp:11:    bNotifyTaskFinished = true;
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_MoveToTile.cpp:12:    NodeName = "Move To Tile";
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_MoveToTile.cpp:13:}
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_MoveToTile.cpp:15:EBTNodeResult::Type UBTTask_MoveToTile::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_MoveToTile.cpp:16:{
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_MoveToTile.cpp:17:    ALFPAIController* AIController = Cast<ALFPAIController>(OwnerComp.GetAIOwner());
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_MoveToTile.cpp:18:    if (!AIController) return EBTNodeResult::Failed;
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_MoveToTile.cpp:20:    ALFPTacticsUnit* ControlledUnit = Cast<ALFPTacticsUnit>(AIController->GetPawn());
+d:/UE/UE_Project/LFP2D/Source/LFP2D/AI/BehaviorTree/BTTask_MoveToTile.cpp:21:    if (!ControlledUnit) return EBTNodeResult::Failed;

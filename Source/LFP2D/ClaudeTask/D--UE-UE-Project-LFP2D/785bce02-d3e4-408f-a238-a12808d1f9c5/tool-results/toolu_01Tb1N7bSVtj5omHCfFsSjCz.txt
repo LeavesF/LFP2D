@@ -1,0 +1,1190 @@
+     1→1:// Fill out your copyright notice in the Description page of Project Settings.
+     2→3:#pragma once
+     3→5:#include "CoreMinimal.h"
+     4→6:#include "GameFramework/PlayerController.h"
+     5→7:#include "LFP2D/HexGrid/LFPHexTile.h"
+     6→8:#include "InputActionValue.h"
+     7→9:#include "LFPTacticsPlayerController.generated.h"
+     8→11:class ALFPTacticsUnit;
+     9→12:class ALFPHexGridManager;
+    10→14:class UInputMappingContext;
+    11→15:class UInputAction;
+    12→17:class ULFPSkillBase;
+    13→19:class ALFPTurnManager;
+    14→21:class ULFPTurnSpeedListWidget;
+    15→22:class ULFPSkillSelectionWidget;
+    16→23:/**
+    17→24: * 
+    18→25: */
+    19→26:UCLASS()
+    20→27:class LFP2D_API ALFPTacticsPlayerController : public APlayerController
+    21→28:{
+    22→29:	GENERATED_BODY()
+    23→30:	
+    24→31:public:
+    25→32:    ALFPTacticsPlayerController();
+    26→34:protected:
+    27→35:    virtual void BeginPlay() override;
+    28→36:    virtual void SetupInputComponent() override;
+    29→37:    virtual void Tick(float DeltaTime) override;
+    30→39:public:
+    31→40:    // Enhanced Input �󶨺���
+    32→41:    void OnSelectStarted(const FInputActionValue& Value);
+    33→42:    void OnSelectCompleted(const FInputActionValue& Value);
+    34→43:    void OnAttackStarted(const FInputActionValue& Value);
+    35→44:    void OnConfirmAction(const FInputActionValue& Value);
+    36→45:    void OnCancelAction(const FInputActionValue& Value);
+    37→46:    //void OnRotateCamera(const FInputActionValue& Value);
+    38→47:    void OnToggleDebug(const FInputActionValue& Value);
+    39→48:    void OnSkipTurnAction(const FInputActionValue& Value);
+    40→50:    void OnCameraPan(const FInputActionValue& Value);
+    41→51:    void OnCameraDragStarted(const FInputActionValue& Value);
+    42→52:    void OnCameraDragTriggered(const FInputActionValue& Value);
+    43→53:    void OnCameraDragCompleted(const FInputActionValue& Value);
+    44→54:    void OnCameraZoom(const FInputActionValue& Value);
+    45→56:    // ��Ϸ���̺���
+    46→57:    void SelectUnit(ALFPTacticsUnit* Unit);
+    47→58:    void SelectTile(ALFPHexTile* Tile);
+    48→59:    void ConfirmMove();
+    49→60:    void ShowUnitRange(EUnitRange UnitRange = EUnitRange::UR_Default);
+    50→61:    void ShowPathToSelectedTile();
+    51→62:    void HidePathToDefault();
+    52→63:    void HidePathToRange();
+    53→65:    // ���Թ���
+    54→66:    void ToggleDebugDisplay();
+    55→68:protected:
+    56→69:    // ����ϵͳ�ʲ�
+    57→70:    UPROPERTY(EditAnywhere, Category = "Input")
+    58→71:    TObjectPtr<UInputMappingContext> DefaultInputMapping;
+    59→73:    UPROPERTY(EditAnywhere, Category = "Input")
+    60→74:    UInputAction* SelectAction;
+    61→76:    UPROPERTY(EditAnywhere, Category = "Input")
+    62→77:    UInputAction* AttackAction;
+    63→79:    UPROPERTY(EditAnywhere, Category = "Input")
+    64→80:    UInputAction* ConfirmAction;
+    65→82:    UPROPERTY(EditAnywhere, Category = "Input")
+    66→83:    UInputAction* CancelAction;
+    67→85:    //UPROPERTY(EditAnywhere, Category = "Input")
+    68→86:    //UInputAction* RotateCameraAction;
+    69→88:    UPROPERTY(EditAnywhere, Category = "Input")
+    70→89:    UInputAction* DebugToggleAction;
+    71→91:	UPROPERTY(EditAnywhere, Category = "Input")
+    72→92:	UInputAction* SkipTurnAction;
+    73→94:    UPROPERTY(EditAnywhere, Category = "Input")
+    74→95:    UInputAction* CameraPanAction;
+    75→97:    UPROPERTY(EditAnywhere, Category = "Input")
+    76→98:    UInputAction* CameraDragAction;
+    77→100:    UPROPERTY(EditAnywhere, Category = "Input")
+    78→101:    UInputAction* CameraZoomAction;
+    79→104:    // �������������
+    80→105:    UPROPERTY()
+    81→106:    ALFPHexGridManager* GridManager;
+    82→108:    // ��ǰѡ�еĵ�λ
+    83→109:    UPROPERTY()
+    84→110:    ALFPTacticsUnit* SelectedUnit;
+    85→112:    UPROPERTY()
+    86→113:    ALFPTacticsUnit* TargetUnit;
+    87→115:    // ��ǰѡ�еĸ��ӣ������ƶ�Ŀ�꣩
+    88→116:    UPROPERTY()
+    89→117:    ALFPHexTile* SelectedTile;
+    90→119:    UPROPERTY()
+    91→120:    ALFPHexTile* LastHoveredTile;
+    92→122:    // ��ǰ��ʾ�Ŀ��ƶ���Χ
+    93→123:    TArray<ALFPHexTile*> MovementRangeTiles;
+    94→125:    TArray<ALFPHexTile*> CacheRangeTiles;
+    95→126:    // ��ǰ��ʾ��·��
+    96→127:    TArray<ALFPHexTile*> CurrentPath;
+    97→129:    // ״̬��־
+    98→130:    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "State")
+    99→131:    bool bIsSelecting;
+   100→133:    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "State")
+   101→134:    bool bIsAttacking = false;
+   102→136:    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "State")
+   103→137:    bool bIsReleaseSkill = false;
+   104→139:    FVector2D SelectionStart;
+   105→141:    // �������
+   106→142:    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera")
+   107→143:    float CameraRotationPitchAngle;
+   108→145:    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera")
+   109→146:    float CameraRotationYawAngle;
+   110→147:    FVector CameraOffset;
+   111→149:    // ��ק״̬
+   112→150:    bool bIsDragging;
+   113→151:    FVector2D DragStartPosition;
+   114→153:	UPROPERTY(EditAnywhere, Category = "Input")
+   115→154:	float DragTime = 0.f;
+   116→156:	UPROPERTY(EditAnywhere, Category = "Input")
+   117→157:	float DragThresholdTime = 0.5f;
+   118→159:    // ���Ա�־
+   119→160:    bool bDebugEnabled;
+   120→162:    // ����ƶ��ٶ�
+   121→163:    UPROPERTY(EditAnywhere, Category = "Camera")
+   122→164:    float CameraPanSpeed = 500.0f;
+   123→166:    UPROPERTY(EditAnywhere, Category = "Camera")
+   124→167:    float CameraDragSpeed = 10.0f;
+   125→169:    // �������
+   126→170:    UPROPERTY(EditAnywhere, Category = "Camera")
+   127→171:    float CameraZoomSpeed = 100.0f;
+   128→173:    UPROPERTY(EditAnywhere, Category = "Camera")
+   129→174:    float MinZoomDistance = 300.0f;
+   130→176:    UPROPERTY(EditAnywhere, Category = "Camera")
+   131→177:    float MaxZoomDistance = 2000.0f;
+   132→179:    float CurrentZoom = 1000.0f;
+   133→181:public:
+   134→182:    ALFPTurnManager* GetTurnManager() const;
+   135→184:    UFUNCTION(BlueprintCallable, Category = "Skill")
+   136→185:    void HideSkillSelection();
+   137→187:    UFUNCTION(BlueprintCallable, Category = "Skill")
+   138→188:    void HandleSkillSelection();
+   139→190:    UFUNCTION(BlueprintCallable, Category = "Skill")
+   140→191:    void HandleSkillTargetSelecting(ULFPSkillBase* Skill);
+   141→193:    /*UFUNCTION(BlueprintCallable, Category = "Skill")
+   142→194:    void HandleSkillTargetSelected(ALFPHexTile* TargetTile);*/
+   143→196:    // �غ��¼�
+   144→197:    UFUNCTION(BlueprintImplementableEvent, Category = "Turn Events")
+   145→198:    void OnTurnStarted(ALFPTacticsUnit* Unit);
+   146→200:    UFUNCTION(BlueprintImplementableEvent, Category = "Turn Events")
+   147→201:    void OnTurnEnded(ALFPTacticsUnit* Unit);
+   148→203:    UFUNCTION(BlueprintImplementableEvent, Category = "Turn Events")
+   149→204:    void OnRoundStarted(int32 RoundNumber);
+   150→206:    UFUNCTION(BlueprintImplementableEvent, Category = "Turn Events")
+   151→207:    void OnRoundEnded(int32 RoundNumber);
+   152→209:    // ��λ�ж�
+   153→210:    UFUNCTION(BlueprintCallable, Category = "Unit Actions")
+   154→211:    void MoveUnit(ALFPTacticsUnit* Unit, ALFPHexTile* TargetTile);
+   155→213:    UFUNCTION(BlueprintCallable, Category = "Unit Actions")
+   156→214:    bool AttackTarget(ALFPTacticsUnit* Attacker, ALFPTacticsUnit* Target);
+   157→216:    UFUNCTION(BlueprintCallable, Category = "Unit Actions")
+   158→217:    void SkipTurn(ALFPTacticsUnit* Unit);
+   159→219:// UI���
+   160→220:protected:
+   161→221:    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+   162→222:    TSubclassOf<class UUserWidget> TurnSpeedWidgetClass;
+   163→224:    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+   164→225:    TObjectPtr<ULFPTurnSpeedListWidget> TurnSpeedListWidget;
+   165→227:    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+   166→228:    TSubclassOf<class UUserWidget> SkillSelectionWidgetClass;
+   167→230:    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+   168→232:    TObjectPtr<ULFPSkillSelectionWidget> SkillSelectionWidget;
+   169→234:public:
+   170→235:    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
+   171→236:    TObjectPtr<ULFPSkillBase> CurrentSelectedSkill;
+   172→238:    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
+   173→239:    EPlayControlState LastControlState;
+   174→241:    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
+   175→242:    EPlayControlState CurrentControlState;
+   176→244://///////// Skill part  ////////////
+   177→245:public:
+   178→246:    UFUNCTION(BlueprintCallable, Category = "Battle System")
+   179→247:    void ExecuteSkill(ULFPSkillBase* CurrentSkill);
+   180→248:};
+   181→1:// Fill out your copyright notice in the Description page of Project Settings.
+   182→4:#include "LFP2D/Unit/LFPTacticsUnit.h"
+   183→5:#include "LFP2D/AI/LFPAIController.h"
+   184→6:#include "LFP2D/Player/LFPTacticsPlayerController.h"
+   185→7:#include "LFP2D/Skill/LFPSkillBase.h"
+   186→8:#include "LFP2D/Skill/LFPSkillComponent.h"
+   187→9:#include "LFP2D/Unit/Betrayal/LFPBetrayalCondition.h"
+   188→10:#include "LFP2D/HexGrid/LFPHexTile.h"
+   189→11:#include "LFP2D/HexGrid/LFPHexGridManager.h"
+   190→12:#include "LFP2D/Turn/LFPTurnManager.h"
+   191→13:#include "LFP2D/UI/Fighting/LFPHealthBarWidget.h"
+   192→14:#include "Kismet/GameplayStatics.h"
+   193→15:#include "Components/TimelineComponent.h"
+   194→16:#include "Components/WidgetComponent.h"
+   195→17:#include "Curves/CurveFloat.h"
+   196→18:#include "DrawDebugHelpers.h"
+   197→20:ALFPTacticsUnit::ALFPTacticsUnit()
+   198→21:{
+   199→22:    PrimaryActorTick.bCanEverTick = true;
+   200→24:    // ���������
+   201→25:    RootSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
+   202→26:    RootComponent = RootSceneComponent;
+   203→28:    // �����������
+   204→29:    SpriteComponent = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("SpriteComponent"));
+   205→30:    SpriteComponent->SetupAttachment(RootComponent);
+   206→31:    SpriteComponent->SetRelativeLocation(FVector(0, 0, 0)); // �ڸ����Ϸ�
+   207→33:    // Ĭ��ֵ
+   208→34:    CurrentMovePoints = MaxMovePoints;
+   209→35:    CurrentActionPoints = MaxActionPoints;
+   210→36:    CurrentPathIndex = -1;
+   211→37:    MoveProgress = 0.0f;
+   212→39:	// ����Ѫ�����
+   213→40:	HealthBarComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBarComponent"));
+   214→41:	HealthBarComponent->SetupAttachment(RootComponent);
+   215→42:	HealthBarComponent->SetWidgetSpace(EWidgetSpace::Screen);
+   216→43:	HealthBarComponent->SetDrawAtDesiredSize(true);
+   217→44:	// �������λ�ã��ڵ�λ�Ϸ���
+   218→45:	HealthBarComponent->SetRelativeLocation(FVector(0, 150, 0));
+   219→47:    // �����������
+   220→48:    SkillComponent = CreateDefaultSubobject<ULFPSkillComponent>(TEXT("SkillComponent"));
+   221→49:    // ����ʱ�������
+   222→50:    //MoveTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("MoveTimeline"));
+   223→51:}
+   224→53:void ALFPTacticsUnit::BeginPlay()
+   225→54:{
+   226→55:    Super::BeginPlay();
+   227→57:    // ע�ᵽ�غϹ�����
+   228→58:    if (ALFPTurnManager* TurnManager = GetTurnManager())
+   229→59:    {
+   230→60:        TurnManager->RegisterUnit(this);
+   231→61:    }
+   232→63:    for (ULFPBetrayalCondition* Condition : BetrayalConditions)
+   233→64:    {
+   234→65:        Condition->RegisterCondition(this);
+   235→66:    }
+   236→68:    FLFPHexCoordinates SpawnPoint = FLFPHexCoordinates(StartCoordinates_Q, StartCoordinates_R);
+   237→69:    SetCurrentCoordinates(SpawnPoint);
+   238→71:	// ��ʼ��Ѫ��
+   239→72:    CurrentHealth = MaxHealth;
+   240→73:	InitializeHealthBar();
+   241→75:    // �����ƶ�ʱ����
+   242→76:    if (MoveCurve)
+   243→77:    {
+   244→78:        FOnTimelineFloat TimelineCallback;
+   245→79:        TimelineCallback.BindUFunction(this, FName("UpdateMoveAnimation"));
+   246→80:        //MoveTimeline->AddInterpFloat(MoveCurve, TimelineCallback);
+   247→82:        FOnTimelineEvent TimelineFinishedCallback;
+   248→83:        TimelineFinishedCallback.BindUFunction(this, FName("FinishMove"));
+   249→84:        //MoveTimeline->SetTimelineFinishedFunc(TimelineFinishedCallback);
+   250→85:    }
+   251→87:    // ����ǵз���λ������AI������
+   252→88:    if (IsEnemy())
+   253→89:    {
+   254→90:        FActorSpawnParameters SpawnParams;
+   255→91:        SpawnParams.Owner = this;
+   256→92:        SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+   257→94:        if (AIControllerClass)
+   258→95:        {
+   259→96:            AIController = GetWorld()->SpawnActor<ALFPAIController>(AIControllerClass, SpawnParams);
+   260→97:            if (AIController)
+   261→98:            {
+   262→99:                AIController->Possess(this);
+   263→100:                AIController->SetControlledUnit(this);
+   264→101:            }
+   265→102:        }
+   266→103:    }
+   267→104:}
+   268→106:void ALFPTacticsUnit::EndPlay(const EEndPlayReason::Type EndPlayReason)
+   269→107:{
+   270→108:    Super::EndPlay(EndPlayReason);
+   271→110:    if (ALFPTurnManager* TurnManager = GetTurnManager())
+   272→111:    {
+   273→112:        TurnManager->UnregisterUnit(this);
+   274→113:    }
+   275→115:	for (ULFPBetrayalCondition* Condition : BetrayalConditions)
+   276→116:	{
+   277→117:		Condition->UnRegisterCondition(this);
+   278→118:	}
+   279→119:}
+   280→121:void ALFPTacticsUnit::SetCurrentCoordinates(const FLFPHexCoordinates& NewCoords)
+   281→122:{
+   282→123:    // ����λ��
+   283→124:    if (ALFPHexGridManager* GridManager = GetGridManager())
+   284→125:    {
+   285→126:        if (ALFPHexTile* LastTile = GridManager->GetTileAtCoordinates(CurrentCoordinates))
+   286→127:        {
+   287→128:            LastTile->SetIsOccupied(false);
+   288→129:            LastTile->SetUnitOnTile(nullptr);
+   289→130:        }
+   290→131:        if (ALFPHexTile* Tile = GridManager->GetTileAtCoordinates(NewCoords))
+   291→132:        {
+   292→133:            SetActorLocation(Tile->GetActorLocation() + FVector(0, 0, 1));
+   293→134:            Tile->SetIsOccupied(true);
+   294→135:            Tile->SetUnitOnTile(this);
+   295→136:            CurrentCoordinates = NewCoords;
+   296→137:        }
+   297→138:    }
+   298→139:}
+   299→141:ALFPHexTile* ALFPTacticsUnit::GetCurrentTile()
+   300→142:{
+   301→143:    if (ALFPHexGridManager* GridManager = GetGridManager())
+   302→144:    {
+   303→145:        if (ALFPHexTile* Tile = GridManager->GetTileAtCoordinates(CurrentCoordinates))
+   304→146:        {
+   305→147:            return Tile;
+   306→148:        }
+   307→149:    }
+   308→150:    return nullptr;
+   309→151:}
+   310→153://void ALFPTacticsUnit::SnapToGrid()
+   311→154://{
+   312→155://    if (ALFPHexGridManager* GridManager = GetGridManager())
+   313→156://    {
+   314→157://        if (ALFPHexTile* Tile = GridManager->GetTileAtCoordinates(CurrentCoordinates))
+   315→158://        {
+   316→159://            SetActorLocation(Tile->GetActorLocation() + FVector(0, 0, 50));
+   317→160://        }
+   318→161://    }
+   319→162://}
+   320→164://// ��ȡ���ƶ���Χ
+   321→165://TArray<ALFPHexTile*> ALFPTacticsUnit::GetMovementRangeTiles()
+   322→166://{
+   323→167://    if (MovementRangeTiles.Num() > 0)
+   324→168://        return MovementRangeTiles;
+   325→169://
+   326→170://    if (ALFPHexGridManager* GridManager = GetGridManager())
+   327→171://    {
+   328→172://        if (ALFPHexTile* UnitTile = GridManager->GetTileAtCoordinates(CurrentCoordinates))
+   329→173://        {
+   330→174://            // �����ƶ���Χ
+   331→175://            MovementRangeTiles = GridManager->GetMovementRange(UnitTile, MovementRange);
+   332→176://        }
+   333→177://    }
+   334→178://    return MovementRangeTiles;
+   335→179://}
+   336→181:bool ALFPTacticsUnit::MoveToTile(ALFPHexTile* NewTargetTile)
+   337→182:{
+   338→183:    if (!NewTargetTile || !HasEnoughMovePoints(1)) return false;
+   339→185:    ALFPHexGridManager* GridManager = GetGridManager();
+   340→186:    if (!GridManager) return false;
+   341→188:    // ��ȡ��ǰ���ڵĸ���
+   342→189:    ALFPHexTile* CurrentTile = GridManager->GetTileAtCoordinates(CurrentCoordinates);
+   343→190:    if (!CurrentTile) return false;
+   344→192:    // ����·��
+   345→193:    MovePath = GridManager->FindPath(CurrentTile, NewTargetTile);
+   346→194:    if (MovePath.Num() == 0|| MovePath.Num()>CurrentMovePoints) return false;
+   347→196:    // �����ƶ�״̬
+   348→197:    CurrentTile->SetIsOccupied(false);
+   349→198:    TargetTile = NewTargetTile;
+   350→199:    CurrentPathIndex = 0;
+   351→200:    MoveProgress = 0.0f;
+   352→201:    MovementRangeTiles.Empty();
+   353→203:    // �����ж���
+   354→204:    //ConsumeMovePoints(1);
+   355→206:    // ��ʼ�ƶ�����
+   356→207:    //if (MoveTimeline)
+   357→208:    //{
+   358→209:    //    MoveTimeline->PlayFromStart();
+   359→210:    //}
+   360→211:    //else
+   361→212:    //{
+   362→213:    //    // ���û��ʱ���ߣ�ֱ������ƶ�
+   363→214:    //    FinishMove();
+   364→215:    //}
+   365→216:    FinishMove();
+   366→217:    //NotifyMoveComplete();
+   367→218:    return true;
+   368→219:}
+   369→221:void ALFPTacticsUnit::UpdateMoveAnimation(float Value)
+   370→222:{
+   371→223:    if (CurrentPathIndex < 0 || CurrentPathIndex >= MovePath.Num() - 1) return;
+   372→225:    // ��ȡ��ǰ����һ������
+   373→226:    ALFPHexTile* CurrentTile = MovePath[CurrentPathIndex];
+   374→227:    ALFPHexTile* NextTile = MovePath[CurrentPathIndex + 1];
+   375→229:    if (!CurrentTile || !NextTile) return;
+   376→231:    // ����λ��
+   377→232:    FVector StartPos = CurrentTile->GetActorLocation() + FVector(0, 0, 50);
+   378→233:    FVector EndPos = NextTile->GetActorLocation() + FVector(0, 0, 50);
+   379→235:    // Ӧ������ֵ
+   380→236:    FVector NewLocation = FMath::Lerp(StartPos, EndPos, Value);
+   381→237:    SetActorLocation(NewLocation);
+   382→239:    // ���³���
+   383→240:    FVector Direction = (EndPos - StartPos).GetSafeNormal();
+   384→241:    if (!Direction.IsNearlyZero())
+   385→242:    {
+   386→243:        FRotator NewRotation = Direction.Rotation();
+   387→244:        SpriteComponent->SetWorldRotation(NewRotation);
+   388→245:    }
+   389→247:    // ����Ƿ��ƶ�����һ��
+   390→248:    if (Value >= 1.0f)
+   391→249:    {
+   392→250:        CurrentPathIndex++;
+   393→251:        MoveProgress = 0.0f;
+   394→253:        // ���µ�ǰ����
+   395→254:        if (CurrentPathIndex < MovePath.Num())
+   396→255:        {
+   397→256:            SetCurrentCoordinates(MovePath[CurrentPathIndex]->GetCoordinates());
+   398→257:        }
+   399→259:        // �������·�������¿�ʼʱ����
+   400→260:        if (CurrentPathIndex < MovePath.Num() - 1)
+   401→261:        {
+   402→262:            //MoveTimeline->PlayFromStart();
+   403→263:        }
+   404→264:        else
+   405→265:        {
+   406→266:            FinishMove();
+   407→267:        }
+   408→268:    }
+   409→269:}
+   410→271:void ALFPTacticsUnit::FinishMove()
+   411→272:{
+   412→273:    // ���µ�Ŀ��λ��
+   413→274:    if (TargetTile)
+   414→275:    {
+   415→276:        SetCurrentCoordinates(TargetTile->GetCoordinates());
+   416→277:        ConsumeMovePoints(MovePath.Num());
+   417→278:        //SetActorLocation(TargetTile->GetActorLocation() + FVector(0, 0, 50));
+   418→279:    }
+   419→281:    // �����ƶ�״̬
+   420→282:    TargetTile = nullptr;
+   421→283:    MovePath.Empty();
+   422→284:    CurrentPathIndex = -1;
+   423→285:    MoveProgress = 0.0f;
+   424→286:}
+   425→288:void ALFPTacticsUnit::ResetForNewRound()
+   426→289:{
+   427→290:    CurrentMovePoints = MaxMovePoints;
+   428→291:    CurrentActionPoints = MaxActionPoints;
+   429→292:    bHasActed = false;
+   430→294:    // ��ѡ�������Ӿ�����
+   431→295:    if (SpriteComponent)
+   432→296:    {
+   433→297:        SpriteComponent->SetSpriteColor(FLinearColor::White);
+   434→298:    }
+   435→299:}
+   436→301:void ALFPTacticsUnit::OnTurnStarted()
+   437→302:{
+   438→303:    bOnTurn = true;
+   439→305:    if (SkillComponent)
+   440→306:    {
+   441→307:        SkillComponent->OnTurnStarted();
+   442→308:    }
+   443→309:}
+   444→311:void ALFPTacticsUnit::OnTurnEnded()
+   445→312:{
+   446→313:    bOnTurn = false;
+   447→314:}
+   448→316:void ALFPTacticsUnit::OnMouseEnter()
+   449→317:{
+   450→318:}
+   451→320:void ALFPTacticsUnit::SetSelected(bool bSelected)
+   452→321:{
+   453→322:    bIsSelected = bSelected;
+   454→323:    // �Ӿ�������������λ
+   455→324:    if (bSelected)
+   456→325:    {
+   457→326:        SpriteComponent->SetSpriteColor(FLinearColor::Yellow);
+   458→327:    }
+   459→328:    else
+   460→329:    {
+   461→330:        SpriteComponent->SetSpriteColor(FLinearColor::White);
+   462→331:    }
+   463→332:}
+   464→334://void ALFPTacticsUnit::HighlightMovementRange(bool bHighlight)
+   465→335://{
+   466→336://    TArray<ALFPHexTile*> Tiles = GetMovementRangeTiles();
+   467→337://
+   468→338://    for (ALFPHexTile* Tile : Tiles)
+   469→339://    {
+   470→340://        if (bHighlight)
+   471→341://        {
+   472→342://            Tile->SetMovementHighlight(true);
+   473→343://        }
+   474→344://        else
+   475→345://        {
+   476→346://            Tile->SetMovementHighlight(false);
+   477→347://        }
+   478→348://    }
+   479→349://
+   480→350://    if (!bHighlight)
+   481→351://    {
+   482→352://        MovementRangeTiles.Empty();
+   483→353://    }
+   484→354://}
+   485→356:void ALFPTacticsUnit::ConsumeMovePoints(int32 Amount)
+   486→357:{
+   487→358:    CurrentMovePoints = FMath::Max(0, CurrentMovePoints - Amount);
+   488→360:    // ���û���ж����ˣ����Ϊ���ж�
+   489→361:    if (CurrentMovePoints <= 0)
+   490→362:    {
+   491→363:        //bHasActed = true;
+   492→364:    }
+   493→365:}
+   494→367:void ALFPTacticsUnit::ConsumeActionPoints(int32 Amount)
+   495→368:{
+   496→369:    CurrentActionPoints = FMath::Max(0, CurrentActionPoints - Amount);
+   497→370:    CurrentMovePoints = 0;
+   498→371:}
+   499→373:bool ALFPTacticsUnit::HasEnoughMovePoints(int32 Required) const
+   500→374:{
+   501→375:    return CurrentMovePoints >= Required;
+   502→376:}
+   503→378:bool ALFPTacticsUnit::HasEnoughActionPoints(int32 Required) const
+   504→379:{
+   505→380:    return CurrentActionPoints >= Required;
+   506→381:}
+   507→383:ALFPHexGridManager* ALFPTacticsUnit::GetGridManager() const
+   508→384:{
+   509→385:    TArray<AActor*> FoundActors;
+   510→386:    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALFPHexGridManager::StaticClass(), FoundActors);
+   511→387:    if (FoundActors.Num() > 0)
+   512→388:    {
+   513→389:        return Cast<ALFPHexGridManager>(FoundActors[0]);
+   514→390:    }
+   515→391:    return nullptr;
+   516→392:}
+   517→394:ALFPTurnManager* ALFPTacticsUnit::GetTurnManager() const
+   518→395:{
+   519→396:    TArray<AActor*> FoundManagers;
+   520→397:    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALFPTurnManager::StaticClass(), FoundManagers);
+   521→399:    if (FoundManagers.Num() > 0)
+   522→400:    {
+   523→401:        return Cast<ALFPTurnManager>(FoundManagers[0]);
+   524→402:    }
+   525→403:    return nullptr;
+   526→404:}
+   527→406:void ALFPTacticsUnit::Tick(float DeltaTime)
+   528→407:{
+   529→408:    Super::Tick(DeltaTime);
+   530→410:    // ����ʱ����
+   531→411:    /*if (MoveTimeline && MoveTimeline->IsPlaying())
+   532→412:    {
+   533→413:        MoveTimeline->TickComponent(DeltaTime, LEVELTICK_TimeOnly, nullptr);
+   534→414:    }*/
+   535→415:}
+   536→417:void ALFPTacticsUnit::InitializeHealthBar()
+   537→418:{
+   538→419:	if (HealthBarComponent)
+   539→420:	{
+   540→421:		// ��ȡѪ���ؼ�
+   541→422:		ULFPHealthBarWidget* HealthBarWidget = Cast<ULFPHealthBarWidget>(HealthBarComponent->GetWidget());
+   542→423:		if (HealthBarWidget)
+   543→424:		{
+   544→425:			// �󶨵���λ
+   545→426:			HealthBarWidget->BindToUnit(this);
+   546→427:		}
+   547→428:	}
+   548→429:}
+   549→431:void ALFPTacticsUnit::TakeDamage(int32 Damage)
+   550→432:{
+   551→433:    if (bIsDead) return;
+   552→435:	// ����ʵ���˺������Ƿ�����
+   553→436:	int32 ActualDamage = FMath::Max(Damage - Defense, 1);
+   554→437:	int32 OldHealth = CurrentHealth;
+   555→438:	CurrentHealth = FMath::Max(CurrentHealth - ActualDamage, 0);
+   556→440:	// ����Ѫ���仯�¼�
+   557→441:	OnHealthChangedDelegate.Broadcast(CurrentHealth, MaxHealth);
+   558→443:	// ��ͼ�¼�
+   559→444:	OnTakeDamage(ActualDamage);
+   560→446:	// �������
+   561→447:	if (CurrentHealth <= 0)
+   562→448:	{
+   563→449:		HandleDeath();
+   564→450:	}
+   565→451:}
+   566→453:void ALFPTacticsUnit::Heal(int32 Amount)
+   567→454:{
+   568→455:	if (bIsDead) return;
+   569→457:	int32 OldHealth = CurrentHealth;
+   570→458:	CurrentHealth = FMath::Min(CurrentHealth + Amount, MaxHealth);
+   571→460:	// ����Ѫ���仯�¼�
+   572→461:	OnHealthChangedDelegate.Broadcast(CurrentHealth, MaxHealth);
+   573→463:	// ��ͼ�¼�
+   574→464:	OnHeal(Amount);
+   575→465:}
+   576→467:bool ALFPTacticsUnit::AttackTarget(ALFPTacticsUnit* Target)
+   577→468:{
+   578→469:    if (!Target || bIsDead || Target->bIsDead)
+   579→470:    {
+   580→471:        return false;
+   581→472:    }
+   582→474:    // ��鹥����Χ
+   583→475:    if (!IsTargetInAttackRange(Target))
+   584→476:    {
+   585→477:        UE_LOG(LogTemp, Warning, TEXT("Target is out of attack range!"));
+   586→478:        return false;
+   587→479:    }
+   588→480:    if (Affiliation == Target->Affiliation)
+   589→481:    {
+   590→482:        UE_LOG(LogTemp, Warning, TEXT("Target is Ally!"));
+   591→483:        return false;
+   592→484:    }
+   593→486:    ApplyDamageToTarget(Target);
+   594→488:    //// ���Ź�������
+   595→489:    //PlayAttackAnimation(Target);
+   596→491:    //// ʵ���˺����㣨�ӳٵ�����������
+   597→492:    //FTimerDelegate TimerDelegate;
+   598→493:    //TimerDelegate.BindUFunction(this, FName("ApplyDamageToTarget"), Target);
+   599→494:    //GetWorld()->GetTimerManager().SetTimer(AttackTimerHandle, TimerDelegate, 0.5f, false);
+   600→495:    //NotifyAttackComplete();
+   601→496:    return true;
+   602→497:}
+   603→499:void ALFPTacticsUnit::ApplyDamageToTarget(ALFPTacticsUnit* Target)
+   604→500:{
+   605→501:    if (!Target || Target->bIsDead) return;
+   606→503:    // �����˺�����
+   607→504:    int32 Damage = AttackPower;
+   608→506:    // ����������� (10% ��Χ)
+   609→507:    float RandomFactor = FMath::RandRange(0.9f, 1.1f);
+   610→508:    Damage = FMath::RoundToInt(Damage * RandomFactor);
+   611→510:    // Ӧ���˺�
+   612→511:    Target->TakeDamage(Damage);
+   613→513:    // �����ж���
+   614→514:    ConsumeMovePoints(1);
+   615→515:}
+   616→517:void ALFPTacticsUnit::HandleDeath()
+   617→518:{
+   618→519:    bIsDead = true;
+   619→521:	// ���������¼�
+   620→522:    OnDeathDelegate.Broadcast();
+   621→524:    // ��ͼ�¼�
+   622→525:    OnDeath();
+   623→527:    // ���������Ƴ�
+   624→528:    ALFPHexTile* CurrentTile = GetCurrentTile();
+   625→529:    if (CurrentTile)
+   626→530:    {
+   627→531:        CurrentTile->SetUnitOnTile(nullptr);
+   628→532:    }
+   629→534:    // �ӻغ�ϵͳ���Ƴ�
+   630→535:    if (ALFPTurnManager* TurnManager = GetTurnManager())
+   631→536:    {
+   632→537:        TurnManager->UnregisterUnit(this);
+   633→538:    }
+   634→540:    // ������ײ
+   635→541:    SetActorEnableCollision(false);
+   636→543:    // �ӳ�����
+   637→544:    FTimerHandle TimerHandle;
+   638→545:    GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]()
+   639→546:        {
+   640→547:            Destroy();
+   641→548:        }, 2.0f, false);
+   642→549:}
+   643→551:void ALFPTacticsUnit::ChangeAffiliation(EUnitAffiliation NewAffiliation)
+   644→552:{
+   645→553:	Affiliation = NewAffiliation;
+   646→555:    if (NewAffiliation == EUnitAffiliation::UA_Player)
+   647→556:    {
+   648→557:        if (AIController)
+   649→558:        {
+   650→559:            AIController->UnPossess();
+   651→560:            AIController->Destroy();
+   652→561:            /*for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+   653→562:            {
+   654→563:                if (ALFPTacticsPlayerController* PC = Cast<ALFPTacticsPlayerController>(*It))
+   655→564:                {
+   656→565:                    PC->Possess(this);
+   657→566:                }
+   658→567:            }*/
+   659→568:        }
+   660→569:    }
+   661→570:	// �����¼�
+   662→571:    //OnAffiliationChanged.Broadcast(OldAffiliation, NewAffiliation);
+   663→572:}
+   664→574:ALFPTacticsUnit* ALFPTacticsUnit::FindBestTarget()
+   665→575:{
+   666→576:    // ��ȡ������ҵ�λ
+   667→577:    TArray<AActor*> PlayerUnits;
+   668→578:    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALFPTacticsUnit::StaticClass(), PlayerUnits);
+   669→580:    ALFPTacticsUnit* BestTarget = nullptr;
+   670→581:    float BestThreatValue = -MAX_FLT;
+   671→583:    for (AActor* Actor : PlayerUnits)
+   672→584:    {
+   673→585:        ALFPTacticsUnit* Unit = Cast<ALFPTacticsUnit>(Actor);
+   674→586:        if (Unit && Unit->IsAlive() && Unit->IsAlly())
+   675→587:        {
+   676→588:            float ThreatValue = CalculateThreatValue(Unit);
+   677→589:            if (ThreatValue > BestThreatValue)
+   678→590:            {
+   679→591:                BestThreatValue = ThreatValue;
+   680→592:                BestTarget = Unit;
+   681→593:            }
+   682→594:        }
+   683→595:    }
+   684→597:    return BestTarget;
+   685→598:}
+   686→600:ALFPHexTile* ALFPTacticsUnit::FindBestMovementTile(ALFPTacticsUnit* Target)
+   687→601:{
+   688→602:    ALFPHexGridManager* GridManager = GetGridManager();
+   689→603:    if (!GridManager)
+   690→604:    {
+   691→605:        return nullptr;
+   692→606:    }
+   693→607:    // ��ȡ���п��ƶ�λ��
+   694→608:    MovementRangeTiles = GridManager->GetTilesInRange(GetCurrentTile(), GetCurrentMovePoints());
+   695→610:    ALFPHexTile* BestTile = nullptr;
+   696→611:    float BestPositionValue = -MAX_FLT;
+   697→613:    for (ALFPHexTile* Tile : MovementRangeTiles)
+   698→614:    {
+   699→615:        // �������е�λ�ĸ���
+   700→616:        if (Tile->GetUnitOnTile()) continue;
+   701→618:        float PositionValue = CalculatePositionValue(Tile, Target);
+   702→619:        if (PositionValue > BestPositionValue)
+   703→620:        {
+   704→621:            BestPositionValue = PositionValue;
+   705→622:            BestTile = Tile;
+   706→623:        }
+   707→624:    }
+   708→626:    return BestTile;
+   709→627:}
+   710→629:float ALFPTacticsUnit::CalculateThreatValue(ALFPTacticsUnit* Target)
+   711→630:{
+   712→631:    // ������вֵ = Ŀ�깥���� * (1 - Ŀ�굱ǰѪ��/���Ѫ��)
+   713→632:    float ThreatValue = Target->GetAttackPower();
+   714→634:    // �������� (Խ����вԽ��)
+   715→635:    int32 Distance = FLFPHexCoordinates::Distance(
+   716→636:        GetCurrentCoordinates(),
+   717→637:        Target->GetCurrentCoordinates()
+   718→638:    );
+   719→639:    float DistanceFactor = 1.0f / FMath::Max(Distance, 1);
+   720→641:    //// Ӧ����Ϊ����
+   721→642:    //if (BehaviorData)
+   722→643:    //{
+   723→644:    //    if (BehaviorData->bPrioritizeWeakTargets)
+   724→645:    //    {
+   725→646:    //        // ���ӶԵ�Ѫ��Ŀ���Ȩ��
+   726→647:    //        float HealthRatio = (float)Target->GetCurrentHealth() / Target->GetMaxHealth();
+   727→648:    //        ThreatValue *= (2.0f - HealthRatio); // Ѫ��Խ�ͣ���вֵԽ��
+   728→649:    //    }
+   729→651:    //    // Ӧ�ù�������
+   730→652:    //    ThreatValue *= BehaviorData->Aggressiveness;
+   731→653:    //}
+   732→655:    return ThreatValue * DistanceFactor;
+   733→656:}
+   734→658:float ALFPTacticsUnit::CalculatePositionValue(ALFPHexTile* Tile, ALFPTacticsUnit* Target)
+   735→659:{
+   736→660:    if (!Tile || !Target) return 0.0f;
+   737→662:    float PositionValue = 0.0f;
+   738→664:    // 1. ����Ŀ��Խ��Խ��
+   739→665:    int32 DistanceToTarget = FLFPHexCoordinates::Distance(
+   740→666:        Tile->GetCoordinates(),
+   741→667:        Target->GetCurrentCoordinates()
+   742→668:    );
+   743→669:    PositionValue += 10.0f / FMath::Max(DistanceToTarget, 1);
+   744→671:    // 2. ����ڹ�����Χ�ڶ���ӷ�
+   745→672:    if (DistanceToTarget <= GetAttackRange())
+   746→673:    {
+   747→674:        PositionValue += 20.0f;
+   748→675:    }
+   749→677:    //// 3. �����������˵�λ���Ŷ�Э����
+   750→678:    //TArray<AActor*> EnemyUnits;
+   751→679:    //UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALFPTacticsUnit::StaticClass(), EnemyUnits);
+   752→681:    //for (AActor* Actor : EnemyUnits)
+   753→682:    //{
+   754→683:    //    ALFPTacticsUnit* Unit = Cast<ALFPTacticsUnit>(Actor);
+   755→684:    //    if (Unit && Unit != this && Unit->IsEnemy() && Unit->IsAlive())
+   756→685:    //    {
+   757→686:    //        int32 DistanceToAlly = FLFPHexCoordinates::Distance(
+   758→687:    //            Tile->GetCoordinates(),
+   759→688:    //            Unit->GetCurrentCoordinates()
+   760→689:    //        );
+   761→691:    //        if (DistanceToAlly <= 2)
+   762→692:    //        {
+   763→693:    //            PositionValue += 5.0f / FMath::Max(DistanceToAlly, 1);
+   764→694:    //        }
+   765→695:    //    }
+   766→696:    //}
+   767→698:    //// 4. ����Σ��λ�ã�����桢�����ȣ�
+   768→699:    //if (Tile->IsDangerous())
+   769→700:    //{
+   770→701:    //    PositionValue -= 30.0f;
+   771→702:    //}
+   772→704:    //// 5. �ߵ�����
+   773→705:    //if (Tile->IsHighGround())
+   774→706:    //{
+   775→707:    //    PositionValue += 15.0f;
+   776→708:    //}
+   777→710:    return PositionValue;
+   778→711:}
+   779→713:TArray<ALFPHexTile*> ALFPTacticsUnit::GetAttackRangeTiles()
+   780→714:{
+   781→715:    TArray<ALFPHexTile*> AttackRangeTiles;
+   782→717:    if (ALFPHexGridManager* GridManager = GetGridManager())
+   783→718:    {
+   784→719:        // ��ս������Χ
+   785→720:        if (bMeleeAttack)
+   786→721:        {
+   787→722:            // ��ȡ���ڸ���
+   788→723:            TArray<FLFPHexCoordinates> Neighbors = CurrentCoordinates.GetNeighbors();
+   789→724:            for (const FLFPHexCoordinates& Coord : Neighbors)
+   790→725:            {
+   791→726:                FLFPHexCoordinates Key(Coord.Q, Coord.R);
+   792→727:                if (ALFPHexTile* Tile = GridManager->GetTileAtCoordinates(Key))
+   793→728:                {
+   794→729:                    AttackRangeTiles.Add(Tile);
+   795→730:                }
+   796→731:            }
+   797→732:        }
+   798→733:        // Զ�̹�����Χ
+   799→734:        else
+   800→735:        {
+   801→736:            // ��ȡ������Χ�ڵ����и���
+   802→737:            TArray<ALFPHexTile*> TilesInRange = GridManager->GetTilesInRange(GetCurrentTile(), AttackRange);
+   803→739:            for (ALFPHexTile* Tile : TilesInRange)
+   804→740:            {
+   805→741:                AttackRangeTiles.Add(Tile);
+   806→742:            }
+   807→743:        }
+   808→744:    }
+   809→746:    return AttackRangeTiles;
+   810→747:}
+   811→749:bool ALFPTacticsUnit::IsTargetInAttackRange(ALFPTacticsUnit* Target) const
+   812→750:{
+   813→751:    if (!Target || !Target->GetCurrentTile()) return false;
+   814→753:    // �������
+   815→754:    int32 Distance = FLFPHexCoordinates::Distance(
+   816→755:        CurrentCoordinates,
+   817→756:        Target->GetCurrentCoordinates()
+   818→757:    );
+   819→759:    // ��ս�������
+   820→760:    if (bMeleeAttack)
+   821→761:    {
+   822→762:        return Distance == 1; // ���ڸ���
+   823→763:    }
+   824→764:    // Զ�̹������
+   825→765:    else
+   826→766:    {
+   827→767:        return Distance >= 2 && Distance <= AttackRange;
+   828→768:    }
+   829→769:}
+   830→771:FLinearColor ALFPTacticsUnit::GetAffiliationColor() const
+   831→772:{
+   832→773:    switch (Affiliation)
+   833→774:    {
+   834→775:    case EUnitAffiliation::UA_Player:
+   835→776:        return FLinearColor(0.0f, 0.5f, 1.0f, 1.0f); // ��ɫ
+   836→777:    case EUnitAffiliation::UA_Enemy:
+   837→778:        return FLinearColor(1.0f, 0.1f, 0.1f, 1.0f); // ��ɫ
+   838→779:    case EUnitAffiliation::UA_Neutral:
+   839→780:        return FLinearColor(0.5f, 0.5f, 0.5f, 1.0f); // ��ɫ
+   840→781:    default:
+   841→782:        return FLinearColor::White;
+   842→783:    }
+   843→784:}
+   844→786:void ALFPTacticsUnit::UpdateHealthUI()
+   845→787:{
+   846→788:    // ��ʵ����Ŀ�У��������µ�λ��Ѫ��UI
+   847→789:    // ���磺HealthBarWidget->SetPercent((float)CurrentHealth / MaxHealth);
+   848→790:}
+   849→792:TArray<ULFPSkillBase*> ALFPTacticsUnit::GetAvailableSkills()
+   850→793:{
+   851→794:    if (SkillComponent)
+   852→795:    {
+   853→796:        return SkillComponent->GetAvailableSkills();
+   854→797:    }
+   855→798:    return TArray<ULFPSkillBase*>();
+   856→799:}
+   857→801:bool ALFPTacticsUnit::ExecuteSkill(ULFPSkillBase* Skill, ALFPHexTile* NewTargetTile)
+   858→802:{
+   859→803:    if (SkillComponent)
+   860→804:    {
+   861→805:        return SkillComponent->ExecuteSkill(Skill, NewTargetTile);
+   862→806:    }
+   863→807:    return false;
+   864→808:}
+   865→810:ULFPSkillBase* ALFPTacticsUnit::GetDefaultAttackSkill()
+   866→811:{
+   867→812:    if (SkillComponent)
+   868→813:    {
+   869→814:        return SkillComponent->GetDefaultAttackSkill();
+   870→815:    }
+   871→816:    return nullptr;
+   872→817:}
+   873→1:// Fill out your copyright notice in the Description page of Project Settings.
+   874→3:#pragma once
+   875→5:#include "CoreMinimal.h"
+   876→6:#include "GameFramework/Actor.h"
+   877→7:#include "LFP2D/HexGrid/LFPHexTile.h"
+   878→8:#include "Components/TimelineComponent.h"
+   879→9:#include "PaperSpriteComponent.h"
+   880→10:#include "LFPTacticsUnit.generated.h"
+   881→12:// ί��ǩ��
+   882→13:DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnHealthChangedSignature, int32, CurrentHealth, int32, MaxHealth);
+   883→15:DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUnitDeathSignature);
+   884→17:// ��λ��Ӫö��
+   885→18:UENUM(BlueprintType)
+   886→19:enum class EUnitAffiliation : uint8
+   887→20:{
+   888→21:    UA_Player     UMETA(DisplayName = "Player"),
+   889→22:    UA_Enemy      UMETA(DisplayName = "Enemy"),
+   890→23:    UA_Neutral    UMETA(DisplayName = "Neutral")
+   891→24:};
+   892→26:class ULFPSkillBase;
+   893→27:class ALFPHexGridManager;
+   894→28:class ALFPTurnManager;
+   895→29:class ULFPBetrayalCondition;
+   896→30:class ALFPAIController;
+   897→31:class ULFPSkillComponent;
+   898→33:UCLASS()
+   899→34:class LFP2D_API ALFPTacticsUnit : public APawn
+   900→35:{
+   901→36:	GENERATED_BODY()
+   902→37:	
+   903→38:public:
+   904→39:    ALFPTacticsUnit();
+   905→41:    // ����/��ȡ��ǰ����
+   906→42:    UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
+   907→43:    void SetCurrentCoordinates(const FLFPHexCoordinates& NewCoords);
+   908→45:    UFUNCTION(BlueprintPure, Category = "Tactics Unit")
+   909→46:    FLFPHexCoordinates GetCurrentCoordinates() const { return CurrentCoordinates; }
+   910→48:    UFUNCTION(BlueprintPure, Category = "Tactics Unit")
+   911→49:    ALFPHexTile* GetCurrentTile();
+   912→50:    //// ��ȡ���ƶ���Χ
+   913→51:    //UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
+   914→52:    //TArray<ALFPHexTile*> GetMovementRangeTiles();
+   915→54:    // ���ƶ���Χ����
+   916→55:    UPROPERTY(VisibleInstanceOnly, Category = "Unit State")
+   917→56:    TArray<ALFPHexTile*> MovementRangeTiles;
+   918→58:    // �ƶ���Ŀ�����
+   919→59:    UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
+   920→60:    bool MoveToTile(ALFPHexTile* NewTargetTile);
+   921→62:    // ����ѡ��״̬
+   922→63:    UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
+   923→64:    void SetSelected(bool bSelected);
+   924→66:    UFUNCTION(BlueprintPure, Category = "Tactics Unit")
+   925→67:    bool IsSelected() const { return bIsSelected; }
+   926→69:    // ��ȡ�ƶ���Χ
+   927→70:    UFUNCTION(BlueprintPure, Category = "Tactics Unit")
+   928→71:    int32 GetMovementRange() const { return CurrentMovePoints; }
+   929→73:    // �����ƶ���
+   930→74:    UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
+   931→75:    void ConsumeMovePoints(int32 Amount);
+   932→77:	// �����ж���
+   933→78:	UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
+   934→79:	void ConsumeActionPoints(int32 Amount);
+   935→81:    // ����Ƿ����㹻�ƶ���
+   936→82:    UFUNCTION(BlueprintPure, Category = "Tactics Unit")
+   937→83:    bool HasEnoughMovePoints(int32 Required) const;
+   938→85:    // ����Ƿ����㹻�ж���
+   939→86:    UFUNCTION(BlueprintPure, Category = "Tactics Unit")
+   940→87:    bool HasEnoughActionPoints(int32 Required) const;
+   941→89:    UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
+   942→90:    int32 GetCurrentMovePoints() { return CurrentMovePoints; }
+   943→92:    UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
+   944→93:    int32 GetMaxMovePoints() { return CurrentMovePoints; }
+   945→95:	UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
+   946→96:	int32 GetActionPoints() { return CurrentActionPoints; }
+   947→98:    UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
+   948→99:    ALFPHexGridManager* GetGridManager() const;
+   949→101:    UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
+   950→102:    ALFPTurnManager* GetTurnManager() const;
+   951→103:protected:
+   952→104:    virtual void BeginPlay() override;
+   953→105:    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+   954→106:    virtual void Tick(float DeltaTime) override;
+   955→108:    // �ƶ���������
+   956→109:    UFUNCTION()
+   957→110:    void UpdateMoveAnimation(float Value);
+   958→112:    // ����ƶ�
+   959→113:    void FinishMove();
+   960→115:    // �������
+   961→116:    void SnapToGrid();
+   962→118:protected:
+   963→119:    // ��λ����
+   964→120:    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Unit Stats")
+   965→121:    int32 MovementRange = 5;
+   966→123:    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Unit Stats")
+   967→124:    int32 MaxMovePoints = 3;
+   968→126:    UPROPERTY(VisibleInstanceOnly, Category = "Unit State")
+   969→127:    int32 CurrentMovePoints;
+   970→129:	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Unit Stats")
+   971→130:	int32 MaxActionPoints = 3;
+   972→132:	UPROPERTY(VisibleInstanceOnly, Category = "Unit State")
+   973→133:	int32 CurrentActionPoints;
+   974→135:    // ��ǰ����
+   975→136:    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Unit Stats")
+   976→137:    int32 StartCoordinates_Q = 0;
+   977→139:    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Unit Stats")
+   978→140:    int32 StartCoordinates_R = 0;
+   979→142:    FLFPHexCoordinates CurrentCoordinates;
+   980→144:    // ѡ��״̬
+   981→145:    UPROPERTY(VisibleInstanceOnly, Category = "Unit State")
+   982→146:    bool bIsSelected = false;
+   983→148:    // �ƶ�״̬
+   984→149:    UPROPERTY(Transient)
+   985→150:    ALFPHexTile* TargetTile;
+   986→152:    TArray<ALFPHexTile*> MovePath;
+   987→153:    int32 CurrentPathIndex;
+   988→154:    float MoveProgress;
+   989→156:    // ����
+   990→157:    FTimerHandle MoveTimerHandle;
+   991→158:    FTimeline MoveTimeline;
+   992→160:    UPROPERTY(EditDefaultsOnly, Category = "Animation")
+   993→161:    UCurveFloat* MoveCurve;
+   994→163:    // ���
+   995→164:    UPROPERTY(VisibleAnywhere, Category = "Components")
+   996→165:    USceneComponent* RootSceneComponent;
+   997→167:    UPROPERTY(VisibleAnywhere, Category = "Components")
+   998→168:    UPaperSpriteComponent* SpriteComponent;
+   999→170:public:
+  1000→171:    // �غ�ϵͳ����
+  1001→172:    UFUNCTION(BlueprintCallable, Category = "Turn System")
+  1002→173:    void ResetForNewRound();
+  1003→175:    UFUNCTION(BlueprintPure, Category = "Turn System")
+  1004→176:    bool CanAct() const { return !bHasActed && bOnTurn; }
+  1005→178:    UFUNCTION(BlueprintPure, Category = "Turn System")
+  1006→179:    int32 GetSpeed() const { return Speed; }
+  1007→181:    UFUNCTION(BlueprintPure, Category = "Turn System")
+  1008→182:    bool HasActed() const { return bHasActed; }
+  1009→184:    UFUNCTION(BlueprintCallable, Category = "Turn System")
+  1010→185:    void SetHasActed(bool bActed) { bHasActed = bActed; }
+  1011→187:    UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Turn System")
+  1012→188:    UTexture2D* GetUnitIcon() const { return UnitIconTexture; }
+  1013→190:    // �غ��¼�
+  1014→191:    UFUNCTION()
+  1015→192:    void OnTurnStarted();
+  1016→194:    UFUNCTION()
+  1017→195:    void OnTurnEnded();
+  1018→197:public:
+  1019→198:    // �غ�ϵͳ����
+  1020→199:    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Stats")
+  1021→200:    int32 Speed = 5; // �ٶ�ֵ�������ж�˳��
+  1022→202:    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Unit State")
+  1023→203:    bool bHasActed = false;
+  1024→205:    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Unit State")
+  1025→206:    bool bOnTurn = false;
+  1026→208:    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turn System")
+  1027→209:    UTexture2D* UnitIconTexture;
+  1028→211:public:
+  1029→212:    UFUNCTION(BlueprintCallable, Category = "Mouse Input")
+  1030→213:    void OnMouseEnter();
+  1031→215:    UFUNCTION(BlueprintImplementableEvent, Category = "Mouse Input")
+  1032→216:    void OnMouseExit();
+  1033→218:    UFUNCTION(BlueprintImplementableEvent, Category = "Mouse Input")
+  1034→219:    void OnMouseClick();
+  1035→221:	// �ڵ�λ��������Ѫ���仯�¼�
+  1036→222:public:
+  1037→223:	// �¼���Ѫ���仯
+  1038→224:	UPROPERTY(BlueprintAssignable, Category = "Unit Events")
+  1039→225:	FOnHealthChangedSignature OnHealthChangedDelegate;
+  1040→227:	// �¼�����λ����
+  1041→228:	UPROPERTY(BlueprintAssignable, Category = "Unit Events")
+  1042→229:    FOnUnitDeathSignature OnDeathDelegate;
+  1043→231:	// ��ȡ��ǰѪ��
+  1044→232:	UFUNCTION(BlueprintPure, Category = "Unit Combat")
+  1045→233:	int32 GetCurrentHealth() const { return CurrentHealth; }
+  1046→235:	// ��ȡ���Ѫ��
+  1047→236:	UFUNCTION(BlueprintPure, Category = "Unit Combat")
+  1048→237:	int32 GetMaxHealth() const { return MaxHealth; }
+  1049→239:    // ��ȡ������
+  1050→240:    UFUNCTION(BlueprintPure, Category = "Unit Combat")
+  1051→241:    int32 GetAttackPower() const { return AttackPower; }
+  1052→243:	// ��ȡ��Ӫ��ʶ
+  1053→244:	UFUNCTION(BlueprintPure, Category = "Unit Combat")
+  1054→245:    EUnitAffiliation GetAffiliation() const { return Affiliation; }
+  1055→247:	// Ѫ�����
+  1056→248:	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+  1057→249:	class UWidgetComponent* HealthBarComponent;
+  1058→251:	// ��ʼ��Ѫ��
+  1059→252:	UFUNCTION(BlueprintCallable, Category = "Unit Display")
+  1060→253:	void InitializeHealthBar();
+  1061→255:public:
+  1062→256:    // Ѫ������
+  1063→257:    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Stats")
+  1064→258:    int32 MaxHealth = 100;
+  1065→260:    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Unit Stats")
+  1066→261:    int32 CurrentHealth = 100;
+  1067→263:    // ����������
+  1068→264:    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Stats")
+  1069→265:    int32 AttackPower = 10;
+  1070→267:    // ����������
+  1071→268:    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Stats")
+  1072→269:    int32 Defense = 5;
+  1073→271:    // ��Ӫ��ʶ
+  1074→272:    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Stats")
+  1075→273:    EUnitAffiliation Affiliation = EUnitAffiliation::UA_Player;
+  1076→275:    // ==== �������� ====
+  1077→277:    // Ӧ���˺�
+  1078→278:    UFUNCTION(BlueprintCallable, Category = "Unit Combat")
+  1079→279:    void TakeDamage(int32 Damage);
+  1080→281:    // ���Ƶ�λ
+  1081→282:    UFUNCTION(BlueprintCallable, Category = "Unit Combat")
+  1082→283:    void Heal(int32 Amount);
+  1083→285:    // ����Ƿ���
+  1084→286:    UFUNCTION(BlueprintPure, Category = "Unit Combat")
+  1085→287:    bool IsAlive() const { return CurrentHealth > 0; }
+  1086→289:    // ����Ƿ�Ϊ�з���λ
+  1087→290:    UFUNCTION(BlueprintPure, Category = "Unit Combat")
+  1088→291:    bool IsEnemy() const { return Affiliation == EUnitAffiliation::UA_Enemy; }
+  1089→293:    // ����Ƿ�Ϊ�ѷ���λ
+  1090→294:    UFUNCTION(BlueprintPure, Category = "Unit Combat")
+  1091→295:    bool IsAlly() const { return Affiliation == EUnitAffiliation::UA_Player; }
+  1092→297:    // ����Ƿ�Ϊ������λ
+  1093→298:    UFUNCTION(BlueprintPure, Category = "Unit Combat")
+  1094→299:    bool IsNeutral() const { return Affiliation == EUnitAffiliation::UA_Neutral; }
+  1095→301:    // ����Ŀ�굥λ
+  1096→302:    UFUNCTION(BlueprintCallable, Category = "Unit Combat")
+  1097→303:    bool AttackTarget(ALFPTacticsUnit* Target);
+  1098→305:    void ApplyDamageToTarget(ALFPTacticsUnit* Target);
+  1099→307:    // ��������
+  1100→308:    UFUNCTION(BlueprintImplementableEvent, Category = "Unit Combat")
+  1101→309:    void OnDeath();
+  1102→311:    // �˺�����
+  1103→312:    UFUNCTION(BlueprintImplementableEvent, Category = "Unit Combat")
+  1104→313:    void OnTakeDamage(int32 DamageTaken);
+  1105→315:    // ���ƴ���
+  1106→316:    UFUNCTION(BlueprintImplementableEvent, Category = "Unit Combat")
+  1107→317:    void OnHeal(int32 HealAmount);
+  1108→319:    // ��������
+  1109→320:    UFUNCTION(BlueprintImplementableEvent, Category = "Unit Combat")
+  1110→321:    void PlayAttackAnimation(ALFPTacticsUnit* Target);
+  1111→323:    // ��ȡ������Χ
+  1112→324:    UFUNCTION(BlueprintCallable, Category = "Unit Combat")
+  1113→325:    TArray<ALFPHexTile*> GetAttackRangeTiles();
+  1114→327:    // ��ȡ������Χ��С
+  1115→328:    UFUNCTION(BlueprintCallable, Category = "Unit Combat")
+  1116→329:    int32 GetAttackRange() { return AttackRange; }
+  1117→331:    // ���Ŀ���Ƿ��ڹ�����Χ��
+  1118→332:    UFUNCTION(BlueprintPure, Category = "Unit Combat")
+  1119→333:    bool IsTargetInAttackRange(ALFPTacticsUnit* Target) const;
+  1120→335:    // ��Ӫ��ɫ
+  1121→336:    UFUNCTION(BlueprintPure, Category = "Unit Display")
+  1122→337:    FLinearColor GetAffiliationColor() const;
+  1123→339:    void UpdateHealthUI();
+  1124→341:protected:
+  1125→342:    // ��������
+  1126→343:    void HandleDeath();
+  1127→345:    // ������Χ
+  1128→346:    UPROPERTY(EditAnywhere, Category = "Unit Combat")
+  1129→347:    int32 AttackRange = 2;
+  1130→349:    // ������Χģʽ
+  1131→350:    UPROPERTY(EditAnywhere, Category = "Unit Combat")
+  1132→351:    bool bMeleeAttack = true;
+  1133→353:    // ����״̬
+  1134→354:    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Unit State", meta = (AllowPrivateAccess = "true"))
+  1135→355:    bool bIsDead = false;
+  1136→357:public:
+  1137→358:    UFUNCTION(BlueprintCallable, Category = "Betrayal")
+  1138→359:    void ChangeAffiliation(EUnitAffiliation NewAffiliation = EUnitAffiliation::UA_Player);
+  1139→361:protected:
+  1140→362:	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Betrayal")
+  1141→363:	TArray<ULFPBetrayalCondition*> BetrayalConditions;
+  1142→365:    // ����AI������֧�ֺ��¼�
+  1143→366:public:
+  1144→367:    // ��ȡAI������
+  1145→368:    UFUNCTION(BlueprintPure, Category = "AI")
+  1146→369:    ALFPAIController* GetAIController() const { return AIController; }
+  1147→371:    //// �¼����ƶ����
+  1148→372:    //UPROPERTY(BlueprintAssignable, Category = "Events")
+  1149→373:    //FSimpleMulticastDelegate OnMoveCompleteDelegate;
+  1150→375:    //// �¼����������
+  1151→376:    //UPROPERTY(BlueprintAssignable, Category = "Events")
+  1152→377:    //FSimpleMulticastDelegate OnAttackCompleteDelegate;
+  1153→379:    //// ���ƶ������д����¼�
+  1154→380:    //UFUNCTION()
+  1155→381:    //void NotifyMoveComplete()
+  1156→382:    //{
+  1157→383:    //    OnMoveCompleteDelegate.Broadcast();
+  1158→384:    //}
+  1159→386:    //// �ڹ��������д����¼�
+  1160→387:    //UFUNCTION()
+  1161→388:    //void NotifyAttackComplete()
+  1162→389:    //{
+  1163→390:    //    OnAttackCompleteDelegate.Broadcast();
+  1164→391:    //}
+  1165→393:protected:
+  1166→394:    // AI������
+  1167→395:    UPROPERTY()
+  1168→396:    ALFPAIController* AIController;
+  1169→398:public:
+  1170→399:    // Ѱ�����Ŀ��
+  1171→400:    UFUNCTION(BlueprintCallable, Category = "AI")
+  1172→401:    virtual ALFPTacticsUnit* FindBestTarget();
+  1173→403:    // Ѱ������ƶ�λ��
+  1174→404:    UFUNCTION(BlueprintCallable, Category = "AI")
+  1175→405:    virtual ALFPHexTile* FindBestMovementTile(ALFPTacticsUnit* Target);
+  1176→407:    // ������вֵ
+  1177→408:    UFUNCTION(BlueprintCallable, Category = "AI")
+  1178→409:    virtual float CalculateThreatValue(ALFPTacticsUnit* Target);
+  1179→411:    // ����λ�ü�ֵ
+  1180→412:    UFUNCTION(BlueprintCallable, Category = "AI")
+  1181→413:    virtual float CalculatePositionValue(ALFPHexTile* Tile, ALFPTacticsUnit* Target);
+  1182→415:public:
+  1183→416:    TArray<ULFPSkillBase*> GetAvailableSkills();
+  1184→418:    bool ExecuteSkill(ULFPSkillBase* Skill, ALFPHexTile* NewTargetTile = nullptr);
+  1185→420:    ULFPSkillBase* GetDefaultAttackSkill();
+  1186→422:public:
+  1187→423:    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+  1188→424:    TObjectPtr<ULFPSkillComponent> SkillComponent;
+  1189→425:};
+  1190→

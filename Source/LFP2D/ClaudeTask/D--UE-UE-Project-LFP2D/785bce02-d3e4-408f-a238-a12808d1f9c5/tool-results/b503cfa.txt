@@ -1,0 +1,1189 @@
+1:// Fill out your copyright notice in the Description page of Project Settings.
+3:#pragma once
+5:#include "CoreMinimal.h"
+6:#include "GameFramework/PlayerController.h"
+7:#include "LFP2D/HexGrid/LFPHexTile.h"
+8:#include "InputActionValue.h"
+9:#include "LFPTacticsPlayerController.generated.h"
+11:class ALFPTacticsUnit;
+12:class ALFPHexGridManager;
+14:class UInputMappingContext;
+15:class UInputAction;
+17:class ULFPSkillBase;
+19:class ALFPTurnManager;
+21:class ULFPTurnSpeedListWidget;
+22:class ULFPSkillSelectionWidget;
+23:/**
+24: * 
+25: */
+26:UCLASS()
+27:class LFP2D_API ALFPTacticsPlayerController : public APlayerController
+28:{
+29:	GENERATED_BODY()
+30:	
+31:public:
+32:    ALFPTacticsPlayerController();
+34:protected:
+35:    virtual void BeginPlay() override;
+36:    virtual void SetupInputComponent() override;
+37:    virtual void Tick(float DeltaTime) override;
+39:public:
+40:    // Enhanced Input 绑定函数
+41:    void OnSelectStarted(const FInputActionValue& Value);
+42:    void OnSelectCompleted(const FInputActionValue& Value);
+43:    void OnAttackStarted(const FInputActionValue& Value);
+44:    void OnConfirmAction(const FInputActionValue& Value);
+45:    void OnCancelAction(const FInputActionValue& Value);
+46:    //void OnRotateCamera(const FInputActionValue& Value);
+47:    void OnToggleDebug(const FInputActionValue& Value);
+48:    void OnSkipTurnAction(const FInputActionValue& Value);
+50:    void OnCameraPan(const FInputActionValue& Value);
+51:    void OnCameraDragStarted(const FInputActionValue& Value);
+52:    void OnCameraDragTriggered(const FInputActionValue& Value);
+53:    void OnCameraDragCompleted(const FInputActionValue& Value);
+54:    void OnCameraZoom(const FInputActionValue& Value);
+56:    // 游戏流程函数
+57:    void SelectUnit(ALFPTacticsUnit* Unit);
+58:    void SelectTile(ALFPHexTile* Tile);
+59:    void ConfirmMove();
+60:    void ShowUnitRange(EUnitRange UnitRange = EUnitRange::UR_Default);
+61:    void ShowPathToSelectedTile();
+62:    void HidePathToDefault();
+63:    void HidePathToRange();
+65:    // 调试功能
+66:    void ToggleDebugDisplay();
+68:protected:
+69:    // 输入系统资产
+70:    UPROPERTY(EditAnywhere, Category = "Input")
+71:    TObjectPtr<UInputMappingContext> DefaultInputMapping;
+73:    UPROPERTY(EditAnywhere, Category = "Input")
+74:    UInputAction* SelectAction;
+76:    UPROPERTY(EditAnywhere, Category = "Input")
+77:    UInputAction* AttackAction;
+79:    UPROPERTY(EditAnywhere, Category = "Input")
+80:    UInputAction* ConfirmAction;
+82:    UPROPERTY(EditAnywhere, Category = "Input")
+83:    UInputAction* CancelAction;
+85:    //UPROPERTY(EditAnywhere, Category = "Input")
+86:    //UInputAction* RotateCameraAction;
+88:    UPROPERTY(EditAnywhere, Category = "Input")
+89:    UInputAction* DebugToggleAction;
+91:	UPROPERTY(EditAnywhere, Category = "Input")
+92:	UInputAction* SkipTurnAction;
+94:    UPROPERTY(EditAnywhere, Category = "Input")
+95:    UInputAction* CameraPanAction;
+97:    UPROPERTY(EditAnywhere, Category = "Input")
+98:    UInputAction* CameraDragAction;
+100:    UPROPERTY(EditAnywhere, Category = "Input")
+101:    UInputAction* CameraZoomAction;
+104:    // 引用网格管理器
+105:    UPROPERTY()
+106:    ALFPHexGridManager* GridManager;
+108:    // 当前选中的单位
+109:    UPROPERTY()
+110:    ALFPTacticsUnit* SelectedUnit;
+112:    UPROPERTY()
+113:    ALFPTacticsUnit* TargetUnit;
+115:    // 当前选中的格子（用于移动目标）
+116:    UPROPERTY()
+117:    ALFPHexTile* SelectedTile;
+119:    UPROPERTY()
+120:    ALFPHexTile* LastHoveredTile;
+122:    // 当前显示的可移动范围
+123:    TArray<ALFPHexTile*> MovementRangeTiles;
+125:    TArray<ALFPHexTile*> CacheRangeTiles;
+126:    // 当前显示的路径
+127:    TArray<ALFPHexTile*> CurrentPath;
+129:    // 状态标志
+130:    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "State")
+131:    bool bIsSelecting;
+133:    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "State")
+134:    bool bIsAttacking = false;
+136:    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "State")
+137:    bool bIsReleaseSkill = false;
+139:    FVector2D SelectionStart;
+141:    // 相机控制
+142:    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera")
+143:    float CameraRotationPitchAngle;
+145:    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera")
+146:    float CameraRotationYawAngle;
+147:    FVector CameraOffset;
+149:    // 拖拽状态
+150:    bool bIsDragging;
+151:    FVector2D DragStartPosition;
+153:	UPROPERTY(EditAnywhere, Category = "Input")
+154:	float DragTime = 0.f;
+156:	UPROPERTY(EditAnywhere, Category = "Input")
+157:	float DragThresholdTime = 0.5f;
+159:    // 调试标志
+160:    bool bDebugEnabled;
+162:    // 相机移动速度
+163:    UPROPERTY(EditAnywhere, Category = "Camera")
+164:    float CameraPanSpeed = 500.0f;
+166:    UPROPERTY(EditAnywhere, Category = "Camera")
+167:    float CameraDragSpeed = 10.0f;
+169:    // 相机缩放
+170:    UPROPERTY(EditAnywhere, Category = "Camera")
+171:    float CameraZoomSpeed = 100.0f;
+173:    UPROPERTY(EditAnywhere, Category = "Camera")
+174:    float MinZoomDistance = 300.0f;
+176:    UPROPERTY(EditAnywhere, Category = "Camera")
+177:    float MaxZoomDistance = 2000.0f;
+179:    float CurrentZoom = 1000.0f;
+181:public:
+182:    ALFPTurnManager* GetTurnManager() const;
+184:    UFUNCTION(BlueprintCallable, Category = "Skill")
+185:    void HideSkillSelection();
+187:    UFUNCTION(BlueprintCallable, Category = "Skill")
+188:    void HandleSkillSelection();
+190:    UFUNCTION(BlueprintCallable, Category = "Skill")
+191:    void HandleSkillTargetSelecting(ULFPSkillBase* Skill);
+193:    /*UFUNCTION(BlueprintCallable, Category = "Skill")
+194:    void HandleSkillTargetSelected(ALFPHexTile* TargetTile);*/
+196:    // 回合事件
+197:    UFUNCTION(BlueprintImplementableEvent, Category = "Turn Events")
+198:    void OnTurnStarted(ALFPTacticsUnit* Unit);
+200:    UFUNCTION(BlueprintImplementableEvent, Category = "Turn Events")
+201:    void OnTurnEnded(ALFPTacticsUnit* Unit);
+203:    UFUNCTION(BlueprintImplementableEvent, Category = "Turn Events")
+204:    void OnRoundStarted(int32 RoundNumber);
+206:    UFUNCTION(BlueprintImplementableEvent, Category = "Turn Events")
+207:    void OnRoundEnded(int32 RoundNumber);
+209:    // 单位行动
+210:    UFUNCTION(BlueprintCallable, Category = "Unit Actions")
+211:    void MoveUnit(ALFPTacticsUnit* Unit, ALFPHexTile* TargetTile);
+213:    UFUNCTION(BlueprintCallable, Category = "Unit Actions")
+214:    bool AttackTarget(ALFPTacticsUnit* Attacker, ALFPTacticsUnit* Target);
+216:    UFUNCTION(BlueprintCallable, Category = "Unit Actions")
+217:    void SkipTurn(ALFPTacticsUnit* Unit);
+219:// UI相关
+220:protected:
+221:    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+222:    TSubclassOf<class UUserWidget> TurnSpeedWidgetClass;
+224:    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+225:    TObjectPtr<ULFPTurnSpeedListWidget> TurnSpeedListWidget;
+227:    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+228:    TSubclassOf<class UUserWidget> SkillSelectionWidgetClass;
+230:    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+232:    TObjectPtr<ULFPSkillSelectionWidget> SkillSelectionWidget;
+234:public:
+235:    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
+236:    TObjectPtr<ULFPSkillBase> CurrentSelectedSkill;
+238:    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
+239:    EPlayControlState LastControlState;
+241:    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
+242:    EPlayControlState CurrentControlState;
+244://///////// Skill part  ////////////
+245:public:
+246:    UFUNCTION(BlueprintCallable, Category = "Battle System")
+247:    void ExecuteSkill(ULFPSkillBase* CurrentSkill);
+248:};
+1:// Fill out your copyright notice in the Description page of Project Settings.
+4:#include "LFP2D/Unit/LFPTacticsUnit.h"
+5:#include "LFP2D/AI/LFPAIController.h"
+6:#include "LFP2D/Player/LFPTacticsPlayerController.h"
+7:#include "LFP2D/Skill/LFPSkillBase.h"
+8:#include "LFP2D/Skill/LFPSkillComponent.h"
+9:#include "LFP2D/Unit/Betrayal/LFPBetrayalCondition.h"
+10:#include "LFP2D/HexGrid/LFPHexTile.h"
+11:#include "LFP2D/HexGrid/LFPHexGridManager.h"
+12:#include "LFP2D/Turn/LFPTurnManager.h"
+13:#include "LFP2D/UI/Fighting/LFPHealthBarWidget.h"
+14:#include "Kismet/GameplayStatics.h"
+15:#include "Components/TimelineComponent.h"
+16:#include "Components/WidgetComponent.h"
+17:#include "Curves/CurveFloat.h"
+18:#include "DrawDebugHelpers.h"
+20:ALFPTacticsUnit::ALFPTacticsUnit()
+21:{
+22:    PrimaryActorTick.bCanEverTick = true;
+24:    // 创建根组件
+25:    RootSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
+26:    RootComponent = RootSceneComponent;
+28:    // 创建精灵组件
+29:    SpriteComponent = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("SpriteComponent"));
+30:    SpriteComponent->SetupAttachment(RootComponent);
+31:    SpriteComponent->SetRelativeLocation(FVector(0, 0, 0)); // 在格子上方
+33:    // 默认值
+34:    CurrentMovePoints = MaxMovePoints;
+35:    CurrentActionPoints = MaxActionPoints;
+36:    CurrentPathIndex = -1;
+37:    MoveProgress = 0.0f;
+39:	// 创建血条组件
+40:	HealthBarComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBarComponent"));
+41:	HealthBarComponent->SetupAttachment(RootComponent);
+42:	HealthBarComponent->SetWidgetSpace(EWidgetSpace::Screen);
+43:	HealthBarComponent->SetDrawAtDesiredSize(true);
+44:	// 设置相对位置（在单位上方）
+45:	HealthBarComponent->SetRelativeLocation(FVector(0, 150, 0));
+47:    // 创建技能组件
+48:    SkillComponent = CreateDefaultSubobject<ULFPSkillComponent>(TEXT("SkillComponent"));
+49:    // 创建时间线组件
+50:    //MoveTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("MoveTimeline"));
+51:}
+53:void ALFPTacticsUnit::BeginPlay()
+54:{
+55:    Super::BeginPlay();
+57:    // 注册到回合管理器
+58:    if (ALFPTurnManager* TurnManager = GetTurnManager())
+59:    {
+60:        TurnManager->RegisterUnit(this);
+61:    }
+63:    for (ULFPBetrayalCondition* Condition : BetrayalConditions)
+64:    {
+65:        Condition->RegisterCondition(this);
+66:    }
+68:    FLFPHexCoordinates SpawnPoint = FLFPHexCoordinates(StartCoordinates_Q, StartCoordinates_R);
+69:    SetCurrentCoordinates(SpawnPoint);
+71:	// 初始化血条
+72:    CurrentHealth = MaxHealth;
+73:	InitializeHealthBar();
+75:    // 设置移动时间线
+76:    if (MoveCurve)
+77:    {
+78:        FOnTimelineFloat TimelineCallback;
+79:        TimelineCallback.BindUFunction(this, FName("UpdateMoveAnimation"));
+80:        //MoveTimeline->AddInterpFloat(MoveCurve, TimelineCallback);
+82:        FOnTimelineEvent TimelineFinishedCallback;
+83:        TimelineFinishedCallback.BindUFunction(this, FName("FinishMove"));
+84:        //MoveTimeline->SetTimelineFinishedFunc(TimelineFinishedCallback);
+85:    }
+87:    // 如果是敌方单位，创建AI控制器
+88:    if (IsEnemy())
+89:    {
+90:        FActorSpawnParameters SpawnParams;
+91:        SpawnParams.Owner = this;
+92:        SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+94:        if (AIControllerClass)
+95:        {
+96:            AIController = GetWorld()->SpawnActor<ALFPAIController>(AIControllerClass, SpawnParams);
+97:            if (AIController)
+98:            {
+99:                AIController->Possess(this);
+100:                AIController->SetControlledUnit(this);
+101:            }
+102:        }
+103:    }
+104:}
+106:void ALFPTacticsUnit::EndPlay(const EEndPlayReason::Type EndPlayReason)
+107:{
+108:    Super::EndPlay(EndPlayReason);
+110:    if (ALFPTurnManager* TurnManager = GetTurnManager())
+111:    {
+112:        TurnManager->UnregisterUnit(this);
+113:    }
+115:	for (ULFPBetrayalCondition* Condition : BetrayalConditions)
+116:	{
+117:		Condition->UnRegisterCondition(this);
+118:	}
+119:}
+121:void ALFPTacticsUnit::SetCurrentCoordinates(const FLFPHexCoordinates& NewCoords)
+122:{
+123:    // 更新位置
+124:    if (ALFPHexGridManager* GridManager = GetGridManager())
+125:    {
+126:        if (ALFPHexTile* LastTile = GridManager->GetTileAtCoordinates(CurrentCoordinates))
+127:        {
+128:            LastTile->SetIsOccupied(false);
+129:            LastTile->SetUnitOnTile(nullptr);
+130:        }
+131:        if (ALFPHexTile* Tile = GridManager->GetTileAtCoordinates(NewCoords))
+132:        {
+133:            SetActorLocation(Tile->GetActorLocation() + FVector(0, 0, 1));
+134:            Tile->SetIsOccupied(true);
+135:            Tile->SetUnitOnTile(this);
+136:            CurrentCoordinates = NewCoords;
+137:        }
+138:    }
+139:}
+141:ALFPHexTile* ALFPTacticsUnit::GetCurrentTile()
+142:{
+143:    if (ALFPHexGridManager* GridManager = GetGridManager())
+144:    {
+145:        if (ALFPHexTile* Tile = GridManager->GetTileAtCoordinates(CurrentCoordinates))
+146:        {
+147:            return Tile;
+148:        }
+149:    }
+150:    return nullptr;
+151:}
+153://void ALFPTacticsUnit::SnapToGrid()
+154://{
+155://    if (ALFPHexGridManager* GridManager = GetGridManager())
+156://    {
+157://        if (ALFPHexTile* Tile = GridManager->GetTileAtCoordinates(CurrentCoordinates))
+158://        {
+159://            SetActorLocation(Tile->GetActorLocation() + FVector(0, 0, 50));
+160://        }
+161://    }
+162://}
+164://// 获取可移动范围
+165://TArray<ALFPHexTile*> ALFPTacticsUnit::GetMovementRangeTiles()
+166://{
+167://    if (MovementRangeTiles.Num() > 0)
+168://        return MovementRangeTiles;
+169://
+170://    if (ALFPHexGridManager* GridManager = GetGridManager())
+171://    {
+172://        if (ALFPHexTile* UnitTile = GridManager->GetTileAtCoordinates(CurrentCoordinates))
+173://        {
+174://            // 计算移动范围
+175://            MovementRangeTiles = GridManager->GetMovementRange(UnitTile, MovementRange);
+176://        }
+177://    }
+178://    return MovementRangeTiles;
+179://}
+181:bool ALFPTacticsUnit::MoveToTile(ALFPHexTile* NewTargetTile)
+182:{
+183:    if (!NewTargetTile || !HasEnoughMovePoints(1)) return false;
+185:    ALFPHexGridManager* GridManager = GetGridManager();
+186:    if (!GridManager) return false;
+188:    // 获取当前所在的格子
+189:    ALFPHexTile* CurrentTile = GridManager->GetTileAtCoordinates(CurrentCoordinates);
+190:    if (!CurrentTile) return false;
+192:    // 计算路径
+193:    MovePath = GridManager->FindPath(CurrentTile, NewTargetTile);
+194:    if (MovePath.Num() == 0|| MovePath.Num()>CurrentMovePoints) return false;
+196:    // 设置移动状态
+197:    CurrentTile->SetIsOccupied(false);
+198:    TargetTile = NewTargetTile;
+199:    CurrentPathIndex = 0;
+200:    MoveProgress = 0.0f;
+201:    MovementRangeTiles.Empty();
+203:    // 消耗行动点
+204:    //ConsumeMovePoints(1);
+206:    // 开始移动动画
+207:    //if (MoveTimeline)
+208:    //{
+209:    //    MoveTimeline->PlayFromStart();
+210:    //}
+211:    //else
+212:    //{
+213:    //    // 如果没有时间线，直接完成移动
+214:    //    FinishMove();
+215:    //}
+216:    FinishMove();
+217:    //NotifyMoveComplete();
+218:    return true;
+219:}
+221:void ALFPTacticsUnit::UpdateMoveAnimation(float Value)
+222:{
+223:    if (CurrentPathIndex < 0 || CurrentPathIndex >= MovePath.Num() - 1) return;
+225:    // 获取当前和下一个格子
+226:    ALFPHexTile* CurrentTile = MovePath[CurrentPathIndex];
+227:    ALFPHexTile* NextTile = MovePath[CurrentPathIndex + 1];
+229:    if (!CurrentTile || !NextTile) return;
+231:    // 计算位置
+232:    FVector StartPos = CurrentTile->GetActorLocation() + FVector(0, 0, 50);
+233:    FVector EndPos = NextTile->GetActorLocation() + FVector(0, 0, 50);
+235:    // 应用曲线值
+236:    FVector NewLocation = FMath::Lerp(StartPos, EndPos, Value);
+237:    SetActorLocation(NewLocation);
+239:    // 更新朝向
+240:    FVector Direction = (EndPos - StartPos).GetSafeNormal();
+241:    if (!Direction.IsNearlyZero())
+242:    {
+243:        FRotator NewRotation = Direction.Rotation();
+244:        SpriteComponent->SetWorldRotation(NewRotation);
+245:    }
+247:    // 检查是否移动到下一段
+248:    if (Value >= 1.0f)
+249:    {
+250:        CurrentPathIndex++;
+251:        MoveProgress = 0.0f;
+253:        // 更新当前坐标
+254:        if (CurrentPathIndex < MovePath.Num())
+255:        {
+256:            SetCurrentCoordinates(MovePath[CurrentPathIndex]->GetCoordinates());
+257:        }
+259:        // 如果还有路径，重新开始时间线
+260:        if (CurrentPathIndex < MovePath.Num() - 1)
+261:        {
+262:            //MoveTimeline->PlayFromStart();
+263:        }
+264:        else
+265:        {
+266:            FinishMove();
+267:        }
+268:    }
+269:}
+271:void ALFPTacticsUnit::FinishMove()
+272:{
+273:    // 更新到目标位置
+274:    if (TargetTile)
+275:    {
+276:        SetCurrentCoordinates(TargetTile->GetCoordinates());
+277:        ConsumeMovePoints(MovePath.Num());
+278:        //SetActorLocation(TargetTile->GetActorLocation() + FVector(0, 0, 50));
+279:    }
+281:    // 重置移动状态
+282:    TargetTile = nullptr;
+283:    MovePath.Empty();
+284:    CurrentPathIndex = -1;
+285:    MoveProgress = 0.0f;
+286:}
+288:void ALFPTacticsUnit::ResetForNewRound()
+289:{
+290:    CurrentMovePoints = MaxMovePoints;
+291:    CurrentActionPoints = MaxActionPoints;
+292:    bHasActed = false;
+294:    // 可选：添加视觉反馈
+295:    if (SpriteComponent)
+296:    {
+297:        SpriteComponent->SetSpriteColor(FLinearColor::White);
+298:    }
+299:}
+301:void ALFPTacticsUnit::OnTurnStarted()
+302:{
+303:    bOnTurn = true;
+305:    if (SkillComponent)
+306:    {
+307:        SkillComponent->OnTurnStarted();
+308:    }
+309:}
+311:void ALFPTacticsUnit::OnTurnEnded()
+312:{
+313:    bOnTurn = false;
+314:}
+316:void ALFPTacticsUnit::OnMouseEnter()
+317:{
+318:}
+320:void ALFPTacticsUnit::SetSelected(bool bSelected)
+321:{
+322:    bIsSelected = bSelected;
+323:    // 视觉反馈：高亮单位
+324:    if (bSelected)
+325:    {
+326:        SpriteComponent->SetSpriteColor(FLinearColor::Yellow);
+327:    }
+328:    else
+329:    {
+330:        SpriteComponent->SetSpriteColor(FLinearColor::White);
+331:    }
+332:}
+334://void ALFPTacticsUnit::HighlightMovementRange(bool bHighlight)
+335://{
+336://    TArray<ALFPHexTile*> Tiles = GetMovementRangeTiles();
+337://
+338://    for (ALFPHexTile* Tile : Tiles)
+339://    {
+340://        if (bHighlight)
+341://        {
+342://            Tile->SetMovementHighlight(true);
+343://        }
+344://        else
+345://        {
+346://            Tile->SetMovementHighlight(false);
+347://        }
+348://    }
+349://
+350://    if (!bHighlight)
+351://    {
+352://        MovementRangeTiles.Empty();
+353://    }
+354://}
+356:void ALFPTacticsUnit::ConsumeMovePoints(int32 Amount)
+357:{
+358:    CurrentMovePoints = FMath::Max(0, CurrentMovePoints - Amount);
+360:    // 如果没有行动点了，标记为已行动
+361:    if (CurrentMovePoints <= 0)
+362:    {
+363:        //bHasActed = true;
+364:    }
+365:}
+367:void ALFPTacticsUnit::ConsumeActionPoints(int32 Amount)
+368:{
+369:    CurrentActionPoints = FMath::Max(0, CurrentActionPoints - Amount);
+370:    CurrentMovePoints = 0;
+371:}
+373:bool ALFPTacticsUnit::HasEnoughMovePoints(int32 Required) const
+374:{
+375:    return CurrentMovePoints >= Required;
+376:}
+378:bool ALFPTacticsUnit::HasEnoughActionPoints(int32 Required) const
+379:{
+380:    return CurrentActionPoints >= Required;
+381:}
+383:ALFPHexGridManager* ALFPTacticsUnit::GetGridManager() const
+384:{
+385:    TArray<AActor*> FoundActors;
+386:    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALFPHexGridManager::StaticClass(), FoundActors);
+387:    if (FoundActors.Num() > 0)
+388:    {
+389:        return Cast<ALFPHexGridManager>(FoundActors[0]);
+390:    }
+391:    return nullptr;
+392:}
+394:ALFPTurnManager* ALFPTacticsUnit::GetTurnManager() const
+395:{
+396:    TArray<AActor*> FoundManagers;
+397:    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALFPTurnManager::StaticClass(), FoundManagers);
+399:    if (FoundManagers.Num() > 0)
+400:    {
+401:        return Cast<ALFPTurnManager>(FoundManagers[0]);
+402:    }
+403:    return nullptr;
+404:}
+406:void ALFPTacticsUnit::Tick(float DeltaTime)
+407:{
+408:    Super::Tick(DeltaTime);
+410:    // 更新时间线
+411:    /*if (MoveTimeline && MoveTimeline->IsPlaying())
+412:    {
+413:        MoveTimeline->TickComponent(DeltaTime, LEVELTICK_TimeOnly, nullptr);
+414:    }*/
+415:}
+417:void ALFPTacticsUnit::InitializeHealthBar()
+418:{
+419:	if (HealthBarComponent)
+420:	{
+421:		// 获取血条控件
+422:		ULFPHealthBarWidget* HealthBarWidget = Cast<ULFPHealthBarWidget>(HealthBarComponent->GetWidget());
+423:		if (HealthBarWidget)
+424:		{
+425:			// 绑定到单位
+426:			HealthBarWidget->BindToUnit(this);
+427:		}
+428:	}
+429:}
+431:void ALFPTacticsUnit::TakeDamage(int32 Damage)
+432:{
+433:    if (bIsDead) return;
+435:	// 计算实际伤害（考虑防御）
+436:	int32 ActualDamage = FMath::Max(Damage - Defense, 1);
+437:	int32 OldHealth = CurrentHealth;
+438:	CurrentHealth = FMath::Max(CurrentHealth - ActualDamage, 0);
+440:	// 触发血量变化事件
+441:	OnHealthChangedDelegate.Broadcast(CurrentHealth, MaxHealth);
+443:	// 蓝图事件
+444:	OnTakeDamage(ActualDamage);
+446:	// 检查死亡
+447:	if (CurrentHealth <= 0)
+448:	{
+449:		HandleDeath();
+450:	}
+451:}
+453:void ALFPTacticsUnit::Heal(int32 Amount)
+454:{
+455:	if (bIsDead) return;
+457:	int32 OldHealth = CurrentHealth;
+458:	CurrentHealth = FMath::Min(CurrentHealth + Amount, MaxHealth);
+460:	// 触发血量变化事件
+461:	OnHealthChangedDelegate.Broadcast(CurrentHealth, MaxHealth);
+463:	// 蓝图事件
+464:	OnHeal(Amount);
+465:}
+467:bool ALFPTacticsUnit::AttackTarget(ALFPTacticsUnit* Target)
+468:{
+469:    if (!Target || bIsDead || Target->bIsDead)
+470:    {
+471:        return false;
+472:    }
+474:    // 检查攻击范围
+475:    if (!IsTargetInAttackRange(Target))
+476:    {
+477:        UE_LOG(LogTemp, Warning, TEXT("Target is out of attack range!"));
+478:        return false;
+479:    }
+480:    if (Affiliation == Target->Affiliation)
+481:    {
+482:        UE_LOG(LogTemp, Warning, TEXT("Target is Ally!"));
+483:        return false;
+484:    }
+486:    ApplyDamageToTarget(Target);
+488:    //// 播放攻击动画
+489:    //PlayAttackAnimation(Target);
+491:    //// 实际伤害计算（延迟到动画结束）
+492:    //FTimerDelegate TimerDelegate;
+493:    //TimerDelegate.BindUFunction(this, FName("ApplyDamageToTarget"), Target);
+494:    //GetWorld()->GetTimerManager().SetTimer(AttackTimerHandle, TimerDelegate, 0.5f, false);
+495:    //NotifyAttackComplete();
+496:    return true;
+497:}
+499:void ALFPTacticsUnit::ApplyDamageToTarget(ALFPTacticsUnit* Target)
+500:{
+501:    if (!Target || Target->bIsDead) return;
+503:    // 基础伤害计算
+504:    int32 Damage = AttackPower;
+506:    // 添加随机波动 (10% 范围)
+507:    float RandomFactor = FMath::RandRange(0.9f, 1.1f);
+508:    Damage = FMath::RoundToInt(Damage * RandomFactor);
+510:    // 应用伤害
+511:    Target->TakeDamage(Damage);
+513:    // 消耗行动点
+514:    ConsumeMovePoints(1);
+515:}
+517:void ALFPTacticsUnit::HandleDeath()
+518:{
+519:    bIsDead = true;
+521:	// 触发死亡事件
+522:    OnDeathDelegate.Broadcast();
+524:    // 蓝图事件
+525:    OnDeath();
+527:    // 从网格上移除
+528:    ALFPHexTile* CurrentTile = GetCurrentTile();
+529:    if (CurrentTile)
+530:    {
+531:        CurrentTile->SetUnitOnTile(nullptr);
+532:    }
+534:    // 从回合系统中移除
+535:    if (ALFPTurnManager* TurnManager = GetTurnManager())
+536:    {
+537:        TurnManager->UnregisterUnit(this);
+538:    }
+540:    // 禁用碰撞
+541:    SetActorEnableCollision(false);
+543:    // 延迟销毁
+544:    FTimerHandle TimerHandle;
+545:    GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]()
+546:        {
+547:            Destroy();
+548:        }, 2.0f, false);
+549:}
+551:void ALFPTacticsUnit::ChangeAffiliation(EUnitAffiliation NewAffiliation)
+552:{
+553:	Affiliation = NewAffiliation;
+555:    if (NewAffiliation == EUnitAffiliation::UA_Player)
+556:    {
+557:        if (AIController)
+558:        {
+559:            AIController->UnPossess();
+560:            AIController->Destroy();
+561:            /*for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+562:            {
+563:                if (ALFPTacticsPlayerController* PC = Cast<ALFPTacticsPlayerController>(*It))
+564:                {
+565:                    PC->Possess(this);
+566:                }
+567:            }*/
+568:        }
+569:    }
+570:	// 触发事件
+571:    //OnAffiliationChanged.Broadcast(OldAffiliation, NewAffiliation);
+572:}
+574:ALFPTacticsUnit* ALFPTacticsUnit::FindBestTarget()
+575:{
+576:    // 获取所有玩家单位
+577:    TArray<AActor*> PlayerUnits;
+578:    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALFPTacticsUnit::StaticClass(), PlayerUnits);
+580:    ALFPTacticsUnit* BestTarget = nullptr;
+581:    float BestThreatValue = -MAX_FLT;
+583:    for (AActor* Actor : PlayerUnits)
+584:    {
+585:        ALFPTacticsUnit* Unit = Cast<ALFPTacticsUnit>(Actor);
+586:        if (Unit && Unit->IsAlive() && Unit->IsAlly())
+587:        {
+588:            float ThreatValue = CalculateThreatValue(Unit);
+589:            if (ThreatValue > BestThreatValue)
+590:            {
+591:                BestThreatValue = ThreatValue;
+592:                BestTarget = Unit;
+593:            }
+594:        }
+595:    }
+597:    return BestTarget;
+598:}
+600:ALFPHexTile* ALFPTacticsUnit::FindBestMovementTile(ALFPTacticsUnit* Target)
+601:{
+602:    ALFPHexGridManager* GridManager = GetGridManager();
+603:    if (!GridManager)
+604:    {
+605:        return nullptr;
+606:    }
+607:    // 获取所有可移动位置
+608:    MovementRangeTiles = GridManager->GetTilesInRange(GetCurrentTile(), GetCurrentMovePoints());
+610:    ALFPHexTile* BestTile = nullptr;
+611:    float BestPositionValue = -MAX_FLT;
+613:    for (ALFPHexTile* Tile : MovementRangeTiles)
+614:    {
+615:        // 跳过已有单位的格子
+616:        if (Tile->GetUnitOnTile()) continue;
+618:        float PositionValue = CalculatePositionValue(Tile, Target);
+619:        if (PositionValue > BestPositionValue)
+620:        {
+621:            BestPositionValue = PositionValue;
+622:            BestTile = Tile;
+623:        }
+624:    }
+626:    return BestTile;
+627:}
+629:float ALFPTacticsUnit::CalculateThreatValue(ALFPTacticsUnit* Target)
+630:{
+631:    // 基础威胁值 = 目标攻击力 * (1 - 目标当前血量/最大血量)
+632:    float ThreatValue = Target->GetAttackPower();
+634:    // 距离因子 (越近威胁越大)
+635:    int32 Distance = FLFPHexCoordinates::Distance(
+636:        GetCurrentCoordinates(),
+637:        Target->GetCurrentCoordinates()
+638:    );
+639:    float DistanceFactor = 1.0f / FMath::Max(Distance, 1);
+641:    //// 应用行为数据
+642:    //if (BehaviorData)
+643:    //{
+644:    //    if (BehaviorData->bPrioritizeWeakTargets)
+645:    //    {
+646:    //        // 增加对低血量目标的权重
+647:    //        float HealthRatio = (float)Target->GetCurrentHealth() / Target->GetMaxHealth();
+648:    //        ThreatValue *= (2.0f - HealthRatio); // 血量越低，威胁值越高
+649:    //    }
+651:    //    // 应用攻击倾向
+652:    //    ThreatValue *= BehaviorData->Aggressiveness;
+653:    //}
+655:    return ThreatValue * DistanceFactor;
+656:}
+658:float ALFPTacticsUnit::CalculatePositionValue(ALFPHexTile* Tile, ALFPTacticsUnit* Target)
+659:{
+660:    if (!Tile || !Target) return 0.0f;
+662:    float PositionValue = 0.0f;
+664:    // 1. 距离目标越近越好
+665:    int32 DistanceToTarget = FLFPHexCoordinates::Distance(
+666:        Tile->GetCoordinates(),
+667:        Target->GetCurrentCoordinates()
+668:    );
+669:    PositionValue += 10.0f / FMath::Max(DistanceToTarget, 1);
+671:    // 2. 如果在攻击范围内额外加分
+672:    if (DistanceToTarget <= GetAttackRange())
+673:    {
+674:        PositionValue += 20.0f;
+675:    }
+677:    //// 3. 靠近其他敌人单位（团队协作）
+678:    //TArray<AActor*> EnemyUnits;
+679:    //UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALFPTacticsUnit::StaticClass(), EnemyUnits);
+681:    //for (AActor* Actor : EnemyUnits)
+682:    //{
+683:    //    ALFPTacticsUnit* Unit = Cast<ALFPTacticsUnit>(Actor);
+684:    //    if (Unit && Unit != this && Unit->IsEnemy() && Unit->IsAlive())
+685:    //    {
+686:    //        int32 DistanceToAlly = FLFPHexCoordinates::Distance(
+687:    //            Tile->GetCoordinates(),
+688:    //            Unit->GetCurrentCoordinates()
+689:    //        );
+691:    //        if (DistanceToAlly <= 2)
+692:    //        {
+693:    //            PositionValue += 5.0f / FMath::Max(DistanceToAlly, 1);
+694:    //        }
+695:    //    }
+696:    //}
+698:    //// 4. 避免危险位置（如火焰、毒雾等）
+699:    //if (Tile->IsDangerous())
+700:    //{
+701:    //    PositionValue -= 30.0f;
+702:    //}
+704:    //// 5. 高地优势
+705:    //if (Tile->IsHighGround())
+706:    //{
+707:    //    PositionValue += 15.0f;
+708:    //}
+710:    return PositionValue;
+711:}
+713:TArray<ALFPHexTile*> ALFPTacticsUnit::GetAttackRangeTiles()
+714:{
+715:    TArray<ALFPHexTile*> AttackRangeTiles;
+717:    if (ALFPHexGridManager* GridManager = GetGridManager())
+718:    {
+719:        // 近战攻击范围
+720:        if (bMeleeAttack)
+721:        {
+722:            // 获取相邻格子
+723:            TArray<FLFPHexCoordinates> Neighbors = CurrentCoordinates.GetNeighbors();
+724:            for (const FLFPHexCoordinates& Coord : Neighbors)
+725:            {
+726:                FLFPHexCoordinates Key(Coord.Q, Coord.R);
+727:                if (ALFPHexTile* Tile = GridManager->GetTileAtCoordinates(Key))
+728:                {
+729:                    AttackRangeTiles.Add(Tile);
+730:                }
+731:            }
+732:        }
+733:        // 远程攻击范围
+734:        else
+735:        {
+736:            // 获取攻击范围内的所有格子
+737:            TArray<ALFPHexTile*> TilesInRange = GridManager->GetTilesInRange(GetCurrentTile(), AttackRange);
+739:            for (ALFPHexTile* Tile : TilesInRange)
+740:            {
+741:                AttackRangeTiles.Add(Tile);
+742:            }
+743:        }
+744:    }
+746:    return AttackRangeTiles;
+747:}
+749:bool ALFPTacticsUnit::IsTargetInAttackRange(ALFPTacticsUnit* Target) const
+750:{
+751:    if (!Target || !Target->GetCurrentTile()) return false;
+753:    // 计算距离
+754:    int32 Distance = FLFPHexCoordinates::Distance(
+755:        CurrentCoordinates,
+756:        Target->GetCurrentCoordinates()
+757:    );
+759:    // 近战攻击检查
+760:    if (bMeleeAttack)
+761:    {
+762:        return Distance == 1; // 相邻格子
+763:    }
+764:    // 远程攻击检查
+765:    else
+766:    {
+767:        return Distance >= 2 && Distance <= AttackRange;
+768:    }
+769:}
+771:FLinearColor ALFPTacticsUnit::GetAffiliationColor() const
+772:{
+773:    switch (Affiliation)
+774:    {
+775:    case EUnitAffiliation::UA_Player:
+776:        return FLinearColor(0.0f, 0.5f, 1.0f, 1.0f); // 蓝色
+777:    case EUnitAffiliation::UA_Enemy:
+778:        return FLinearColor(1.0f, 0.1f, 0.1f, 1.0f); // 红色
+779:    case EUnitAffiliation::UA_Neutral:
+780:        return FLinearColor(0.5f, 0.5f, 0.5f, 1.0f); // 灰色
+781:    default:
+782:        return FLinearColor::White;
+783:    }
+784:}
+786:void ALFPTacticsUnit::UpdateHealthUI()
+787:{
+788:    // 在实际项目中，这里会更新单位的血条UI
+789:    // 例如：HealthBarWidget->SetPercent((float)CurrentHealth / MaxHealth);
+790:}
+792:TArray<ULFPSkillBase*> ALFPTacticsUnit::GetAvailableSkills()
+793:{
+794:    if (SkillComponent)
+795:    {
+796:        return SkillComponent->GetAvailableSkills();
+797:    }
+798:    return TArray<ULFPSkillBase*>();
+799:}
+801:bool ALFPTacticsUnit::ExecuteSkill(ULFPSkillBase* Skill, ALFPHexTile* NewTargetTile)
+802:{
+803:    if (SkillComponent)
+804:    {
+805:        return SkillComponent->ExecuteSkill(Skill, NewTargetTile);
+806:    }
+807:    return false;
+808:}
+810:ULFPSkillBase* ALFPTacticsUnit::GetDefaultAttackSkill()
+811:{
+812:    if (SkillComponent)
+813:    {
+814:        return SkillComponent->GetDefaultAttackSkill();
+815:    }
+816:    return nullptr;
+817:}
+1:// Fill out your copyright notice in the Description page of Project Settings.
+3:#pragma once
+5:#include "CoreMinimal.h"
+6:#include "GameFramework/Actor.h"
+7:#include "LFP2D/HexGrid/LFPHexTile.h"
+8:#include "Components/TimelineComponent.h"
+9:#include "PaperSpriteComponent.h"
+10:#include "LFPTacticsUnit.generated.h"
+12:// 委托签名
+13:DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnHealthChangedSignature, int32, CurrentHealth, int32, MaxHealth);
+15:DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUnitDeathSignature);
+17:// 单位阵营枚举
+18:UENUM(BlueprintType)
+19:enum class EUnitAffiliation : uint8
+20:{
+21:    UA_Player     UMETA(DisplayName = "Player"),
+22:    UA_Enemy      UMETA(DisplayName = "Enemy"),
+23:    UA_Neutral    UMETA(DisplayName = "Neutral")
+24:};
+26:class ULFPSkillBase;
+27:class ALFPHexGridManager;
+28:class ALFPTurnManager;
+29:class ULFPBetrayalCondition;
+30:class ALFPAIController;
+31:class ULFPSkillComponent;
+33:UCLASS()
+34:class LFP2D_API ALFPTacticsUnit : public APawn
+35:{
+36:	GENERATED_BODY()
+37:	
+38:public:
+39:    ALFPTacticsUnit();
+41:    // 设置/获取当前坐标
+42:    UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
+43:    void SetCurrentCoordinates(const FLFPHexCoordinates& NewCoords);
+45:    UFUNCTION(BlueprintPure, Category = "Tactics Unit")
+46:    FLFPHexCoordinates GetCurrentCoordinates() const { return CurrentCoordinates; }
+48:    UFUNCTION(BlueprintPure, Category = "Tactics Unit")
+49:    ALFPHexTile* GetCurrentTile();
+50:    //// 获取可移动范围
+51:    //UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
+52:    //TArray<ALFPHexTile*> GetMovementRangeTiles();
+54:    // 可移动范围格子
+55:    UPROPERTY(VisibleInstanceOnly, Category = "Unit State")
+56:    TArray<ALFPHexTile*> MovementRangeTiles;
+58:    // 移动到目标格子
+59:    UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
+60:    bool MoveToTile(ALFPHexTile* NewTargetTile);
+62:    // 设置选中状态
+63:    UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
+64:    void SetSelected(bool bSelected);
+66:    UFUNCTION(BlueprintPure, Category = "Tactics Unit")
+67:    bool IsSelected() const { return bIsSelected; }
+69:    // 获取移动范围
+70:    UFUNCTION(BlueprintPure, Category = "Tactics Unit")
+71:    int32 GetMovementRange() const { return CurrentMovePoints; }
+73:    // 消耗移动点
+74:    UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
+75:    void ConsumeMovePoints(int32 Amount);
+77:	// 消耗行动点
+78:	UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
+79:	void ConsumeActionPoints(int32 Amount);
+81:    // 检查是否有足够移动点
+82:    UFUNCTION(BlueprintPure, Category = "Tactics Unit")
+83:    bool HasEnoughMovePoints(int32 Required) const;
+85:    // 检查是否有足够行动点
+86:    UFUNCTION(BlueprintPure, Category = "Tactics Unit")
+87:    bool HasEnoughActionPoints(int32 Required) const;
+89:    UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
+90:    int32 GetCurrentMovePoints() { return CurrentMovePoints; }
+92:    UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
+93:    int32 GetMaxMovePoints() { return CurrentMovePoints; }
+95:	UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
+96:	int32 GetActionPoints() { return CurrentActionPoints; }
+98:    UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
+99:    ALFPHexGridManager* GetGridManager() const;
+101:    UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
+102:    ALFPTurnManager* GetTurnManager() const;
+103:protected:
+104:    virtual void BeginPlay() override;
+105:    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+106:    virtual void Tick(float DeltaTime) override;
+108:    // 移动动画更新
+109:    UFUNCTION()
+110:    void UpdateMoveAnimation(float Value);
+112:    // 完成移动
+113:    void FinishMove();
+115:    // 对齐格子
+116:    void SnapToGrid();
+118:protected:
+119:    // 单位属性
+120:    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Unit Stats")
+121:    int32 MovementRange = 5;
+123:    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Unit Stats")
+124:    int32 MaxMovePoints = 3;
+126:    UPROPERTY(VisibleInstanceOnly, Category = "Unit State")
+127:    int32 CurrentMovePoints;
+129:	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Unit Stats")
+130:	int32 MaxActionPoints = 3;
+132:	UPROPERTY(VisibleInstanceOnly, Category = "Unit State")
+133:	int32 CurrentActionPoints;
+135:    // 当前坐标
+136:    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Unit Stats")
+137:    int32 StartCoordinates_Q = 0;
+139:    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Unit Stats")
+140:    int32 StartCoordinates_R = 0;
+142:    FLFPHexCoordinates CurrentCoordinates;
+144:    // 选中状态
+145:    UPROPERTY(VisibleInstanceOnly, Category = "Unit State")
+146:    bool bIsSelected = false;
+148:    // 移动状态
+149:    UPROPERTY(Transient)
+150:    ALFPHexTile* TargetTile;
+152:    TArray<ALFPHexTile*> MovePath;
+153:    int32 CurrentPathIndex;
+154:    float MoveProgress;
+156:    // 动画
+157:    FTimerHandle MoveTimerHandle;
+158:    FTimeline MoveTimeline;
+160:    UPROPERTY(EditDefaultsOnly, Category = "Animation")
+161:    UCurveFloat* MoveCurve;
+163:    // 组件
+164:    UPROPERTY(VisibleAnywhere, Category = "Components")
+165:    USceneComponent* RootSceneComponent;
+167:    UPROPERTY(VisibleAnywhere, Category = "Components")
+168:    UPaperSpriteComponent* SpriteComponent;
+170:public:
+171:    // 回合系统函数
+172:    UFUNCTION(BlueprintCallable, Category = "Turn System")
+173:    void ResetForNewRound();
+175:    UFUNCTION(BlueprintPure, Category = "Turn System")
+176:    bool CanAct() const { return !bHasActed && bOnTurn; }
+178:    UFUNCTION(BlueprintPure, Category = "Turn System")
+179:    int32 GetSpeed() const { return Speed; }
+181:    UFUNCTION(BlueprintPure, Category = "Turn System")
+182:    bool HasActed() const { return bHasActed; }
+184:    UFUNCTION(BlueprintCallable, Category = "Turn System")
+185:    void SetHasActed(bool bActed) { bHasActed = bActed; }
+187:    UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Turn System")
+188:    UTexture2D* GetUnitIcon() const { return UnitIconTexture; }
+190:    // 回合事件
+191:    UFUNCTION()
+192:    void OnTurnStarted();
+194:    UFUNCTION()
+195:    void OnTurnEnded();
+197:public:
+198:    // 回合系统属性
+199:    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Stats")
+200:    int32 Speed = 5; // 速度值（决定行动顺序）
+202:    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Unit State")
+203:    bool bHasActed = false;
+205:    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Unit State")
+206:    bool bOnTurn = false;
+208:    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turn System")
+209:    UTexture2D* UnitIconTexture;
+211:public:
+212:    UFUNCTION(BlueprintCallable, Category = "Mouse Input")
+213:    void OnMouseEnter();
+215:    UFUNCTION(BlueprintImplementableEvent, Category = "Mouse Input")
+216:    void OnMouseExit();
+218:    UFUNCTION(BlueprintImplementableEvent, Category = "Mouse Input")
+219:    void OnMouseClick();
+221:	// 在单位类中添加血量变化事件
+222:public:
+223:	// 事件：血量变化
+224:	UPROPERTY(BlueprintAssignable, Category = "Unit Events")
+225:	FOnHealthChangedSignature OnHealthChangedDelegate;
+227:	// 事件：单位死亡
+228:	UPROPERTY(BlueprintAssignable, Category = "Unit Events")
+229:    FOnUnitDeathSignature OnDeathDelegate;
+231:	// 获取当前血量
+232:	UFUNCTION(BlueprintPure, Category = "Unit Combat")
+233:	int32 GetCurrentHealth() const { return CurrentHealth; }
+235:	// 获取最大血量
+236:	UFUNCTION(BlueprintPure, Category = "Unit Combat")
+237:	int32 GetMaxHealth() const { return MaxHealth; }
+239:    // 获取攻击力
+240:    UFUNCTION(BlueprintPure, Category = "Unit Combat")
+241:    int32 GetAttackPower() const { return AttackPower; }
+243:	// 获取阵营标识
+244:	UFUNCTION(BlueprintPure, Category = "Unit Combat")
+245:    EUnitAffiliation GetAffiliation() const { return Affiliation; }
+247:	// 血条组件
+248:	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+249:	class UWidgetComponent* HealthBarComponent;
+251:	// 初始化血条
+252:	UFUNCTION(BlueprintCallable, Category = "Unit Display")
+253:	void InitializeHealthBar();
+255:public:
+256:    // 血量属性
+257:    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Stats")
+258:    int32 MaxHealth = 100;
+260:    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Unit Stats")
+261:    int32 CurrentHealth = 100;
+263:    // 攻击力属性
+264:    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Stats")
+265:    int32 AttackPower = 10;
+267:    // 防御力属性
+268:    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Stats")
+269:    int32 Defense = 5;
+271:    // 阵营标识
+272:    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Stats")
+273:    EUnitAffiliation Affiliation = EUnitAffiliation::UA_Player;
+275:    // ==== 新增函数 ====
+277:    // 应用伤害
+278:    UFUNCTION(BlueprintCallable, Category = "Unit Combat")
+279:    void TakeDamage(int32 Damage);
+281:    // 治疗单位
+282:    UFUNCTION(BlueprintCallable, Category = "Unit Combat")
+283:    void Heal(int32 Amount);
+285:    // 检查是否存活
+286:    UFUNCTION(BlueprintPure, Category = "Unit Combat")
+287:    bool IsAlive() const { return CurrentHealth > 0; }
+289:    // 检查是否为敌方单位
+290:    UFUNCTION(BlueprintPure, Category = "Unit Combat")
+291:    bool IsEnemy() const { return Affiliation == EUnitAffiliation::UA_Enemy; }
+293:    // 检查是否为友方单位
+294:    UFUNCTION(BlueprintPure, Category = "Unit Combat")
+295:    bool IsAlly() const { return Affiliation == EUnitAffiliation::UA_Player; }
+297:    // 检查是否为中立单位
+298:    UFUNCTION(BlueprintPure, Category = "Unit Combat")
+299:    bool IsNeutral() const { return Affiliation == EUnitAffiliation::UA_Neutral; }
+301:    // 攻击目标单位
+302:    UFUNCTION(BlueprintCallable, Category = "Unit Combat")
+303:    bool AttackTarget(ALFPTacticsUnit* Target);
+305:    void ApplyDamageToTarget(ALFPTacticsUnit* Target);
+307:    // 死亡处理
+308:    UFUNCTION(BlueprintImplementableEvent, Category = "Unit Combat")
+309:    void OnDeath();
+311:    // 伤害处理
+312:    UFUNCTION(BlueprintImplementableEvent, Category = "Unit Combat")
+313:    void OnTakeDamage(int32 DamageTaken);
+315:    // 治疗处理
+316:    UFUNCTION(BlueprintImplementableEvent, Category = "Unit Combat")
+317:    void OnHeal(int32 HealAmount);
+319:    // 攻击动画
+320:    UFUNCTION(BlueprintImplementableEvent, Category = "Unit Combat")
+321:    void PlayAttackAnimation(ALFPTacticsUnit* Target);
+323:    // 获取攻击范围
+324:    UFUNCTION(BlueprintCallable, Category = "Unit Combat")
+325:    TArray<ALFPHexTile*> GetAttackRangeTiles();
+327:    // 获取攻击范围大小
+328:    UFUNCTION(BlueprintCallable, Category = "Unit Combat")
+329:    int32 GetAttackRange() { return AttackRange; }
+331:    // 检查目标是否在攻击范围内
+332:    UFUNCTION(BlueprintPure, Category = "Unit Combat")
+333:    bool IsTargetInAttackRange(ALFPTacticsUnit* Target) const;
+335:    // 阵营颜色
+336:    UFUNCTION(BlueprintPure, Category = "Unit Display")
+337:    FLinearColor GetAffiliationColor() const;
+339:    void UpdateHealthUI();
+341:protected:
+342:    // 死亡处理
+343:    void HandleDeath();
+345:    // 攻击范围
+346:    UPROPERTY(EditAnywhere, Category = "Unit Combat")
+347:    int32 AttackRange = 2;
+349:    // 攻击范围模式
+350:    UPROPERTY(EditAnywhere, Category = "Unit Combat")
+351:    bool bMeleeAttack = true;
+353:    // 死亡状态
+354:    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Unit State", meta = (AllowPrivateAccess = "true"))
+355:    bool bIsDead = false;
+357:public:
+358:    UFUNCTION(BlueprintCallable, Category = "Betrayal")
+359:    void ChangeAffiliation(EUnitAffiliation NewAffiliation = EUnitAffiliation::UA_Player);
+361:protected:
+362:	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Betrayal")
+363:	TArray<ULFPBetrayalCondition*> BetrayalConditions;
+365:    // 添加AI控制器支持和事件
+366:public:
+367:    // 获取AI控制器
+368:    UFUNCTION(BlueprintPure, Category = "AI")
+369:    ALFPAIController* GetAIController() const { return AIController; }
+371:    //// 事件：移动完成
+372:    //UPROPERTY(BlueprintAssignable, Category = "Events")
+373:    //FSimpleMulticastDelegate OnMoveCompleteDelegate;
+375:    //// 事件：攻击完成
+376:    //UPROPERTY(BlueprintAssignable, Category = "Events")
+377:    //FSimpleMulticastDelegate OnAttackCompleteDelegate;
+379:    //// 在移动函数中触发事件
+380:    //UFUNCTION()
+381:    //void NotifyMoveComplete()
+382:    //{
+383:    //    OnMoveCompleteDelegate.Broadcast();
+384:    //}
+386:    //// 在攻击函数中触发事件
+387:    //UFUNCTION()
+388:    //void NotifyAttackComplete()
+389:    //{
+390:    //    OnAttackCompleteDelegate.Broadcast();
+391:    //}
+393:protected:
+394:    // AI控制器
+395:    UPROPERTY()
+396:    ALFPAIController* AIController;
+398:public:
+399:    // 寻找最佳目标
+400:    UFUNCTION(BlueprintCallable, Category = "AI")
+401:    virtual ALFPTacticsUnit* FindBestTarget();
+403:    // 寻找最佳移动位置
+404:    UFUNCTION(BlueprintCallable, Category = "AI")
+405:    virtual ALFPHexTile* FindBestMovementTile(ALFPTacticsUnit* Target);
+407:    // 计算威胁值
+408:    UFUNCTION(BlueprintCallable, Category = "AI")
+409:    virtual float CalculateThreatValue(ALFPTacticsUnit* Target);
+411:    // 计算位置价值
+412:    UFUNCTION(BlueprintCallable, Category = "AI")
+413:    virtual float CalculatePositionValue(ALFPHexTile* Tile, ALFPTacticsUnit* Target);
+415:public:
+416:    TArray<ULFPSkillBase*> GetAvailableSkills();
+418:    bool ExecuteSkill(ULFPSkillBase* Skill, ALFPHexTile* NewTargetTile = nullptr);
+420:    ULFPSkillBase* GetDefaultAttackSkill();
+422:public:
+423:    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+424:    TObjectPtr<ULFPSkillComponent> SkillComponent;
+425:};
