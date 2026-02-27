@@ -312,7 +312,8 @@ ULFPSkillBase* ALFPAIController::SelectBestSkill()
     for (ULFPSkillBase* Skill : Skills)
     {
         if (!Skill) continue;
-        if (!Skill->CanExecute()) continue;
+        //Todo: Add HasEnoughAP(Skill)
+        //if (!Skill->CanExecute()) continue;
 
         // 找该技能的最佳目标
         ALFPTacticsUnit* PotentialTarget = FindBestSkillTarget(Skill);

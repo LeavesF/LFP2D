@@ -215,6 +215,7 @@ void ULFPSkillSelectionWidget::UpdateConfirmButtonState()
     if (!OwnerUnit || !SelectedSkill) return;
 
     // 检查技能是否可用
+    //Todo: Add HasEnoughAP(Skill)
     bool bCanExecute = SelectedSkill->CanExecute();
 
     //// 更新确认按钮状态
@@ -256,6 +257,7 @@ void ULFPSkillSelectionWidget::OnConfirmClicked()
     if (!SelectedSkill || !OwnerUnit) return;
 
     // 检查技能是否可用
+    //Todo: Add HasEnoughAP(Skill)
     if (!SelectedSkill->CanExecute())
     {
         // 播放错误音效或提示
