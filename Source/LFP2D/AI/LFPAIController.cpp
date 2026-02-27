@@ -312,8 +312,9 @@ ULFPSkillBase* ALFPAIController::SelectBestSkill()
     for (ULFPSkillBase* Skill : Skills)
     {
         if (!Skill) continue;
-        //Todo: Add HasEnoughAP(Skill)
-        //if (!Skill->CanExecute()) continue;
+
+        // 轻量检查：冷却和行动点
+        if (!Skill->IsAvailable()) continue;
 
         // 找该技能的最佳目标
         ALFPTacticsUnit* PotentialTarget = FindBestSkillTarget(Skill);
@@ -368,8 +369,6 @@ ALFPHexTile* ALFPAIController::FindBestCasterPosition(ULFPSkillBase* Skill, ALFP
     ALFPHexTile* BestTile = nullptr;
     float BestValue = -MAX_FLT;
 
-    FLFPHexCoordinates TargetCoords = TargetTile->GetCoordinates();
-
     for (ALFPHexTile* Tile : MovementRange)
     {
         if (!Tile) continue;
@@ -378,25 +377,22 @@ ALFPHexTile* ALFPAIController::FindBestCasterPosition(ULFPSkillBase* Skill, ALFP
         ALFPTacticsUnit* Occupant = Tile->GetUnitOnTile();
         if (Occupant && Occupant != ControlledUnit) continue;
 
-        // 检查从该格子到目标格子的距离是否在技能释放范围内
-        int32 DistToTarget = FLFPHexCoordinates::Distance(
-            Tile->GetCoordinates(),
-            TargetCoords
-        );
-
-        if (DistToTarget < Skill->Range.MinRange || DistToTarget > Skill->Range.MaxRange)
-        {
-            continue;
-        }
+        // 位置检查：从该格子能否对目标格子释放技能
+        if (!Skill->CanReleaseFrom(Tile, TargetTile)) continue;
 
         // 评估位置价值
         float Value = 0.0f;
+
+        int32 DistToTarget = FLFPHexCoordinates::Distance(
+            Tile->GetCoordinates(),
+            TargetTile->GetCoordinates()
+        );
 
         // 在技能范围内加分
         Value += 30.0f;
 
         // 离目标越近越好（在范围内的前提下）
-        Value += 10.0f / FMath::Max(DistToTarget, 1);
+        //Value += 10.0f / FMath::Max(DistToTarget, 1);
 
         // 离当前位置越近越好（减少移动消耗）
         int32 MoveDistance = FLFPHexCoordinates::Distance(

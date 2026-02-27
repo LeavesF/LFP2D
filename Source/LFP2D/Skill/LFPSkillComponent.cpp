@@ -103,8 +103,11 @@ bool ULFPSkillComponent::ExecuteSkill(ULFPSkillBase* Skill, ALFPHexTile* TargetT
     ALFPTacticsUnit* OwnerUnit = Cast<ALFPTacticsUnit>(GetOwner());
     if (!OwnerUnit || !Skill) return false;
 
-    // 检查技能是否可用
-    if (!Skill->CanExecute(TargetTile)) return false;
+    if (!OwnerUnit->IsEnemy())
+    {
+		// 检查技能是否可用
+		if (!Skill->CanExecute(TargetTile)) return false;
+    }
 
     // 执行技能
     Skill->Execute(TargetTile);

@@ -3,6 +3,7 @@
 
 #include "LFP2D/Skill/LFPSkillBase.h"
 #include "LFP2D/HexGrid/LFPHexGridManager.h"
+#include "LFP2D/HexGrid/LFPHexTile.h"
 #include "LFP2D/Unit/LFPTacticsUnit.h"
 
 
@@ -23,6 +24,37 @@ bool ULFPSkillBase::CanExecute_Implementation(ALFPHexTile* TargetTile)
 
     // 检查行动力
     if (!Owner->HasEnoughActionPoints(ActionPointCost)) return false;
+
+    return true;
+}
+
+bool ULFPSkillBase::IsAvailable() const
+{
+    if (!Owner) return false;
+
+    // 检查冷却
+    if (CurrentCooldown > 0) return false;
+
+    // 检查行动点
+    if (!Owner->HasEnoughActionPoints(ActionPointCost)) return false;
+
+    return true;
+}
+
+bool ULFPSkillBase::CanReleaseFrom_Implementation(ALFPHexTile* CasterTile, ALFPHexTile* TargetTile)
+{
+    if (!CasterTile || !TargetTile) return false;
+
+    // 计算施法格子到目标格子的距离
+    int32 Dist = FLFPHexCoordinates::Distance(
+        CasterTile->GetCoordinates(),
+        TargetTile->GetCoordinates()
+    );
+
+    // 检查是否在技能释放范围内
+    if (Dist < Range.MinRange || Dist > Range.MaxRange) return false;
+
+    // TODO: 视线检查 (bRequireLineOfSight)
 
     return true;
 }

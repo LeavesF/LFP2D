@@ -56,6 +56,14 @@ public:
     UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Skill")
     bool CanExecute(ALFPHexTile* TargetTile = nullptr);
 
+    // 轻量检查：冷却和行动点是否满足（AI 选技能时用）
+    UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Skill")
+    bool IsAvailable() const;
+
+    // 位置检查：从施法格子能否对目标格子释放（AI 找站位时用）
+    UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Skill")
+    bool CanReleaseFrom(ALFPHexTile* CasterTile, ALFPHexTile* TargetTile);
+
     UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Skill")
     FString GetCooldownStatus() const;
 
