@@ -6,6 +6,7 @@
 #include "LFP2D/Skill/LFPSkillComponent.h"
 #include "LFP2D/Skill/LFPSkillBase.h"
 #include "LFP2D/Skill/LFPSkillButtonWidget.h"
+#include "LFP2D/Turn/LFPTurnManager.h"
 #include "GameplayTagContainer.h"
 #include "Components/UniformGridPanel.h"
 #include "Components/TextBlock.h"
@@ -43,6 +44,12 @@ void ULFPSkillSelectionWidget::InitializeSkills(ALFPTacticsUnit* Unit, ALFPTacti
 
     OwnerUnit = Unit;
     TacticsPC = PC;
+
+    // 绑定阵营 AP 变化委托
+    if (ALFPTurnManager* TurnManager = Unit->GetTurnManager())
+    {
+        TurnManager->OnFactionAPChanged.AddDynamic(this, &ULFPSkillSelectionWidget::OnFactionAPChanged);
+    }
 
     // 清空所有技能按钮
     SkillGrid->ClearChildren();
@@ -194,20 +201,18 @@ void ULFPSkillSelectionWidget::UpdateSkillDetails(ULFPSkillBase* Skill)
 
 void ULFPSkillSelectionWidget::UpdateUnitInfo()
 {
-    //if (!OwnerUnit || !UnitNameText || !ActionPointsText || !HealthText) return;
+    if (!OwnerUnit) return;
 
-    //// 更新单位名称
-    //UnitNameText->SetText(FText::FromString(OwnerUnit->GetName()));
-
-    //// 更新行动力
-    //FString APText = FString::Printf(TEXT("AP: %d/%d"),
-    //    OwnerUnit->GetCurrentMovePoints(), OwnerUnit->GetMaxMovePoints());
-    //ActionPointsText->SetText(FText::FromString(APText));
-
-    //// 更新血量
-    //FString HealthTextStr = FString::Printf(TEXT("HP: %d/%d"),
-    //    OwnerUnit->GetCurrentHealth(), OwnerUnit->GetMaxHealth());
-    //HealthText->SetText(FText::FromString(HealthTextStr));
+    // 更新阵营 AP 显示
+    if (ActionPointsText)
+    {
+        if (ALFPTurnManager* TurnManager = OwnerUnit->GetTurnManager())
+        {
+            int32 CurrentAP = TurnManager->GetFactionAP(OwnerUnit->GetAffiliation());
+            FString APText = FString::Printf(TEXT("AP: %d/%d"), CurrentAP, TurnManager->GetFactionMaxAP());
+            ActionPointsText->SetText(FText::FromString(APText));
+        }
+    }
 }
 
 void ULFPSkillSelectionWidget::UpdateConfirmButtonState()
@@ -425,6 +430,16 @@ TArray<ULFPSkillBase*> ULFPSkillSelectionWidget::GetFilteredSkills(ALFPTacticsUn
     }
 
     return FilteredSkills;
+}
+
+void ULFPSkillSelectionWidget::OnFactionAPChanged(EUnitAffiliation Faction, int32 NewAP)
+{
+    // 只关注当前单位所属阵营的 AP 变化
+    if (OwnerUnit && OwnerUnit->GetAffiliation() == Faction)
+    {
+        UpdateUnitInfo();
+        RefreshSkillButtons();
+    }
 }
 
 void ULFPSkillSelectionWidget::SortSkills(ESkillSortMethod SortMethod)

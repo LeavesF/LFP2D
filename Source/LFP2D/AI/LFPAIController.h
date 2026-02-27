@@ -65,8 +65,9 @@ public:
     // ==== 规划阶段方法 ====
 
     // 创建行动计划（选技能、选目标、移动到施法位置）
+    // PreAllocatedSkill: 全局分配阶段预分配的技能，为空则自行选择
     UFUNCTION(BlueprintCallable, Category = "AI|Planning")
-    FEnemyActionPlan CreateActionPlan();
+    FEnemyActionPlan CreateActionPlan(ULFPSkillBase* PreAllocatedSkill = nullptr);
 
     // 选择最佳技能（virtual 可覆盖）
     UFUNCTION(BlueprintCallable, Category = "AI|Planning")

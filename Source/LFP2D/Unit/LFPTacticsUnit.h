@@ -15,14 +15,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnHealthChangedSignature, int32, C
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUnitDeathSignature);
 
-// 单位阵营枚举
-UENUM(BlueprintType)
-enum class EUnitAffiliation : uint8
-{
-    UA_Player     UMETA(DisplayName = "Player"),
-    UA_Enemy      UMETA(DisplayName = "Enemy"),
-    UA_Neutral    UMETA(DisplayName = "Neutral")
-};
+// EUnitAffiliation 定义在 LFPBattleTypes.h 中
 
 class ULFPSkillBase;
 class ALFPHexGridManager;
@@ -94,7 +87,7 @@ public:
     int32 GetMaxMovePoints() { return CurrentMovePoints; }
 
 	UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
-	int32 GetActionPoints() { return CurrentActionPoints; }
+	int32 GetActionPoints();
 
     UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
     ALFPHexGridManager* GetGridManager() const;
@@ -127,11 +120,7 @@ protected:
     UPROPERTY(VisibleInstanceOnly, Category = "Unit State")
     int32 CurrentMovePoints;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Unit Stats")
-	int32 MaxActionPoints = 3;
-
-	UPROPERTY(VisibleInstanceOnly, Category = "Unit State")
-	int32 CurrentActionPoints;
+    // MaxActionPoints 和 CurrentActionPoints 已迁移至 TurnManager 的阵营 AP 系统
 
     // 当前坐标
     UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Unit Stats")

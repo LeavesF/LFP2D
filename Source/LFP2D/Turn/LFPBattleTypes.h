@@ -9,6 +9,15 @@ class ALFPTacticsUnit;
 class ULFPSkillBase;
 class ALFPHexTile;
 
+// 单位阵营枚举（从 LFPTacticsUnit.h 迁移至此，供多个系统使用）
+UENUM(BlueprintType)
+enum class EUnitAffiliation : uint8
+{
+	UA_Player     UMETA(DisplayName = "Player"),
+	UA_Enemy      UMETA(DisplayName = "Enemy"),
+	UA_Neutral    UMETA(DisplayName = "Neutral")
+};
+
 // 战斗阶段枚举
 UENUM(BlueprintType)
 enum class EBattlePhase : uint8

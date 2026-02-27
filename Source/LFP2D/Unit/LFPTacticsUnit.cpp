@@ -33,7 +33,6 @@ ALFPTacticsUnit::ALFPTacticsUnit()
 
     // 默认值
     CurrentMovePoints = MaxMovePoints;
-    CurrentActionPoints = MaxActionPoints;
     CurrentPathIndex = -1;
     MoveProgress = 0.0f;
 
@@ -305,7 +304,6 @@ void ALFPTacticsUnit::FinishMove()
 void ALFPTacticsUnit::ResetForNewRound()
 {
     CurrentMovePoints = MaxMovePoints;
-    CurrentActionPoints = MaxActionPoints;
     bHasActed = false;
 
     // 重置精灵视觉效果
@@ -386,7 +384,10 @@ void ALFPTacticsUnit::ConsumeMovePoints(int32 Amount)
 
 void ALFPTacticsUnit::ConsumeActionPoints(int32 Amount)
 {
-    CurrentActionPoints = FMath::Max(0, CurrentActionPoints - Amount);
+    if (ALFPTurnManager* TurnManager = GetTurnManager())
+    {
+        TurnManager->ConsumeFactionAP(Affiliation, Amount);
+    }
     CurrentMovePoints = 0;
 }
 
@@ -397,7 +398,20 @@ bool ALFPTacticsUnit::HasEnoughMovePoints(int32 Required) const
 
 bool ALFPTacticsUnit::HasEnoughActionPoints(int32 Required) const
 {
-    return CurrentActionPoints >= Required;
+    if (ALFPTurnManager* TurnManager = GetTurnManager())
+    {
+        return TurnManager->HasEnoughFactionAP(Affiliation, Required);
+    }
+    return false;
+}
+
+int32 ALFPTacticsUnit::GetActionPoints()
+{
+    if (ALFPTurnManager* TurnManager = GetTurnManager())
+    {
+        return TurnManager->GetFactionAP(Affiliation);
+    }
+    return 0;
 }
 
 ALFPHexGridManager* ALFPTacticsUnit::GetGridManager() const

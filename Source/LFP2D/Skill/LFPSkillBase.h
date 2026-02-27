@@ -73,6 +73,24 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Skill")
     void OnTurnStart();
 
+    // ==== 技能优先级（AI 规划阶段用于全局 AP 分配） ====
+
+    // 释放后降低优先级
+    UFUNCTION(BlueprintCallable, Category = "Skill|Priority")
+    void OnSkillUsed();
+
+    // 每轮回复优先级（在 OnTurnStart 中调用）
+    UFUNCTION(BlueprintCallable, Category = "Skill|Priority")
+    void RecoverPriority();
+
+    // 条件提升（预留接口，子类/蓝图可覆盖）
+    UFUNCTION(BlueprintNativeEvent, BlueprintPure, Category = "Skill|Priority")
+    float EvaluateConditionBonus() const;
+
+    // 获取本轮有效优先级（当前值 + 条件加成）
+    UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Skill|Priority")
+    float GetEffectivePriority() const;
+
     UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Skill")
     void UpdateSkillRange();
 
@@ -132,4 +150,22 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
     TArray<FLFPHexCoordinates> EffectRangeCoords;
+
+    // ==== 技能优先级属性 ====
+
+    // 当前运行时优先级
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Skill|Priority")
+    float SkillPriority;
+
+    // 基础优先级（设计值，也是上限）
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill|Priority")
+    float BasePriority = 50.0f;
+
+    // 释放后优先级下降值
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill|Priority")
+    float PriorityDecreaseOnUse = 30.0f;
+
+    // 每轮优先级回复值
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill|Priority")
+    float PriorityRecoveryPerRound = 10.0f;
 };

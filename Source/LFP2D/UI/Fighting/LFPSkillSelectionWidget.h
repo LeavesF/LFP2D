@@ -9,12 +9,14 @@
 #include "Components/Image.h"
 #include "Components/Button.h"
 #include "GameplayTagContainer.h"
+#include "LFP2D/Turn/LFPBattleTypes.h"
 #include "LFPSkillSelectionWidget.generated.h"
 
 class ULFPSkillBase;
 class ALFPTacticsUnit;
 class ULFPSkillButtonWidget;
 class ALFPTacticsPlayerController;
+class ALFPTurnManager;
 /**
  *
  */
@@ -112,6 +114,10 @@ private:
     UFUNCTION()
     TArray<ULFPSkillBase*> GetFilteredSkills(ALFPTacticsUnit* Unit) const;
 
+    // 阵营 AP 变化回调
+    UFUNCTION()
+    void OnFactionAPChanged(EUnitAffiliation Faction, int32 NewAP);
+
 public:
     // 委托：技能被选中（但未确认）
     UPROPERTY(BlueprintAssignable, Category = "Skill Selection")
@@ -158,9 +164,9 @@ protected:
     //UPROPERTY(BlueprintReadOnly, Category = "Skill Selection", meta = (BindWidget))
     //UTextBlock* UnitNameText;
 
-    //// 行动力文本
-    //UPROPERTY(BlueprintReadOnly, Category = "Skill Selection", meta = (BindWidget))
-    //UTextBlock* ActionPointsText;
+    // 阵营行动力文本（可选）
+    UPROPERTY(BlueprintReadOnly, Category = "Skill Selection", meta = (BindWidgetOptional))
+    UTextBlock* ActionPointsText;
 
     //// 血量文本
     //UPROPERTY(BlueprintReadOnly, Category = "Skill Selection", meta = (BindWidget))

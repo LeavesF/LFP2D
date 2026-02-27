@@ -11,6 +11,7 @@ class ALFPTacticsUnit;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnTurnChangedSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPhaseChangedSignature, EBattlePhase, NewPhase);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnFactionAPChangedSignature, EUnitAffiliation, Faction, int32, NewAP);
 
 UCLASS()
 class LFP2D_API ALFPTurnManager : public AActor
@@ -71,12 +72,29 @@ public:
     UFUNCTION(BlueprintPure, Category = "Turn System")
     const TArray<FEnemyActionPlan>& GetAllEnemyPlans() const { return EnemyActionPlans; }
 
+    // ==== 阵营行动点 ====
+
+    UFUNCTION(BlueprintPure, Category = "Action Points")
+    int32 GetFactionAP(EUnitAffiliation Faction) const;
+
+    UFUNCTION(BlueprintPure, Category = "Action Points")
+    bool HasEnoughFactionAP(EUnitAffiliation Faction, int32 Amount) const;
+
+    UFUNCTION(BlueprintCallable, Category = "Action Points")
+    void ConsumeFactionAP(EUnitAffiliation Faction, int32 Amount);
+
 public:
     UPROPERTY(BlueprintAssignable, Category = "Turn System")
     FOnTurnChangedSignature OnTurnChanged;
 
     UPROPERTY(BlueprintAssignable, Category = "Turn System")
     FOnPhaseChangedSignature OnPhaseChanged;
+
+    UPROPERTY(BlueprintAssignable, Category = "Action Points")
+    FOnFactionAPChangedSignature OnFactionAPChanged;
+
+    UFUNCTION(BlueprintPure, Category = "Action Points")
+    int32 GetFactionMaxAP() const { return FactionMaxAP; }
 
 protected:
     virtual void BeginPlay() override;
@@ -98,6 +116,9 @@ protected:
 
     // 开始敌人规划阶段
     void BeginEnemyPlanningPhase();
+
+    // Step 1: 全局技能分配（按优先级分配AP技能）
+    void AllocateEnemySkills();
 
     // 处理下一个敌人的规划
     void ProcessNextEnemyPlan();
@@ -144,6 +165,25 @@ protected:
 
     // 当前正在规划的敌人索引
     int32 CurrentPlanningEnemyIndex = 0;
+
+    // 技能分配结果（Step1 → Step2 传递）
+    UPROPERTY()
+    TMap<ALFPTacticsUnit*, ULFPSkillBase*> AllocatedSkills;
+
+    // ==== 阵营行动点配置 ====
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Action Points")
+    int32 FactionMaxAP = 3;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Action Points")
+    int32 FactionInitialAP = 1;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Action Points")
+    int32 FactionAPRecovery = 1;
+
+    // 当前阵营 AP
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Action Points")
+    TMap<EUnitAffiliation, int32> FactionCurrentAP;
 
     // 空计划（用于查询未找到时返回）
     static FEnemyActionPlan EmptyPlan;

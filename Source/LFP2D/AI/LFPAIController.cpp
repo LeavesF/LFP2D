@@ -228,7 +228,7 @@ float ALFPAIController::CalculatePositionValue(ALFPHexTile* Tile, ALFPTacticsUni
 
 // ==== 规划阶段方法 ====
 
-FEnemyActionPlan ALFPAIController::CreateActionPlan()
+FEnemyActionPlan ALFPAIController::CreateActionPlan(ULFPSkillBase* PreAllocatedSkill)
 {
     FEnemyActionPlan Plan;
     Plan.EnemyUnit = ControlledUnit;
@@ -238,8 +238,8 @@ FEnemyActionPlan ALFPAIController::CreateActionPlan()
         return Plan;
     }
 
-    // 1. 选择技能
-    ULFPSkillBase* ChosenSkill = SelectBestSkill();
+    // 1. 选择技能：优先使用预分配的，否则自行选择（会 fallback 到默认攻击）
+    ULFPSkillBase* ChosenSkill = PreAllocatedSkill ? PreAllocatedSkill : SelectBestSkill();
     if (!ChosenSkill)
     {
         return Plan;

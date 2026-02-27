@@ -112,6 +112,9 @@ bool ULFPSkillComponent::ExecuteSkill(ULFPSkillBase* Skill, ALFPHexTile* TargetT
     // 执行技能
     Skill->Execute(TargetTile);
 
+    // 更新技能优先级（降低已使用技能的优先级）
+    Skill->OnSkillUsed();
+
     // 广播事件
     OnSkillExecuted.Broadcast(OwnerUnit, TargetTile);
 

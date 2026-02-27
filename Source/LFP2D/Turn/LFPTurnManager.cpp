@@ -6,6 +6,7 @@
 #include "LFP2D/Player/LFPTacticsPlayerController.h"
 #include "LFP2D/AI/LFPAIController.h"
 #include "LFP2D/Skill/LFPSkillBase.h"
+#include "LFP2D/Skill/LFPSkillComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 FEnemyActionPlan ALFPTurnManager::EmptyPlan;
@@ -39,6 +40,11 @@ void ALFPTurnManager::StartGame()
     // 添加延迟后开始第一回合
     FTimerHandle TimerHandle;
     GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ALFPTurnManager::BeginNewRound, 0.5f, false);
+
+    // 初始化阵营 AP
+    FactionCurrentAP.Add(EUnitAffiliation::UA_Player, FactionInitialAP);
+    FactionCurrentAP.Add(EUnitAffiliation::UA_Enemy, FactionInitialAP);
+    FactionCurrentAP.Add(EUnitAffiliation::UA_Neutral, FactionInitialAP);
 }
 
 void ALFPTurnManager::BeginNewRound()
@@ -60,6 +66,14 @@ void ALFPTurnManager::BeginNewRound()
 
     // 清空上一轮的敌人计划
     EnemyActionPlans.Empty();
+    AllocatedSkills.Empty();
+
+    // 恢复阵营 AP
+    for (auto& Pair : FactionCurrentAP)
+    {
+        Pair.Value = FMath::Min(Pair.Value + FactionAPRecovery, FactionMaxAP);
+        OnFactionAPChanged.Broadcast(Pair.Key, Pair.Value);
+    }
 
     // 进入敌人规划阶段
     BeginEnemyPlanningPhase();
@@ -135,6 +149,10 @@ void ALFPTurnManager::BeginEnemyPlanningPhase()
         PC->HideSkillSelection();
     }
 
+    // Step 1: 全局技能分配（按优先级分配AP技能）
+    AllocateEnemySkills();
+
+    // Step 2: 按速度顺序移动展示
     ProcessNextEnemyPlan();
 }
 
@@ -165,8 +183,13 @@ void ALFPTurnManager::ProcessNextEnemyPlan()
         return;
     }
 
-    // 创建行动计划（包括移动到施法位置）
-    FEnemyActionPlan Plan = AIController->CreateActionPlan();
+    // 创建行动计划，传入预分配的技能
+    ULFPSkillBase* PreAllocatedSkill = nullptr;
+    if (ULFPSkillBase** Found = AllocatedSkills.Find(Enemy))
+    {
+        PreAllocatedSkill = *Found;
+    }
+    FEnemyActionPlan Plan = AIController->CreateActionPlan(PreAllocatedSkill);
 
     // 存储计划
     EnemyActionPlans.Add(Plan);
@@ -245,8 +268,8 @@ void ALFPTurnManager::ExecuteEnemyPlan(ALFPTacticsUnit* Unit)
     if (Plan.bIsValid && Plan.PlannedSkill)
     {
         // 在原定目标格子释放技能（即使目标已死亡）
+        // AP 已在规划阶段 AllocateEnemySkills 中扣除
         Unit->ExecuteSkill(Plan.PlannedSkill, Plan.TargetTile);
-        Unit->ConsumeActionPoints(Plan.PlannedSkill->ActionPointCost);
     }
 
     // 清除头顶技能图标
@@ -374,4 +397,82 @@ const FEnemyActionPlan& ALFPTurnManager::GetPlanForEnemy(ALFPTacticsUnit* Enemy)
         }
     }
     return EmptyPlan;
+}
+
+// ==== 阵营行动点 ====
+
+int32 ALFPTurnManager::GetFactionAP(EUnitAffiliation Faction) const
+{
+    const int32* AP = FactionCurrentAP.Find(Faction);
+    return AP ? *AP : 0;
+}
+
+bool ALFPTurnManager::HasEnoughFactionAP(EUnitAffiliation Faction, int32 Amount) const
+{
+    return GetFactionAP(Faction) >= Amount;
+}
+
+void ALFPTurnManager::ConsumeFactionAP(EUnitAffiliation Faction, int32 Amount)
+{
+    if (int32* AP = FactionCurrentAP.Find(Faction))
+    {
+        *AP = FMath::Max(0, *AP - Amount);
+        OnFactionAPChanged.Broadcast(Faction, *AP);
+    }
+}
+
+// ==== 全局技能分配 ====
+
+void ALFPTurnManager::AllocateEnemySkills()
+{
+    AllocatedSkills.Empty();
+
+    // 收集所有敌方单位的所有消耗AP的技能候选
+    struct FSkillCandidate
+    {
+        ALFPTacticsUnit* Unit;
+        ULFPSkillBase* Skill;
+        float EffectivePriority;
+    };
+    TArray<FSkillCandidate> Candidates;
+
+    for (ALFPTacticsUnit* Enemy : PlanningOrderEnemies)
+    {
+        if (!Enemy || !Enemy->IsAlive()) continue;
+
+        TArray<ULFPSkillBase*> Skills = Enemy->GetAvailableSkills();
+        for (ULFPSkillBase* Skill : Skills)
+        {
+            if (!Skill) continue;
+            if (Skill->ActionPointCost <= 0) continue; // 0消耗技能不参与竞争
+            if (Skill->CurrentCooldown > 0) continue;  // 冷却中跳过
+
+            FSkillCandidate Candidate;
+            Candidate.Unit = Enemy;
+            Candidate.Skill = Skill;
+            Candidate.EffectivePriority = Skill->GetEffectivePriority();
+            Candidates.Add(Candidate);
+        }
+    }
+
+    // 按有效优先级降序排序
+    Candidates.Sort([](const FSkillCandidate& A, const FSkillCandidate& B) {
+        return A.EffectivePriority > B.EffectivePriority;
+    });
+
+    // 依次分配：如果阵营AP足够且该单位尚未分配
+    for (const FSkillCandidate& Candidate : Candidates)
+    {
+        // 该单位已分配过技能，跳过
+        if (AllocatedSkills.Contains(Candidate.Unit)) continue;
+
+        // 检查阵营AP是否足够
+        if (HasEnoughFactionAP(EUnitAffiliation::UA_Enemy, Candidate.Skill->ActionPointCost))
+        {
+            AllocatedSkills.Add(Candidate.Unit, Candidate.Skill);
+            ConsumeFactionAP(EUnitAffiliation::UA_Enemy, Candidate.Skill->ActionPointCost);
+        }
+    }
+
+    // 未分配到AP技能的敌人会在 CreateActionPlan 中 fallback 到默认攻击
 }

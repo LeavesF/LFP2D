@@ -13,6 +13,7 @@ ULFPSkillBase::ULFPSkillBase()
     CooldownRounds = 0;
     ActionPointCost = 1;
     bIsDefaultAttack = false;
+    SkillPriority = BasePriority;
 }
 
 bool ULFPSkillBase::CanExecute_Implementation(ALFPHexTile* TargetTile)
@@ -93,6 +94,31 @@ void ULFPSkillBase::OnTurnStart()
     {
         CurrentCooldown--;
     }
+
+    RecoverPriority();
+}
+
+// ==== 技能优先级 ====
+
+void ULFPSkillBase::OnSkillUsed()
+{
+    SkillPriority = FMath::Max(0.0f, SkillPriority - PriorityDecreaseOnUse);
+}
+
+void ULFPSkillBase::RecoverPriority()
+{
+    SkillPriority = FMath::Min(BasePriority, SkillPriority + PriorityRecoveryPerRound);
+}
+
+float ULFPSkillBase::EvaluateConditionBonus_Implementation() const
+{
+    // 默认无条件加成，子类/蓝图可覆盖
+    return 0.0f;
+}
+
+float ULFPSkillBase::GetEffectivePriority() const
+{
+    return SkillPriority + EvaluateConditionBonus();
 }
 
 float ULFPSkillBase::CalculateHatredValue_Implementation(ALFPTacticsUnit* Caster, ALFPTacticsUnit* Target) const
