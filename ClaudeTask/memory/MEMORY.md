@@ -19,6 +19,10 @@ See [architecture.md](architecture.md) for detailed system design records.
 - Player controller: `Source/LFP2D/Player/LFPTacticsPlayerController.h/.cpp`
 - Skill selection UI: `Source/LFP2D/UI/Fighting/LFPSkillSelectionWidget.h/.cpp`
 - Planned skill icon: `Source/LFP2D/UI/Fighting/LFPPlannedSkillIconWidget.h/.cpp`
+- Map data struct: `Source/LFP2D/HexGrid/LFPMapData.h`
+- Terrain data asset: `Source/LFP2D/HexGrid/LFPTerrainDataAsset.h`
+- Map editor component: `Source/LFP2D/HexGrid/LFPMapEditorComponent.h/.cpp`
+- Map editor widget: `Source/LFP2D/UI/MapEditor/LFPMapEditorWidget.h/.cpp`
 
 ## Current Development Status
 See [progress.md](progress.md) for implementation progress.
