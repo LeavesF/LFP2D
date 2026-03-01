@@ -9,7 +9,6 @@
 
 class ALFPTacticsUnit;
 class ALFPHexTile;
-class ALFPTacticsPlayerController;
 
 struct FLFPHexCoordinates;
 
@@ -49,6 +48,10 @@ class LFP2D_API ULFPSkillBase : public UObject
 
 public:
     ULFPSkillBase();
+
+    // 创建后初始化（蓝图默认值已应用后调用，初始化运行时状态）
+    UFUNCTION(BlueprintCallable, Category = "Skill")
+    void InitSkill(ALFPTacticsUnit* InOwner);
 
     UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Skill")
     void Execute(ALFPHexTile* TargetTile = nullptr);
@@ -111,9 +114,6 @@ public:
 public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
     ALFPTacticsUnit* Owner;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
-    ALFPTacticsPlayerController* OwnerController;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
     FText SkillName;

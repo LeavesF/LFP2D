@@ -715,7 +715,7 @@ void ALFPTacticsPlayerController::HandleSkillSelection()
             if (SkillSelectionWidget)
             {
                 SkillSelectionWidget->Show();
-                SkillSelectionWidget->InitializeSkills(SelectedUnit, this);
+                SkillSelectionWidget->InitializeSkillsInfo(SelectedUnit, this);
                 SkillSelectionWidget->AddToViewport();
 
                 //// 进入技能选择模式
@@ -725,7 +725,7 @@ void ALFPTacticsPlayerController::HandleSkillSelection()
         else
         {
             SkillSelectionWidget->Show();
-            SkillSelectionWidget->InitializeSkills(SelectedUnit, this);
+            SkillSelectionWidget->InitializeSkillsInfo(SelectedUnit, this);
 
             //// 进入技能选择模式
             //CurrentSelectionMode = ESelectionMode::SkillSelection;

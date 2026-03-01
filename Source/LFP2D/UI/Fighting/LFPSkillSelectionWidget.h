@@ -46,7 +46,7 @@ public:
 
     // 初始化技能列表
     UFUNCTION(BlueprintCallable, Category = "Skill Selection")
-    void InitializeSkills(ALFPTacticsUnit* Unit, ALFPTacticsPlayerController* PC);
+    void InitializeSkillsInfo(ALFPTacticsUnit* Unit, ALFPTacticsPlayerController* PC);
 
     // 显示技能选择窗口
     UFUNCTION(BlueprintCallable, Category = "Skill Selection")

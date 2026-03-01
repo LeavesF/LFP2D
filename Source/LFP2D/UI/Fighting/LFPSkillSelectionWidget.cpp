@@ -38,16 +38,17 @@ void ULFPSkillSelectionWidget::NativeConstruct()
     }
 }
 
-void ULFPSkillSelectionWidget::InitializeSkills(ALFPTacticsUnit* Unit, ALFPTacticsPlayerController* PC)
+void ULFPSkillSelectionWidget::InitializeSkillsInfo(ALFPTacticsUnit* Unit, ALFPTacticsPlayerController* PC)
 {
     if (!Unit || !PC || !SkillGrid) return;
 
     OwnerUnit = Unit;
     TacticsPC = PC;
 
-    // 绑定阵营 AP 变化委托
+    // 绑定阵营 AP 变化委托（先移除旧绑定，避免重复添加触发断言）
     if (ALFPTurnManager* TurnManager = Unit->GetTurnManager())
     {
+        TurnManager->OnFactionAPChanged.RemoveDynamic(this, &ULFPSkillSelectionWidget::OnFactionAPChanged);
         TurnManager->OnFactionAPChanged.AddDynamic(this, &ULFPSkillSelectionWidget::OnFactionAPChanged);
     }
 
@@ -389,7 +390,7 @@ void ULFPSkillSelectionWidget::SetSkillFilter(const FGameplayTagContainer& Filte
     // 重新初始化技能列表
     if (OwnerUnit)
     {
-        //InitializeSkills(OwnerUnit, this);
+        //InitializeSkillsInfo(OwnerUnit, this);
     }
 }
 
@@ -401,7 +402,7 @@ void ULFPSkillSelectionWidget::ClearSkillFilter()
     // 重新初始化技能列表
     if (OwnerUnit)
     {
-        //InitializeSkills(OwnerUnit, this);
+        //InitializeSkillsInfo(OwnerUnit, this);
     }
 }
 

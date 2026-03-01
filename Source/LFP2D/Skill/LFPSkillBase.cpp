@@ -16,6 +16,17 @@ ULFPSkillBase::ULFPSkillBase()
     SkillPriority = BasePriority;
 }
 
+void ULFPSkillBase::InitSkill(ALFPTacticsUnit* InOwner)
+{
+    // 用蓝图配置的 BasePriority 初始化运行时优先级
+    // （构造函数执行时蓝图默认值尚未应用，所以需要在这里重新赋值）
+    SkillPriority = BasePriority;
+    if (InOwner)
+    {
+        Owner = InOwner;
+    }
+}
+
 bool ULFPSkillBase::CanExecute_Implementation(ALFPHexTile* TargetTile)
 {
     if (!Owner) return false;
