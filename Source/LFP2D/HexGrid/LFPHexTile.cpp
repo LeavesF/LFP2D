@@ -2,6 +2,7 @@
 
 
 #include "LFP2D/HexGrid/LFPHexTile.h"
+#include "LFP2D/HexGrid/LFPTerrainDataAsset.h"
 #include "PaperSpriteComponent.h"
 
 // Sets default values
@@ -10,20 +11,30 @@ ALFPHexTile::ALFPHexTile()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	// ´´½¨¸ù³¡¾°×é¼ş
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	RootSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 	RootComponent = RootSceneComponent;
 
-	// ´´½¨²¢¸½¼Ó¾«Áé×é¼şµ½¸ù×é¼ş
+	// åˆ›å»ºè§†è§‰ç²¾çµç»„ä»¶
 	SpriteComponent = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("SpriteComponent"));
 	SpriteComponent->SetupAttachment(RootComponent);
+
+	// åˆ›å»ºè£…é¥°ç²¾çµç»„ä»¶ï¼ˆåœ¨åŸºç¡€ç²¾çµä¸Šæ–¹ï¼‰
+	DecorationSpriteComponent = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("DecorationSpriteComponent"));
+	DecorationSpriteComponent->SetupAttachment(RootComponent);
+	DecorationSpriteComponent->SetRelativeLocation(FVector(0, 0, 0.5f));
 }
 
 // Called when the game starts or when spawned
 void ALFPHexTile::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	// å¦‚æœæœ‰è£…é¥°ç²¾çµï¼Œåº”ç”¨åˆ°è£…é¥°ç»„ä»¶
+	if (DecorationSprite && DecorationSpriteComponent)
+	{
+		DecorationSpriteComponent->SetSprite(DecorationSprite);
+	}
 }
 
 // Called every frame
@@ -77,6 +88,32 @@ bool ALFPHexTile::IsTargetHexInLine(FLFPHexCoordinates Coord)
 		return true;
 	}
 	return false;
+}
+
+int32 ALFPHexTile::GetMovementCost() const
+{
+	if (TerrainData)
+	{
+		return TerrainData->MovementCost;
+	}
+	return 1; // é»˜è®¤ä»£ä»·
+}
+
+void ALFPHexTile::SetTerrainData(ULFPTerrainDataAsset* InTerrainData)
+{
+	TerrainData = InTerrainData;
+	if (TerrainData)
+	{
+		// ä»åœ°å½¢æ•°æ®åŒæ­¥å±æ€§
+		bIsWalkable = TerrainData->bIsWalkable;
+
+		// è®¾ç½®åŸºç¡€ç²¾çµ
+		if (TerrainData->DefaultSprite)
+		{
+			DefaultSprite = TerrainData->DefaultSprite;
+			SpriteComponent->SetSprite(DefaultSprite);
+		}
+	}
 }
 
 void ALFPHexTile::SetRangeSprite(EUnitRange UnitRange)

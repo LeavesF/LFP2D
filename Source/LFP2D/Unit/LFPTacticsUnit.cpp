@@ -207,7 +207,13 @@ bool ALFPTacticsUnit::MoveToTile(ALFPHexTile* NewTargetTile)
 
     // 寻找路径
     MovePath = GridManager->FindPath(CurrentTile, NewTargetTile);
-    if (MovePath.Num() == 0|| MovePath.Num()>CurrentMovePoints) return false;
+    // 计算路径实际移动代价（考虑地形）
+    int32 PathCost = 0;
+    for (ALFPHexTile* Tile : MovePath)
+    {
+        PathCost += Tile->GetMovementCost();
+    }
+    if (MovePath.Num() == 0 || PathCost > CurrentMovePoints) return false;
 
     // 设置移动状态
     CurrentTile->SetIsOccupied(false);
@@ -290,7 +296,13 @@ void ALFPTacticsUnit::FinishMove()
     if (TargetTile)
     {
         SetCurrentCoordinates(TargetTile->GetCoordinates());
-        ConsumeMovePoints(MovePath.Num());
+        // 计算路径实际移动代价（考虑地形）
+        int32 TotalCost = 0;
+        for (ALFPHexTile* Tile : MovePath)
+        {
+            TotalCost += Tile->GetMovementCost();
+        }
+        ConsumeMovePoints(TotalCost);
         //SetActorLocation(TargetTile->GetActorLocation() + FVector(0, 0, 50));
     }
 

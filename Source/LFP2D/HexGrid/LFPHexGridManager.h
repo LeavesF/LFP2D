@@ -7,6 +7,8 @@
 #include "LFP2D/HexGrid/LFPHexTile.h"
 #include "LFPHexGridManager.generated.h"
 
+class ULFPTerrainDataAsset;
+
 
 UCLASS()
 class LFP2D_API ALFPHexGridManager : public AActor
@@ -75,6 +77,10 @@ protected:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hex Grid", meta = (ClampMin = "0.1", ClampMax = "2.0"))
     float VerticalScale = 1.0f;
+
+	// 默认地形数据（没有单独配置的格子使用此数据）
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Terrain")
+	TObjectPtr<ULFPTerrainDataAsset> DefaultTerrainData;
 
 	UPROPERTY(EditAnywhere, Category = "Debug")
 	bool bDrawDebug = true;

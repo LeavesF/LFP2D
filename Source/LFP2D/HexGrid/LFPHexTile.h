@@ -10,6 +10,7 @@
 class UPaperSpriteComponent;
 class UPaperSprite;
 class ALFPTacticsUnit;
+class ULFPTerrainDataAsset;
 
 USTRUCT(BlueprintType)
 struct FLFPHexCoordinates
@@ -207,9 +208,33 @@ protected:
 	bool bIsOccupied = false;
 	//bool bIsSelect = false;
 
+	// 地形数据资产引用
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Terrain")
+	TObjectPtr<ULFPTerrainDataAsset> TerrainData;
+
 	TObjectPtr<ALFPTacticsUnit> CurrentUnit;
 
 public:
+	// 获取移动代价（从地形数据获取，无数据默认返回 1）
+	UFUNCTION(BlueprintCallable, Category = "Hex Tile")
+	int32 GetMovementCost() const;
+
+	// 设置地形数据（同步可行走性和精灵）
+	UFUNCTION(BlueprintCallable, Category = "Hex Tile")
+	void SetTerrainData(ULFPTerrainDataAsset* InTerrainData);
+
+	// 获取地形数据
+	UFUNCTION(BlueprintPure, Category = "Hex Tile")
+	ULFPTerrainDataAsset* GetTerrainData() const { return TerrainData; }
+
+	// 装饰精灵组件（叠加在基础地形上方，纯视觉）
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<UPaperSpriteComponent> DecorationSpriteComponent;
+
+	// 装饰精灵（编辑器中可配置，纯视觉无游戏效果）
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Decoration")
+	TObjectPtr<UPaperSprite> DecorationSprite;
+
 	// 设置RangeSprite层级
 	UFUNCTION(BlueprintCallable, Category = "Hex Tile")
 	void SetRangeSprite(EUnitRange UnitRange = EUnitRange::UR_Default);

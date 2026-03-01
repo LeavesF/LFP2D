@@ -27,6 +27,21 @@ enum class EBattlePhase : uint8
 	BP_RoundEnd        UMETA(DisplayName = "Round End")
 };
 
+// 地形类型枚举
+UENUM(BlueprintType)
+enum class ELFPTerrainType : uint8
+{
+	TT_Grass   UMETA(DisplayName = "草地"),
+	TT_Sand    UMETA(DisplayName = "沙地"),
+	TT_Dirt    UMETA(DisplayName = "泥地"),
+	TT_Stone   UMETA(DisplayName = "石地"),
+	TT_Snow    UMETA(DisplayName = "雪地"),
+	TT_Water   UMETA(DisplayName = "水域"),
+	TT_Lava    UMETA(DisplayName = "熔岩"),
+	TT_Magic   UMETA(DisplayName = "魔法"),
+	TT_Bridge  UMETA(DisplayName = "桥")
+};
+
 // 敌人行动计划结构体
 USTRUCT(BlueprintType)
 struct FEnemyActionPlan

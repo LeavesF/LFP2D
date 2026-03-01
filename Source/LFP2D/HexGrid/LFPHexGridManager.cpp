@@ -2,6 +2,7 @@
 
 
 #include "LFP2D/HexGrid/LFPHexGridManager.h"
+#include "LFP2D/HexGrid/LFPTerrainDataAsset.h"
 #include "Engine/World.h"
 #include "Kismet/GameplayStatics.h"
 #include "LFP2D/Unit/LFPTacticsUnit.h"
@@ -101,6 +102,12 @@ void ALFPHexGridManager::GenerateGrid(int32 Width, int32 Height)
 				NewTile->SetCoordinates(HexCoord);
 				NewTile->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
 
+				// 应用默认地形数据
+				if (DefaultTerrainData)
+				{
+					NewTile->SetTerrainData(DefaultTerrainData);
+				}
+
 				// 添加到网格映射（使用Q,R作为键）
 				FIntPoint Key(HexCoord.Q, HexCoord.R);
 				GridMap.Add(Key, NewTile);
@@ -129,28 +136,33 @@ TArray<ALFPHexTile*> ALFPHexGridManager::GetNeighbors(const FLFPHexCoordinates& 
 
 TArray<ALFPHexTile*> ALFPHexGridManager::GetTilesInRange(ALFPHexTile* Center, int32 MaxRange, int32 MinRange)
 {
-	//// Todo: 用Map优化
-	//TPair<ALFPHexTile*, int32> Key(Center, MaxRange);
-	//if (MaxRangeCache.Contains(Key))
-	//{
-	//	return MaxRangeCache[Key];
-	//}
-
 	TArray<ALFPHexTile*> ReachableTiles;
 	if (!Center || MaxRange <= 0) return ReachableTiles;
 
-	// BFS数据结构
+	// Dijkstra 数据结构（支持变代价地形）
 	TMap<ALFPHexTile*, int32> MoveCosts;
-	TQueue<ALFPHexTile*> TileQueue;
+	TArray<ALFPHexTile*> OpenList;
 
-	TileQueue.Enqueue(Center);
+	OpenList.Add(Center);
 	MoveCosts.Add(Center, 0);
-	ReachableTiles.Add(Center);
 
-	while (!TileQueue.IsEmpty())
+	while (OpenList.Num() > 0)
 	{
-		ALFPHexTile* CurrentTile;
-		TileQueue.Dequeue(CurrentTile);
+		// 找到代价最小的节点
+		int32 MinCostIndex = 0;
+		int32 MinCost = MoveCosts[OpenList[0]];
+		for (int32 i = 1; i < OpenList.Num(); i++)
+		{
+			int32 Cost = MoveCosts[OpenList[i]];
+			if (Cost < MinCost)
+			{
+				MinCost = Cost;
+				MinCostIndex = i;
+			}
+		}
+
+		ALFPHexTile* CurrentTile = OpenList[MinCostIndex];
+		OpenList.RemoveAt(MinCostIndex);
 		int32 CurrentCost = MoveCosts[CurrentTile];
 
 		// 获取所有邻居
@@ -158,24 +170,32 @@ TArray<ALFPHexTile*> ALFPHexGridManager::GetTilesInRange(ALFPHexTile* Center, in
 		{
 			if (!Neighbor || !Neighbor->IsWalkable() || Neighbor->IsOccupied()) continue;
 
-			// 计算移动代价
-			const int32 NewCost = CurrentCost + 1;
+			// 计算移动代价（使用地形代价）
+			const int32 NewCost = CurrentCost + Neighbor->GetMovementCost();
 
 			// 如果未访问或找到更短路径
 			if (!MoveCosts.Contains(Neighbor) || NewCost < MoveCosts[Neighbor])
 			{
 				MoveCosts.Add(Neighbor, NewCost);
 
-				// 在移动范围内
+				// 在移动范围内才加入开放列表
 				if (NewCost <= MaxRange)
 				{
-					ReachableTiles.Add(Neighbor);
-					TileQueue.Enqueue(Neighbor);
+					OpenList.Add(Neighbor);
 				}
 			}
 		}
 	}
-	ReachableTiles.Remove(Center);
+
+	// 收集所有可达格子（排除起点，应用最小范围过滤）
+	for (auto& Pair : MoveCosts)
+	{
+		if (Pair.Key != Center && Pair.Value >= MinRange && Pair.Value <= MaxRange)
+		{
+			ReachableTiles.Add(Pair.Key);
+		}
+	}
+
 	return ReachableTiles;
 }
 
@@ -276,8 +296,8 @@ TArray<ALFPHexTile*> ALFPHexGridManager::FindPath(ALFPHexTile* Start, ALFPHexTil
 				continue;
 			}
 
-			// 计算新G值（这里所有格子移动代价相同）
-			const float TentativeG = GScoreMap[Current] + 1.0f;
+			// 计算新G值（使用地形移动代价）
+			const float TentativeG = GScoreMap[Current] + (float)Neighbor->GetMovementCost();
 
 			// 发现新节点或找到更短路径
 			if (!OpenSet.Contains(Neighbor) || TentativeG < GScoreMap[Neighbor])
