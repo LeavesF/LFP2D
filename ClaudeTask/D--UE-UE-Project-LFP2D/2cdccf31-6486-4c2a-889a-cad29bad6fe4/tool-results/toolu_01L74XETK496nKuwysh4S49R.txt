@@ -1,0 +1,399 @@
+d:\UE_Projects\LFP2D\Source\LFP2D\Unit\LFPTacticsUnit.h-171-public:
+d:\UE_Projects\LFP2D\Source\LFP2D\Unit\LFPTacticsUnit.h-172-    // 回合系统相关
+d:\UE_Projects\LFP2D\Source\LFP2D\Unit\LFPTacticsUnit.h-173-    UFUNCTION(BlueprintCallable, Category = "Turn System")
+d:\UE_Projects\LFP2D\Source\LFP2D\Unit\LFPTacticsUnit.h:174:    void ResetForNewRound();
+d:\UE_Projects\LFP2D\Source\LFP2D\Unit\LFPTacticsUnit.h-175-
+d:\UE_Projects\LFP2D\Source\LFP2D\Unit\LFPTacticsUnit.h-176-    UFUNCTION(BlueprintPure, Category = "Turn System")
+d:\UE_Projects\LFP2D\Source\LFP2D\Unit\LFPTacticsUnit.h-177-    bool CanAct() const { return !bHasActed && bOnTurn; }
+--
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5.jsonl-113-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5.jsonl-114-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5.jsonl-115-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5.jsonl:116:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5.jsonl-117-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5.jsonl-118-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5.jsonl-119-[Omitted long context line]
+--
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5.jsonl-166-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5.jsonl-167-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5.jsonl-168-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5.jsonl:169:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5.jsonl-170-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5.jsonl:171:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5.jsonl-172-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5.jsonl:173:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5.jsonl-174-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5.jsonl-175-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5.jsonl-176-[Omitted long context line]
+--
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-ae27f8893290c0af5.jsonl-14-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-ae27f8893290c0af5.jsonl-15-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-ae27f8893290c0af5.jsonl-16-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-ae27f8893290c0af5.jsonl:17:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-ae27f8893290c0af5.jsonl-18-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-ae27f8893290c0af5.jsonl-19-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-ae27f8893290c0af5.jsonl-20-[Omitted long context line]
+--
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-ae27f8893290c0af5.jsonl-29-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-ae27f8893290c0af5.jsonl-30-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-ae27f8893290c0af5.jsonl-31-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-ae27f8893290c0af5.jsonl:32:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-ae27f8893290c0af5.jsonl-33-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-ae27f8893290c0af5.jsonl-34-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-ae27f8893290c0af5.jsonl-35-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-ae27f8893290c0af5.jsonl-36-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-ae27f8893290c0af5.jsonl-37-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-ae27f8893290c0af5.jsonl-38-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-ae27f8893290c0af5.jsonl:39:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-ae27f8893290c0af5.jsonl-40-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-ae27f8893290c0af5.jsonl:41:[Omitted long matching line]
+--
+d:\UE_Projects\LFP2D\Source\LFP2D\Unit\LFPTacticsUnit.cpp-302-    MoveProgress = 0.0f;
+d:\UE_Projects\LFP2D\Source\LFP2D\Unit\LFPTacticsUnit.cpp-303-}
+d:\UE_Projects\LFP2D\Source\LFP2D\Unit\LFPTacticsUnit.cpp-304-
+d:\UE_Projects\LFP2D\Source\LFP2D\Unit\LFPTacticsUnit.cpp:305:void ALFPTacticsUnit::ResetForNewRound()
+d:\UE_Projects\LFP2D\Source\LFP2D\Unit\LFPTacticsUnit.cpp-306-{
+d:\UE_Projects\LFP2D\Source\LFP2D\Unit\LFPTacticsUnit.cpp-307-    CurrentMovePoints = MaxMovePoints;
+d:\UE_Projects\LFP2D\Source\LFP2D\Unit\LFPTacticsUnit.cpp-308-    CurrentActionPoints = MaxActionPoints;
+--
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-ac03cac9af0051dcd.jsonl-95-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-ac03cac9af0051dcd.jsonl-96-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-ac03cac9af0051dcd.jsonl-97-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-ac03cac9af0051dcd.jsonl:98:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-ac03cac9af0051dcd.jsonl-99-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-ac03cac9af0051dcd.jsonl-100-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-ac03cac9af0051dcd.jsonl-101-[Omitted long context line]
+--
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-ac03cac9af0051dcd.jsonl-106-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-ac03cac9af0051dcd.jsonl-107-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-ac03cac9af0051dcd.jsonl-108-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-ac03cac9af0051dcd.jsonl:109:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-ac03cac9af0051dcd.jsonl-110-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-ac03cac9af0051dcd.jsonl-111-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-ac03cac9af0051dcd.jsonl-112-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-ac03cac9af0051dcd.jsonl:113:[Omitted long matching line]
+--
+d:\UE_Projects\LFP2D\Source\LFP2D\Turn\LFPTurnManager.cpp-51-    {
+d:\UE_Projects\LFP2D\Source\LFP2D\Turn\LFPTurnManager.cpp-52-        if (Unit && Unit->IsValidLowLevel())
+d:\UE_Projects\LFP2D\Source\LFP2D\Turn\LFPTurnManager.cpp-53-        {
+d:\UE_Projects\LFP2D\Source\LFP2D\Turn\LFPTurnManager.cpp:54:            Unit->ResetForNewRound();
+d:\UE_Projects\LFP2D\Source\LFP2D\Turn\LFPTurnManager.cpp-55-        }
+d:\UE_Projects\LFP2D\Source\LFP2D\Turn\LFPTurnManager.cpp-56-    }
+d:\UE_Projects\LFP2D\Source\LFP2D\Turn\LFPTurnManager.cpp-57-
+--
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-a5119b382c78eea17.jsonl-64-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-a5119b382c78eea17.jsonl-65-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-a5119b382c78eea17.jsonl-66-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-a5119b382c78eea17.jsonl:67:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-a5119b382c78eea17.jsonl-68-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-a5119b382c78eea17.jsonl-69-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-a5119b382c78eea17.jsonl-70-[Omitted long context line]
+--
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-52-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-53-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-54-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:55:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-56-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-57-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-58-[Omitted long context line]
+--
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-117-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-118-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-119-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:120:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-121-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:122:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-123-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-124-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:125:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:126:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-127-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-128-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-129-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-130-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-131-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-132-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:133:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-134-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-135-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-136-[Omitted long context line]
+--
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-151-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-152-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-153-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:154:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-155-{"type":"file-history-snapshot","messageId":"6b898ef5-2d50-431f-9f88-31ebe78623fa","snapshot":{"messageId":"1a303df6-e215-48bd-a54e-d230526b2804","trackedFileBackups":{"CLAUDE.md":{"backupFileName":"e5a881febd66f0f4@v2","version":2,"backupTime":"2026-02-23T18:05:32.526Z"},"C:\\Users\\leave\\.claude\\plans\\warm-imagining-gem.md":{"backupFileName":null,"version":1,"backupTime":"2026-02-26T07:37:17.374Z"}},"timestamp":"2026-02-26T07:06:11.651Z"},"isSnapshotUpdate":true}
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:156:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:157:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:158:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-159-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-160-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-161-[Omitted long context line]
+--
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-167-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-168-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-169-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:170:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-171-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-172-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-173-[Omitted long context line]
+--
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-182-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-183-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-184-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:185:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-186-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:187:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-188-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-189-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-190-[Omitted long context line]
+--
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-216-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-217-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-218-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:219:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-220-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-221-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-222-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-223-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:224:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-225-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-226-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:227:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:228:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-229-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-230-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:231:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-232-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-233-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:234:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:235:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:236:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:237:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-238-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-239-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-240-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-241-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:242:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-243-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-244-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-245-[Omitted long context line]
+--
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-359-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-360-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-361-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:362:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-363-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-364-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-365-[Omitted long context line]
+--
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-395-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-396-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-397-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:398:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-399-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-400-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-401-[Omitted long context line]
+--
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-410-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-411-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-412-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:413:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-414-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-415-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-416-[Omitted long context line]
+--
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-436-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-437-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-438-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:439:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-440-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-441-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-442-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-443-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:444:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-445-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:446:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:447:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:448:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:449:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:450:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:451:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:452:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:453:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:454:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:455:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:456:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:457:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:458:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:459:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:460:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:461:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:462:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:463:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:464:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:465:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:466:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:467:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:468:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:469:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:470:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:471:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:472:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:473:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:474:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:475:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:476:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:477:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:478:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:479:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:480:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:481:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:482:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:483:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:484:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:485:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:486:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:487:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:488:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:489:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:490:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:491:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:492:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:493:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:494:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:495:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:496:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:497:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:498:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:499:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:500:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:501:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:502:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:503:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:504:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:505:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:506:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:507:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:508:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:509:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:510:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:511:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl:512:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-513-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-514-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4.jsonl-515-[Omitted long context line]
+--
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-a4d1dbbdd1223bd48.jsonl:1:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-a4d1dbbdd1223bd48.jsonl-2-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-a4d1dbbdd1223bd48.jsonl-3-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-a4d1dbbdd1223bd48.jsonl-4-[Omitted long context line]
+--
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-a4d1dbbdd1223bd48.jsonl-27-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-a4d1dbbdd1223bd48.jsonl-28-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-a4d1dbbdd1223bd48.jsonl-29-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-a4d1dbbdd1223bd48.jsonl:30:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-a4d1dbbdd1223bd48.jsonl-31-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-a4d1dbbdd1223bd48.jsonl-32-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-a4d1dbbdd1223bd48.jsonl-33-[Omitted long context line]
+--
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-a4d1dbbdd1223bd48.jsonl-44-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-a4d1dbbdd1223bd48.jsonl-45-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-a4d1dbbdd1223bd48.jsonl-46-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-a4d1dbbdd1223bd48.jsonl:47:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-a4d1dbbdd1223bd48.jsonl-48-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-a4d1dbbdd1223bd48.jsonl-49-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-a4d1dbbdd1223bd48.jsonl-50-[Omitted long context line]
+--
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-a4d1dbbdd1223bd48.jsonl-54-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-a4d1dbbdd1223bd48.jsonl-55-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-a4d1dbbdd1223bd48.jsonl-56-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-a4d1dbbdd1223bd48.jsonl:57:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-a4d1dbbdd1223bd48.jsonl-58-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-a4d1dbbdd1223bd48.jsonl-59-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-a4d1dbbdd1223bd48.jsonl-60-[Omitted long context line]
+--
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-a4d1dbbdd1223bd48.jsonl-136-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-a4d1dbbdd1223bd48.jsonl-137-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-a4d1dbbdd1223bd48.jsonl-138-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\2cdccf31-6486-4c2a-889a-cad29bad6fe4\subagents\agent-a4d1dbbdd1223bd48.jsonl:139:[Omitted long matching line]
+--
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\tool-results\toolu_01Tb1N7bSVtj5omHCfFsSjCz.txt-422-   422→284:    CurrentPathIndex = -1;
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\tool-results\toolu_01Tb1N7bSVtj5omHCfFsSjCz.txt-423-   423→285:    MoveProgress = 0.0f;
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\tool-results\toolu_01Tb1N7bSVtj5omHCfFsSjCz.txt-424-   424→286:}
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\tool-results\toolu_01Tb1N7bSVtj5omHCfFsSjCz.txt:425:   425→288:void ALFPTacticsUnit::ResetForNewRound()
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\tool-results\toolu_01Tb1N7bSVtj5omHCfFsSjCz.txt-426-   426→289:{
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\tool-results\toolu_01Tb1N7bSVtj5omHCfFsSjCz.txt-427-   427→290:    CurrentMovePoints = MaxMovePoints;
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\tool-results\toolu_01Tb1N7bSVtj5omHCfFsSjCz.txt-428-   428→291:    CurrentActionPoints = MaxActionPoints;
+--
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\tool-results\toolu_01Tb1N7bSVtj5omHCfFsSjCz.txt-999-   999→170:public:
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\tool-results\toolu_01Tb1N7bSVtj5omHCfFsSjCz.txt-1000-  1000→171:    // �غ�ϵͳ����
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\tool-results\toolu_01Tb1N7bSVtj5omHCfFsSjCz.txt-1001-  1001→172:    UFUNCTION(BlueprintCallable, Category = "Turn System")
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\tool-results\toolu_01Tb1N7bSVtj5omHCfFsSjCz.txt:1002:  1002→173:    void ResetForNewRound();
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\tool-results\toolu_01Tb1N7bSVtj5omHCfFsSjCz.txt-1003-  1003→175:    UFUNCTION(BlueprintPure, Category = "Turn System")
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\tool-results\toolu_01Tb1N7bSVtj5omHCfFsSjCz.txt-1004-  1004→176:    bool CanAct() const { return !bHasActed && bOnTurn; }
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\tool-results\toolu_01Tb1N7bSVtj5omHCfFsSjCz.txt-1005-  1005→178:    UFUNCTION(BlueprintPure, Category = "Turn System")
+--
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\tool-results\b503cfa.txt-422-284:    CurrentPathIndex = -1;
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\tool-results\b503cfa.txt-423-285:    MoveProgress = 0.0f;
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\tool-results\b503cfa.txt-424-286:}
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\tool-results\b503cfa.txt:425:288:void ALFPTacticsUnit::ResetForNewRound()
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\tool-results\b503cfa.txt-426-289:{
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\tool-results\b503cfa.txt-427-290:    CurrentMovePoints = MaxMovePoints;
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\tool-results\b503cfa.txt-428-291:    CurrentActionPoints = MaxActionPoints;
+--
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\tool-results\b503cfa.txt-999-170:public:
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\tool-results\b503cfa.txt-1000-171:    // �غ�ϵͳ����
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\tool-results\b503cfa.txt-1001-172:    UFUNCTION(BlueprintCallable, Category = "Turn System")
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\tool-results\b503cfa.txt:1002:173:    void ResetForNewRound();
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\tool-results\b503cfa.txt-1003-175:    UFUNCTION(BlueprintPure, Category = "Turn System")
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\tool-results\b503cfa.txt-1004-176:    bool CanAct() const { return !bHasActed && bOnTurn; }
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\tool-results\b503cfa.txt-1005-178:    UFUNCTION(BlueprintPure, Category = "Turn System")
+--
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\subagents\agent-ab65f26edce62f842.jsonl-59-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\subagents\agent-ab65f26edce62f842.jsonl-60-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\subagents\agent-ab65f26edce62f842.jsonl-61-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\subagents\agent-ab65f26edce62f842.jsonl:62:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\subagents\agent-ab65f26edce62f842.jsonl-63-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\subagents\agent-ab65f26edce62f842.jsonl-64-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\subagents\agent-ab65f26edce62f842.jsonl-65-[Omitted long context line]
+--
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\subagents\agent-a6db8af1a53bafb55.jsonl-4-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\subagents\agent-a6db8af1a53bafb55.jsonl-5-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\subagents\agent-a6db8af1a53bafb55.jsonl-6-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\subagents\agent-a6db8af1a53bafb55.jsonl:7:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\subagents\agent-a6db8af1a53bafb55.jsonl-8-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\subagents\agent-a6db8af1a53bafb55.jsonl:9:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\subagents\agent-a6db8af1a53bafb55.jsonl-10-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\subagents\agent-a6db8af1a53bafb55.jsonl-11-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\subagents\agent-a6db8af1a53bafb55.jsonl:12:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\subagents\agent-a6db8af1a53bafb55.jsonl:13:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\subagents\agent-a6db8af1a53bafb55.jsonl-14-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\subagents\agent-a6db8af1a53bafb55.jsonl-15-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\subagents\agent-a6db8af1a53bafb55.jsonl-16-[Omitted long context line]
+--
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\subagents\agent-a79432641a505ab80.jsonl-18-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\subagents\agent-a79432641a505ab80.jsonl-19-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\subagents\agent-a79432641a505ab80.jsonl-20-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\subagents\agent-a79432641a505ab80.jsonl:21:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\subagents\agent-a79432641a505ab80.jsonl-22-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\subagents\agent-a79432641a505ab80.jsonl-23-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\subagents\agent-a79432641a505ab80.jsonl-24-[Omitted long context line]
+--
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\subagents\agent-a79432641a505ab80.jsonl-27-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\subagents\agent-a79432641a505ab80.jsonl-28-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\subagents\agent-a79432641a505ab80.jsonl-29-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\subagents\agent-a79432641a505ab80.jsonl:30:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\subagents\agent-a79432641a505ab80.jsonl-31-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\subagents\agent-a79432641a505ab80.jsonl-32-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\subagents\agent-a79432641a505ab80.jsonl-33-[Omitted long context line]
+--
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\subagents\agent-a6bb692cc21f04811.jsonl-30-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\subagents\agent-a6bb692cc21f04811.jsonl-31-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\subagents\agent-a6bb692cc21f04811.jsonl-32-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\subagents\agent-a6bb692cc21f04811.jsonl:33:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\subagents\agent-a6bb692cc21f04811.jsonl-34-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\subagents\agent-a6bb692cc21f04811.jsonl:35:[Omitted long matching line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\subagents\agent-a6bb692cc21f04811.jsonl-36-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\subagents\agent-a6bb692cc21f04811.jsonl-37-[Omitted long context line]
+d:\UE_Projects\LFP2D\ClaudeTask\D--UE-UE-Project-LFP2D\785bce02-d3e4-408f-a238-a12808d1f9c5\subagents\agent-a6bb692cc21f04811.jsonl-38-[Omitted long context line]
