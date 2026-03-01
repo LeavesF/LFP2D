@@ -5,9 +5,12 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "LFP2D/HexGrid/LFPHexTile.h"
+#include "LFP2D/HexGrid/LFPMapData.h"
 #include "LFPHexGridManager.generated.h"
 
 class ULFPTerrainDataAsset;
+class UDataTable;
+class UPaperSprite;
 
 
 UCLASS()
@@ -62,6 +65,66 @@ public:
 	// 调试控制
 	UFUNCTION(BlueprintCallable, Category = "Hex Grid")
 	void SetDebugEnabled(bool bEnabled) { bDrawDebug = bEnabled; }
+
+	// 公共参数 Getter
+	UFUNCTION(BlueprintPure, Category = "Hex Grid")
+	float GetHexSize() const { return HexSize; }
+
+	UFUNCTION(BlueprintPure, Category = "Hex Grid")
+	float GetVerticalScale() const { return VerticalScale; }
+
+	// ============== 地图数据驱动 ==============
+
+	// 清除所有格子
+	UFUNCTION(BlueprintCallable, Category = "Map Data")
+	void ClearGrid();
+
+	// 在指定坐标生成单个格子
+	UFUNCTION(BlueprintCallable, Category = "Map Data")
+	ALFPHexTile* SpawnTileAt(int32 Q, int32 R, ELFPTerrainType TerrainType,
+		FName DecorationID = NAME_None,
+		ELFPSpawnFaction SpawnFaction = ELFPSpawnFaction::SF_None,
+		int32 SpawnIndex = 0,
+		FGameplayTag EventTag = FGameplayTag());
+
+	// 添加格子（默认地形）
+	UFUNCTION(BlueprintCallable, Category = "Map Data")
+	ALFPHexTile* AddTile(int32 Q, int32 R);
+
+	// 移除格子
+	UFUNCTION(BlueprintCallable, Category = "Map Data")
+	bool RemoveTile(int32 Q, int32 R);
+
+	// 从 DataTable 加载地图
+	UFUNCTION(BlueprintCallable, Category = "Map Data")
+	void LoadMapFromDataTable(UDataTable* InMapData);
+
+	// 从 CSV 文件加载地图
+	UFUNCTION(BlueprintCallable, Category = "Map Data")
+	bool LoadMapFromCSV(const FString& CSVFilePath);
+
+	// 保存当前地图到 CSV 文件
+	UFUNCTION(BlueprintCallable, Category = "Map Data")
+	bool SaveMapToCSV(const FString& CSVFilePath);
+
+	// 导出当前地图数据
+	UFUNCTION(BlueprintCallable, Category = "Map Data")
+	TArray<FLFPMapTileRow> ExportMapData() const;
+
+	// 查询地形数据资产
+	UFUNCTION(BlueprintPure, Category = "Map Data")
+	ULFPTerrainDataAsset* GetTerrainDataForType(ELFPTerrainType TerrainType) const;
+
+	// 查询装饰精灵
+	UFUNCTION(BlueprintPure, Category = "Map Data")
+	UPaperSprite* GetDecorationSprite(FName DecorationID) const;
+
+	// 获取指定阵营出生点
+	UFUNCTION(BlueprintCallable, Category = "Map Data")
+	TArray<ALFPHexTile*> GetSpawnPoints(ELFPSpawnFaction Faction) const;
+
+	// 获取 GridMap 只读引用
+	const TMap<FIntPoint, ALFPHexTile*>& GetGridMap() const { return GridMap; }
 protected:
     UPROPERTY(EditDefaultsOnly)
     TSubclassOf<ALFPHexTile> HexTileClass;
@@ -82,6 +145,18 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Terrain")
 	TObjectPtr<ULFPTerrainDataAsset> DefaultTerrainData;
 
+	// 地形注册表：地形类型枚举 → 地形数据资产（在蓝图中配置）
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Map Data|Registry")
+	TMap<ELFPTerrainType, TObjectPtr<ULFPTerrainDataAsset>> TerrainRegistry;
+
+	// 装饰注册表：装饰 ID → 精灵（在蓝图中配置）
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Map Data|Registry")
+	TMap<FName, TObjectPtr<UPaperSprite>> DecorationRegistry;
+
+	// 预设地图数据表（BeginPlay 时自动加载）
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Map Data")
+	TObjectPtr<UDataTable> MapDataTable;
+
 	UPROPERTY(EditAnywhere, Category = "Debug")
 	bool bDrawDebug = true;
 
@@ -95,42 +170,6 @@ private:
 	// 六边形方向数组（静态常量）
 	static const TArray<FLFPHexCoordinates> HexDirections;
 
-    //// 寻路节点结构体（用于A*算法）
-    //struct FPathNode
-    //{
-    //    ALFPHexTile* Tile;
-    //    float GScore; // 从起点到当前节点的实际代价
-    //    float FScore; // GScore + 启发式估计值
-    //    FPathNode* Parent;
-
-    //    FPathNode(ALFPHexTile* InTile, float InG, float InF, FPathNode* InParent)
-    //        : Tile(InTile), GScore(InG), FScore(InF), Parent(InParent) {}
-
-    //    // 用于优先队列比较
-    //    bool operator<(const FPathNode& Other) const
-    //    {
-    //        return FScore > Other.FScore; // 注意：优先队列是最大堆，所以反转比较
-    //    }
-    //};
-
-    //// 自定义优先队列比较函数
-    //struct FComparePathNode
-    //{
-    //    bool operator()(const FPathNode* A, const FPathNode* B) const
-    //    {
-    //        return A->FScore > B->FScore;
-    //    }
-    //};
-
-    //// 存储所有的六角格片
-    //UPROPERTY()
-    //TArray<ALFPHexTile*> GridTiles;
-
-    //// 根据Tile获取坐标的哈希函数
-    //FORCEINLINE uint32 GetTypeHash(const ALFPHexTile* Tile) const
-    //{
-    //    return PointerHash(Tile);
-    //}
 public:
     UFUNCTION(BlueprintCallable, Category = "Hex Grid")
     ALFPHexTile* GetHexTileUnderCursor(const FVector2D& ScreenPosition, APlayerController* PlayerController);

@@ -3,10 +3,14 @@
 
 #include "LFP2D/HexGrid/LFPHexGridManager.h"
 #include "LFP2D/HexGrid/LFPTerrainDataAsset.h"
+#include "LFP2D/HexGrid/LFPMapData.h"
 #include "Engine/World.h"
+#include "Engine/DataTable.h"
 #include "Kismet/GameplayStatics.h"
 #include "LFP2D/Unit/LFPTacticsUnit.h"
 #include "DrawDebugHelpers.h"
+#include "Misc/FileHelper.h"
+#include "Misc/Paths.h"
 
 // 六边形方向常量（平顶六边形布局）
 const TArray<FLFPHexCoordinates> ALFPHexGridManager::HexDirections = {
@@ -34,7 +38,15 @@ void ALFPHexGridManager::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GenerateGrid(GridWidth, GridHeight);
+	// 如果有预设地图数据表，优先从数据表加载
+	if (MapDataTable)
+	{
+		LoadMapFromDataTable(MapDataTable);
+	}
+	else
+	{
+		GenerateGrid(GridWidth, GridHeight);
+	}
 }
 
 // Called every frame
@@ -63,7 +75,24 @@ void ALFPHexGridManager::Tick(float DeltaTime)
 
 void ALFPHexGridManager::GenerateGrid(int32 Width, int32 Height)
 {
-	// 清除旧的网格
+	ClearGrid();
+
+	// 生成矩形网格
+	ELFPTerrainType DefaultType = DefaultTerrainData ? DefaultTerrainData->TerrainType : ELFPTerrainType::TT_Grass;
+
+	for (int32 r = 0; r < Height; r++)
+	{
+		for (int32 q = 0; q < Width; q++)
+		{
+			// 计算偏移坐标 - 平顶六边形布局
+			int32 offsetQ = q - FMath::FloorToInt(r / 2.0f);
+			SpawnTileAt(offsetQ, r, DefaultType);
+		}
+	}
+}
+
+void ALFPHexGridManager::ClearGrid()
+{
 	for (auto& Tile : GridMap)
 	{
 		if (Tile.Value)
@@ -72,48 +101,241 @@ void ALFPHexGridManager::GenerateGrid(int32 Width, int32 Height)
 		}
 	}
 	GridMap.Empty();
+}
 
-	// 生成新网格
-	for (int32 r = 0; r < Height; r++)
+ALFPHexTile* ALFPHexGridManager::SpawnTileAt(int32 Q, int32 R, ELFPTerrainType TerrainType,
+	FName DecorationID, ELFPSpawnFaction SpawnFaction, int32 SpawnIndex, FGameplayTag EventTag)
+{
+	FIntPoint Key(Q, R);
+	// 如果已存在则跳过
+	if (GridMap.Contains(Key)) return GridMap[Key];
+
+	FLFPHexCoordinates HexCoord(Q, R);
+	FVector WorldLocation = HexCoord.ToWorldLocation(HexSize, VerticalScale) + GetActorLocation();
+
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = this;
+	ALFPHexTile* NewTile = GetWorld()->SpawnActor<ALFPHexTile>(
+		HexTileClass,
+		WorldLocation,
+		FRotator::ZeroRotator,
+		SpawnParams
+	);
+
+	if (!NewTile) return nullptr;
+
+	NewTile->SetCoordinates(HexCoord);
+	NewTile->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
+
+	// 应用地形：优先从注册表查找，否则用默认地形
+	if (ULFPTerrainDataAsset* TerrainDA = GetTerrainDataForType(TerrainType))
 	{
-		for (int32 q = 0; q < Width; q++)
+		NewTile->SetTerrainData(TerrainDA);
+	}
+	else if (DefaultTerrainData)
+	{
+		NewTile->SetTerrainData(DefaultTerrainData);
+	}
+
+	// 应用装饰
+	if (!DecorationID.IsNone())
+	{
+		NewTile->SetDecorationByID(DecorationID, GetDecorationSprite(DecorationID));
+	}
+
+	// 应用出生点和事件数据
+	NewTile->SpawnFaction = SpawnFaction;
+	NewTile->SpawnIndex = SpawnIndex;
+	NewTile->EventTag = EventTag;
+
+	GridMap.Add(Key, NewTile);
+	return NewTile;
+}
+
+ALFPHexTile* ALFPHexGridManager::AddTile(int32 Q, int32 R)
+{
+	ELFPTerrainType DefaultType = DefaultTerrainData ? DefaultTerrainData->TerrainType : ELFPTerrainType::TT_Grass;
+	return SpawnTileAt(Q, R, DefaultType);
+}
+
+bool ALFPHexGridManager::RemoveTile(int32 Q, int32 R)
+{
+	FIntPoint Key(Q, R);
+	if (ALFPHexTile** Found = GridMap.Find(Key))
+	{
+		if (*Found)
 		{
-			// 计算偏移坐标 - 平顶六边形布局
-			int32 offsetQ = q - FMath::FloorToInt(r / 2.0f);
+			(*Found)->Destroy();
+		}
+		GridMap.Remove(Key);
+		return true;
+	}
+	return false;
+}
 
-			// 创建立方坐标
-			FLFPHexCoordinates HexCoord(offsetQ, r);
+void ALFPHexGridManager::LoadMapFromDataTable(UDataTable* InMapData)
+{
+	if (!InMapData)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("LoadMapFromDataTable: DataTable 为空"));
+		return;
+	}
 
-			// 计算世界位置（使用垂直缩放）
-			FVector WorldLocation = HexCoord.ToWorldLocation(HexSize, VerticalScale) + GetActorLocation();
+	ClearGrid();
 
-			// 生成格子
-			FActorSpawnParameters SpawnParams;
-			SpawnParams.Owner = this;
-			ALFPHexTile* NewTile = GetWorld()->SpawnActor<ALFPHexTile>(
-				HexTileClass,
-				WorldLocation,
-				FRotator::ZeroRotator,
-				SpawnParams
-			);
+	TArray<FLFPMapTileRow*> AllRows;
+	InMapData->GetAllRows<FLFPMapTileRow>(TEXT("LoadMap"), AllRows);
 
-			if (NewTile)
-			{
-				NewTile->SetCoordinates(HexCoord);
-				NewTile->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
-
-				// 应用默认地形数据
-				if (DefaultTerrainData)
-				{
-					NewTile->SetTerrainData(DefaultTerrainData);
-				}
-
-				// 添加到网格映射（使用Q,R作为键）
-				FIntPoint Key(HexCoord.Q, HexCoord.R);
-				GridMap.Add(Key, NewTile);
-			}
+	for (const FLFPMapTileRow* Row : AllRows)
+	{
+		if (Row)
+		{
+			SpawnTileAt(Row->Q, Row->R, Row->TerrainType,
+				Row->DecorationID, Row->SpawnFaction, Row->SpawnIndex, Row->EventTag);
 		}
 	}
+
+	UE_LOG(LogTemp, Log, TEXT("LoadMapFromDataTable: 加载了 %d 个格子"), AllRows.Num());
+}
+
+bool ALFPHexGridManager::LoadMapFromCSV(const FString& CSVFilePath)
+{
+	FString CSVContent;
+	if (!FFileHelper::LoadFileToString(CSVContent, *CSVFilePath))
+	{
+		UE_LOG(LogTemp, Error, TEXT("LoadMapFromCSV: 无法加载文件 %s"), *CSVFilePath);
+		return false;
+	}
+
+	// 使用临时 DataTable 解析 CSV
+	UDataTable* TempTable = NewObject<UDataTable>(GetTransientPackage());
+	TempTable->RowStruct = FLFPMapTileRow::StaticStruct();
+
+	TArray<FString> Problems = TempTable->CreateTableFromCSVString(CSVContent);
+	if (Problems.Num() > 0)
+	{
+		for (const FString& Problem : Problems)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("CSV 解析问题: %s"), *Problem);
+		}
+	}
+
+	LoadMapFromDataTable(TempTable);
+	return true;
+}
+
+bool ALFPHexGridManager::SaveMapToCSV(const FString& CSVFilePath)
+{
+	// CSV 头部（UE DataTable 格式：第一列为 RowName）
+	FString CSVContent = TEXT("---,Q,R,TerrainType,DecorationID,SpawnFaction,SpawnIndex,EventTag\n");
+
+	for (const auto& Pair : GridMap)
+	{
+		ALFPHexTile* Tile = Pair.Value;
+		if (!Tile) continue;
+
+		FLFPHexCoordinates Coord = Tile->GetCoordinates();
+		FString RowName = FString::Printf(TEXT("%d_%d"), Coord.Q, Coord.R);
+
+		// 地形类型枚举名
+		ELFPTerrainType TType = Tile->GetTerrainData() ? Tile->GetTerrainData()->TerrainType : ELFPTerrainType::TT_Grass;
+		FString TerrainStr = UEnum::GetValueAsString(TType);
+		TerrainStr = TerrainStr.RightChop(TerrainStr.Find(TEXT("::")) + 2);
+
+		// 装饰 ID
+		FString DecoStr = Tile->DecorationID.IsNone() ? TEXT("") : Tile->DecorationID.ToString();
+
+		// 出生点阵营
+		FString SpawnStr = UEnum::GetValueAsString(Tile->SpawnFaction);
+		SpawnStr = SpawnStr.RightChop(SpawnStr.Find(TEXT("::")) + 2);
+
+		// 事件标签
+		FString EventStr = Tile->EventTag.IsValid() ? Tile->EventTag.ToString() : TEXT("");
+
+		CSVContent += FString::Printf(TEXT("%s,%d,%d,%s,%s,%s,%d,%s\n"),
+			*RowName, Coord.Q, Coord.R, *TerrainStr, *DecoStr,
+			*SpawnStr, Tile->SpawnIndex, *EventStr);
+	}
+
+	// 确保目录存在
+	FString Directory = FPaths::GetPath(CSVFilePath);
+	if (!FPaths::DirectoryExists(Directory))
+	{
+		IFileManager::Get().MakeDirectory(*Directory, true);
+	}
+
+	bool bSuccess = FFileHelper::SaveStringToFile(CSVContent, *CSVFilePath,
+		FFileHelper::EEncodingOptions::ForceUTF8WithoutBOM);
+
+	if (bSuccess)
+	{
+		UE_LOG(LogTemp, Log, TEXT("SaveMapToCSV: 保存 %d 个格子到 %s"), GridMap.Num(), *CSVFilePath);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("SaveMapToCSV: 保存失败 %s"), *CSVFilePath);
+	}
+	return bSuccess;
+}
+
+TArray<FLFPMapTileRow> ALFPHexGridManager::ExportMapData() const
+{
+	TArray<FLFPMapTileRow> Result;
+	for (const auto& Pair : GridMap)
+	{
+		ALFPHexTile* Tile = Pair.Value;
+		if (!Tile) continue;
+
+		FLFPMapTileRow Row;
+		FLFPHexCoordinates Coord = Tile->GetCoordinates();
+		Row.Q = Coord.Q;
+		Row.R = Coord.R;
+		Row.TerrainType = Tile->GetTerrainData() ? Tile->GetTerrainData()->TerrainType : ELFPTerrainType::TT_Grass;
+		Row.DecorationID = Tile->DecorationID;
+		Row.SpawnFaction = Tile->SpawnFaction;
+		Row.SpawnIndex = Tile->SpawnIndex;
+		Row.EventTag = Tile->EventTag;
+		Result.Add(Row);
+	}
+	return Result;
+}
+
+ULFPTerrainDataAsset* ALFPHexGridManager::GetTerrainDataForType(ELFPTerrainType TerrainType) const
+{
+	if (const TObjectPtr<ULFPTerrainDataAsset>* Found = TerrainRegistry.Find(TerrainType))
+	{
+		return *Found;
+	}
+	return nullptr;
+}
+
+UPaperSprite* ALFPHexGridManager::GetDecorationSprite(FName DecorationID) const
+{
+	if (DecorationID.IsNone()) return nullptr;
+
+	if (const TObjectPtr<UPaperSprite>* Found = DecorationRegistry.Find(DecorationID))
+	{
+		return *Found;
+	}
+	return nullptr;
+}
+
+TArray<ALFPHexTile*> ALFPHexGridManager::GetSpawnPoints(ELFPSpawnFaction Faction) const
+{
+	TArray<ALFPHexTile*> Result;
+	for (const auto& Pair : GridMap)
+	{
+		if (Pair.Value && Pair.Value->SpawnFaction == Faction && Pair.Value->SpawnIndex > 0)
+		{
+			Result.Add(Pair.Value);
+		}
+	}
+	// 按 SpawnIndex 排序
+	Result.Sort([](const ALFPHexTile& A, const ALFPHexTile& B)
+	{
+		return A.SpawnIndex < B.SpawnIndex;
+	});
+	return Result;
 }
 
 TArray<ALFPHexTile*> ALFPHexGridManager::GetNeighbors(const FLFPHexCoordinates& Coords) const

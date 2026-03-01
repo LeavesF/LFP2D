@@ -21,6 +21,7 @@ class ALFPTurnManager;
 
 class ULFPTurnSpeedListWidget;
 class ULFPSkillSelectionWidget;
+class ULFPMapEditorComponent;
 /**
  *
  */
@@ -47,6 +48,7 @@ public:
     //void OnRotateCamera(const FInputActionValue& Value);
     void OnToggleDebug(const FInputActionValue& Value);
     void OnSkipTurnAction(const FInputActionValue& Value);
+    void OnToggleEditorAction(const FInputActionValue& Value);
 
     void OnCameraPan(const FInputActionValue& Value);
     void OnCameraDragStarted(const FInputActionValue& Value);
@@ -101,10 +103,18 @@ protected:
     UPROPERTY(EditAnywhere, Category = "Input")
     UInputAction* CameraZoomAction;
 
+	// 地图编辑器输入
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* ToggleEditorAction;
+
 
     // 网格管理器引用
     UPROPERTY()
     ALFPHexGridManager* GridManager;
+
+	// 地图编辑器组件
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Map Editor")
+	TObjectPtr<ULFPMapEditorComponent> MapEditorComponent;
 
     // 当前选中的单位
     UPROPERTY()

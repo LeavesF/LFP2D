@@ -116,6 +116,16 @@ void ALFPHexTile::SetTerrainData(ULFPTerrainDataAsset* InTerrainData)
 	}
 }
 
+void ALFPHexTile::SetDecorationByID(FName InID, UPaperSprite* InSprite)
+{
+	DecorationID = InID;
+	DecorationSprite = InSprite;
+	if (DecorationSpriteComponent)
+	{
+		DecorationSpriteComponent->SetSprite(InSprite);
+	}
+}
+
 void ALFPHexTile::SetRangeSprite(EUnitRange UnitRange)
 {
 	switch (UnitRange)

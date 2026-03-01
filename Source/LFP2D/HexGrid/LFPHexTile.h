@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "GameplayTagContainer.h"
 #include "Math/IntPoint.h"
 #include "LFPHexTile.generated.h"
 
@@ -11,6 +12,7 @@ class UPaperSpriteComponent;
 class UPaperSprite;
 class ALFPTacticsUnit;
 class ULFPTerrainDataAsset;
+enum class ELFPSpawnFaction : uint8;
 
 USTRUCT(BlueprintType)
 struct FLFPHexCoordinates
@@ -234,6 +236,28 @@ public:
 	// 装饰精灵（编辑器中可配置，纯视觉无游戏效果）
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Decoration")
 	TObjectPtr<UPaperSprite> DecorationSprite;
+
+	// ============== 地图数据字段 ==============
+
+	// 出生点阵营
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Map Data")
+	ELFPSpawnFaction SpawnFaction;
+
+	// 出生点顺序索引（同一阵营内的出生顺序，0 = 非出生点）
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Map Data")
+	int32 SpawnIndex = 0;
+
+	// 事件标签（空 = 无事件）
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Map Data")
+	FGameplayTag EventTag;
+
+	// 装饰标识（对应装饰注册表中的 Key）
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Map Data")
+	FName DecorationID = NAME_None;
+
+	// 运行时设置装饰精灵（通过 ID 和精灵引用）
+	UFUNCTION(BlueprintCallable, Category = "Hex Tile")
+	void SetDecorationByID(FName InID, UPaperSprite* InSprite);
 
 	// 设置RangeSprite层级
 	UFUNCTION(BlueprintCallable, Category = "Hex Tile")

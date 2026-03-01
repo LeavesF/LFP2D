@@ -9,6 +9,7 @@
 #include "LFP2D/Turn/LFPTurnManager.h"
 #include "LFP2D/UI/Fighting/LFPSkillSelectionWidget.h"
 #include "LFP2D/UI/Fighting/LFPTurnSpeedListWidget.h"
+#include "LFP2D/HexGrid/LFPMapEditorComponent.h"
 #include "Kismet/GameplayStatics.h"
 //#include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "EnhancedInputComponent.h"
@@ -29,6 +30,9 @@ ALFPTacticsPlayerController::ALFPTacticsPlayerController()
     bIsDragging = false;
     CurrentControlState = EPlayControlState::MoveState;
     LastControlState = CurrentControlState;
+
+    // 创建地图编辑器组件
+    MapEditorComponent = CreateDefaultSubobject<ULFPMapEditorComponent>(TEXT("MapEditorComponent"));
 }
 
 void ALFPTacticsPlayerController::BeginPlay()
@@ -104,6 +108,9 @@ void ALFPTacticsPlayerController::SetupInputComponent()
         EnhancedInputComponent->BindAction(CameraDragAction, ETriggerEvent::Triggered, this, &ALFPTacticsPlayerController::OnCameraDragTriggered);
         EnhancedInputComponent->BindAction(CameraDragAction, ETriggerEvent::Completed, this, &ALFPTacticsPlayerController::OnCameraDragCompleted);
         EnhancedInputComponent->BindAction(CameraZoomAction, ETriggerEvent::Triggered, this, &ALFPTacticsPlayerController::OnCameraZoom);
+
+        // 地图编辑器切换
+        EnhancedInputComponent->BindAction(ToggleEditorAction, ETriggerEvent::Started, this, &ALFPTacticsPlayerController::OnToggleEditorAction);
     }
 }
 
@@ -275,6 +282,34 @@ void ALFPTacticsPlayerController::OnConfirmAction(const FInputActionValue& Value
         return;
     }
     DragTime = 0.f;
+
+    // 编辑器模式优先处理
+    if (MapEditorComponent && MapEditorComponent->IsEditorActive())
+    {
+        if (LastHoveredTile)
+        {
+            MapEditorComponent->ApplyToolToTile(LastHoveredTile);
+        }
+        else if (GridManager && MapEditorComponent->GetCurrentTool() == ELFPMapEditorTool::MET_AddTile)
+        {
+            // 对空白区域添加格子：射线投射到 Z=0 平面计算坐标
+            FVector WorldOrigin, WorldDirection;
+            DeprojectMousePositionToWorld(WorldOrigin, WorldDirection);
+            if (FMath::Abs(WorldDirection.Z) > KINDA_SMALL_NUMBER)
+            {
+                float T = -WorldOrigin.Z / WorldDirection.Z;
+                FVector HitPoint = WorldOrigin + WorldDirection * T;
+                FVector2D LocalLoc(
+                    HitPoint.X - GridManager->GetActorLocation().X,
+                    HitPoint.Y - GridManager->GetActorLocation().Y
+                );
+                FLFPHexCoordinates Coord = FLFPHexCoordinates::FromWorldLocation(
+                    LocalLoc, GridManager->GetHexSize(), GridManager->GetVerticalScale());
+                MapEditorComponent->ApplyToolToCoord(Coord.Q, Coord.R);
+            }
+        }
+        return;
+    }
 
     if (SelectedUnit && SelectedTile)
     {
@@ -839,5 +874,13 @@ void ALFPTacticsPlayerController::OnPhaseChanged(EBattlePhase NewPhase)
 
     case EBattlePhase::BP_RoundEnd:
         break;
+    }
+}
+
+void ALFPTacticsPlayerController::OnToggleEditorAction(const FInputActionValue& Value)
+{
+    if (MapEditorComponent)
+    {
+        MapEditorComponent->ToggleEditorMode();
     }
 }
