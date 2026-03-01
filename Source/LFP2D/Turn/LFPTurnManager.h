@@ -176,7 +176,7 @@ protected:
     int32 FactionMaxAP = 3;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Action Points")
-    int32 FactionInitialAP = 1;
+    int32 FactionInitialAP = 0;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Action Points")
     int32 FactionAPRecovery = 1;
