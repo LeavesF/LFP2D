@@ -10,6 +10,7 @@
 #include "LFP2D/UI/Fighting/LFPSkillSelectionWidget.h"
 #include "LFP2D/UI/Fighting/LFPTurnSpeedListWidget.h"
 #include "LFP2D/HexGrid/LFPMapEditorComponent.h"
+#include "LFP2D/UI/MapEditor/LFPMapEditorWidget.h"
 #include "Kismet/GameplayStatics.h"
 //#include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "EnhancedInputComponent.h"
@@ -879,8 +880,36 @@ void ALFPTacticsPlayerController::OnPhaseChanged(EBattlePhase NewPhase)
 
 void ALFPTacticsPlayerController::OnToggleEditorAction(const FInputActionValue& Value)
 {
-    if (MapEditorComponent)
+    if (!MapEditorComponent) return;
+
+    MapEditorComponent->ToggleEditorMode();
+
+    if (MapEditorComponent->IsEditorActive())
     {
-        MapEditorComponent->ToggleEditorMode();
+        // 创建或显示编辑器 Widget
+        if (!MapEditorWidget && MapEditorWidgetClass)
+        {
+            MapEditorWidget = CreateWidget<ULFPMapEditorWidget>(this, MapEditorWidgetClass);
+            if (MapEditorWidget)
+            {
+                MapEditorWidget->AddToViewport();
+                MapEditorWidget->InitializeEditor(MapEditorComponent);
+            }
+        }
+        else if (MapEditorWidget)
+        {
+            MapEditorWidget->SetVisibility(ESlateVisibility::Visible);
+        }
+
+        // 显示鼠标光标
+        bShowMouseCursor = true;
+    }
+    else
+    {
+        // 隐藏编辑器 Widget
+        if (MapEditorWidget)
+        {
+            MapEditorWidget->SetVisibility(ESlateVisibility::Collapsed);
+        }
     }
 }

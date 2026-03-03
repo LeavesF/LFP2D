@@ -22,6 +22,7 @@ class ALFPTurnManager;
 class ULFPTurnSpeedListWidget;
 class ULFPSkillSelectionWidget;
 class ULFPMapEditorComponent;
+class ULFPMapEditorWidget;
 /**
  *
  */
@@ -241,6 +242,13 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 
     TObjectPtr<ULFPSkillSelectionWidget> SkillSelectionWidget;
+
+	// 地图编辑器 UI
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<ULFPMapEditorWidget> MapEditorWidgetClass;
+
+	UPROPERTY()
+	TObjectPtr<ULFPMapEditorWidget> MapEditorWidget;
 
 public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
