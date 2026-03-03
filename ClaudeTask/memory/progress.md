@@ -67,6 +67,20 @@
 - [ ] Configure TerrainRegistry on BP_HexGridManager (map each ELFPTerrainType → DA_Terrain_* asset)
 - [ ] Configure DecorationRegistry on BP_HexGridManager (map FName → decoration sprites)
 
+## Planned Features
+
+### World Map System (design complete, not yet implemented)
+- [ ] 数据结构：节点（FLFPWorldMapNodeData）、边（FLFPWorldMapEdgeData）、序列化为 CSV/DataTable
+- [ ] ALFPWorldMapNode Actor（Sprite 渲染节点类型）
+- [ ] ALFPWorldMapEdge Actor（边渲染）
+- [ ] ALFPWorldMapManager（节点/边管理、迷雾逻辑、数据加载/保存）
+- [ ] 关卡地图编辑器（外层，放置/连接节点）
+- [ ] 嵌套编辑：关卡编辑器 → 战斗地图编辑器的切换
+- [ ] 场景切换：Level Streaming（关卡地图 ↔ 战斗场景）
+- [ ] 玩家移动逻辑（消耗回合、触发节点事件）
+- [ ] 迷雾系统（图距离视野范围，永久揭开）
+- [ ] 回合压力系统（100 回合后全局难度递增事件）
+
 ## Known Issues / Notes
 - `FindBestCasterPosition` and `SelectBestSkill` cannot be `const` because `GetCurrentTile()` is non-const
 - SkillBase `EvaluateConditionBonus()` returns 0 by default — override in Blueprint subclasses for context-aware priority bonuses
