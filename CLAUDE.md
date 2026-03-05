@@ -69,7 +69,7 @@ TurnManager（速度制回合）
 ### 内容组织
 
 - `Content/Battle/Skill/Skills/` — 技能蓝图实现（如 BP_Skill_TestArrow, BP_Skill_TestRecover）
-- `Content/Map/2DMap.umap` — 主战斗地图
+- `Content/Map/Test_Fight.umap` — 主战斗地图
 - `Content/Core/BP_TacticsPC` — 玩家控制器蓝图
 - `Content/AI/` — 行为树资产
 - `Content/UI/Fighting/` — 战斗 UI Widget 蓝图
