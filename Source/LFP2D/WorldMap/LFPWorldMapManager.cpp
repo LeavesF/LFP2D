@@ -312,6 +312,12 @@ bool ALFPWorldMapManager::LoadWorldMap(const FString& MapName)
 	if (!bNodesOk) return false;
 
 	bool bEdgesOk = LoadEdgesFromCSV(Dir / (MapName + TEXT("_edges.csv")));
+
+	if (bEdgesOk)
+	{
+		CurrentWorldMapName = MapName;
+	}
+
 	return bEdgesOk;
 }
 
@@ -666,4 +672,16 @@ bool ALFPWorldMapManager::MovePlayer(int32 TargetNodeID)
 	}
 
 	return bMoved;
+}
+
+void ALFPWorldMapManager::RestoreTriggeredNodes(const TSet<int32>& TriggeredNodeIDs)
+{
+	for (int32 NodeID : TriggeredNodeIDs)
+	{
+		if (ALFPWorldMapNode* Node = GetNode(NodeID))
+		{
+			Node->bHasBeenTriggered = true;
+			Node->UpdateVisualState();
+		}
+	}
 }

@@ -4,6 +4,7 @@
 #include "LFP2D/WorldMap/LFPWorldMapPlayerState.h"
 #include "LFP2D/WorldMap/LFPWorldMapEditorComponent.h"
 #include "LFP2D/UI/WorldMapEditor/LFPWorldMapEditorWidget.h"
+#include "LFP2D/Core/LFPGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -348,12 +349,85 @@ void ALFPWorldMapPlayerController::EnterNode(ALFPWorldMapNode* Node)
 
 	UE_LOG(LogTemp, Log, TEXT("进入节点 %d，类型: %d"), Node->NodeID, (int32)Node->NodeType);
 
-	// TODO: 根据节点类型触发不同逻辑
-	// - 战斗节点 → 加载战斗场景
-	// - 事件节点 → 触发事件
-	// - 商店节点 → 打开商店 UI
-	// - 城镇节点 → 进入城镇场景
-	// 这些逻辑将在 Phase 5 实现
+	switch (Node->NodeType)
+	{
+	case ELFPWorldNodeType::WNT_Battle:
+	case ELFPWorldNodeType::WNT_Boss:
+		EnterBattle(Node);
+		break;
+
+	case ELFPWorldNodeType::WNT_Event:
+		// TODO: 触发事件系统
+		UE_LOG(LogTemp, Log, TEXT("事件节点 %d: EventID=%s"), Node->NodeID, *Node->EventID);
+		break;
+
+	case ELFPWorldNodeType::WNT_Shop:
+		// TODO: 打开商店 UI
+		UE_LOG(LogTemp, Log, TEXT("商店节点 %d"), Node->NodeID);
+		break;
+
+	case ELFPWorldNodeType::WNT_Town:
+		// TODO: 进入城镇
+		UE_LOG(LogTemp, Log, TEXT("城镇节点 %d"), Node->NodeID);
+		break;
+
+	case ELFPWorldNodeType::WNT_QuestNPC:
+		// TODO: 触发任务对话
+		UE_LOG(LogTemp, Log, TEXT("任务NPC节点 %d"), Node->NodeID);
+		break;
+
+	case ELFPWorldNodeType::WNT_SkillNode:
+		// TODO: 打开技能树 UI
+		UE_LOG(LogTemp, Log, TEXT("技能节点 %d"), Node->NodeID);
+		break;
+
+	default:
+		break;
+	}
+}
+
+void ALFPWorldMapPlayerController::EnterBattle(ALFPWorldMapNode* BattleNode)
+{
+	if (!BattleNode) return;
+
+	ULFPGameInstance* GI = Cast<ULFPGameInstance>(GetGameInstance());
+	if (!GI) return;
+
+	ALFPWorldMapManager* Manager = GetWorldMapManager();
+	if (!Manager) return;
+
+	// 保存世界地图快照
+	FLFPWorldMapSnapshot Snapshot;
+	Snapshot.WorldMapName = Manager->GetCurrentWorldMapName();
+	if (ULFPWorldMapPlayerState* PS = Manager->GetPlayerState())
+	{
+		Snapshot.CurrentNodeID = PS->CurrentNodeID;
+		Snapshot.CurrentTurn = PS->CurrentTurn;
+		Snapshot.VisitedNodeIDs = PS->VisitedNodeIDs;
+		Snapshot.RevealedNodeIDs = PS->RevealedNodeIDs;
+	}
+
+	// 收集已触发节点
+	for (const auto& Pair : Manager->GetNodeMap())
+	{
+		if (Pair.Value && Pair.Value->bHasBeenTriggered)
+		{
+			Snapshot.TriggeredNodeIDs.Add(Pair.Key);
+		}
+	}
+
+	GI->SaveWorldMapSnapshot(Snapshot);
+
+	// 设置战斗请求
+	FLFPBattleRequest Request;
+	Request.SourceNodeID = BattleNode->NodeID;
+	Request.BattleMapName = BattleNode->BattleMapName;
+	Request.StarRating = BattleNode->StarRating;
+	Request.bCanEscape = BattleNode->bCanEscape;
+	GI->SetBattleRequest(Request);
+
+	// 切换到战斗关卡
+	GI->TransitionToBattle(TEXT(""));
 }
 
 ALFPWorldMapManager* ALFPWorldMapPlayerController::GetWorldMapManager() const

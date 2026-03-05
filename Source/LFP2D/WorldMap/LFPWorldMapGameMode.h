@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "LFP2D/Core/LFPGameInstance.h"
 #include "LFPWorldMapGameMode.generated.h"
 
 class ALFPWorldMapManager;
@@ -18,6 +19,9 @@ class LFP2D_API ALFPWorldMapGameMode : public AGameModeBase
 protected:
 	virtual void StartPlay() override;
 
+	// 处理战斗结果
+	void HandleBattleResult(const FLFPBattleResult& Result);
+
 public:
 	// 世界地图管理器引用
 	UPROPERTY()
@@ -26,6 +30,14 @@ public:
 	// 世界地图管理器类（蓝图中配置）
 	UPROPERTY(EditDefaultsOnly, Category = "World Map")
 	TSubclassOf<ALFPWorldMapManager> WorldMapManagerClass;
+
+	// 默认世界地图名（首次加载用）
+	UPROPERTY(EditDefaultsOnly, Category = "World Map")
+	FString DefaultWorldMapName;
+
+	// 默认起始节点 ID
+	UPROPERTY(EditDefaultsOnly, Category = "World Map")
+	int32 DefaultStartNodeID = 0;
 
 	// 获取世界地图管理器
 	UFUNCTION(BlueprintPure, Category = "World Map")

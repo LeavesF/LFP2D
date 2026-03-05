@@ -64,6 +64,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "World Map")
 	void EnterNode(ALFPWorldMapNode* Node);
 
+	// 进入战斗（保存快照 + 设置请求 + 切换关卡）
+	UFUNCTION(BlueprintCallable, Category = "World Map")
+	void EnterBattle(ALFPWorldMapNode* BattleNode);
+
 	// 获取世界地图管理器
 	UFUNCTION(BlueprintPure, Category = "World Map")
 	ALFPWorldMapManager* GetWorldMapManager() const;

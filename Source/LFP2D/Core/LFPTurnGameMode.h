@@ -4,16 +4,34 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "LFP2D/Core/LFPGameInstance.h"
 #include "LFPTurnGameMode.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class LFP2D_API ALFPTurnGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
-	
+
 public:
 	virtual void StartPlay() override;
+
+	// 结束战斗，写回结果并返回世界地图
+	UFUNCTION(BlueprintCallable, Category = "Battle")
+	void EndBattle(bool bVictory, bool bEscaped = false);
+
+	// 获取当前战斗请求
+	UFUNCTION(BlueprintPure, Category = "Battle")
+	const FLFPBattleRequest& GetBattleRequest() const { return CachedBattleRequest; }
+
+	// 是否由世界地图触发的战斗（否则为独立测试）
+	UFUNCTION(BlueprintPure, Category = "Battle")
+	bool IsWorldMapBattle() const { return CachedBattleRequest.bIsValid; }
+
+protected:
+	// 缓存的战斗请求
+	UPROPERTY(BlueprintReadOnly, Category = "Battle")
+	FLFPBattleRequest CachedBattleRequest;
 };

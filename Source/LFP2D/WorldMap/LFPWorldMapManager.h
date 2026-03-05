@@ -119,6 +119,18 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "World Map")
 	bool MovePlayer(int32 TargetNodeID);
 
+	// 获取当前加载的世界地图名
+	UFUNCTION(BlueprintPure, Category = "World Map")
+	FString GetCurrentWorldMapName() const { return CurrentWorldMapName; }
+
+	// 设置当前世界地图名
+	UFUNCTION(BlueprintCallable, Category = "World Map")
+	void SetCurrentWorldMapName(const FString& MapName) { CurrentWorldMapName = MapName; }
+
+	// 从快照恢复运行时状态（已触发节点）
+	UFUNCTION(BlueprintCallable, Category = "World Map")
+	void RestoreTriggeredNodes(const TSet<int32>& TriggeredNodeIDs);
+
 protected:
 	// 节点注册表：NodeID → Node Actor
 	UPROPERTY()
@@ -160,6 +172,9 @@ protected:
 
 	// ID 计数器
 	int32 NextNodeID = 0;
+
+	// 当前世界地图名
+	FString CurrentWorldMapName;
 
 	// 世界地图保存目录
 	FString GetWorldMapSaveDirectory() const;
