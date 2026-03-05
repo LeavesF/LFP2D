@@ -53,33 +53,56 @@
 - [x] PlayerController: ToggleEditorAction, editor mode input routing, Z=0 plane raycast
 
 ## Editor TODO (manual)
-- [ ] Create UMG Blueprint `WBP_PlannedSkillIcon` with UImage named `SkillIconImage`
+- [x] Create UMG Blueprint `WBP_PlannedSkillIcon` with UImage named `SkillIconImage`
 - [ ] Set `PlannedSkillIconWidgetClass` on enemy unit blueprints
 - [ ] Optionally add `ActionPointsText` TextBlock to SkillSelectionWidget UMG
 - [ ] Optionally add `PhaseText` TextBlock to TurnSpeedListWidget UMG
 - [x] Configure skill priority values (BasePriority, PriorityDecreaseOnUse, PriorityRecoveryPerRound) on skill Blueprint assets
-- [ ] Configure faction AP values (FactionMaxAP, FactionInitialAP, FactionAPRecovery) on TurnManager Blueprint
+- [x] Configure faction AP values (FactionMaxAP, FactionInitialAP, FactionAPRecovery) on TurnManager Blueprint
 - [x] Create terrain DataAsset instances (DA_Terrain_Grass created in Content/Grid/Terrain/)
 - [ ] Set DefaultTerrainData on BP_HexGridManager
 - [ ] Configure specific tiles with different terrain types for testing
-- [ ] Create WBP_MapEditor UMG Blueprint in Content/UI/MapEditor/
-- [ ] Create IA_ToggleEditor InputAction (e.g. F5) and add to input mapping
-- [ ] Configure TerrainRegistry on BP_HexGridManager (map each ELFPTerrainType → DA_Terrain_* asset)
-- [ ] Configure DecorationRegistry on BP_HexGridManager (map FName → decoration sprites)
+- [x] Create WBP_MapEditor UMG Blueprint in Content/UI/MapEditor/
+- [x] Create IA_ToggleEditor InputAction (e.g. F5) and add to input mapping
+- [x] Configure TerrainRegistry on BP_HexGridManager (map each ELFPTerrainType → DA_Terrain_* asset)
+- [x] Configure DecorationRegistry on BP_HexGridManager (map FName → decoration sprites)
 
 ## Planned Features
 
-### World Map System (design complete, not yet implemented)
-- [ ] 数据结构：节点（FLFPWorldMapNodeData）、边（FLFPWorldMapEdgeData）、序列化为 CSV/DataTable
-- [ ] ALFPWorldMapNode Actor（Sprite 渲染节点类型）
-- [ ] ALFPWorldMapEdge Actor（边渲染）
-- [ ] ALFPWorldMapManager（节点/边管理、迷雾逻辑、数据加载/保存）
-- [ ] 关卡地图编辑器（外层，放置/连接节点）
-- [ ] 嵌套编辑：关卡编辑器 → 战斗地图编辑器的切换
-- [ ] 场景切换：Level Streaming（关卡地图 ↔ 战斗场景）
-- [ ] 玩家移动逻辑（消耗回合、触发节点事件）
-- [ ] 迷雾系统（图距离视野范围，永久揭开）
-- [ ] 回合压力系统（100 回合后全局难度递增事件）
+### World Map System
+#### Phase 1+2: 数据层 + 可视化（完成）
+- [x] LFPWorldMapData.h: ELFPWorldNodeType 枚举（7 种节点）、FLFPWorldNodeRow、FLFPWorldEdgeRow
+- [x] LFPWorldNodeDataAsset.h: 节点类型视觉数据资产（DefaultSprite/TriggeredSprite/FogSprite）
+- [x] ALFPWorldMapNode Actor: 数据 + PaperSpriteComponent + 高亮 + InitFromRowData/ExportToRowData
+- [x] ALFPWorldMapEdge Actor: 数据 + 拉伸精灵线段 + UpdateVisualPosition
+- [x] ALFPWorldMapManager: NodeMap/EdgeMap/AdjacencyList、SpawnNode/RemoveNode/AddEdge/RemoveEdge、CSV 保存/加载、NodeVisualRegistry
+
+#### Phase 3: 世界地图编辑器（完成）
+- [x] LFPWorldMapEditorComponent（工具模式、笔刷参数、嵌套编辑）
+- [x] LFPWorldMapEditorWidget（UI）
+- [x] PlayerController 集成（输入路由、Toggle）
+
+#### GameMode 架构重构（完成）
+- [x] ALFPWorldMapGameMode（世界地图专用 GameMode，生成 WorldMapManager）
+- [x] ALFPWorldMapPlayerController（世界地图专用 PlayerController，相机/编辑器/节点交互）
+- [x] 从 ALFPTacticsPlayerController 移除世界地图相关代码
+
+#### Phase 4: 玩家移动 + 迷雾（完成）
+- [x] LFPWorldMapPlayerState（CurrentNodeID、CurrentTurn、VisitedNodeIDs、RevealedNodeIDs、MoveToNode、GetReachableNodeIDs）
+- [x] Manager 迷雾系统（BFS GetNodesWithinGraphDistance、UpdateFog、InitializePlayer、MovePlayer）
+- [x] PlayerController 世界地图移动逻辑（MoveToNode、ShowReachableNodes、ClearReachableHighlight、EnterNode）
+- [x] 回合压力系统（TurnPressureThreshold=100、IsPastPressureThreshold）
+- [x] 节点触发标记（战斗/事件/Boss 首次触发后标记，商店/城镇可反复进入）
+- [x] 前置节点解锁检查（PrerequisiteNodeIDs 分号分隔解析）
+
+#### Phase 5: 场景切换（完成）
+- [x] ULFPGameInstance（跨关卡状态中转：FLFPBattleRequest、FLFPBattleResult、FLFPWorldMapSnapshot）
+- [x] WorldMapPlayerController::EnterNode 按节点类型分发（战斗/事件/商店等）
+- [x] WorldMapPlayerController::EnterBattle（保存快照 + 设置战斗请求 + OpenLevel）
+- [x] TurnGameMode::StartPlay 读取 BattleRequest（ConsumeBattleRequest）
+- [x] TurnGameMode::EndBattle（写回 BattleResult + TransitionToWorldMap）
+- [x] WorldMapGameMode::StartPlay 从快照恢复（加载地图 + 恢复 PlayerState + 已触发节点 + 处理战斗结果）
+- [x] Manager: GetCurrentWorldMapName/SetCurrentWorldMapName、RestoreTriggeredNodes、LoadWorldMap 记录地图名
 
 ## Known Issues / Notes
 - `FindBestCasterPosition` and `SelectBestSkill` cannot be `const` because `GetCurrentTile()` is non-const

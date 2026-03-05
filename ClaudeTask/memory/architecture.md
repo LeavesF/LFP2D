@@ -109,6 +109,27 @@ Map data stored as DataTable/CSV, runtime editor for map creation:
 - 战斗地图数据量小（六角格 + Paper2D sprite），加载快
 - 过场动画（地图卷起/展开）掩盖加载时间，强化"古老地图"氛围
 
+### GameMode 架构（已重构）
+- **世界地图模式**：`ALFPWorldMapGameMode` + `ALFPWorldMapPlayerController`
+  - 世界地图管理器初始化
+  - 节点交互（进入战斗/事件/商店）
+  - 世界地图编辑器
+  - 玩家移动和迷雾系统
+- **战斗模式**：`ALFPTurnGameMode` + `ALFPTacticsPlayerController`
+  - 回合管理器初始化
+  - 单位选择/移动/技能释放
+  - 战斗地图编辑器
+  - 敌人 AI 和回合流程
+- **职责分离**：不同 Level 使用不同 GameMode，PlayerController 职责清晰，无需状态标志区分模式
+
+### 场景切换（方案 C: GameInstance + OpenLevel）
+- `ULFPGameInstance`：跨关卡生命周期，持有世界地图快照、战斗请求/结果
+- **世界地图 → 战斗**: `EnterBattle()` 保存 `FLFPWorldMapSnapshot` + 设置 `FLFPBattleRequest` → `OpenLevel(战斗关卡)`
+- **战斗 → 世界地图**: `EndBattle()` 设置 `FLFPBattleResult` → `OpenLevel(世界地图关卡)`
+- **世界地图恢复**: `WorldMapGameMode::StartPlay()` 检查快照 → 加载地图 → 恢复 PlayerState → 恢复已触发节点 → 处理战斗结果
+- 数据结构: `FLFPBattleRequest`（节点ID/地图名/星级/可逃跑）、`FLFPBattleResult`（胜利/逃跑）、`FLFPWorldMapSnapshot`（节点ID/回合/访问集/揭露集/触发集）
+- Consume 模式：读取后清除，防止重复处理
+
 ### 渲染方式
 - 世界中 Actor 渲染（非 UI），微倾斜俯视角，"古老地图"视觉风格
 - `ALFPWorldMapNode` Actor：节点，Sprite 表示类型，悬停显示信息
