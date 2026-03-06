@@ -10,8 +10,9 @@ ALFPWorldMapEdge::ALFPWorldMapEdge()
 
 	EdgeSpriteComponent = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("EdgeSprite"));
 	EdgeSpriteComponent->SetupAttachment(RootSceneComponent);
-	// 边在节点下方渲染（Z 略低）
+	// 边在节点下方渲染（Z 略低），旋转使其平躺在 XY 平面
 	EdgeSpriteComponent->SetRelativeLocation(FVector(0.f, 0.f, -2.f));
+	EdgeSpriteComponent->SetRelativeRotation(FRotator(-90.f, 0.f, 0.f));
 }
 
 void ALFPWorldMapEdge::InitFromRowData(const FLFPWorldEdgeRow& Row)

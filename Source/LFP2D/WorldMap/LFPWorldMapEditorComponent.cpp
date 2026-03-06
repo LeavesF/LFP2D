@@ -33,12 +33,44 @@ void ULFPWorldMapEditorComponent::ToggleEditorMode()
 {
 	bEditorActive = !bEditorActive;
 
-	if (!bEditorActive)
+	ALFPWorldMapManager* Manager = GetWorldMapManager();
+
+	if (bEditorActive)
 	{
+		// 编辑器开启：显示所有节点（临时揭开迷雾）
+		if (Manager)
+		{
+			for (const auto& Pair : Manager->GetNodeMap())
+			{
+				if (ALFPWorldMapNode* Node = Pair.Value)
+				{
+					Node->bIsRevealed = true;
+					Node->UpdateVisualState();
+				}
+			}
+
+			// 显示所有边
+			for (const auto& Pair : Manager->GetEdgeMap())
+			{
+				if (ALFPWorldMapEdge* Edge = Pair.Value)
+				{
+					Edge->SetActorHiddenInGame(false);
+				}
+			}
+		}
+	}
+	else
+	{
+		// 编辑器关闭：恢复迷雾状态
 		CurrentTool = ELFPWorldMapEditorTool::WMET_None;
 		SelectedNode = nullptr;
 		EdgeStartNode = nullptr;
 		EdgeRemovalStartNode = nullptr;
+
+		if (Manager)
+		{
+			Manager->UpdateFog();
+		}
 	}
 
 	OnEditorModeChanged.Broadcast(bEditorActive);
@@ -67,6 +99,10 @@ ALFPWorldMapNode* ULFPWorldMapEditorComponent::PlaceNodeAt(FVector2D WorldPos)
 
 	if (NewNode)
 	{
+		// 编辑器模式下新节点直接可见
+		NewNode->bIsRevealed = true;
+		NewNode->UpdateVisualState();
+
 		// 应用笔刷参数
 		NewNode->BattleMapName = BrushBattleMapName;
 		NewNode->StarRating = BrushStarRating;

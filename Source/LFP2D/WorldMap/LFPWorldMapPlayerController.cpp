@@ -38,6 +38,36 @@ void ALFPWorldMapPlayerController::BeginPlay()
 	}
 }
 
+void ALFPWorldMapPlayerController::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (bIsDragging)
+	{
+		DragTime += DeltaTime;
+	}
+
+	// 更新相机位置和旋转
+	// 相机位置：CameraOffset（XY 平移）+ CurrentZoom（高度）
+	FVector TargetLocation = CameraOffset + FVector(0.f, 0.f, CurrentZoom);
+
+	// 相机旋转：俯视角
+	FRotator TargetRotation(CameraPitchAngle, 0.f, 0.f);
+
+	// 平滑插值并设置
+	FRotator CurrentRotation = GetControlRotation();
+	SetControlRotation(FMath::RInterpTo(CurrentRotation, TargetRotation, DeltaTime, 5.0f));
+
+	// 通过 Pawn 控制相机位置（如果有 Pawn）
+	if (APawn* ControlledPawn = GetPawn())
+	{
+		FVector CurrentLocation = ControlledPawn->GetActorLocation();
+		ControlledPawn->SetActorLocation(
+			FMath::VInterpTo(CurrentLocation, TargetLocation, DeltaTime, 5.0f)
+		);
+	}
+}
+
 void ALFPWorldMapPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();

@@ -27,6 +27,7 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
+	virtual void Tick(float DeltaTime) override;
 
 public:
 	// ============== 输入处理 ==============
@@ -108,6 +109,10 @@ protected:
 	TObjectPtr<ULFPWorldMapEditorWidget> WorldMapEditorWidget;
 
 	// ============== 相机 ==============
+
+	// 相机俯视角度（Pitch，负值向下看）
+	UPROPERTY(EditAnywhere, Category = "Camera")
+	float CameraPitchAngle = -60.0f;
 
 	UPROPERTY(EditAnywhere, Category = "Camera")
 	float CameraPanSpeed = 500.0f;
