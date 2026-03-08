@@ -33,6 +33,7 @@ See [architecture.md](architecture.md) for detailed system design records.
 - World map game mode: `Source/LFP2D/WorldMap/LFPWorldMapGameMode.h/.cpp`
 - World map player controller: `Source/LFP2D/WorldMap/LFPWorldMapPlayerController.h/.cpp`
 - World map player state: `Source/LFP2D/WorldMap/LFPWorldMapPlayerState.h/.cpp`
+- World map pawn: `Source/LFP2D/WorldMap/LFPWorldMapPawn.h/.cpp`
 - Game instance: `Source/LFP2D/Core/LFPGameInstance.h/.cpp`
 
 ## Current Development Status
