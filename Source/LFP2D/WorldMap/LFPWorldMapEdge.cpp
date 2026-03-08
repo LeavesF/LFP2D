@@ -12,7 +12,8 @@ ALFPWorldMapEdge::ALFPWorldMapEdge()
 	EdgeSpriteComponent->SetupAttachment(RootSceneComponent);
 	// 边在节点下方渲染（Z 略低），旋转使其平躺在 XY 平面
 	EdgeSpriteComponent->SetRelativeLocation(FVector(0.f, 0.f, -2.f));
-	EdgeSpriteComponent->SetRelativeRotation(FRotator(-90.f, 0.f, 0.f));
+	EdgeSpriteComponent->SetRelativeRotation(FRotator(0.f, 90.f, -90.f));
+	EdgeSpriteComponent->TranslucencySortPriority = 0;
 }
 
 void ALFPWorldMapEdge::InitFromRowData(const FLFPWorldEdgeRow& Row)
@@ -53,7 +54,7 @@ void ALFPWorldMapEdge::UpdateVisualPosition(FVector StartPos, FVector EndPos)
 	if (EdgeSpriteComponent)
 	{
 		// X 缩放 = 距离，Y 缩放保持线条宽度
-		EdgeSpriteComponent->SetRelativeScale3D(FVector(Distance / 100.f, 1.f, 1.f));
+		EdgeSpriteComponent->SetRelativeScale3D(FVector(1.f, 1.f, Distance / 300.f));
 	}
 }
 

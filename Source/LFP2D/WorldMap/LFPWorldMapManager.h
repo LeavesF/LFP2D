@@ -7,6 +7,7 @@
 
 class ALFPWorldMapNode;
 class ALFPWorldMapEdge;
+class ALFPWorldMapPawn;
 class ULFPWorldNodeDataAsset;
 class ULFPWorldMapPlayerState;
 class UPaperSprite;
@@ -131,6 +132,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "World Map")
 	void RestoreTriggeredNodes(const TSet<int32>& TriggeredNodeIDs);
 
+	// 棋子是否正在移动中
+	UFUNCTION(BlueprintPure, Category = "World Map")
+	bool IsPawnMoving() const;
+
+	// 获取玩家棋子
+	UFUNCTION(BlueprintPure, Category = "World Map")
+	ALFPWorldMapPawn* GetPlayerPawn() const { return PlayerPawn; }
+
 protected:
 	// 节点注册表：NodeID → Node Actor
 	UPROPERTY()
@@ -170,6 +179,14 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "World Map")
 	TObjectPtr<ULFPWorldMapPlayerState> PlayerState;
 
+	// 玩家棋子类（蓝图中配置）
+	UPROPERTY(EditDefaultsOnly, Category = "World Map|Pawn")
+	TSubclassOf<ALFPWorldMapPawn> PawnActorClass;
+
+	// 玩家棋子实例
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "World Map|Pawn")
+	TObjectPtr<ALFPWorldMapPawn> PlayerPawn;
+
 	// ID 计数器
 	int32 NextNodeID = 0;
 
@@ -188,4 +205,14 @@ private:
 	bool SaveEdgesToCSV(const FString& FilePath);
 	bool LoadNodesFromCSV(const FString& FilePath);
 	bool LoadEdgesFromCSV(const FString& FilePath);
+
+	// 棋子移动完成回调
+	UFUNCTION()
+	void OnPawnMoveComplete();
+
+	// 移动完成后执行迷雾更新和节点事件
+	void HandlePostMove(int32 TargetNodeID);
+
+	// 缓存的目标节点 ID（棋子移动期间保存）
+	int32 PendingMoveTargetNodeID = -1;
 };

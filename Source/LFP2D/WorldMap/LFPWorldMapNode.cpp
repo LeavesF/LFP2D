@@ -12,13 +12,15 @@ ALFPWorldMapNode::ALFPWorldMapNode()
 	NodeSpriteComponent = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("NodeSprite"));
 	NodeSpriteComponent->SetupAttachment(RootSceneComponent);
 	// 精灵默认在 XZ 平面（竖直），旋转使其平躺在 XY 平面（俯视角）
-	NodeSpriteComponent->SetRelativeRotation(FRotator(0.f, 0.f, -90.f));
+	NodeSpriteComponent->SetRelativeRotation(FRotator(0.f, 90.f, -90.f));
+	NodeSpriteComponent->TranslucencySortPriority = 1;
 
 	HighlightSpriteComponent = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("HighlightSprite"));
 	HighlightSpriteComponent->SetupAttachment(RootSceneComponent);
 	// 高亮层在节点精灵下方（Z 略低）
 	HighlightSpriteComponent->SetRelativeLocation(FVector(0.f, 0.f, -1.f));
-	HighlightSpriteComponent->SetRelativeRotation(FRotator(0.f, 0.f, -90.f));
+	HighlightSpriteComponent->SetRelativeRotation(FRotator(0.f, 90.f, -90.f));
+	HighlightSpriteComponent->TranslucencySortPriority = 2;
 	HighlightSpriteComponent->SetVisibility(false);
 }
 

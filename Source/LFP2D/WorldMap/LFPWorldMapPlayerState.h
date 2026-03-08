@@ -14,7 +14,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerNodeChanged, ALFPWorldMapNo
  * 世界地图玩家状态：追踪位置、回合消耗、访问/揭露节点
  * 由 WorldMapManager 持有
  */
-UCLASS(BlueprintType)
+UCLASS(Blueprintable, BlueprintType)
 class LFP2D_API ULFPWorldMapPlayerState : public UObject
 {
 	GENERATED_BODY()

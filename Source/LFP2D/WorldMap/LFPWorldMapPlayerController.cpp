@@ -285,7 +285,7 @@ void ALFPWorldMapPlayerController::OnCameraDragTriggered(const FInputActionValue
 	GetMousePosition(CurrentMousePos.X, CurrentMousePos.Y);
 	FVector2D Delta = CurrentMousePos - DragStartPosition;
 
-	CameraOffset -= FVector(Delta.X, Delta.Y, 0) * CameraDragSpeed;
+	CameraOffset -= FVector(-Delta.Y, Delta.X, 0) * CameraDragSpeed;
 	DragStartPosition = CurrentMousePos;
 }
 
@@ -332,6 +332,9 @@ void ALFPWorldMapPlayerController::MoveToNode(ALFPWorldMapNode* Node)
 
 	ALFPWorldMapManager* Manager = GetWorldMapManager();
 	if (!Manager) return;
+
+	// 棋子移动中不允许操作
+	if (Manager->IsPawnMoving()) return;
 
 	ClearReachableHighlight();
 

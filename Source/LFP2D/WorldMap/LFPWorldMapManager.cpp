@@ -3,6 +3,7 @@
 #include "LFP2D/WorldMap/LFPWorldMapEdge.h"
 #include "LFP2D/WorldMap/LFPWorldNodeDataAsset.h"
 #include "LFP2D/WorldMap/LFPWorldMapPlayerState.h"
+#include "LFP2D/WorldMap/LFPWorldMapPawn.h"
 #include "Engine/World.h"
 #include "Engine/DataTable.h"
 #include "Misc/FileHelper.h"
@@ -627,6 +628,27 @@ void ALFPWorldMapManager::InitializePlayer(int32 StartNodeID)
 
 	PlayerState->Initialize(StartNodeID);
 
+	// 生成或移动玩家棋子到起始节点
+	ALFPWorldMapNode* StartNode = GetNode(StartNodeID);
+	FVector StartLocation = StartNode ? StartNode->GetActorLocation() + FVector(0, 0, 1) : FVector::ZeroVector;
+
+	if (!PlayerPawn && PawnActorClass)
+	{
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = this;
+		PlayerPawn = GetWorld()->SpawnActor<ALFPWorldMapPawn>(
+			PawnActorClass, StartLocation, FRotator::ZeroRotator, SpawnParams);
+
+		if (PlayerPawn)
+		{
+			PlayerPawn->OnMoveComplete.AddDynamic(this, &ALFPWorldMapManager::OnPawnMoveComplete);
+		}
+	}
+	else if (PlayerPawn)
+	{
+		PlayerPawn->SetLocationImmediate(StartLocation);
+	}
+
 	// 初始迷雾更新
 	UpdateFog();
 
@@ -637,41 +659,76 @@ bool ALFPWorldMapManager::MovePlayer(int32 TargetNodeID)
 {
 	if (!PlayerState) return false;
 
+	// 棋子移动中不允许再次移动
+	if (PlayerPawn && PlayerPawn->IsMoving()) return false;
+
 	bool bMoved = PlayerState->MoveToNode(TargetNodeID, this);
 
 	if (bMoved)
 	{
-		// 更新迷雾
-		UpdateFog();
-
-		// 触发节点事件（首次进入未触发的节点）
 		ALFPWorldMapNode* TargetNode = GetNode(TargetNodeID);
-		if (TargetNode && !TargetNode->bHasBeenTriggered)
-		{
-			// 标记节点类型决定是否首次触发
-			switch (TargetNode->NodeType)
-			{
-			case ELFPWorldNodeType::WNT_Battle:
-			case ELFPWorldNodeType::WNT_Event:
-			case ELFPWorldNodeType::WNT_Boss:
-				TargetNode->bHasBeenTriggered = true;
-				TargetNode->UpdateVisualState();
-				break;
-			default:
-				// 商店、城镇、任务NPC、技能节点可反复进入
-				break;
-			}
-		}
+		if (!TargetNode) return true;
 
-		// 回合压力检查
-		if (PlayerState->IsPastPressureThreshold())
+		// 如果有棋子，启动移动动画，延迟迷雾更新和事件触发
+		if (PlayerPawn)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("回合压力: 已超过 %d 回合阈值！当前 %d 回合"),
-				PlayerState->TurnPressureThreshold, PlayerState->CurrentTurn);
+			PendingMoveTargetNodeID = TargetNodeID;
+			FVector TargetLocation = TargetNode->GetActorLocation() + FVector(0, 0, 1);
+			PlayerPawn->MoveToLocation(TargetLocation);
+		}
+		else
+		{
+			// 没有棋子，直接执行后续逻辑
+			HandlePostMove(TargetNodeID);
 		}
 	}
 
 	return bMoved;
+}
+
+void ALFPWorldMapManager::OnPawnMoveComplete()
+{
+	if (PendingMoveTargetNodeID >= 0)
+	{
+		int32 NodeID = PendingMoveTargetNodeID;
+		PendingMoveTargetNodeID = -1;
+		HandlePostMove(NodeID);
+	}
+}
+
+void ALFPWorldMapManager::HandlePostMove(int32 TargetNodeID)
+{
+	// 更新迷雾
+	UpdateFog();
+
+	// 触发节点事件（首次进入未触发的节点）
+	ALFPWorldMapNode* TargetNode = GetNode(TargetNodeID);
+	if (TargetNode && !TargetNode->bHasBeenTriggered)
+	{
+		switch (TargetNode->NodeType)
+		{
+		case ELFPWorldNodeType::WNT_Battle:
+		case ELFPWorldNodeType::WNT_Event:
+		case ELFPWorldNodeType::WNT_Boss:
+			TargetNode->bHasBeenTriggered = true;
+			TargetNode->UpdateVisualState();
+			break;
+		default:
+			break;
+		}
+	}
+
+	// 回合压力检查
+	if (PlayerState && PlayerState->IsPastPressureThreshold())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("回合压力: 已超过 %d 回合阈值！当前 %d 回合"),
+			PlayerState->TurnPressureThreshold, PlayerState->CurrentTurn);
+	}
+}
+
+bool ALFPWorldMapManager::IsPawnMoving() const
+{
+	return PlayerPawn && PlayerPawn->IsMoving();
 }
 
 void ALFPWorldMapManager::RestoreTriggeredNodes(const TSet<int32>& TriggeredNodeIDs)
