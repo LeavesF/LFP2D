@@ -148,3 +148,56 @@ Map data stored as DataTable/CSV, runtime editor for map creation:
 - **道具系统**：遗物模式，全队生效（非单位装备）。通过战斗掉落、事件、支线任务、商店获得
 - **单位升阶**：合并同种单位（2 个同阶同种 → 升一阶）。与背叛机制天然配合
 - **学习新技能**：访问地图上的技能节点获取点数，在技能树中提升
+
+## 10. 队伍与备战营系统 (completed)
+玩家队伍管理：出战队伍 + 备战营，跨关卡持久化。
+
+### 数据层
+- `FLFPUnitEntry`（在 LFPGameInstance.h 中）：轻量单位数据，TypeID (FName) + Tier (int32)
+- `ULFPUnitRegistryDataAsset`（Core/）：全局注册表，FName TypeID → {蓝图类, 显示名, 图标}
+- `ALFPTacticsUnit`：新增 `UnitTypeID`、`UnitTier`、`ToUnitEntry()` 身份字段
+
+### 队伍管理（GameInstance）
+- `PartyUnits` / `ReserveUnits`：TArray<FLFPUnitEntry>
+- `MaxPartySize = 3` / `MaxReserveSize = 3`（可配置）
+- `TryAddUnit()`：先队伍 → 再备战 → 都满返回 false
+- `ReplacePartyUnit()` / `ReplaceReserveUnit()` / `RemovePartyUnit()` / `RemoveReserveUnit()`
+- 每场战斗 HP 恢复满，不持久化 HP
+
+### 战斗捕获流程
+- `ChangeAffiliation()`（敌→玩家）自动调用 `TurnGameMode->RecordCapturedUnit()`
+- `ALFPTurnGameMode`：`CapturedUnits` 列表 + `RecordCapturedUnit()`
+- `EndBattle()` 胜利时将 CapturedUnits 写入 `FLFPBattleResult.CapturedUnits`
+
+### 战后处理（WorldMapGameMode）
+- `HandleBattleResult()` → `ProcessCapturedUnits()`
+- 逐个 `TryAddUnit()`，失败的进 `PendingCapturedUnits` 队列
+- 队列非空时 `ShowNextReplacementUI()` → 创建 `ULFPUnitReplacementWidget`
+- Widget 提供 `ReplacePartySlot()` / `ReplaceReserveSlot()` / `DiscardNewUnit()`
+- 完成后通过 `OnReplacementComplete` 委托处理下一个
+
+## 11. 战斗布置阶段 (completed)
+战斗开始前玩家手动布置单位到出生点。
+
+### 阶段枚举
+- `EBattlePhase` 新增 `BP_Deployment`，作为战斗第一阶段
+
+### TurnManager 流程变更
+- `StartGame()`: 仅注册非玩家单位 → `BeginDeploymentPhase()`
+- `BeginDeploymentPhase()`: SetPhase(BP_Deployment)
+- `EndDeploymentPhase()`: 收集场上所有玩家单位注册 → `BeginNewRound()`
+
+### PlayerController 布置交互
+- `OnDeploymentPhaseStarted()`: 高亮出生点、创建 DeploymentWidget
+- `StartPlacingUnit(PartyIndex)`: 从注册表生成单位 Actor，跟随鼠标
+- `PlaceUnit(Tile)`: 放到出生点格子
+- `CancelPlacing()`: 销毁预览，退出放置模式
+- `PickupDeployedUnit()`: 拾起已放置的重新放
+- `ConfirmDeployment()`: 清除高亮 → TurnManager::EndDeploymentPhase()
+- Tick 中 bIsPlacingUnit 时更新预览位置
+- OnConfirmAction/OnCancelAction 中优先处理布置阶段
+
+### DeploymentWidget
+- `Setup()` / `MarkUnitPlaced()` / `SetConfirmEnabled()`
+- `OnUnitSelected` / `OnConfirmPressed` 委托
+- BlueprintImplementableEvent: `OnSetupComplete` / `OnPlacedStateChanged` / `OnConfirmEnabledChanged`

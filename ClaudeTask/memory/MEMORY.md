@@ -35,6 +35,9 @@ See [architecture.md](architecture.md) for detailed system design records.
 - World map player state: `Source/LFP2D/WorldMap/LFPWorldMapPlayerState.h/.cpp`
 - World map pawn: `Source/LFP2D/WorldMap/LFPWorldMapPawn.h/.cpp`
 - Game instance: `Source/LFP2D/Core/LFPGameInstance.h/.cpp`
+- Unit registry: `Source/LFP2D/Core/LFPUnitRegistryDataAsset.h/.cpp`
+- Unit replacement UI: `Source/LFP2D/UI/WorldMap/LFPUnitReplacementWidget.h/.cpp`
+- Deployment widget: `Source/LFP2D/UI/Fighting/LFPDeploymentWidget.h/.cpp`
 
 ## Current Development Status
 See [progress.md](progress.md) for implementation progress.
