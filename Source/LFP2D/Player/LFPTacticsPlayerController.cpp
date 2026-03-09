@@ -9,8 +9,11 @@
 #include "LFP2D/Turn/LFPTurnManager.h"
 #include "LFP2D/UI/Fighting/LFPSkillSelectionWidget.h"
 #include "LFP2D/UI/Fighting/LFPTurnSpeedListWidget.h"
+#include "LFP2D/UI/Fighting/LFPDeploymentWidget.h"
 #include "LFP2D/HexGrid/LFPMapEditorComponent.h"
 #include "LFP2D/UI/MapEditor/LFPMapEditorWidget.h"
+#include "LFP2D/Core/LFPGameInstance.h"
+#include "LFP2D/Core/LFPUnitRegistryDataAsset.h"
 #include "Kismet/GameplayStatics.h"
 //#include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "EnhancedInputComponent.h"
@@ -122,6 +125,19 @@ void ALFPTacticsPlayerController::Tick(float DeltaTime)
     if (bIsDragging)
     {
         DragTime += DeltaTime;
+    }
+
+    // 布置阶段：更新预览单位跟随鼠标
+    if (bIsInDeployment && bIsPlacingUnit && PlacingUnitPreview)
+    {
+        FVector WorldOrigin, WorldDirection;
+        DeprojectMousePositionToWorld(WorldOrigin, WorldDirection);
+        if (FMath::Abs(WorldDirection.Z) > KINDA_SMALL_NUMBER)
+        {
+            float T = -WorldOrigin.Z / WorldDirection.Z;
+            FVector HitPoint = WorldOrigin + WorldDirection * T;
+            PlacingUnitPreview->SetActorLocation(FVector(HitPoint.X, HitPoint.Y, 50.f));
+        }
     }
 
     // 更新相机位置
@@ -284,6 +300,32 @@ void ALFPTacticsPlayerController::OnConfirmAction(const FInputActionValue& Value
     }
     DragTime = 0.f;
 
+    // 布置阶段优先处理
+    if (bIsInDeployment)
+    {
+        if (bIsPlacingUnit)
+        {
+            // 正在放置单位：检测是否点击了空闲出生点
+            if (LastHoveredTile && PlayerSpawnTiles.Contains(LastHoveredTile)
+                && !LastHoveredTile->IsOccupied())
+            {
+                PlaceUnit(LastHoveredTile);
+            }
+        }
+        else
+        {
+            // 不在放置模式：检测是否点击了已放置的单位（拾起）
+            FHitResult HitResult;
+            GetHitResultUnderCursor(ECC_Visibility, false, HitResult);
+            ALFPTacticsUnit* ClickedUnit = Cast<ALFPTacticsUnit>(HitResult.GetActor());
+            if (ClickedUnit && DeployedUnits.Contains(ClickedUnit))
+            {
+                PickupDeployedUnit(ClickedUnit);
+            }
+        }
+        return;
+    }
+
     // 编辑器模式优先处理
     if (MapEditorComponent && MapEditorComponent->IsEditorActive())
     {
@@ -360,6 +402,13 @@ void ALFPTacticsPlayerController::OnCancelAction(const FInputActionValue& Value)
         return;
     }
     DragTime = 0.f;
+
+    // 布置阶段：取消放置
+    if (bIsInDeployment && bIsPlacingUnit)
+    {
+        CancelPlacing();
+        return;
+    }
 
     bIsAttacking = false;
     bIsReleaseSkill = false;
@@ -864,6 +913,10 @@ void ALFPTacticsPlayerController::OnPhaseChanged(EBattlePhase NewPhase)
 
     switch (NewPhase)
     {
+    case EBattlePhase::BP_Deployment:
+        OnDeploymentPhaseStarted();
+        break;
+
     case EBattlePhase::BP_EnemyPlanning:
         // 敌人规划阶段：隐藏技能选择UI
         HideSkillSelection();
@@ -912,4 +965,210 @@ void ALFPTacticsPlayerController::OnToggleEditorAction(const FInputActionValue& 
             MapEditorWidget->SetVisibility(ESlateVisibility::Collapsed);
         }
     }
+}
+
+// ============== 布置阶段 ==============
+
+void ALFPTacticsPlayerController::OnDeploymentPhaseStarted()
+{
+    bIsInDeployment = true;
+    bIsPlacingUnit = false;
+    PlacingPartyIndex = -1;
+    PlacingUnitPreview = nullptr;
+
+    // 获取玩家出生点并高亮
+    if (GridManager)
+    {
+        PlayerSpawnTiles = GridManager->GetSpawnPoints(ELFPSpawnFaction::SF_Player);
+        for (ALFPHexTile* Tile : PlayerSpawnTiles)
+        {
+            if (Tile)
+            {
+                Tile->SetMovementHighlight(true);
+            }
+        }
+    }
+
+    // 获取队伍数据
+    ULFPGameInstance* GI = Cast<ULFPGameInstance>(GetGameInstance());
+    if (!GI) return;
+
+    // 初始化已布置单位数组（与 PartyUnits 等长，初始全为 nullptr）
+    DeployedUnits.Empty();
+    DeployedUnits.SetNum(GI->PartyUnits.Num());
+
+    // 创建布置 UI
+    if (DeploymentWidgetClass && !DeploymentWidget)
+    {
+        DeploymentWidget = CreateWidget<ULFPDeploymentWidget>(this, DeploymentWidgetClass);
+    }
+
+    if (DeploymentWidget)
+    {
+        DeploymentWidget->Setup(GI->PartyUnits, GI->UnitRegistry);
+        DeploymentWidget->OnUnitSelected.AddDynamic(this, &ALFPTacticsPlayerController::StartPlacingUnit);
+        DeploymentWidget->OnConfirmPressed.AddDynamic(this, &ALFPTacticsPlayerController::ConfirmDeployment);
+        DeploymentWidget->AddToViewport();
+    }
+
+    UE_LOG(LogTemp, Log, TEXT("布置阶段：%d 个出生点，%d 个队伍单位"),
+        PlayerSpawnTiles.Num(), GI->PartyUnits.Num());
+}
+
+void ALFPTacticsPlayerController::StartPlacingUnit(int32 PartyIndex)
+{
+    // 如果正在放置其他单位，先取消
+    if (bIsPlacingUnit)
+    {
+        CancelPlacing();
+    }
+
+    ULFPGameInstance* GI = Cast<ULFPGameInstance>(GetGameInstance());
+    if (!GI || !GI->UnitRegistry) return;
+    if (!GI->PartyUnits.IsValidIndex(PartyIndex)) return;
+
+    // 如果该单位已经放置，先拾起
+    if (DeployedUnits.IsValidIndex(PartyIndex) && DeployedUnits[PartyIndex])
+    {
+        PickupDeployedUnit(DeployedUnits[PartyIndex]);
+    }
+
+    const FLFPUnitEntry& Entry = GI->PartyUnits[PartyIndex];
+    TSubclassOf<ALFPTacticsUnit> UnitClass = GI->UnitRegistry->GetUnitClass(Entry.TypeID);
+    if (!UnitClass) return;
+
+    // 在鼠标位置生成预览单位
+    FVector UnitSpawnLoc = FVector(0, 0, 50.f);
+    FActorSpawnParameters SpawnParams;
+    PlacingUnitPreview = GetWorld()->SpawnActor<ALFPTacticsUnit>(UnitClass, UnitSpawnLoc, FRotator::ZeroRotator, SpawnParams);
+
+    if (PlacingUnitPreview)
+    {
+        PlacingUnitPreview->Affiliation = EUnitAffiliation::UA_Player;
+        PlacingUnitPreview->UnitTypeID = Entry.TypeID;
+        PlacingUnitPreview->UnitTier = Entry.Tier;
+    }
+
+    PlacingPartyIndex = PartyIndex;
+    bIsPlacingUnit = true;
+
+    if (DeploymentWidget)
+    {
+        DeploymentWidget->MarkUnitSelecting(PartyIndex);
+    }
+
+    UE_LOG(LogTemp, Log, TEXT("开始放置单位 %s（索引 %d）"), *Entry.TypeID.ToString(), PartyIndex);
+}
+
+void ALFPTacticsPlayerController::PlaceUnit(ALFPHexTile* Tile)
+{
+    if (!Tile || !PlacingUnitPreview || PlacingPartyIndex < 0) return;
+
+    // 放置到格子上
+    FVector TileLocation = Tile->GetActorLocation() + FVector(0, 0, 50.f);
+    PlacingUnitPreview->SetActorLocation(TileLocation);
+    PlacingUnitPreview->SetCurrentCoordinates(Tile->GetCoordinates());
+
+    // 更新格子占用
+    Tile->SetIsOccupied(true);
+    Tile->SetUnitOnTile(PlacingUnitPreview);
+
+    // 记录到已布置列表
+    if (DeployedUnits.IsValidIndex(PlacingPartyIndex))
+    {
+        DeployedUnits[PlacingPartyIndex] = PlacingUnitPreview;
+    }
+
+    // 更新 UI
+    if (DeploymentWidget)
+    {
+        DeploymentWidget->MarkUnitPlaced(PlacingPartyIndex, true);
+    }
+
+    UE_LOG(LogTemp, Log, TEXT("放置单位到格子 (%d, %d)"), Tile->GetCoordinates().Q, Tile->GetCoordinates().R);
+
+    // 重置放置状态
+    PlacingUnitPreview = nullptr;
+    PlacingPartyIndex = -1;
+    bIsPlacingUnit = false;
+}
+
+void ALFPTacticsPlayerController::CancelPlacing()
+{
+    if (PlacingUnitPreview)
+    {
+        PlacingUnitPreview->Destroy();
+        PlacingUnitPreview = nullptr;
+    }
+
+    PlacingPartyIndex = -1;
+    bIsPlacingUnit = false;
+}
+
+void ALFPTacticsPlayerController::PickupDeployedUnit(ALFPTacticsUnit* Unit)
+{
+    if (!Unit) return;
+
+    // 找到对应的 PartyIndex
+    int32 FoundIndex = DeployedUnits.Find(Unit);
+    if (FoundIndex == INDEX_NONE) return;
+
+    // 清除格子占用
+    ALFPHexTile* OldTile = Unit->GetCurrentTile();
+    if (OldTile)
+    {
+        OldTile->SetIsOccupied(false);
+        OldTile->SetUnitOnTile(nullptr);
+    }
+
+    // 设置为跟随鼠标的预览
+    PlacingUnitPreview = Unit;
+    PlacingPartyIndex = FoundIndex;
+    bIsPlacingUnit = true;
+
+    // 清除已布置记录
+    DeployedUnits[FoundIndex] = nullptr;
+
+    // 更新 UI
+    if (DeploymentWidget)
+    {
+        DeploymentWidget->MarkUnitPlaced(FoundIndex, false);
+    }
+
+    UE_LOG(LogTemp, Log, TEXT("拾起已放置的单位（索引 %d）"), FoundIndex);
+}
+
+void ALFPTacticsPlayerController::ConfirmDeployment()
+{
+    if (!bIsInDeployment) return;
+
+    // 取消高亮
+    for (ALFPHexTile* Tile : PlayerSpawnTiles)
+    {
+        if (Tile)
+        {
+            Tile->SetMovementHighlight(false);
+        }
+    }
+    PlayerSpawnTiles.Empty();
+
+    // 移除布置 UI
+    if (DeploymentWidget)
+    {
+        DeploymentWidget->OnUnitSelected.RemoveDynamic(this, &ALFPTacticsPlayerController::StartPlacingUnit);
+        DeploymentWidget->OnConfirmPressed.RemoveDynamic(this, &ALFPTacticsPlayerController::ConfirmDeployment);
+        DeploymentWidget->RemoveFromParent();
+    }
+
+    bIsInDeployment = false;
+    bIsPlacingUnit = false;
+
+    // 通知 TurnManager 结束布置阶段
+    ALFPTurnManager* TurnManager = GetTurnManager();
+    if (TurnManager)
+    {
+        TurnManager->EndDeploymentPhase();
+    }
+
+    UE_LOG(LogTemp, Log, TEXT("布置确认，进入战斗"));
 }

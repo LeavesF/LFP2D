@@ -22,6 +22,7 @@ enum class EUnitAffiliation : uint8
 UENUM(BlueprintType)
 enum class EBattlePhase : uint8
 {
+	BP_Deployment      UMETA(DisplayName = "Deployment"),
 	BP_EnemyPlanning   UMETA(DisplayName = "Enemy Planning"),
 	BP_ActionPhase     UMETA(DisplayName = "Action Phase"),
 	BP_RoundEnd        UMETA(DisplayName = "Round End")

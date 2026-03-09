@@ -24,27 +24,58 @@ void ALFPTurnManager::BeginPlay()
 
 void ALFPTurnManager::StartGame()
 {
-    // 收集所有单位
+    // 收集场上所有单位（敌方预放置在关卡中）
     TArray<AActor*> FoundActors;
     UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALFPTacticsUnit::StaticClass(), FoundActors);
 
-    // 转换为战术单位数组
     for (AActor* Actor : FoundActors)
     {
         if (ALFPTacticsUnit* Unit = Cast<ALFPTacticsUnit>(Actor))
         {
-            TurnOrderUnits.Add(Unit);
+            // 仅注册非玩家单位（玩家单位在布置阶段结束后注册）
+            if (Unit->GetAffiliation() != EUnitAffiliation::UA_Player)
+            {
+                TurnOrderUnits.Add(Unit);
+            }
         }
     }
-
-    // 添加延迟后开始第一回合
-    FTimerHandle TimerHandle;
-    GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ALFPTurnManager::BeginNewRound, 0.5f, false);
 
     // 初始化阵营 AP
     FactionCurrentAP.Add(EUnitAffiliation::UA_Player, FactionInitialAP);
     FactionCurrentAP.Add(EUnitAffiliation::UA_Enemy, FactionInitialAP);
     FactionCurrentAP.Add(EUnitAffiliation::UA_Neutral, FactionInitialAP);
+
+    // 进入布置阶段
+    BeginDeploymentPhase();
+}
+
+void ALFPTurnManager::BeginDeploymentPhase()
+{
+    SetPhase(EBattlePhase::BP_Deployment);
+    UE_LOG(LogTemp, Log, TEXT("布置阶段开始"));
+}
+
+void ALFPTurnManager::EndDeploymentPhase()
+{
+    UE_LOG(LogTemp, Log, TEXT("布置阶段结束，注册玩家单位"));
+
+    // 收集布置阶段放置的玩家单位
+    TArray<AActor*> FoundActors;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALFPTacticsUnit::StaticClass(), FoundActors);
+
+    for (AActor* Actor : FoundActors)
+    {
+        if (ALFPTacticsUnit* Unit = Cast<ALFPTacticsUnit>(Actor))
+        {
+            if (Unit->GetAffiliation() == EUnitAffiliation::UA_Player && !TurnOrderUnits.Contains(Unit))
+            {
+                TurnOrderUnits.Add(Unit);
+            }
+        }
+    }
+
+    // 开始第一回合
+    BeginNewRound();
 }
 
 void ALFPTurnManager::BeginNewRound()

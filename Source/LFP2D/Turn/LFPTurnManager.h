@@ -58,6 +58,10 @@ public:
     // 从回合系统注销单位
     void UnregisterUnit(ALFPTacticsUnit* Unit);
 
+    // 结束布置阶段（玩家确认部署后调用）
+    UFUNCTION(BlueprintCallable, Category = "Turn System")
+    void EndDeploymentPhase();
+
     // ==== 阶段系统 ====
 
     // 获取当前战斗阶段
@@ -111,6 +115,11 @@ protected:
 
     // 设置阶段并广播
     void SetPhase(EBattlePhase NewPhase);
+
+    // ==== 布置阶段 ====
+
+    // 开始布置阶段（protected，由 StartGame 调用）
+    void BeginDeploymentPhase();
 
     // ==== 敌人规划阶段 ====
 

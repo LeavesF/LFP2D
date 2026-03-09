@@ -23,6 +23,8 @@ class ULFPTurnSpeedListWidget;
 class ULFPSkillSelectionWidget;
 class ULFPMapEditorComponent;
 class ULFPMapEditorWidget;
+class ULFPDeploymentWidget;
+class ULFPUnitRegistryDataAsset;
 /**
  *
  */
@@ -289,4 +291,50 @@ protected:
 
     // 当前战斗阶段（本地缓存）
     EBattlePhase CachedBattlePhase = EBattlePhase::BP_RoundEnd;
+
+    // ==== 布置阶段 ====
+public:
+    // 布置阶段开始时调用
+    void OnDeploymentPhaseStarted();
+
+    // 开始放置某个队伍单位（UI 委托回调）
+    UFUNCTION()
+    void StartPlacingUnit(int32 PartyIndex);
+
+    // 将当前放置的单位放到指定格子
+    void PlaceUnit(ALFPHexTile* Tile);
+
+    // 取消当前放置
+    void CancelPlacing();
+
+    // 拾起已放置的单位重新放置
+    void PickupDeployedUnit(ALFPTacticsUnit* Unit);
+
+    // 确认布置完毕
+    UFUNCTION()
+    void ConfirmDeployment();
+
+protected:
+    // 布置阶段状态
+    bool bIsInDeployment = false;
+    bool bIsPlacingUnit = false;
+    int32 PlacingPartyIndex = -1;
+
+    // 跟随鼠标的预览单位
+    UPROPERTY()
+    TObjectPtr<ALFPTacticsUnit> PlacingUnitPreview;
+
+    // 已布置的单位列表（索引对应 PartyIndex）
+    UPROPERTY()
+    TArray<TObjectPtr<ALFPTacticsUnit>> DeployedUnits;
+
+    // 缓存的玩家出生点格子
+    TArray<ALFPHexTile*> PlayerSpawnTiles;
+
+    // 布置 UI
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+    TSubclassOf<ULFPDeploymentWidget> DeploymentWidgetClass;
+
+    UPROPERTY()
+    TObjectPtr<ULFPDeploymentWidget> DeploymentWidget;
 };
