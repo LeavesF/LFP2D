@@ -10,6 +10,7 @@
 #include "LFP2D/HexGrid/LFPHexTile.h"
 #include "LFP2D/HexGrid/LFPHexGridManager.h"
 #include "LFP2D/Turn/LFPTurnManager.h"
+#include "LFP2D/Core/LFPTurnGameMode.h"
 #include "LFP2D/UI/Fighting/LFPHealthBarWidget.h"
 #include "LFP2D/UI/Fighting/LFPPlannedSkillIconWidget.h"
 #include "Kismet/GameplayStatics.h"
@@ -596,6 +597,7 @@ void ALFPTacticsUnit::HandleDeath()
 
 void ALFPTacticsUnit::ChangeAffiliation(EUnitAffiliation NewAffiliation)
 {
+	EUnitAffiliation OldAffiliation = Affiliation;
 	Affiliation = NewAffiliation;
 
     if (NewAffiliation == EUnitAffiliation::UA_Player)
@@ -604,17 +606,17 @@ void ALFPTacticsUnit::ChangeAffiliation(EUnitAffiliation NewAffiliation)
         {
             AIController->UnPossess();
             AIController->Destroy();
-            /*for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+        }
+
+        // 敌人→玩家：记录捕获
+        if (OldAffiliation == EUnitAffiliation::UA_Enemy)
+        {
+            if (ALFPTurnGameMode* GM = Cast<ALFPTurnGameMode>(GetWorld()->GetAuthGameMode()))
             {
-                if (ALFPTacticsPlayerController* PC = Cast<ALFPTacticsPlayerController>(*It))
-                {
-                    PC->Possess(this);
-                }
-            }*/
+                GM->RecordCapturedUnit(this);
+            }
         }
     }
-	// 广播事件
-    //OnAffiliationChanged.Broadcast(OldAffiliation, NewAffiliation);
 }
 
 ALFPTacticsUnit* ALFPTacticsUnit::FindBestTarget()

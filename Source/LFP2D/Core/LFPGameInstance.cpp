@@ -54,3 +54,60 @@ void ULFPGameInstance::TransitionToWorldMap(const FString& WorldMapLevelName)
 	UE_LOG(LogTemp, Log, TEXT("切换到世界地图关卡: %s"), *LevelName);
 	UGameplayStatics::OpenLevel(this, FName(*LevelName));
 }
+
+// ============== 编队系统 ==============
+
+bool ULFPGameInstance::TryAddUnit(const FLFPUnitEntry& Unit)
+{
+	if (!Unit.IsValid()) return false;
+
+	if (!IsPartyFull())
+	{
+		PartyUnits.Add(Unit);
+		UE_LOG(LogTemp, Log, TEXT("单位 %s 加入出战队伍（%d/%d）"), *Unit.TypeID.ToString(), PartyUnits.Num(), MaxPartySize);
+		return true;
+	}
+	if (!IsReserveFull())
+	{
+		ReserveUnits.Add(Unit);
+		UE_LOG(LogTemp, Log, TEXT("单位 %s 加入备战营（%d/%d）"), *Unit.TypeID.ToString(), ReserveUnits.Num(), MaxReserveSize);
+		return true;
+	}
+	return false;
+}
+
+void ULFPGameInstance::ReplacePartyUnit(int32 SlotIndex, const FLFPUnitEntry& NewUnit)
+{
+	if (PartyUnits.IsValidIndex(SlotIndex))
+	{
+		UE_LOG(LogTemp, Log, TEXT("替换队伍槽 %d: %s → %s"), SlotIndex, *PartyUnits[SlotIndex].TypeID.ToString(), *NewUnit.TypeID.ToString());
+		PartyUnits[SlotIndex] = NewUnit;
+	}
+}
+
+void ULFPGameInstance::ReplaceReserveUnit(int32 SlotIndex, const FLFPUnitEntry& NewUnit)
+{
+	if (ReserveUnits.IsValidIndex(SlotIndex))
+	{
+		UE_LOG(LogTemp, Log, TEXT("替换备战营槽 %d: %s → %s"), SlotIndex, *ReserveUnits[SlotIndex].TypeID.ToString(), *NewUnit.TypeID.ToString());
+		ReserveUnits[SlotIndex] = NewUnit;
+	}
+}
+
+void ULFPGameInstance::RemovePartyUnit(int32 SlotIndex)
+{
+	if (PartyUnits.IsValidIndex(SlotIndex))
+	{
+		UE_LOG(LogTemp, Log, TEXT("移除队伍槽 %d: %s"), SlotIndex, *PartyUnits[SlotIndex].TypeID.ToString());
+		PartyUnits.RemoveAt(SlotIndex);
+	}
+}
+
+void ULFPGameInstance::RemoveReserveUnit(int32 SlotIndex)
+{
+	if (ReserveUnits.IsValidIndex(SlotIndex))
+	{
+		UE_LOG(LogTemp, Log, TEXT("移除备战营槽 %d: %s"), SlotIndex, *ReserveUnits[SlotIndex].TypeID.ToString());
+		ReserveUnits.RemoveAt(SlotIndex);
+	}
+}

@@ -5,6 +5,24 @@
 #include "LFPGameInstance.generated.h"
 
 class ALFPWorldMapNode;
+class ULFPUnitRegistryDataAsset;
+
+// 轻量单位数据：跨关卡保存用
+USTRUCT(BlueprintType)
+struct FLFPUnitEntry
+{
+	GENERATED_BODY()
+
+	// 单位类型 ID（对应 ULFPUnitRegistryDataAsset 中的键）
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit")
+	FName TypeID = NAME_None;
+
+	// 单位阶级
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit")
+	int32 Tier = 1;
+
+	bool IsValid() const { return TypeID != NAME_None; }
+};
 
 // 战斗请求：世界地图 → 战斗场景传递的数据
 USTRUCT(BlueprintType)
@@ -50,6 +68,10 @@ struct FLFPBattleResult
 	// 是否逃跑
 	UPROPERTY(BlueprintReadWrite, Category = "Battle")
 	bool bEscaped = false;
+
+	// 战斗中捕获的单位列表（背叛系统触发）
+	UPROPERTY(BlueprintReadWrite, Category = "Battle")
+	TArray<FLFPUnitEntry> CapturedUnits;
 
 	// 是否有有效结果
 	UPROPERTY(BlueprintReadWrite, Category = "Battle")
@@ -150,6 +172,56 @@ public:
 	// 战斗关卡名（蓝图中配置，默认值）
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Scene Transition")
 	FString DefaultBattleLevelName = TEXT("Test_Fight");
+
+	// ============== 编队系统 ==============
+
+	// 单位注册表（蓝图中配置，全局唯一）
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Party")
+	TObjectPtr<ULFPUnitRegistryDataAsset> UnitRegistry;
+
+	// 出战队伍
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Party")
+	TArray<FLFPUnitEntry> PartyUnits;
+
+	// 备战营
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Party")
+	TArray<FLFPUnitEntry> ReserveUnits;
+
+	// 出战队伍上限
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Party")
+	int32 MaxPartySize = 3;
+
+	// 备战营上限
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Party")
+	int32 MaxReserveSize = 3;
+
+	// 尝试添加单位：先队伍 → 再备战 → 都满返回 false
+	UFUNCTION(BlueprintCallable, Category = "Party")
+	bool TryAddUnit(const FLFPUnitEntry& Unit);
+
+	// 队伍是否已满
+	UFUNCTION(BlueprintPure, Category = "Party")
+	bool IsPartyFull() const { return PartyUnits.Num() >= MaxPartySize; }
+
+	// 备战营是否已满
+	UFUNCTION(BlueprintPure, Category = "Party")
+	bool IsReserveFull() const { return ReserveUnits.Num() >= MaxReserveSize; }
+
+	// 替换队伍中的单位
+	UFUNCTION(BlueprintCallable, Category = "Party")
+	void ReplacePartyUnit(int32 SlotIndex, const FLFPUnitEntry& NewUnit);
+
+	// 替换备战营中的单位
+	UFUNCTION(BlueprintCallable, Category = "Party")
+	void ReplaceReserveUnit(int32 SlotIndex, const FLFPUnitEntry& NewUnit);
+
+	// 移除队伍单位
+	UFUNCTION(BlueprintCallable, Category = "Party")
+	void RemovePartyUnit(int32 SlotIndex);
+
+	// 移除备战营单位
+	UFUNCTION(BlueprintCallable, Category = "Party")
+	void RemoveReserveUnit(int32 SlotIndex);
 
 protected:
 	// 待处理的战斗请求

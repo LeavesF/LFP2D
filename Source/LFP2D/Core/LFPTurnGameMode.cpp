@@ -4,6 +4,7 @@
 #include "LFP2D/Core/LFPTurnGameMode.h"
 #include "LFP2D/Core/LFPGameInstance.h"
 #include "LFP2D/Turn/LFPTurnManager.h"
+#include "LFP2D/Unit/LFPTacticsUnit.h"
 
 void ALFPTurnGameMode::StartPlay()
 {
@@ -52,11 +53,30 @@ void ALFPTurnGameMode::EndBattle(bool bVictory, bool bEscaped)
     Result.SourceNodeID = CachedBattleRequest.SourceNodeID;
     Result.bVictory = bVictory;
     Result.bEscaped = bEscaped;
+
+    // 胜利时传递捕获的单位
+    if (bVictory)
+    {
+        Result.CapturedUnits = CapturedUnits;
+    }
+
     GI->SetBattleResult(Result);
 
     // 返回世界地图
     if (CachedBattleRequest.bIsValid)
     {
         GI->TransitionToWorldMap(TEXT(""));
+    }
+}
+
+void ALFPTurnGameMode::RecordCapturedUnit(ALFPTacticsUnit* Unit)
+{
+    if (!Unit) return;
+
+    FLFPUnitEntry Entry = Unit->ToUnitEntry();
+    if (Entry.IsValid())
+    {
+        CapturedUnits.Add(Entry);
+        UE_LOG(LogTemp, Log, TEXT("捕获单位: %s, 阶级 %d"), *Entry.TypeID.ToString(), Entry.Tier);
     }
 }

@@ -4,6 +4,7 @@
 #include "LFP2D/WorldMap/LFPWorldMapPlayerController.h"
 #include "LFP2D/WorldMap/LFPWorldMapPlayerState.h"
 #include "LFP2D/Core/LFPGameInstance.h"
+#include "LFP2D/UI/WorldMap/LFPUnitReplacementWidget.h"
 
 void ALFPWorldMapGameMode::StartPlay()
 {
@@ -95,6 +96,12 @@ void ALFPWorldMapGameMode::HandleBattleResult(const FLFPBattleResult& Result)
 			Node->bHasBeenTriggered = true;
 			Node->UpdateVisualState();
 		}
+
+		// 处理捕获的单位
+		if (Result.CapturedUnits.Num() > 0)
+		{
+			ProcessCapturedUnits(Result.CapturedUnits);
+		}
 	}
 	else if (Result.bEscaped)
 	{
@@ -107,4 +114,70 @@ void ALFPWorldMapGameMode::HandleBattleResult(const FLFPBattleResult& Result)
 		// TODO: 游戏结束 or 惩罚后继续
 		UE_LOG(LogTemp, Warning, TEXT("战斗失败：节点 %d"), Result.SourceNodeID);
 	}
+}
+
+void ALFPWorldMapGameMode::ProcessCapturedUnits(const TArray<FLFPUnitEntry>& CapturedUnits)
+{
+	ULFPGameInstance* GI = Cast<ULFPGameInstance>(GetGameInstance());
+	if (!GI) return;
+
+	for (const FLFPUnitEntry& Unit : CapturedUnits)
+	{
+		if (!GI->TryAddUnit(Unit))
+		{
+			// 队伍和备战营都满了，加入待处理队列
+			PendingCapturedUnits.Add(Unit);
+		}
+	}
+
+	// 有待处理的，显示替换 UI
+	if (PendingCapturedUnits.Num() > 0)
+	{
+		ShowNextReplacementUI();
+	}
+}
+
+void ALFPWorldMapGameMode::ShowNextReplacementUI()
+{
+	if (PendingCapturedUnits.Num() == 0) return;
+
+	FLFPUnitEntry NextUnit = PendingCapturedUnits[0];
+	PendingCapturedUnits.RemoveAt(0);
+
+	if (!ReplacementWidgetClass)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ReplacementWidgetClass 未配置，放弃单位 %s"), *NextUnit.TypeID.ToString());
+		ShowNextReplacementUI();
+		return;
+	}
+
+	ULFPGameInstance* GI = Cast<ULFPGameInstance>(GetGameInstance());
+	if (!GI) return;
+
+	APlayerController* PC = GetWorld()->GetFirstPlayerController();
+	if (!PC) return;
+
+	if (!ReplacementWidget)
+	{
+		ReplacementWidget = CreateWidget<ULFPUnitReplacementWidget>(PC, ReplacementWidgetClass);
+	}
+
+	if (ReplacementWidget)
+	{
+		ReplacementWidget->Setup(NextUnit, GI->PartyUnits, GI->ReserveUnits, GI->UnitRegistry);
+		ReplacementWidget->OnReplacementComplete.AddDynamic(this, &ALFPWorldMapGameMode::OnReplacementComplete);
+		ReplacementWidget->AddToViewport(100);
+	}
+}
+
+void ALFPWorldMapGameMode::OnReplacementComplete()
+{
+	if (ReplacementWidget)
+	{
+		ReplacementWidget->RemoveFromParent();
+		ReplacementWidget->OnReplacementComplete.RemoveDynamic(this, &ALFPWorldMapGameMode::OnReplacementComplete);
+	}
+
+	// 处理下一个
+	ShowNextReplacementUI();
 }

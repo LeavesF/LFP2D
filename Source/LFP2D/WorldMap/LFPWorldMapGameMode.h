@@ -6,6 +6,7 @@
 #include "LFPWorldMapGameMode.generated.h"
 
 class ALFPWorldMapManager;
+class ULFPUnitReplacementWidget;
 
 /**
  * 世界地图游戏模式
@@ -21,6 +22,16 @@ protected:
 
 	// 处理战斗结果
 	void HandleBattleResult(const FLFPBattleResult& Result);
+
+	// 处理捕获的单位（加入编队/后备/显示替换 UI）
+	void ProcessCapturedUnits(const TArray<FLFPUnitEntry>& CapturedUnits);
+
+	// 显示下一个替换 UI
+	void ShowNextReplacementUI();
+
+	// 替换 UI 完成回调
+	UFUNCTION()
+	void OnReplacementComplete();
 
 public:
 	// 世界地图管理器引用
@@ -39,7 +50,20 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "World Map")
 	int32 DefaultStartNodeID = 0;
 
+	// 替换 UI Widget 类（蓝图中配置）
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<ULFPUnitReplacementWidget> ReplacementWidgetClass;
+
 	// 获取世界地图管理器
 	UFUNCTION(BlueprintPure, Category = "World Map")
 	ALFPWorldMapManager* GetWorldMapManager() const { return WorldMapManager; }
+
+private:
+	// 待处理的捕获单位队列
+	UPROPERTY()
+	TArray<FLFPUnitEntry> PendingCapturedUnits;
+
+	// 替换 UI 实例
+	UPROPERTY()
+	TObjectPtr<ULFPUnitReplacementWidget> ReplacementWidget;
 };

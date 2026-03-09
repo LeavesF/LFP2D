@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "LFP2D/HexGrid/LFPHexTile.h"
 #include "LFP2D/Turn/LFPBattleTypes.h"
+#include "LFP2D/Core/LFPGameInstance.h"
 #include "Components/TimelineComponent.h"
 #include "PaperSpriteComponent.h"
 #include "LFPTacticsUnit.generated.h"
@@ -261,6 +262,25 @@ public:
     // 阵营标识
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Stats")
     EUnitAffiliation Affiliation = EUnitAffiliation::UA_Player;
+
+    // ==== 单位身份 ====
+
+    // 单位类型 ID（对应 ULFPUnitRegistryDataAsset 中的键）
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Identity")
+    FName UnitTypeID = NAME_None;
+
+    // 单位阶级
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Identity")
+    int32 UnitTier = 1;
+
+    // 生成轻量单位数据（用于捕获、保存）
+    FLFPUnitEntry ToUnitEntry() const
+    {
+        FLFPUnitEntry Entry;
+        Entry.TypeID = UnitTypeID;
+        Entry.Tier = UnitTier;
+        return Entry;
+    }
 
     // ==== 战斗相关 ====
 
