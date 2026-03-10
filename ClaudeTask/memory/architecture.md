@@ -183,9 +183,13 @@ Map data stored as DataTable/CSV, runtime editor for map creation:
 - `EBattlePhase` 新增 `BP_Deployment`，作为战斗第一阶段
 
 ### TurnManager 流程变更
-- `StartGame()`: 仅注册非玩家单位 → `BeginDeploymentPhase()`
-- `BeginDeploymentPhase()`: SetPhase(BP_Deployment)
+- `StartGame()`: 仅注册非玩家单位，设置 `CurrentPhase = BP_Deployment`（不广播，避免时序问题）
 - `EndDeploymentPhase()`: 收集场上所有玩家单位注册 → `BeginNewRound()`
+
+### 时序设计（重要）
+- `GameMode::StartPlay()` 在 `PlayerController::BeginPlay()` 之前执行
+- `StartGame()` 仅设置 CurrentPhase，不调用 SetPhase() 广播
+- `PlayerController::BeginPlay()` 绑定委托后主动检查当前阶段，发现 BP_Deployment 则调用 `OnDeploymentPhaseStarted()`
 
 ### PlayerController 布置交互
 - `OnDeploymentPhaseStarted()`: 高亮出生点、创建 DeploymentWidget
@@ -198,6 +202,18 @@ Map data stored as DataTable/CSV, runtime editor for map creation:
 - OnConfirmAction/OnCancelAction 中优先处理布置阶段
 
 ### DeploymentWidget
-- `Setup()` / `MarkUnitPlaced()` / `SetConfirmEnabled()`
+- BindWidget 模式：`Button_Unit0/1/2`、`Image_Unit0/1/2`、`Button_Confirm` 与蓝图绑定
+- `Setup()` / `MarkUnitPlaced()` / `SetConfirmEnabled()` / `MarkUnitSelecting()`
 - `OnUnitSelected` / `OnConfirmPressed` 委托
-- BlueprintImplementableEvent: `OnSetupComplete` / `OnPlacedStateChanged` / `OnConfirmEnabledChanged`
+- NativeConstruct 中绑定按钮 OnClicked
+- 已放置单位半透明显示（0.5 alpha）
+
+## 12. TurnGameMode 生成管理器 (completed)
+GameMode 负责生成 GridManager 和 TurnManager（而非预放置或场景查找）。
+
+### 生成流程
+- `StartPlay()`: 读取 BattleRequest → 生成 GridManager → CSV 加载地图 → 生成 TurnManager → StartGame()
+- `GridManagerClass`（EditDefaultsOnly）：蓝图中配置，未配置则用默认 C++ 类
+- GridManager/TurnManager 存为成员变量，提供 Getter
+- CSV 路径：`{ProjectSavedDir}/Maps/{BattleMapName}.csv`
+- GridManager::BeginPlay() 中原有的自动加载已注释掉，改为由 GameMode 控制

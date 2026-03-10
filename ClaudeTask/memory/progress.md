@@ -100,12 +100,29 @@
 - [x] WorldMapPlayerController::EnterNode 按节点类型分发（战斗/事件/商店等）
 - [x] WorldMapPlayerController::EnterBattle（保存快照 + 设置战斗请求 + OpenLevel）
 - [x] TurnGameMode::StartPlay 读取 BattleRequest（ConsumeBattleRequest）
+- [x] TurnGameMode 生成 HexGridManager + 从 CSV 加载地图 + 生成 TurnManager
 - [x] TurnGameMode::EndBattle（写回 BattleResult + TransitionToWorldMap）
 - [x] WorldMapGameMode::StartPlay 从快照恢复（加载地图 + 恢复 PlayerState + 已触发节点 + 处理战斗结果）
 - [x] Manager: GetCurrentWorldMapName/SetCurrentWorldMapName、RestoreTriggeredNodes、LoadWorldMap 记录地图名
+
+#### Phase 6: 世界地图玩家棋子（完成）
+- [x] ALFPWorldMapPawn: PaperSpriteComponent + FTimeline 移动动画 + OnMoveComplete 委托
+- [x] Manager 集成: SpawnPawn、MoveToLocation、HandlePostMove
+
+#### Phase 7: 队伍/备战营 + 布置阶段（完成）
+- [x] FLFPUnitEntry + ULFPUnitRegistryDataAsset 单位数据层
+- [x] GameInstance 编队管理（PartyUnits/ReserveUnits/TryAddUnit/Replace/Remove）
+- [x] 战斗捕获流程（ChangeAffiliation → RecordCapturedUnit → EndBattle → ProcessCapturedUnits）
+- [x] ULFPUnitReplacementWidget（溢出替换 UI）
+- [x] BP_Deployment 阶段（EBattlePhase 新增）
+- [x] TurnManager 布置阶段流程（StartGame 仅注册敌方 → 设置 BP_Deployment → EndDeploymentPhase 注册玩家）
+- [x] PlayerController 布置交互（高亮出生点、放置/拾起/确认）
+- [x] LFPDeploymentWidget（BindWidget 模式，C++ 逻辑）
+- [x] 时序修复：PlayerController::BeginPlay 主动检查阶段而非依赖委托广播
 
 ## Known Issues / Notes
 - `FindBestCasterPosition` and `SelectBestSkill` cannot be `const` because `GetCurrentTile()` is non-const
 - SkillBase `EvaluateConditionBonus()` returns 0 by default — override in Blueprint subclasses for context-aware priority bonuses
 - AP is consumed during AllocateEnemySkills (planning), NOT during action phase execution
-- UE BP default values are applied AFTER C++ constructor — use InitSkill() pattern for runtime state that depends on BP config
+- HexGridManager::BeginPlay() 中原有自动加载逻辑已注释掉，改为由 TurnGameMode 控制生成和加载
+- TurnManager 是 GameMode 的成员，不再使用局部变量

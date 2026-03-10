@@ -28,10 +28,10 @@ Unreal Engine 5.5 C++ 项目，运行时模块为 **LFP2D**。
 
 ### 核心系统 (Source/LFP2D/)
 
-- **Core/** — `LFPTurnGameMode`: 游戏模式，启动时初始化回合系统。
-- **Turn/** — `LFPTurnManager`: 速度制回合管理、回合周期、单位注册。管理两阶段战斗流程（EnemyPlanning → ActionPhase → RoundEnd）。管理阵营共享 AP 池。
+- **Core/** — `LFPTurnGameMode`: 战斗游戏模式，负责生成 HexGridManager 和 TurnManager，从 GameInstance 读取战斗请求，根据 BattleMapName 从 CSV 加载地图。`LFPGameInstance`: 跨关卡数据持久化（战斗请求/结果、世界地图快照、编队系统）。`LFPUnitRegistryDataAsset`: 单位注册表（TypeID → 蓝图类/图标映射）。
+- **Turn/** — `LFPTurnManager`: 速度制回合管理、回合周期、单位注册。管理战斗阶段流程（Deployment → EnemyPlanning → ActionPhase → RoundEnd）。管理阵营共享 AP 池。
   - `LFPBattleTypes.h`: 共享类型定义（`EBattlePhase`、`EUnitAffiliation`、`FEnemyActionPlan`）
-- **Player/** — `LFPTacticsPlayerController`: 玩家控制器，处理 Enhanced Input、摄像机控制（平移/拖拽/缩放）、单位选择、移动指令、技能释放。管理游戏状态（MoveState, SkillReleaseState）。
+- **Player/** — `LFPTacticsPlayerController`: 玩家控制器，处理 Enhanced Input、摄像机控制（平移/拖拽/缩放）、单位选择、移动指令、技能释放、布置阶段交互。管理游戏状态（MoveState, SkillReleaseState）。
 - **HexGrid/** — `LFPHexGridManager` + `LFPHexTile`: 六角网格生成（立方体坐标 Q, R, S）、A* 寻路、范围计算、格子占用/可行走性、精灵图层高亮（移动/攻击/技能效果/路径）。
 - **Unit/** — `LFPTacticsUnit`: 核心单位 Actor，属性（HP、攻击、防御、移动范围、速度）、阵营（Player/Enemy/Neutral）、Timeline 移动动画、PaperSprite 渲染。AP 方法代理到 TurnManager 的阵营 AP 系统。
 - **Skill/** — 技能系统：
@@ -41,22 +41,36 @@ Unreal Engine 5.5 C++ 项目，运行时模块为 **LFP2D**。
   - `LFPSkillButtonWidget`（UI）
 - **AI/** — `LFPAIController`：规划阶段方法（`CreateActionPlan`、`SelectBestSkill`、`FindBestCasterPosition`）。`LFPEnemyBehaviorData` 数据资产定义 AI 性格。BT 任务节点位于 `AI/BehaviorTree/`。
 - **Unit/Betrayal/** — 背叛系统：`LFPBetrayalManager`、`LFPBetrayalCondition`（抽象）、`LFPBCondition_HPLack`（低血触发）。
-- **UI/Fighting/** — 战斗 UI：`LFPSkillSelectionWidget`（技能面板，显示阵营 AP）、`LFPTurnSpeedListWidget`/`LFPTurnSpeedIconWidget`（回合顺序显示）、`LFPHealthBarWidget`、`LFPPlannedSkillIconWidget`（头顶技能图标）。
+- **UI/Fighting/** — 战斗 UI：`LFPSkillSelectionWidget`（技能面板，显示阵营 AP）、`LFPTurnSpeedListWidget`/`LFPTurnSpeedIconWidget`（回合顺序显示）、`LFPHealthBarWidget`、`LFPPlannedSkillIconWidget`（头顶技能图标）、`LFPDeploymentWidget`（布置阶段 UI，BindWidget 模式）。
+- **WorldMap/** — 世界地图系统：`LFPWorldMapManager`（地图管理器，节点/边管理、迷雾、CSV 数据加载）、`LFPWorldMapNode`/`LFPWorldMapEdge`（节点/边 Actor）、`LFPWorldMapPawn`（玩家棋子，FTimeline 移动动画）、`LFPWorldMapGameMode`/`LFPWorldMapPlayerController`/`LFPWorldMapPlayerState`。
+- **UI/WorldMap/** — `LFPUnitReplacementWidget`（编队溢出替换 UI）。
 
 ### 战斗流程
 
 ```
-TurnManager（速度制回合）
-  每回合开始:
-    1. 敌方规划阶段 (EnemyPlanning)
-       AllocateEnemySkills()  — 全局按技能优先级分配阵营 AP
-       ProcessNextEnemyPlan() — 按速度顺序：选目标 → 移动到施法位 → 显示头顶图标
-    2. 行动阶段 (ActionPhase)
-       按速度排序轮流行动:
-         玩家单位 → PlayerController 输入控制
-         敌方单位 → 执行预规划的技能
-    3. 回合结束 (RoundEnd)
-       回复阵营 AP、重置单位状态
+TurnGameMode::StartPlay()
+  → 生成 HexGridManager（可选从 CSV 加载地图）
+  → 生成 TurnManager → StartGame()
+
+TurnManager::StartGame()
+  → 注册场上敌方单位，设置 CurrentPhase = BP_Deployment
+
+PlayerController::BeginPlay()
+  → 绑定 OnPhaseChanged 委托
+  → 检测到 BP_Deployment → OnDeploymentPhaseStarted()
+    → 高亮出生点、显示布置 UI、玩家放置单位
+    → 确认 → EndDeploymentPhase() → 注册玩家单位 → BeginNewRound()
+
+TurnManager 每回合:
+  1. 敌方规划阶段 (EnemyPlanning)
+     AllocateEnemySkills()  — 全局按技能优先级分配阵营 AP
+     ProcessNextEnemyPlan() — 按速度顺序：选目标 → 移动到施法位 → 显示头顶图标
+  2. 行动阶段 (ActionPhase)
+     按速度排序轮流行动:
+       玩家单位 → PlayerController 输入控制
+       敌方单位 → 执行预规划的技能
+  3. 回合结束 (RoundEnd)
+     回复阵营 AP、重置单位状态
 ```
 
 ### 设计模式
