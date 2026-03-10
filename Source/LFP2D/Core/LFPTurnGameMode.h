@@ -8,6 +8,8 @@
 #include "LFPTurnGameMode.generated.h"
 
 class ALFPTacticsUnit;
+class ALFPHexGridManager;
+class ALFPTurnManager;
 
 /**
  * 战斗游戏模式
@@ -42,6 +44,14 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Battle")
 	const TArray<FLFPUnitEntry>& GetCapturedUnits() const { return CapturedUnits; }
 
+	// 获取网格管理器
+	UFUNCTION(BlueprintPure, Category = "Battle")
+	ALFPHexGridManager* GetGridManager() const { return GridManager; }
+
+	// 获取回合管理器
+	UFUNCTION(BlueprintPure, Category = "Battle")
+	ALFPTurnManager* GetTurnManager() const { return TurnManager; }
+
 protected:
 	// 缓存的战斗请求
 	UPROPERTY(BlueprintReadOnly, Category = "Battle")
@@ -50,4 +60,16 @@ protected:
 	// 本场捕获的单位列表
 	UPROPERTY()
 	TArray<FLFPUnitEntry> CapturedUnits;
+
+	// 网格管理器类（蓝图中配置）
+	UPROPERTY(EditDefaultsOnly, Category = "Battle")
+	TSubclassOf<ALFPHexGridManager> GridManagerClass;
+
+	// 网格管理器实例
+	UPROPERTY()
+	TObjectPtr<ALFPHexGridManager> GridManager;
+
+	// 回合管理器实例
+	UPROPERTY()
+	TObjectPtr<ALFPTurnManager> TurnManager;
 };

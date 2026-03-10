@@ -6,13 +6,14 @@
 #include "LFPDeploymentWidget.generated.h"
 
 class ULFPUnitRegistryDataAsset;
+class UButton;
+class UImage;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDeploymentUnitSelected, int32, PartyIndex);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDeploymentConfirmed);
 
 /**
  * 布置阶段 UI：显示队伍单位列表，玩家点击选中后放置到出生点
- * 具体布局由蓝图子类实现
  */
 UCLASS()
 class LFP2D_API ULFPDeploymentWidget : public UUserWidget
@@ -44,15 +45,37 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnDeploymentConfirmed OnConfirmPressed;
 
-	// 确认按钮点击（蓝图中绑定按钮调用此方法）
-	UFUNCTION(BlueprintCallable, Category = "Deployment")
-	void OnConfirmButtonClicked();
-
-	// 单位图标点击（蓝图中绑定按钮调用此方法）
-	UFUNCTION(BlueprintCallable, Category = "Deployment")
-	void OnUnitIconClicked(int32 PartyIndex);
-
 protected:
+	virtual void NativeConstruct() override;
+
+	// ============== BindWidget 绑定 ==============
+
+	// 3 个单位按钮
+	UPROPERTY(BlueprintReadOnly, Category = "Deployment", meta = (BindWidget))
+	TObjectPtr<UButton> Button_Unit0;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Deployment", meta = (BindWidget))
+	TObjectPtr<UButton> Button_Unit1;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Deployment", meta = (BindWidget))
+	TObjectPtr<UButton> Button_Unit2;
+
+	// 3 个单位图标
+	UPROPERTY(BlueprintReadOnly, Category = "Deployment", meta = (BindWidget))
+	TObjectPtr<UImage> Image_Unit0;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Deployment", meta = (BindWidget))
+	TObjectPtr<UImage> Image_Unit1;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Deployment", meta = (BindWidget))
+	TObjectPtr<UImage> Image_Unit2;
+
+	// 确认按钮
+	UPROPERTY(BlueprintReadOnly, Category = "Deployment", meta = (BindWidget))
+	TObjectPtr<UButton> Button_Confirm;
+
+	// ============== 数据 ==============
+
 	// 队伍数据缓存
 	UPROPERTY(BlueprintReadOnly, Category = "Deployment")
 	TArray<FLFPUnitEntry> CachedPartyUnits;
@@ -69,15 +92,17 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Deployment")
 	bool bConfirmEnabled = false;
 
-	// 蓝图实现：刷新 UI 显示
-	UFUNCTION(BlueprintImplementableEvent, Category = "Deployment")
-	void OnSetupComplete();
+private:
+	// 按钮点击回调
+	UFUNCTION() void OnUnit0Clicked();
+	UFUNCTION() void OnUnit1Clicked();
+	UFUNCTION() void OnUnit2Clicked();
+	UFUNCTION() void OnConfirmClicked();
 
-	// 蓝图实现：单位放置状态变化时刷新
-	UFUNCTION(BlueprintImplementableEvent, Category = "Deployment")
-	void OnPlacedStateChanged(int32 PartyIndex, bool bPlaced);
+	// 获取按钮/图标数组访问
+	UButton* GetUnitButton(int32 Index) const;
+	UImage* GetUnitImage(int32 Index) const;
 
-	// 蓝图实现：确认按钮状态变化
-	UFUNCTION(BlueprintImplementableEvent, Category = "Deployment")
-	void OnConfirmEnabledChanged(bool bEnabled);
+	// 更新单位槽位的视觉状态
+	void UpdateSlotVisual(int32 Index);
 };

@@ -45,8 +45,8 @@ void ALFPTurnManager::StartGame()
     FactionCurrentAP.Add(EUnitAffiliation::UA_Enemy, FactionInitialAP);
     FactionCurrentAP.Add(EUnitAffiliation::UA_Neutral, FactionInitialAP);
 
-    // 进入布置阶段
-    BeginDeploymentPhase();
+    // 标记为布置阶段（不广播，等 PlayerController 绑定委托后主动调用）
+    CurrentPhase = EBattlePhase::BP_Deployment;
 }
 
 void ALFPTurnManager::BeginDeploymentPhase()
@@ -144,6 +144,7 @@ void ALFPTurnManager::SortUnitsBySpeed()
 void ALFPTurnManager::SetPhase(EBattlePhase NewPhase)
 {
     CurrentPhase = NewPhase;
+    UE_LOG(LogTemp, Log, TEXT("SetPhase:=%d"), NewPhase);
     OnPhaseChanged.Broadcast(NewPhase);
 }
 

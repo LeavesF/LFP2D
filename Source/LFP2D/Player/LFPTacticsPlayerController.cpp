@@ -82,6 +82,13 @@ void ALFPTacticsPlayerController::BeginPlay()
     if (ALFPTurnManager* TurnManager = GetTurnManager())
     {
         TurnManager->OnPhaseChanged.AddDynamic(this, &ALFPTacticsPlayerController::OnPhaseChanged);
+
+        // StartGame() 在 GameMode::StartPlay() 中执行，早于 PlayerController::BeginPlay()
+        // 此时阶段已设置但未广播，需主动检查并触发布置阶段
+        if (TurnManager->GetCurrentPhase() == EBattlePhase::BP_Deployment)
+        {
+            OnDeploymentPhaseStarted();
+        }
     }
 }
 
@@ -907,7 +914,7 @@ void ALFPTacticsPlayerController::HideEnemyPlanPreview()
 void ALFPTacticsPlayerController::OnPhaseChanged(EBattlePhase NewPhase)
 {
     CachedBattlePhase = NewPhase;
-
+    UE_LOG(LogTemp, Log, TEXT("OnPhaseChanged:=%d"), NewPhase);
     // 阶段切换时清理预览状态
     HideEnemyPlanPreview();
 

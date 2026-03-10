@@ -39,14 +39,14 @@ void ALFPHexGridManager::BeginPlay()
 	Super::BeginPlay();
 
 	// 如果有预设地图数据表，优先从数据表加载
-	if (MapDataTable)
+	/*if (MapDataTable)
 	{
 		LoadMapFromDataTable(MapDataTable);
 	}
 	else
 	{
 		GenerateGrid(GridWidth, GridHeight);
-	}
+	}*/
 }
 
 // Called every frame

@@ -5,6 +5,9 @@
 #include "LFP2D/Core/LFPGameInstance.h"
 #include "LFP2D/Turn/LFPTurnManager.h"
 #include "LFP2D/Unit/LFPTacticsUnit.h"
+#include "LFP2D/HexGrid/LFPHexGridManager.h"
+#include "Kismet/GameplayStatics.h"
+#include "Misc/Paths.h"
 
 void ALFPTurnGameMode::StartPlay()
 {
@@ -21,16 +24,38 @@ void ALFPTurnGameMode::StartPlay()
         }
     }
 
-    // 生成回合管理器
     FActorSpawnParameters SpawnParams;
     SpawnParams.Owner = this;
 
-    ALFPTurnManager* TurnManager = GetWorld()->SpawnActor<ALFPTurnManager>(
-        ALFPTurnManager::StaticClass(),
-        FVector::ZeroVector,
-        FRotator::ZeroRotator,
-        SpawnParams
-    );
+    // 生成网格管理器
+    if (GridManagerClass)
+    {
+        GridManager = GetWorld()->SpawnActor<ALFPHexGridManager>(
+            GridManagerClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
+    }
+    else
+    {
+        GridManager = GetWorld()->SpawnActor<ALFPHexGridManager>(
+            ALFPHexGridManager::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
+    }
+
+    // 如果有 BattleMapName，从 CSV 加载地图
+    if (GridManager && !CachedBattleRequest.BattleMapName.IsEmpty())
+    {
+        FString CSVPath = FPaths::ProjectSavedDir() / TEXT("Maps") / CachedBattleRequest.BattleMapName + TEXT(".csv");
+        if (GridManager->LoadMapFromCSV(CSVPath))
+        {
+            UE_LOG(LogTemp, Log, TEXT("战斗模式: 从 CSV 加载地图 %s"), *CachedBattleRequest.BattleMapName);
+        }
+        else
+        {
+            UE_LOG(LogTemp, Warning, TEXT("战斗模式: CSV 地图加载失败 %s"), *CSVPath);
+        }
+    }
+
+    // 生成回合管理器
+    TurnManager = GetWorld()->SpawnActor<ALFPTurnManager>(
+        ALFPTurnManager::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
 
     if (TurnManager)
     {
@@ -38,9 +63,6 @@ void ALFPTurnGameMode::StartPlay()
     }
 
     Super::StartPlay();
-
-    // TODO: 如果有 BattleMapName，让 HexGridManager 加载对应 CSV
-    // 这需要在 HexGridManager 生成后调用 LoadMapFromCSV
 }
 
 void ALFPTurnGameMode::EndBattle(bool bVictory, bool bEscaped)
