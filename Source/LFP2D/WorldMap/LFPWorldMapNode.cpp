@@ -31,6 +31,8 @@ void ALFPWorldMapNode::InitFromRowData(const FLFPWorldNodeRow& Row)
 	BattleMapName = Row.BattleMapName;
 	StarRating = Row.StarRating;
 	bCanEscape = Row.bCanEscape;
+	BaseGoldReward = Row.BaseGoldReward;
+	BaseFoodReward = Row.BaseFoodReward;
 	EventID = Row.EventID;
 	PrerequisiteNodeIDs = Row.PrerequisiteNodeIDs;
 
@@ -48,6 +50,8 @@ FLFPWorldNodeRow ALFPWorldMapNode::ExportToRowData() const
 	Row.BattleMapName = BattleMapName;
 	Row.StarRating = StarRating;
 	Row.bCanEscape = bCanEscape;
+	Row.BaseGoldReward = BaseGoldReward;
+	Row.BaseFoodReward = BaseFoodReward;
 	Row.EventID = EventID;
 	Row.PrerequisiteNodeIDs = PrerequisiteNodeIDs;
 	return Row;

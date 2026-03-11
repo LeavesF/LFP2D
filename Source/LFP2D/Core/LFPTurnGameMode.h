@@ -10,6 +10,7 @@
 class ALFPTacticsUnit;
 class ALFPHexGridManager;
 class ALFPTurnManager;
+class ULFPBattleResultWidget;
 
 /**
  * 战斗游戏模式
@@ -44,6 +45,11 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Battle")
 	const TArray<FLFPUnitEntry>& GetCapturedUnits() const { return CapturedUnits; }
 
+	// ============== 掉落追踪 ==============
+
+	// 敌方单位被击杀时调用（累加掉落）
+	void OnEnemyUnitKilled(ALFPTacticsUnit* Unit);
+
 	// 获取网格管理器
 	UFUNCTION(BlueprintPure, Category = "Battle")
 	ALFPHexGridManager* GetGridManager() const { return GridManager; }
@@ -60,6 +66,36 @@ protected:
 	// 本场捕获的单位列表
 	UPROPERTY()
 	TArray<FLFPUnitEntry> CapturedUnits;
+
+	// ============== 掉落累积 ==============
+
+	// 累积的击杀掉落金币
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Battle|Loot")
+	int32 AccumulatedDropGold = 0;
+
+	// 累积的击杀掉落食物
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Battle|Loot")
+	int32 AccumulatedDropFood = 0;
+
+	// ============== 结算 UI ==============
+
+	// 结算 Widget 蓝图类
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<ULFPBattleResultWidget> BattleResultWidgetClass;
+
+	// 结算 Widget 实例
+	UPROPERTY()
+	TObjectPtr<ULFPBattleResultWidget> BattleResultWidget;
+
+	// 缓存的战斗结果（确认后写回 GameInstance）
+	UPROPERTY()
+	FLFPBattleResult CachedBattleResult;
+
+	// 结算确认回调
+	UFUNCTION()
+	void OnBattleResultConfirmed();
+
+	// ============== 管理器 ==============
 
 	// 网格管理器类（蓝图中配置）
 	UPROPERTY(EditDefaultsOnly, Category = "Battle")

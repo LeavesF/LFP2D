@@ -46,6 +46,14 @@ struct FLFPBattleRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Battle")
 	bool bCanEscape = true;
 
+	// 节点基础金币奖励
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
+	int32 BaseGoldReward = 0;
+
+	// 节点基础食物奖励
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Battle")
+	int32 BaseFoodReward = 0;
+
 	// 是否有有效请求
 	UPROPERTY(BlueprintReadWrite, Category = "Battle")
 	bool bIsValid = false;
@@ -72,6 +80,14 @@ struct FLFPBattleResult
 	// 战斗中捕获的单位列表（背叛系统触发）
 	UPROPERTY(BlueprintReadWrite, Category = "Battle")
 	TArray<FLFPUnitEntry> CapturedUnits;
+
+	// 总金币奖励（基础 + 击杀掉落）
+	UPROPERTY(BlueprintReadWrite, Category = "Battle")
+	int32 GoldReward = 0;
+
+	// 总食物奖励（基础 + 击杀掉落）
+	UPROPERTY(BlueprintReadWrite, Category = "Battle")
+	int32 FoodReward = 0;
 
 	// 是否有有效结果
 	UPROPERTY(BlueprintReadWrite, Category = "Battle")
@@ -172,6 +188,34 @@ public:
 	// 战斗关卡名（蓝图中配置，默认值）
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Scene Transition")
 	FString DefaultBattleLevelName = TEXT("Test_Fight");
+
+	// ============== 编队系统 ==============
+
+	// ============== 资源系统 ==============
+
+	// 金币
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Resources")
+	int32 Gold = 0;
+
+	// 食物
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Resources")
+	int32 Food = 0;
+
+	// 增加金币
+	UFUNCTION(BlueprintCallable, Category = "Resources")
+	void AddGold(int32 Amount);
+
+	// 增加食物
+	UFUNCTION(BlueprintCallable, Category = "Resources")
+	void AddFood(int32 Amount);
+
+	// 获取金币
+	UFUNCTION(BlueprintPure, Category = "Resources")
+	int32 GetGold() const { return Gold; }
+
+	// 获取食物
+	UFUNCTION(BlueprintPure, Category = "Resources")
+	int32 GetFood() const { return Food; }
 
 	// ============== 编队系统 ==============
 

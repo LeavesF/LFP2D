@@ -38,6 +38,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Node|Battle")
 	bool bCanEscape = true;
 
+	// 基础金币奖励
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Node|Battle")
+	int32 BaseGoldReward = 0;
+
+	// 基础食物奖励
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Node|Battle")
+	int32 BaseFoodReward = 0;
+
 	// ==== 事件参数 ====
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Node|Event")

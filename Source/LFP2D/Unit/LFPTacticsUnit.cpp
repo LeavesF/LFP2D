@@ -571,6 +571,15 @@ void ALFPTacticsUnit::HandleDeath()
     // 蓝图事件
     OnDeath();
 
+    // 通知 GameMode 敌方单位被击杀（掉落追踪）
+    if (IsEnemy())
+    {
+        if (ALFPTurnGameMode* GM = Cast<ALFPTurnGameMode>(GetWorld()->GetAuthGameMode()))
+        {
+            GM->OnEnemyUnitKilled(this);
+        }
+    }
+
     // 从格子上移除
     ALFPHexTile* CurrentTile = GetCurrentTile();
     if (CurrentTile)

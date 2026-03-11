@@ -457,6 +457,8 @@ void ALFPWorldMapPlayerController::EnterBattle(ALFPWorldMapNode* BattleNode)
 	Request.BattleMapName = BattleNode->BattleMapName;
 	Request.StarRating = BattleNode->StarRating;
 	Request.bCanEscape = BattleNode->bCanEscape;
+	Request.BaseGoldReward = BattleNode->BaseGoldReward;
+	Request.BaseFoodReward = BattleNode->BaseFoodReward;
 	GI->SetBattleRequest(Request);
 
 	// 切换到战斗关卡

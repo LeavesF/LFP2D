@@ -259,6 +259,16 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Stats")
     int32 Defense = 5;
 
+    // ==== 击杀掉落 ====
+
+    // 击杀时掉落金币
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Stats|Loot")
+    int32 DropGold = 0;
+
+    // 击杀时掉落食物
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Stats|Loot")
+    int32 DropFood = 0;
+
     // 阵营标识
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Stats")
     EUnitAffiliation Affiliation = EUnitAffiliation::UA_Player;

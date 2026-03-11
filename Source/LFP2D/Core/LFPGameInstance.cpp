@@ -55,6 +55,20 @@ void ULFPGameInstance::TransitionToWorldMap(const FString& WorldMapLevelName)
 	UGameplayStatics::OpenLevel(this, FName(*LevelName));
 }
 
+// ============== 资源系统 ==============
+
+void ULFPGameInstance::AddGold(int32 Amount)
+{
+	Gold += Amount;
+	UE_LOG(LogTemp, Log, TEXT("金币变动: %+d, 当前: %d"), Amount, Gold);
+}
+
+void ULFPGameInstance::AddFood(int32 Amount)
+{
+	Food += Amount;
+	UE_LOG(LogTemp, Log, TEXT("食物变动: %+d, 当前: %d"), Amount, Food);
+}
+
 // ============== 编队系统 ==============
 
 bool ULFPGameInstance::TryAddUnit(const FLFPUnitEntry& Unit)

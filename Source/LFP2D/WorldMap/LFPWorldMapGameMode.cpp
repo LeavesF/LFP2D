@@ -82,6 +82,8 @@ void ALFPWorldMapGameMode::HandleBattleResult(const FLFPBattleResult& Result)
 {
 	if (!WorldMapManager) return;
 
+	ULFPGameInstance* GI = Cast<ULFPGameInstance>(GetGameInstance());
+
 	UE_LOG(LogTemp, Log, TEXT("处理战斗结果: 节点 %d, 胜利=%s, 逃跑=%s"),
 		Result.SourceNodeID,
 		Result.bVictory ? TEXT("是") : TEXT("否"),
@@ -97,6 +99,14 @@ void ALFPWorldMapGameMode::HandleBattleResult(const FLFPBattleResult& Result)
 			Node->UpdateVisualState();
 		}
 
+		// 发放奖励到 GameInstance
+		if (GI)
+		{
+			GI->AddGold(Result.GoldReward);
+			GI->AddFood(Result.FoodReward);
+			UE_LOG(LogTemp, Log, TEXT("战斗奖励: 金币 +%d, 食物 +%d"), Result.GoldReward, Result.FoodReward);
+		}
+
 		// 处理捕获的单位
 		if (Result.CapturedUnits.Num() > 0)
 		{
@@ -105,14 +115,13 @@ void ALFPWorldMapGameMode::HandleBattleResult(const FLFPBattleResult& Result)
 	}
 	else if (Result.bEscaped)
 	{
-		// 逃跑：不标记为已触发，可再次进入
+		// 逃跑：不标记为已触发，可再次进入，不发放奖励
 		UE_LOG(LogTemp, Log, TEXT("逃跑：节点 %d 未标记为已触发"), Result.SourceNodeID);
 	}
 	else
 	{
-		// 失败：根据游戏设计决定处理方式
-		// TODO: 游戏结束 or 惩罚后继续
-		UE_LOG(LogTemp, Warning, TEXT("战斗失败：节点 %d"), Result.SourceNodeID);
+		// 失败：不标记节点，可重试，不发放奖励
+		UE_LOG(LogTemp, Warning, TEXT("战斗失败：节点 %d，可重试"), Result.SourceNodeID);
 	}
 }
 

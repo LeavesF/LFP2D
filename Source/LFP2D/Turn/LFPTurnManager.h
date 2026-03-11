@@ -58,6 +58,9 @@ public:
     // 从回合系统注销单位
     void UnregisterUnit(ALFPTacticsUnit* Unit);
 
+    // 检查战斗结束条件（单位死亡后调用）
+    void CheckBattleEnd();
+
     // 结束布置阶段（玩家确认部署后调用）
     UFUNCTION(BlueprintCallable, Category = "Turn System")
     void EndDeploymentPhase();
@@ -196,4 +199,7 @@ protected:
 
     // 空计划（用于查询未找到时返回）
     static FEnemyActionPlan EmptyPlan;
+
+    // 战斗是否已结束（防止重复触发）
+    bool bBattleEnded = false;
 };

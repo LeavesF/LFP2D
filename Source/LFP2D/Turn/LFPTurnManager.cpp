@@ -7,6 +7,7 @@
 #include "LFP2D/AI/LFPAIController.h"
 #include "LFP2D/Skill/LFPSkillBase.h"
 #include "LFP2D/Skill/LFPSkillComponent.h"
+#include "LFP2D/Core/LFPTurnGameMode.h"
 #include "Kismet/GameplayStatics.h"
 
 FEnemyActionPlan ALFPTurnManager::EmptyPlan;
@@ -80,6 +81,8 @@ void ALFPTurnManager::EndDeploymentPhase()
 
 void ALFPTurnManager::BeginNewRound()
 {
+    if (bBattleEnded) return;
+
     CurrentRound++;
     bIsInRound = true;
 
@@ -112,6 +115,8 @@ void ALFPTurnManager::BeginNewRound()
 
 void ALFPTurnManager::EndCurrentRound()
 {
+    if (bBattleEnded) return;
+
     bIsInRound = false;
 
     SetPhase(EBattlePhase::BP_RoundEnd);
@@ -259,6 +264,8 @@ void ALFPTurnManager::BeginActionPhase()
 
 void ALFPTurnManager::BeginUnitTurn(ALFPTacticsUnit* Unit)
 {
+    if (bBattleEnded) return;
+
     OnTurnChanged.Broadcast();
 
     CurrentUnit = Unit;
@@ -332,17 +339,22 @@ void ALFPTurnManager::EndUnitTurn(ALFPTacticsUnit* Unit)
 
 void ALFPTurnManager::PassTurn()
 {
-    if (!CurrentUnit || TurnOrderUnits.IsEmpty())
+    if (bBattleEnded) return;
+
+    if (TurnOrderUnits.IsEmpty())
     {
         return;
     }
 
     // 结束当前单位回合
-    EndUnitTurn(CurrentUnit);
+    if (CurrentUnit)
+    {
+        EndUnitTurn(CurrentUnit);
+    }
 
     // 找到下一个未行动的单位
-    int32 CurrentIndex = TurnOrderUnits.Find(CurrentUnit);
-    int32 NextIndex = (CurrentIndex + 1) % TurnOrderUnits.Num();
+    int32 CurrentIndex = CurrentUnit ? TurnOrderUnits.Find(CurrentUnit) : -1;
+    int32 StartIndex = (CurrentIndex + 1) % TurnOrderUnits.Num();
 
     // 检查所有单位是否行动完毕
     bool TurnOrderUnitsActed = true;
@@ -365,7 +377,7 @@ void ALFPTurnManager::PassTurn()
         // 寻找下一个未行动单位
         for (int32 i = 0; i < TurnOrderUnits.Num(); i++)
         {
-            int32 Index = (NextIndex + i) % TurnOrderUnits.Num();
+            int32 Index = (StartIndex + i) % TurnOrderUnits.Num();
             ALFPTacticsUnit* NextUnit = TurnOrderUnits[Index];
 
             if (NextUnit && NextUnit->IsAlive() && !NextUnit->HasActed())
@@ -409,10 +421,14 @@ void ALFPTurnManager::UnregisterUnit(ALFPTacticsUnit* Unit)
 {
     if (Unit)
     {
+        bool bWasCurrentUnit = (Unit == CurrentUnit);
         TurnOrderUnits.Remove(Unit);
 
-        // 如果当前单位被移除，传递回合
-        if (Unit == CurrentUnit)
+        // 先检查战斗结束条件
+        CheckBattleEnd();
+
+        // 如果战斗未结束且当前单位被移除，传递回合
+        if (!bBattleEnded && bWasCurrentUnit)
         {
             PassTurn();
         }
@@ -507,4 +523,44 @@ void ALFPTurnManager::AllocateEnemySkills()
     }
 
     // 未分配到AP技能的敌人会在 CreateActionPlan 中 fallback 到默认攻击
+}
+
+void ALFPTurnManager::CheckBattleEnd()
+{
+    if (bBattleEnded) return;
+    if (CurrentPhase == EBattlePhase::BP_Deployment) return;
+
+    bool bHasPlayerUnit = false;
+    bool bHasEnemyUnit = false;
+
+    for (ALFPTacticsUnit* Unit : TurnOrderUnits)
+    {
+        if (!Unit || !Unit->IsAlive()) continue;
+
+        if (Unit->GetAffiliation() == EUnitAffiliation::UA_Player)
+            bHasPlayerUnit = true;
+        else if (Unit->GetAffiliation() == EUnitAffiliation::UA_Enemy)
+            bHasEnemyUnit = true;
+    }
+
+    if (!bHasEnemyUnit)
+    {
+        // 胜利：所有敌方单位消灭
+        bBattleEnded = true;
+        UE_LOG(LogTemp, Log, TEXT("战斗结束: 胜利！"));
+        if (ALFPTurnGameMode* GM = Cast<ALFPTurnGameMode>(GetWorld()->GetAuthGameMode()))
+        {
+            GM->EndBattle(true);
+        }
+    }
+    else if (!bHasPlayerUnit)
+    {
+        // 失败：所有玩家单位消灭
+        bBattleEnded = true;
+        UE_LOG(LogTemp, Log, TEXT("战斗结束: 败北"));
+        if (ALFPTurnGameMode* GM = Cast<ALFPTurnGameMode>(GetWorld()->GetAuthGameMode()))
+        {
+            GM->EndBattle(false);
+        }
+    }
 }

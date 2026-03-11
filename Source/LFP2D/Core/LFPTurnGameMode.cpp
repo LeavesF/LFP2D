@@ -6,6 +6,7 @@
 #include "LFP2D/Turn/LFPTurnManager.h"
 #include "LFP2D/Unit/LFPTacticsUnit.h"
 #include "LFP2D/HexGrid/LFPHexGridManager.h"
+#include "LFP2D/UI/Fighting/LFPBattleResultWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "Misc/Paths.h"
 
@@ -70,19 +71,74 @@ void ALFPTurnGameMode::EndBattle(bool bVictory, bool bEscaped)
     ULFPGameInstance* GI = Cast<ULFPGameInstance>(GetGameInstance());
     if (!GI) return;
 
-    // 写回战斗结果
+    // 构建战斗结果
     FLFPBattleResult Result;
     Result.SourceNodeID = CachedBattleRequest.SourceNodeID;
     Result.bVictory = bVictory;
     Result.bEscaped = bEscaped;
 
-    // 胜利时传递捕获的单位
     if (bVictory)
     {
         Result.CapturedUnits = CapturedUnits;
+        // 总奖励 = 基础奖励 + 击杀掉落
+        Result.GoldReward = CachedBattleRequest.BaseGoldReward + AccumulatedDropGold;
+        Result.FoodReward = CachedBattleRequest.BaseFoodReward + AccumulatedDropFood;
+    }
+    // 逃跑或失败：不给奖励（默认 0）
+
+    // 缓存结果，确认后写回
+    CachedBattleResult = Result;
+
+    // 显示结算 UI
+    if (BattleResultWidgetClass)
+    {
+        APlayerController* PC = GetWorld()->GetFirstPlayerController();
+        if (PC)
+        {
+            BattleResultWidget = CreateWidget<ULFPBattleResultWidget>(PC, BattleResultWidgetClass);
+            if (BattleResultWidget)
+            {
+                BattleResultWidget->Setup(Result, GI->UnitRegistry);
+                BattleResultWidget->OnConfirmPressed.AddDynamic(this, &ALFPTurnGameMode::OnBattleResultConfirmed);
+                BattleResultWidget->AddToViewport(100);
+
+                // 切换到 UI 输入模式
+                FInputModeUIOnly InputMode;
+                InputMode.SetWidgetToFocus(BattleResultWidget->TakeWidget());
+                PC->SetInputMode(InputMode);
+                PC->SetShowMouseCursor(true);
+            }
+        }
+    }
+    else
+    {
+        // 无 Widget 类配置，直接返回（兼容测试场景）
+        OnBattleResultConfirmed();
+    }
+}
+
+void ALFPTurnGameMode::OnBattleResultConfirmed()
+{
+    ULFPGameInstance* GI = Cast<ULFPGameInstance>(GetGameInstance());
+    if (!GI) return;
+
+    // 写回战斗结果
+    GI->SetBattleResult(CachedBattleResult);
+
+    // 移除结算 UI
+    if (BattleResultWidget)
+    {
+        BattleResultWidget->OnConfirmPressed.RemoveDynamic(this, &ALFPTurnGameMode::OnBattleResultConfirmed);
+        BattleResultWidget->RemoveFromParent();
+        BattleResultWidget = nullptr;
     }
 
-    GI->SetBattleResult(Result);
+    // 恢复输入模式
+    if (APlayerController* PC = GetWorld()->GetFirstPlayerController())
+    {
+        FInputModeGameAndUI InputMode;
+        PC->SetInputMode(InputMode);
+    }
 
     // 返回世界地图
     if (CachedBattleRequest.bIsValid)
@@ -101,4 +157,14 @@ void ALFPTurnGameMode::RecordCapturedUnit(ALFPTacticsUnit* Unit)
         CapturedUnits.Add(Entry);
         UE_LOG(LogTemp, Log, TEXT("捕获单位: %s, 阶级 %d"), *Entry.TypeID.ToString(), Entry.Tier);
     }
+}
+
+void ALFPTurnGameMode::OnEnemyUnitKilled(ALFPTacticsUnit* Unit)
+{
+    if (!Unit) return;
+
+    AccumulatedDropGold += Unit->DropGold;
+    AccumulatedDropFood += Unit->DropFood;
+    UE_LOG(LogTemp, Log, TEXT("敌方击杀掉落: 金币 +%d, 食物 +%d (累计: %d / %d)"),
+        Unit->DropGold, Unit->DropFood, AccumulatedDropGold, AccumulatedDropFood);
 }
