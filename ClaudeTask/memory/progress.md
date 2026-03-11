@@ -120,6 +120,26 @@
 - [x] LFPDeploymentWidget（BindWidget 模式，C++ 逻辑）
 - [x] 时序修复：PlayerController::BeginPlay 主动检查阶段而非依赖委托广播
 
+### 战斗结束 + 掉落结算系统（完成）
+- [x] FLFPBattleRequest 扩展（BaseGoldReward、BaseFoodReward）
+- [x] FLFPBattleResult 扩展（GoldReward、FoodReward）
+- [x] ULFPGameInstance 资源系统（Gold、Food、AddGold、AddFood）
+- [x] ALFPTacticsUnit 掉落属性（DropGold、DropFood）
+- [x] HandleDeath → OnEnemyUnitKilled 击杀掉落追踪
+- [x] TurnManager::CheckBattleEnd() 自动胜负判定（全灭检测）
+- [x] TurnManager bBattleEnded 守卫（PassTurn/BeginUnitTurn/BeginNewRound/EndCurrentRound）
+- [x] LFPBattleResultWidget 全屏结算面板（BindWidget 模式）
+- [x] EndBattle 改造（先显示结算 UI → 确认后写回结果 → 转场）
+- [x] 世界地图节点奖励数据（FLFPWorldNodeRow/Node + PlayerController 传递）
+- [x] WorldMapGameMode 处理奖励（AddGold/AddFood）
+
+## Editor TODO (manual)
+- [ ] 创建 `Content/UI/Fighting/WBP_BattleResult`（父类 ULFPBattleResultWidget）
+- [ ] 在 WBP_BattleResult 中添加 BindWidget 组件：Text_Result, Text_Gold, Text_Food, Button_Confirm, Box_CapturedUnits(可选)
+- [ ] 在 BP_TurnGameMode 上配置 `BattleResultWidgetClass = WBP_BattleResult`
+- [ ] 在敌方单位蓝图上配置 DropGold / DropFood 值
+- [ ] 在世界地图编辑器中配置战斗节点的 BaseGoldReward / BaseFoodReward
+
 ## Known Issues / Notes
 - `FindBestCasterPosition` and `SelectBestSkill` cannot be `const` because `GetCurrentTile()` is non-const
 - SkillBase `EvaluateConditionBonus()` returns 0 by default — override in Blueprint subclasses for context-aware priority bonuses

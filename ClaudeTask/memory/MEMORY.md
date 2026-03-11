@@ -40,6 +40,7 @@ See [architecture.md](architecture.md) for detailed system design records.
 - Unit registry: `Source/LFP2D/Core/LFPUnitRegistryDataAsset.h/.cpp`
 - Unit replacement UI: `Source/LFP2D/UI/WorldMap/LFPUnitReplacementWidget.h/.cpp`
 - Deployment widget: `Source/LFP2D/UI/Fighting/LFPDeploymentWidget.h/.cpp`
+- Battle result widget: `Source/LFP2D/UI/Fighting/LFPBattleResultWidget.h/.cpp`
 
 ## Current Development Status
 See [progress.md](progress.md) for implementation progress.
