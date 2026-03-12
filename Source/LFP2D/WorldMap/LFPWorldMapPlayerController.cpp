@@ -6,6 +6,7 @@
 #include "LFP2D/UI/WorldMapEditor/LFPWorldMapEditorWidget.h"
 #include "LFP2D/Core/LFPGameInstance.h"
 #include "Kismet/GameplayStatics.h"
+#include "Camera/PlayerCameraManager.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 
@@ -36,6 +37,17 @@ void ALFPWorldMapPlayerController::BeginPlay()
 			Subsystem->AddMappingContext(DefaultInputMapping, 0);
 		}
 	}
+
+	// 场景切换淡入效果
+	if (PlayerCameraManager)
+	{
+		ULFPGameInstance* GI = Cast<ULFPGameInstance>(GetGameInstance());
+		float FadeDuration = GI ? GI->TransitionFadeDuration : 0.5f;
+		PlayerCameraManager->StartCameraFade(1.f, 0.f, FadeDuration, FLinearColor::Black, false, false);
+	}
+
+	// 首帧跳过相机平滑插值
+	bSnapCameraNextFrame = true;
 }
 
 void ALFPWorldMapPlayerController::Tick(float DeltaTime)
@@ -56,15 +68,31 @@ void ALFPWorldMapPlayerController::Tick(float DeltaTime)
 
 	// 平滑插值并设置
 	FRotator CurrentRotation = GetControlRotation();
-	SetControlRotation(FMath::RInterpTo(CurrentRotation, TargetRotation, DeltaTime, 5.0f));
+	if (bSnapCameraNextFrame)
+	{
+		SetControlRotation(TargetRotation);
+	}
+	else
+	{
+		SetControlRotation(FMath::RInterpTo(CurrentRotation, TargetRotation, DeltaTime, 5.0f));
+	}
 
 	// 通过 Pawn 控制相机位置（如果有 Pawn）
 	if (APawn* ControlledPawn = GetPawn())
 	{
-		FVector CurrentLocation = ControlledPawn->GetActorLocation();
-		ControlledPawn->SetActorLocation(
-			FMath::VInterpTo(CurrentLocation, TargetLocation, DeltaTime, 5.0f)
-		);
+		if (bSnapCameraNextFrame)
+		{
+			// 首帧直接跳到目标位置，避免切场景后相机大幅滑动
+			ControlledPawn->SetActorLocation(TargetLocation);
+			bSnapCameraNextFrame = false;
+		}
+		else
+		{
+			FVector CurrentLocation = ControlledPawn->GetActorLocation();
+			ControlledPawn->SetActorLocation(
+				FMath::VInterpTo(CurrentLocation, TargetLocation, DeltaTime, 5.0f)
+			);
+		}
 	}
 }
 

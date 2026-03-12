@@ -173,13 +173,21 @@ public:
 
 	// ============== 场景切换 ==============
 
-	// 切换到战斗场景
+	// 切换到战斗场景（带淡出过场）
 	UFUNCTION(BlueprintCallable, Category = "Scene Transition")
 	void TransitionToBattle(const FString& BattleLevelName);
 
-	// 切换回世界地图
+	// 切换回世界地图（带淡出过场）
 	UFUNCTION(BlueprintCallable, Category = "Scene Transition")
 	void TransitionToWorldMap(const FString& WorldMapLevelName);
+
+	// 过场动画时长（秒）
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Scene Transition")
+	float TransitionFadeDuration = 0.5f;
+
+	// 是否正在过场中（防止重复触发）
+	UPROPERTY(BlueprintReadOnly, Category = "Scene Transition")
+	bool bIsTransitioning = false;
 
 	// 世界地图关卡名（蓝图中配置，默认值）
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Scene Transition")

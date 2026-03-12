@@ -98,17 +98,28 @@ void ULFPDeploymentWidget::MarkUnitSelecting(int32 PartyIndex)
 void ULFPDeploymentWidget::UpdateSlotVisual(int32 Index)
 {
 	UImage* Img = GetUnitImage(Index);
-	if (!Img) return;
+	UButton* Btn = GetUnitButton(Index);
 
-	if (PlacedStates.IsValidIndex(Index) && PlacedStates[Index])
+	bool bPlaced = PlacedStates.IsValidIndex(Index) && PlacedStates[Index];
+
+	// 已放置：禁用按钮，防止重复生成
+	if (Btn)
 	{
-		// 已放置：半透明
-		Img->SetColorAndOpacity(FLinearColor(0.5f, 0.5f, 0.5f, 0.5f));
+		Btn->SetIsEnabled(!bPlaced);
 	}
-	else
+
+	if (Img)
 	{
-		// 未放置：正常
-		Img->SetColorAndOpacity(FLinearColor::White);
+		if (bPlaced)
+		{
+			// 已放置：半透明
+			Img->SetColorAndOpacity(FLinearColor(0.5f, 0.5f, 0.5f, 0.5f));
+		}
+		else
+		{
+			// 未放置：正常
+			Img->SetColorAndOpacity(FLinearColor::White);
+		}
 	}
 }
 

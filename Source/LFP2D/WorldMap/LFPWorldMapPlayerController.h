@@ -132,6 +132,9 @@ protected:
 	float CurrentZoom = 1000.0f;
 	FVector CameraOffset;
 
+	// 场景切换后首帧跳过相机平滑插值
+	bool bSnapCameraNextFrame = true;
+
 	// 拖拽状态
 	bool bIsDragging = false;
 	FVector2D DragStartPosition;

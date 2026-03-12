@@ -665,7 +665,7 @@ ALFPHexTile* ALFPHexGridManager::GetHexTileUnderCursor(const FVector2D& ScreenPo
 {
 	FHitResult Hit;
 	bool bHitSuccessful = false;
-	bHitSuccessful = PlayerController->GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, Hit);
+	bHitSuccessful = PlayerController->GetHitResultUnderCursor(ECollisionChannel::ECC_GameTraceChannel1, true, Hit);
 	if (!bHitSuccessful)
 	{
 		return nullptr;
@@ -683,6 +683,7 @@ ALFPHexTile* ALFPHexGridManager::GetHexTileUnderCursor(const FVector2D& ScreenPo
 		VerticalScale
 	);
 
+	UE_LOG(LogTemp, Warning, TEXT("Coor:(%d, %d)"), HexCoords.Q, HexCoords.R);
 	// 在GridMap中查找
 	FIntPoint Key(HexCoords.Q, HexCoords.R);
 	if (GridMap.Contains(Key))

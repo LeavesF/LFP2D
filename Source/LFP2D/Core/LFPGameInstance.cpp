@@ -1,5 +1,6 @@
 #include "LFP2D/Core/LFPGameInstance.h"
 #include "Kismet/GameplayStatics.h"
+#include "Camera/PlayerCameraManager.h"
 
 void ULFPGameInstance::SetBattleRequest(const FLFPBattleRequest& Request)
 {
@@ -43,16 +44,70 @@ void ULFPGameInstance::SaveWorldMapSnapshot(const FLFPWorldMapSnapshot& Snapshot
 
 void ULFPGameInstance::TransitionToBattle(const FString& BattleLevelName)
 {
+	if (bIsTransitioning) return;
+	bIsTransitioning = true;
+
 	FString LevelName = BattleLevelName.IsEmpty() ? DefaultBattleLevelName : BattleLevelName;
 	UE_LOG(LogTemp, Log, TEXT("切换到战斗关卡: %s"), *LevelName);
-	UGameplayStatics::OpenLevel(this, FName(*LevelName));
+
+	// 淡出到黑
+	UWorld* World = GetWorld();
+	if (World)
+	{
+		APlayerController* PC = World->GetFirstPlayerController();
+		if (PC && PC->PlayerCameraManager)
+		{
+			PC->PlayerCameraManager->StartCameraFade(0.f, 1.f, TransitionFadeDuration, FLinearColor::Black, false, true);
+		}
+
+		// 延迟后加载关卡
+		FTimerHandle TimerHandle;
+		FString CapturedLevelName = LevelName;
+		World->GetTimerManager().SetTimer(TimerHandle, [this, CapturedLevelName]()
+		{
+			bIsTransitioning = false;
+			UGameplayStatics::OpenLevel(this, FName(*CapturedLevelName));
+		}, TransitionFadeDuration, false);
+	}
+	else
+	{
+		bIsTransitioning = false;
+		UGameplayStatics::OpenLevel(this, FName(*LevelName));
+	}
 }
 
 void ULFPGameInstance::TransitionToWorldMap(const FString& WorldMapLevelName)
 {
+	if (bIsTransitioning) return;
+	bIsTransitioning = true;
+
 	FString LevelName = WorldMapLevelName.IsEmpty() ? DefaultWorldMapLevelName : WorldMapLevelName;
 	UE_LOG(LogTemp, Log, TEXT("切换到世界地图关卡: %s"), *LevelName);
-	UGameplayStatics::OpenLevel(this, FName(*LevelName));
+
+	// 淡出到黑
+	UWorld* World = GetWorld();
+	if (World)
+	{
+		APlayerController* PC = World->GetFirstPlayerController();
+		if (PC && PC->PlayerCameraManager)
+		{
+			PC->PlayerCameraManager->StartCameraFade(0.f, 1.f, TransitionFadeDuration, FLinearColor::Black, false, true);
+		}
+
+		// 延迟后加载关卡
+		FTimerHandle TimerHandle;
+		FString CapturedLevelName = LevelName;
+		World->GetTimerManager().SetTimer(TimerHandle, [this, CapturedLevelName]()
+		{
+			bIsTransitioning = false;
+			UGameplayStatics::OpenLevel(this, FName(*CapturedLevelName));
+		}, TransitionFadeDuration, false);
+	}
+	else
+	{
+		bIsTransitioning = false;
+		UGameplayStatics::OpenLevel(this, FName(*LevelName));
+	}
 }
 
 // ============== 资源系统 ==============

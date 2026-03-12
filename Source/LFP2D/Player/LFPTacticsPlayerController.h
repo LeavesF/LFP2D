@@ -192,6 +192,9 @@ protected:
 
     float CurrentZoom = 1000.0f;
 
+    // 场景切换后首帧跳过相机平滑插值
+    bool bSnapCameraNextFrame = true;
+
 public:
     ALFPTurnManager* GetTurnManager() const;
 

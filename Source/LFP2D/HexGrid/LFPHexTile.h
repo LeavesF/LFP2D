@@ -113,9 +113,9 @@ public:
 		for (int i = 0; i < 3; i++)
 		{
 			// 计算欧式距离
-			UE_LOG(LogTemp, Warning, TEXT("anchor:(%f,%f)"), anchors[i].X, anchors[i].Y);
+			//UE_LOG(LogTemp, Warning, TEXT("anchor:(%f,%f)"), anchors[i].X, anchors[i].Y);
 			distance = FVector2D::Distance(FVector2D(WorldLocation_X, WorldLocation_Y), FVector2D(anchors[i].X, anchors[i].Y));
-			UE_LOG(LogTemp, Warning, TEXT("distance:(%f)"), distance);
+			//UE_LOG(LogTemp, Warning, TEXT("distance:(%f)"), distance);
 			// 如果已经十分确定了
 			if (distance < minDistanceLimit)
 			{

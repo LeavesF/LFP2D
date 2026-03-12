@@ -15,6 +15,7 @@
 #include "LFP2D/Core/LFPGameInstance.h"
 #include "LFP2D/Core/LFPUnitRegistryDataAsset.h"
 #include "Kismet/GameplayStatics.h"
+#include "Camera/PlayerCameraManager.h"
 //#include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -90,6 +91,17 @@ void ALFPTacticsPlayerController::BeginPlay()
             OnDeploymentPhaseStarted();
         }
     }
+
+    // 场景切换淡入效果
+    if (PlayerCameraManager)
+    {
+        ULFPGameInstance* GI = Cast<ULFPGameInstance>(GetGameInstance());
+        float FadeDuration = GI ? GI->TransitionFadeDuration : 0.5f;
+        PlayerCameraManager->StartCameraFade(1.f, 0.f, FadeDuration, FLinearColor::Black, false, false);
+    }
+
+    // 首帧跳过相机平滑插值
+    bSnapCameraNextFrame = true;
 }
 
 void ALFPTacticsPlayerController::SetupInputComponent()
@@ -143,7 +155,7 @@ void ALFPTacticsPlayerController::Tick(float DeltaTime)
         {
             float T = -WorldOrigin.Z / WorldDirection.Z;
             FVector HitPoint = WorldOrigin + WorldDirection * T;
-            PlacingUnitPreview->SetActorLocation(FVector(HitPoint.X, HitPoint.Y, 50.f));
+            PlacingUnitPreview->SetActorLocation(FVector(HitPoint.X, HitPoint.Y, 20.f));
         }
     }
 
@@ -163,12 +175,21 @@ void ALFPTacticsPlayerController::Tick(float DeltaTime)
         if (ControlledPawn)
         {
             FVector TargetLocation = CameraLocation + DirectionOffset;
-            ControlledPawn->SetActorLocation(FMath::VInterpTo(
-                ControlledPawn->GetActorLocation(),
-                TargetLocation,
-                DeltaTime,
-                5.0f // 插值速度
-            ));
+            if (bSnapCameraNextFrame)
+            {
+                // 首帧直接跳到目标位置，避免切场景后相机大幅滑动
+                ControlledPawn->SetActorLocation(TargetLocation);
+                bSnapCameraNextFrame = false;
+            }
+            else
+            {
+                ControlledPawn->SetActorLocation(FMath::VInterpTo(
+                    ControlledPawn->GetActorLocation(),
+                    TargetLocation,
+                    DeltaTime,
+                    5.0f // 插值速度
+                ));
+            }
         }
 
         // 获取鼠标位置
