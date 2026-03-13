@@ -132,8 +132,15 @@ protected:
     // Step 1: 全局技能分配（按优先级分配AP技能）
     void AllocateEnemySkills();
 
-    // 处理下一个敌人的规划
+    // 处理下一个敌人的规划（先等待，再执行）
     void ProcessNextEnemyPlan();
+
+    // 延时结束后执行当前敌人的规划
+    void ExecuteCurrentEnemyPlan();
+
+    // 敌人规划阶段移动完成回调
+    UFUNCTION()
+    void OnEnemyPlanMoveComplete();
 
     // 结束敌人规划阶段
     void EndEnemyPlanningPhase();
@@ -178,6 +185,10 @@ protected:
     // 当前正在规划的敌人索引
     int32 CurrentPlanningEnemyIndex = 0;
 
+    // 规划阶段正在移动的敌人（用于解绑 OnMoveFinished）
+    UPROPERTY()
+    TObjectPtr<ALFPTacticsUnit> PlanningMovingEnemy;
+
     // 技能分配结果（Step1 → Step2 传递）
     UPROPERTY()
     TMap<ALFPTacticsUnit*, ULFPSkillBase*> AllocatedSkills;
@@ -192,6 +203,16 @@ protected:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Action Points")
     int32 FactionAPRecovery = 1;
+
+    // ==== 敌人规划阶段时间配置 ====
+
+    // 每个敌人移动前的等待时间（秒）
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy Planning")
+    float EnemyPlanPreMoveDelay = 1.0f;
+
+    // 敌人移动完成后到下一个敌人规划的间隔（秒）
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy Planning")
+    float EnemyPlanPostMoveDelay = 0.3f;
 
     // 当前阵营 AP
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Action Points")

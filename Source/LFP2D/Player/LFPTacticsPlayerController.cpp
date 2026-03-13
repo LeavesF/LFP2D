@@ -260,6 +260,8 @@ void ALFPTacticsPlayerController::Tick(float DeltaTime)
 // 选择开始
 void ALFPTacticsPlayerController::OnSelectStarted(const FInputActionValue& Value)
 {
+    if (bWaitingForMove) return;
+
     bIsSelecting = true;
 
     // 获取鼠标位置
@@ -273,6 +275,7 @@ void ALFPTacticsPlayerController::OnSelectStarted(const FInputActionValue& Value
 // 选择完成
 void ALFPTacticsPlayerController::OnSelectCompleted(const FInputActionValue& Value)
 {
+    if (bWaitingForMove) return;
     if (!bIsSelecting) return;
     bIsSelecting = false;
 
@@ -310,6 +313,7 @@ void ALFPTacticsPlayerController::OnSelectCompleted(const FInputActionValue& Val
 
 void ALFPTacticsPlayerController::OnAttackStarted(const FInputActionValue& Value)
 {
+    if (bWaitingForMove) return;
     if (SelectedUnit)
     {
         bIsAttacking = true;
@@ -320,6 +324,7 @@ void ALFPTacticsPlayerController::OnAttackStarted(const FInputActionValue& Value
 
 void ALFPTacticsPlayerController::OnConfirmAction(const FInputActionValue& Value)
 {
+    if (bWaitingForMove) return;
     bIsDragging = false;
     if (DragTime > DragThresholdTime)
     {
@@ -423,6 +428,7 @@ void ALFPTacticsPlayerController::OnConfirmAction(const FInputActionValue& Value
 
 void ALFPTacticsPlayerController::OnCancelAction(const FInputActionValue& Value)
 {
+    if (bWaitingForMove) return;
     bIsDragging = false;
     if (DragTime > DragThresholdTime)
     {
@@ -474,6 +480,7 @@ void ALFPTacticsPlayerController::OnToggleDebug(const FInputActionValue& Value)
 
 void ALFPTacticsPlayerController::OnSkipTurnAction(const FInputActionValue& Value)
 {
+    if (bWaitingForMove) return;
     if (!SelectedUnit) return;
     SkipTurn(SelectedUnit);
 }
@@ -708,17 +715,33 @@ void ALFPTacticsPlayerController::MoveUnit(ALFPTacticsUnit* Unit, ALFPHexTile* T
 {
     if (!Unit || !TargetTile || !Unit->CanAct()) return;
 
-    // 计算移动代价
-    const int32 MoveCost = 1;
-
-    // 执行移动
-    Unit->MoveToTile(TargetTile);
-
-    // 通知回合管理器单位完成行动
-    /*if (ALFPTurnManager* TurnManager = GetTurnManager())
+    // 执行移动（启动移动动画）
+    if (Unit->MoveToTile(TargetTile))
     {
-        TurnManager->OnUnitFinishedAction(Unit);
-    }*/
+        // 锁定输入，等待移动完成
+        bWaitingForMove = true;
+        MovingUnit = Unit;
+        Unit->OnMoveFinished.AddDynamic(this, &ALFPTacticsPlayerController::OnUnitMoveComplete);
+    }
+}
+
+void ALFPTacticsPlayerController::OnUnitMoveComplete()
+{
+    bWaitingForMove = false;
+
+    // 解绑委托
+    if (MovingUnit)
+    {
+        MovingUnit->OnMoveFinished.RemoveDynamic(this, &ALFPTacticsPlayerController::OnUnitMoveComplete);
+    }
+
+    // 刷新移动范围显示
+    if (SelectedUnit && SelectedUnit == MovingUnit)
+    {
+        ShowUnitRange(EUnitRange::UR_Default);
+    }
+
+    MovingUnit = nullptr;
 }
 
 bool ALFPTacticsPlayerController::AttackTarget(ALFPTacticsUnit* Attacker, ALFPTacticsUnit* Target)

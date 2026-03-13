@@ -16,6 +16,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnHealthChangedSignature, int32, C
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUnitDeathSignature);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMoveFinishedSignature);
+
 // EUnitAffiliation 定义在 LFPBattleTypes.h 中
 
 class ULFPSkillBase;
@@ -144,14 +146,20 @@ protected:
     int32 CurrentPathIndex;
     float MoveProgress;
 
-    // 动画
-    FTimerHandle MoveTimerHandle;
-    FTimeline MoveTimeline;
+public:
+    // 是否正在移动动画中
+    UPROPERTY(BlueprintReadOnly, Category = "Movement")
+    bool bIsMoving = false;
 
-    UPROPERTY(EditDefaultsOnly, Category = "Animation")
-    UCurveFloat* MoveCurve;
+    // 移动速度（格/秒）
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+    float MoveSpeed = 5.0f;
 
-    // 组件
+    // 移动完成委托
+    UPROPERTY(BlueprintAssignable, Category = "Movement")
+    FOnMoveFinishedSignature OnMoveFinished;
+
+public:
     UPROPERTY(VisibleAnywhere, Category = "Components")
     USceneComponent* RootSceneComponent;
 

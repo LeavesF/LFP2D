@@ -220,6 +220,41 @@ void ALFPTurnManager::ProcessNextEnemyPlan()
         return;
     }
 
+    // 移动前等待，让玩家观察当前局势
+    FTimerHandle TimerHandle;
+    GetWorld()->GetTimerManager().SetTimer(
+        TimerHandle,
+        this,
+        &ALFPTurnManager::ExecuteCurrentEnemyPlan,
+        EnemyPlanPreMoveDelay,
+        false
+    );
+}
+
+void ALFPTurnManager::ExecuteCurrentEnemyPlan()
+{
+    if (CurrentPlanningEnemyIndex >= PlanningOrderEnemies.Num())
+    {
+        EndEnemyPlanningPhase();
+        return;
+    }
+
+    ALFPTacticsUnit* Enemy = PlanningOrderEnemies[CurrentPlanningEnemyIndex];
+    if (!Enemy || !Enemy->IsAlive())
+    {
+        CurrentPlanningEnemyIndex++;
+        ProcessNextEnemyPlan();
+        return;
+    }
+
+    ALFPAIController* AIController = Enemy->GetAIController();
+    if (!AIController)
+    {
+        CurrentPlanningEnemyIndex++;
+        ProcessNextEnemyPlan();
+        return;
+    }
+
     // 创建行动计划，传入预分配的技能
     ULFPSkillBase* PreAllocatedSkill = nullptr;
     if (ULFPSkillBase** Found = AllocatedSkills.Find(Enemy))
@@ -232,14 +267,39 @@ void ALFPTurnManager::ProcessNextEnemyPlan()
     EnemyActionPlans.Add(Plan);
     Enemy->SetActionPlan(Plan);
 
-    // 推进到下一个敌人，加延时让玩家观察
+    // 推进到下一个敌人
     CurrentPlanningEnemyIndex++;
+
+    // 如果敌人正在移动，等移动完成后再推进
+    if (Enemy->bIsMoving)
+    {
+        // 记录当前移动中的敌人，回调中需要解绑
+        PlanningMovingEnemy = Enemy;
+        Enemy->OnMoveFinished.AddDynamic(this, &ALFPTurnManager::OnEnemyPlanMoveComplete);
+    }
+    else
+    {
+        // 没有移动，直接推进下一个敌人
+        ProcessNextEnemyPlan();
+    }
+}
+
+void ALFPTurnManager::OnEnemyPlanMoveComplete()
+{
+    // 解绑委托
+    if (PlanningMovingEnemy)
+    {
+        PlanningMovingEnemy->OnMoveFinished.RemoveDynamic(this, &ALFPTurnManager::OnEnemyPlanMoveComplete);
+        PlanningMovingEnemy = nullptr;
+    }
+
+    // 移动完成后推进下一个敌人规划
     FTimerHandle TimerHandle;
     GetWorld()->GetTimerManager().SetTimer(
         TimerHandle,
         this,
         &ALFPTurnManager::ProcessNextEnemyPlan,
-        0.5f,
+        EnemyPlanPostMoveDelay,
         false
     );
 }

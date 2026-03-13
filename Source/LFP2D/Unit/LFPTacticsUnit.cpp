@@ -55,8 +55,6 @@ ALFPTacticsUnit::ALFPTacticsUnit()
     PlannedSkillIconComponent->SetDrawAtDesiredSize(true);
     PlannedSkillIconComponent->SetRelativeLocation(FVector(0, 250, 0)); // 在血条上方
     PlannedSkillIconComponent->SetVisibility(false); // 默认隐藏
-    // 运行时创建组件
-    //MoveTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("MoveTimeline"));
 }
 
 void ALFPTacticsUnit::BeginPlay()
@@ -85,18 +83,6 @@ void ALFPTacticsUnit::BeginPlay()
 	InitializeHealthBar();
 
     PlannedSkillIconComponent->SetRelativeLocation(FVector(0, SkillIconTopDist, 0)); // 在血条上方
-
-    // 设置移动时间线
-    if (MoveCurve)
-    {
-        FOnTimelineFloat TimelineCallback;
-        TimelineCallback.BindUFunction(this, FName("UpdateMoveAnimation"));
-        //MoveTimeline->AddInterpFloat(MoveCurve, TimelineCallback);
-
-        FOnTimelineEvent TimelineFinishedCallback;
-        TimelineFinishedCallback.BindUFunction(this, FName("FinishMove"));
-        //MoveTimeline->SetTimelineFinishedFunc(TimelineFinishedCallback);
-    }
 
     // 如果是敌方单位，创建AI控制器
     if (IsEnemy())
@@ -206,7 +192,7 @@ bool ALFPTacticsUnit::MoveToTile(ALFPHexTile* NewTargetTile)
     ALFPHexTile* CurrentTile = GridManager->GetTileAtCoordinates(CurrentCoordinates);
     if (!CurrentTile) return false;
 
-    // 寻找路径
+    // 寻找路径（FindPath 返回的路径不包含起点）
     MovePath = GridManager->FindPath(CurrentTile, NewTargetTile);
     // 计算路径实际移动代价（考虑地形）
     int32 PathCost = 0;
@@ -216,6 +202,9 @@ bool ALFPTacticsUnit::MoveToTile(ALFPHexTile* NewTargetTile)
     }
     if (MovePath.Num() == 0 || PathCost > CurrentMovePoints) return false;
 
+    // 在路径开头插入当前格子，使 Tick 中 MovePath[0] → MovePath[1] 为第一段移动
+    MovePath.Insert(CurrentTile, 0);
+
     // 设置移动状态
     CurrentTile->SetIsOccupied(false);
     TargetTile = NewTargetTile;
@@ -223,88 +212,32 @@ bool ALFPTacticsUnit::MoveToTile(ALFPHexTile* NewTargetTile)
     MoveProgress = 0.0f;
     MovementRangeTiles.Empty();
 
-    // 消耗行动力
-    //ConsumeMovePoints(1);
+    // 启动移动动画（Tick 驱动逐格插值）
+    bIsMoving = true;
 
-    // 开始移动动画
-    //if (MoveTimeline)
-    //{
-    //    MoveTimeline->PlayFromStart();
-    //}
-    //else
-    //{
-    //    // 如果没有时间线，直接完成移动
-    //    FinishMove();
-    //}
-    FinishMove();
-    //NotifyMoveComplete();
     return true;
 }
 
 void ALFPTacticsUnit::UpdateMoveAnimation(float Value)
 {
-    if (CurrentPathIndex < 0 || CurrentPathIndex >= MovePath.Num() - 1) return;
-
-    // 获取当前和下一个格子
-    ALFPHexTile* CurrentTile = MovePath[CurrentPathIndex];
-    ALFPHexTile* NextTile = MovePath[CurrentPathIndex + 1];
-
-    if (!CurrentTile || !NextTile) return;
-
-    // 计算位置
-    FVector StartPos = CurrentTile->GetActorLocation() + FVector(0, 0, 50);
-    FVector EndPos = NextTile->GetActorLocation() + FVector(0, 0, 50);
-
-    // 应用插值
-    FVector NewLocation = FMath::Lerp(StartPos, EndPos, Value);
-    SetActorLocation(NewLocation);
-
-    // 更新朝向
-    FVector Direction = (EndPos - StartPos).GetSafeNormal();
-    if (!Direction.IsNearlyZero())
-    {
-        FRotator NewRotation = Direction.Rotation();
-        SpriteComponent->SetWorldRotation(NewRotation);
-    }
-
-    // 检查是否移动到下一段
-    if (Value >= 1.0f)
-    {
-        CurrentPathIndex++;
-        MoveProgress = 0.0f;
-
-        // 更新当前坐标
-        if (CurrentPathIndex < MovePath.Num())
-        {
-            SetCurrentCoordinates(MovePath[CurrentPathIndex]->GetCoordinates());
-        }
-
-        // 如果还有下一段路径，重新开始时间线
-        if (CurrentPathIndex < MovePath.Num() - 1)
-        {
-            //MoveTimeline->PlayFromStart();
-        }
-        else
-        {
-            FinishMove();
-        }
-    }
+    // 已弃用，移动动画改为 Tick 驱动
 }
 
 void ALFPTacticsUnit::FinishMove()
 {
+    bIsMoving = false;
+
     // 更新到目标位置
     if (TargetTile)
     {
         SetCurrentCoordinates(TargetTile->GetCoordinates());
-        // 计算路径实际移动代价（考虑地形）
+        // 计算路径实际移动代价（跳过 MovePath[0] 即起点格子）
         int32 TotalCost = 0;
-        for (ALFPHexTile* Tile : MovePath)
+        for (int32 i = 1; i < MovePath.Num(); i++)
         {
-            TotalCost += Tile->GetMovementCost();
+            TotalCost += MovePath[i]->GetMovementCost();
         }
         ConsumeMovePoints(TotalCost);
-        //SetActorLocation(TargetTile->GetActorLocation() + FVector(0, 0, 50));
     }
 
     // 清除移动状态
@@ -312,6 +245,9 @@ void ALFPTacticsUnit::FinishMove()
     MovePath.Empty();
     CurrentPathIndex = -1;
     MoveProgress = 0.0f;
+
+    // 广播移动完成
+    OnMoveFinished.Broadcast();
 }
 
 void ALFPTacticsUnit::ResetForNewRound()
@@ -454,11 +390,35 @@ void ALFPTacticsUnit::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
-    // 更新时间线
-    /*if (MoveTimeline && MoveTimeline->IsPlaying())
+    // 逐格平滑移动
+    if (bIsMoving && CurrentPathIndex >= 0 && CurrentPathIndex < MovePath.Num() - 1)
     {
-        MoveTimeline->TickComponent(DeltaTime, LEVELTICK_TimeOnly, nullptr);
-    }*/
+        MoveProgress += MoveSpeed * DeltaTime;
+
+        ALFPHexTile* FromTile = MovePath[CurrentPathIndex];
+        ALFPHexTile* ToTile = MovePath[CurrentPathIndex + 1];
+
+        if (FromTile && ToTile)
+        {
+            FVector StartPos = FromTile->GetActorLocation() + FVector(0, 0, 1);
+            FVector EndPos = ToTile->GetActorLocation() + FVector(0, 0, 1);
+
+            float Alpha = FMath::Clamp(MoveProgress, 0.f, 1.f);
+            SetActorLocation(FMath::Lerp(StartPos, EndPos, Alpha));
+        }
+
+        if (MoveProgress >= 1.0f)
+        {
+            CurrentPathIndex++;
+            MoveProgress = 0.0f;
+
+            if (CurrentPathIndex >= MovePath.Num() - 1)
+            {
+                // 到达终点
+                FinishMove();
+            }
+        }
+    }
 }
 
 void ALFPTacticsUnit::InitializeHealthBar()

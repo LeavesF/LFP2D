@@ -195,6 +195,17 @@ protected:
     // 场景切换后首帧跳过相机平滑插值
     bool bSnapCameraNextFrame = true;
 
+    // 等待单位移动动画完成（期间锁定游戏输入）
+    bool bWaitingForMove = false;
+
+    // 当前正在移动的单位（用于解绑委托）
+    UPROPERTY()
+    TObjectPtr<ALFPTacticsUnit> MovingUnit;
+
+    // 单位移动完成回调
+    UFUNCTION()
+    void OnUnitMoveComplete();
+
 public:
     ALFPTurnManager* GetTurnManager() const;
 
