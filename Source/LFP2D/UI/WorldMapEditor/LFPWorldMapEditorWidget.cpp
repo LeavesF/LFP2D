@@ -26,6 +26,8 @@ void ULFPWorldMapEditorWidget::NativeConstruct()
 	if (BattleMapNameInput) BattleMapNameInput->OnTextCommitted.AddDynamic(this, &ULFPWorldMapEditorWidget::OnBattleMapNameChanged);
 	if (EventIDInput) EventIDInput->OnTextCommitted.AddDynamic(this, &ULFPWorldMapEditorWidget::OnEventIDChanged);
 	if (EdgeTurnCostInput) EdgeTurnCostInput->OnTextCommitted.AddDynamic(this, &ULFPWorldMapEditorWidget::OnEdgeTurnCostChanged);
+	if (BaseGoldRewardInput) BaseGoldRewardInput->OnTextCommitted.AddDynamic(this, &ULFPWorldMapEditorWidget::OnBaseGoldRewardChanged);
+	if (BaseFoodRewardInput) BaseFoodRewardInput->OnTextCommitted.AddDynamic(this, &ULFPWorldMapEditorWidget::OnBaseFoodRewardChanged);
 
 	// 绑定保存/加载按钮
 	if (SaveWorldMapButton) SaveWorldMapButton->OnClicked.AddDynamic(this, &ULFPWorldMapEditorWidget::OnSaveClicked);
@@ -50,6 +52,8 @@ void ULFPWorldMapEditorWidget::NativeConstruct()
 	if (StarRatingInput) StarRatingInput->SetText(FText::FromString(TEXT("1")));
 	if (CanEscapeCheckBox) CanEscapeCheckBox->SetIsChecked(true);
 	if (EdgeTurnCostInput) EdgeTurnCostInput->SetText(FText::FromString(TEXT("1")));
+	if (BaseGoldRewardInput) BaseGoldRewardInput->SetText(FText::FromString(TEXT("0")));
+	if (BaseFoodRewardInput) BaseFoodRewardInput->SetText(FText::FromString(TEXT("0")));
 }
 
 void ULFPWorldMapEditorWidget::InitializeEditor(ULFPWorldMapEditorComponent* EditorComp)
@@ -151,6 +155,20 @@ void ULFPWorldMapEditorWidget::OnEdgeTurnCostChanged(const FText& Text, ETextCom
 	EditorComponent->SetBrushEdgeTurnCost(Cost);
 }
 
+void ULFPWorldMapEditorWidget::OnBaseGoldRewardChanged(const FText& Text, ETextCommit::Type CommitType)
+{
+	if (!EditorComponent) return;
+	int32 Gold = FCString::Atoi(*Text.ToString());
+	EditorComponent->SetBrushBaseGoldReward(Gold);
+}
+
+void ULFPWorldMapEditorWidget::OnBaseFoodRewardChanged(const FText& Text, ETextCommit::Type CommitType)
+{
+	if (!EditorComponent) return;
+	int32 Food = FCString::Atoi(*Text.ToString());
+	EditorComponent->SetBrushBaseFoodReward(Food);
+}
+
 // ============== 保存/加载 ==============
 
 void ULFPWorldMapEditorWidget::OnSaveClicked()
@@ -233,7 +251,8 @@ void ULFPWorldMapEditorWidget::UpdateNodeInfo(ALFPWorldMapNode* Node)
 
 	if (Node->NodeType == ELFPWorldNodeType::WNT_Battle)
 	{
-		Info += FString::Printf(TEXT(" | 星级: %d | 地图: %s"), Node->StarRating, *Node->BattleMapName);
+		Info += FString::Printf(TEXT(" | 星级: %d | 地图: %s | 金币: %d | 食物: %d"),
+			Node->StarRating, *Node->BattleMapName, Node->BaseGoldReward, Node->BaseFoodReward);
 	}
 	else if (Node->NodeType == ELFPWorldNodeType::WNT_Event)
 	{

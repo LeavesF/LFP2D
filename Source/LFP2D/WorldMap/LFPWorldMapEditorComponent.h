@@ -73,6 +73,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "World Map Editor|Brush")
 	void SetBrushEdgeTurnCost(int32 InCost) { BrushEdgeTurnCost = FMath::Max(1, InCost); }
 
+	UFUNCTION(BlueprintCallable, Category = "World Map Editor|Brush")
+	void SetBrushBaseGoldReward(int32 InGold) { BrushBaseGoldReward = FMath::Max(0, InGold); }
+
+	UFUNCTION(BlueprintCallable, Category = "World Map Editor|Brush")
+	void SetBrushBaseFoodReward(int32 InFood) { BrushBaseFoodReward = FMath::Max(0, InFood); }
+
 	// ==== 操作方法 ====
 
 	// 在世界坐标处放置新节点
@@ -174,6 +180,14 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Brush")
 	int32 BrushEdgeTurnCost = 1;
+
+	// 基础金币奖励
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Brush")
+	int32 BrushBaseGoldReward = 0;
+
+	// 基础食物奖励
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Brush")
+	int32 BrushBaseFoodReward = 0;
 
 	// 选中的节点（移动/连接/参数编辑用）
 	UPROPERTY()

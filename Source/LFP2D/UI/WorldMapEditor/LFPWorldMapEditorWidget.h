@@ -45,6 +45,8 @@ private:
 	UFUNCTION() void OnBattleMapNameChanged(const FText& Text, ETextCommit::Type CommitType);
 	UFUNCTION() void OnEventIDChanged(const FText& Text, ETextCommit::Type CommitType);
 	UFUNCTION() void OnEdgeTurnCostChanged(const FText& Text, ETextCommit::Type CommitType);
+	UFUNCTION() void OnBaseGoldRewardChanged(const FText& Text, ETextCommit::Type CommitType);
+	UFUNCTION() void OnBaseFoodRewardChanged(const FText& Text, ETextCommit::Type CommitType);
 
 	// 保存/加载回调
 	UFUNCTION() void OnSaveClicked();
@@ -100,6 +102,12 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
 	TObjectPtr<UEditableTextBox> EdgeTurnCostInput;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+	TObjectPtr<UEditableTextBox> BaseGoldRewardInput;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+	TObjectPtr<UEditableTextBox> BaseFoodRewardInput;
 
 	// 文件操作
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
