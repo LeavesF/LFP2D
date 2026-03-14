@@ -149,8 +149,16 @@ protected:
 	UPROPERTY()
 	TObjectPtr<ALFPWorldMapNode> SelectedNode;
 
+	// 玩家移动的目标节点（移动完成后自动进入）
+	UPROPERTY()
+	TObjectPtr<ALFPWorldMapNode> PendingEnterNode;
+
 	// 可达节点缓存（高亮用）
 	TArray<ALFPWorldMapNode*> ReachableNodes;
+
+	// 棋子移动完成回调
+	UFUNCTION()
+	void OnPawnMoveCompleted();
 
 	// 世界地图管理器缓存
 	UPROPERTY()

@@ -7,7 +7,7 @@
 
 class UTextBlock;
 class UButton;
-class UVerticalBox;
+class UWrapBox;
 class ULFPUnitRegistryDataAsset;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnBattleResultConfirmedSignature);
@@ -48,7 +48,7 @@ protected:
 
 	// 捕获单位容器（可选，胜利且有捕获时显示）
 	UPROPERTY(BlueprintReadOnly, Category = "Battle Result", meta = (BindWidgetOptional))
-	TObjectPtr<UVerticalBox> Box_CapturedUnits;
+	TObjectPtr<UWrapBox> Box_CapturedUnits;
 
 	// 确认按钮
 	UPROPERTY(BlueprintReadOnly, Category = "Battle Result", meta = (BindWidget))

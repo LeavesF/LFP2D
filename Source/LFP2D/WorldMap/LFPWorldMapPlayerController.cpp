@@ -1,6 +1,7 @@
 #include "LFP2D/WorldMap/LFPWorldMapPlayerController.h"
 #include "LFP2D/WorldMap/LFPWorldMapManager.h"
 #include "LFP2D/WorldMap/LFPWorldMapNode.h"
+#include "LFP2D/WorldMap/LFPWorldMapPawn.h"
 #include "LFP2D/WorldMap/LFPWorldMapPlayerState.h"
 #include "LFP2D/WorldMap/LFPWorldMapEditorComponent.h"
 #include "LFP2D/UI/WorldMapEditor/LFPWorldMapEditorWidget.h"
@@ -211,6 +212,10 @@ void ALFPWorldMapPlayerController::OnConfirmAction(const FInputActionValue& Valu
 		return;
 	}
 
+	// 游戏模式：棋子移动中屏蔽点击
+	ALFPWorldMapManager* Manager = GetWorldMapManager();
+	if (Manager && Manager->IsPawnMoving()) return;
+
 	// 游戏模式：点击节点移动或进入
 	FHitResult HitResult;
 	GetHitResultUnderCursor(ECC_Visibility, false, HitResult);
@@ -218,7 +223,6 @@ void ALFPWorldMapPlayerController::OnConfirmAction(const FInputActionValue& Valu
 
 	if (ClickedNode)
 	{
-		ALFPWorldMapManager* Manager = GetWorldMapManager();
 		if (!Manager || !Manager->GetPlayerState()) return;
 
 		int32 CurrentNodeID = Manager->GetPlayerState()->CurrentNodeID;
@@ -366,11 +370,19 @@ void ALFPWorldMapPlayerController::MoveToNode(ALFPWorldMapNode* Node)
 
 	ClearReachableHighlight();
 
-	bool bMoved = Manager->MovePlayer(Node->NodeID);
-	if (bMoved)
+	// 记录目标节点，移动完成后自动进入
+	PendingEnterNode = Node;
+
+	// 绑定棋子移动完成回调
+	if (ALFPWorldMapPawn* MapPawn = Manager->GetPlayerPawn())
 	{
-		// 移动后显示新的可达节点
-		ShowReachableNodes();
+		MapPawn->OnMoveComplete.AddUniqueDynamic(this, &ALFPWorldMapPlayerController::OnPawnMoveCompleted);
+	}
+
+	bool bMoved = Manager->MovePlayer(Node->NodeID);
+	if (!bMoved)
+	{
+		PendingEnterNode = nullptr;
 	}
 }
 
@@ -505,4 +517,27 @@ ALFPWorldMapManager* ALFPWorldMapPlayerController::GetWorldMapManager() const
 		}
 	}
 	return CachedWorldMapManager;
+}
+
+void ALFPWorldMapPlayerController::OnPawnMoveCompleted()
+{
+	// 解绑回调
+	if (ALFPWorldMapManager* Manager = GetWorldMapManager())
+	{
+		if (ALFPWorldMapPawn* MapPawn = Manager->GetPlayerPawn())
+		{
+			MapPawn->OnMoveComplete.RemoveDynamic(this, &ALFPWorldMapPlayerController::OnPawnMoveCompleted);
+		}
+	}
+
+	// 显示新的可达节点
+	ShowReachableNodes();
+
+	// 自动进入目标节点
+	if (PendingEnterNode)
+	{
+		ALFPWorldMapNode* NodeToEnter = PendingEnterNode;
+		PendingEnterNode = nullptr;
+		EnterNode(NodeToEnter);
+	}
 }

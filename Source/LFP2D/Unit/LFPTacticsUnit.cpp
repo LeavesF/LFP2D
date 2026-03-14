@@ -586,6 +586,12 @@ void ALFPTacticsUnit::ChangeAffiliation(EUnitAffiliation NewAffiliation)
             }
         }
     }
+
+    // 阵营变更后重新检查胜负条件（如最后一个敌人背叛）
+    if (ALFPTurnManager* TurnManager = GetTurnManager())
+    {
+        TurnManager->CheckBattleEnd();
+    }
 }
 
 ALFPTacticsUnit* ALFPTacticsUnit::FindBestTarget()
