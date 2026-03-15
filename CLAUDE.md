@@ -12,12 +12,12 @@ Unreal Engine 5.5 C++ 项目，运行时模块为 **LFP2D**。
 
 **命令行构建 (Windows):**
 ```
-"<UE5_Install>/Engine/Build/BatchFiles/Build.bat" LFP2D Win64 Development "D:/UE_Projects/LFP2D/LFP2D.uproject" -waitmutex
+"D:/UE/UE_5.5/Engine/Build/BatchFiles/Build.bat" LFP2D Win64 Development "D:/UE_Projects/LFP2D/LFP2D.uproject" -waitmutex
 ```
 
 **编辑器构建:**
 ```
-"<UE5_Install>/Engine/Build/BatchFiles/Build.bat" LFPEditor Win64 Development "D:/UE_Projects/LFP2D/LFP2D.uproject" -waitmutex
+"D:/UE/UE_5.5/Engine/Build/BatchFiles/Build.bat" LFPEditor Win64 Development "D:/UE_Projects/LFP2D/LFP2D.uproject" -waitmutex
 ```
 
 **模块依赖** (LFP2D.Build.cs): Core, CoreUObject, Engine, InputCore, EnhancedInput, Paper2D, SlateCore, GameplayTags

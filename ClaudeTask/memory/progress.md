@@ -52,16 +52,16 @@
 - [x] ULFPMapEditorWidget: BindWidgetOptional UI with tool buttons, dropdowns, file I/O
 - [x] PlayerController: ToggleEditorAction, editor mode input routing, Z=0 plane raycast
 
-## Editor TODO (manual)
+## Editor TODO (manual) — 全部完成
 - [x] Create UMG Blueprint `WBP_PlannedSkillIcon` with UImage named `SkillIconImage`
-- [ ] Set `PlannedSkillIconWidgetClass` on enemy unit blueprints
-- [ ] Optionally add `ActionPointsText` TextBlock to SkillSelectionWidget UMG
-- [ ] Optionally add `PhaseText` TextBlock to TurnSpeedListWidget UMG
+- [x] Set `PlannedSkillIconWidgetClass` on enemy unit blueprints
+- [x] Optionally add `ActionPointsText` TextBlock to SkillSelectionWidget UMG
+- [x] Optionally add `PhaseText` TextBlock to TurnSpeedListWidget UMG
 - [x] Configure skill priority values (BasePriority, PriorityDecreaseOnUse, PriorityRecoveryPerRound) on skill Blueprint assets
 - [x] Configure faction AP values (FactionMaxAP, FactionInitialAP, FactionAPRecovery) on TurnManager Blueprint
 - [x] Create terrain DataAsset instances (DA_Terrain_Grass created in Content/Grid/Terrain/)
-- [ ] Set DefaultTerrainData on BP_HexGridManager
-- [ ] Configure specific tiles with different terrain types for testing
+- [x] Set DefaultTerrainData on BP_HexGridManager
+- [x] Configure specific tiles with different terrain types for testing
 - [x] Create WBP_MapEditor UMG Blueprint in Content/UI/MapEditor/
 - [x] Create IA_ToggleEditor InputAction (e.g. F5) and add to input mapping
 - [x] Configure TerrainRegistry on BP_HexGridManager (map each ELFPTerrainType → DA_Terrain_* asset)
@@ -133,12 +133,26 @@
 - [x] 世界地图节点奖励数据（FLFPWorldNodeRow/Node + PlayerController 传递）
 - [x] WorldMapGameMode 处理奖励（AddGold/AddFood）
 
-## Editor TODO (manual)
-- [ ] 创建 `Content/UI/Fighting/WBP_BattleResult`（父类 ULFPBattleResultWidget）
-- [ ] 在 WBP_BattleResult 中添加 BindWidget 组件：Text_Result, Text_Gold, Text_Food, Button_Confirm, Box_CapturedUnits(可选)
-- [ ] 在 BP_TurnGameMode 上配置 `BattleResultWidgetClass = WBP_BattleResult`
-- [ ] 在敌方单位蓝图上配置 DropGold / DropFood 值
-- [ ] 在世界地图编辑器中配置战斗节点的 BaseGoldReward / BaseFoodReward
+## Editor TODO (manual) — 全部完成
+- [x] 创建 `Content/UI/Fighting/WBP_BattleResult`（父类 ULFPBattleResultWidget）
+- [x] 在 WBP_BattleResult 中添加 BindWidget 组件：Text_Result, Text_Gold, Text_Food, Button_Confirm, Box_CapturedUnits(可选)
+- [x] 在 BP_TurnGameMode 上配置 `BattleResultWidgetClass = WBP_BattleResult`
+- [x] 在敌方单位蓝图上配置 DropGold / DropFood 值
+- [x] 在世界地图编辑器中配置战斗节点的 BaseGoldReward / BaseFoodReward
+
+### 范围高亮系统重构：描边 + 半透明填充（完成）
+- [x] HexTile: 移除旧 Sprite 替换高亮系统（SetRangeSprite/SetMovementHighlight/SetAttackHighlight/SetPathHighlight）
+- [x] HexTile: 新增 OverlaySpriteComponent（Z=0.3f 半透明填充）+ 6 个 EdgeSpriteComponents（Z=1.0f 边线描边）
+- [x] HexTile: InitializeEdgeComponents 计算边线位置/旋转（匹配平顶六边形 30° 偏移几何）
+- [x] HexTile: ShowEdge/HideEdge/ShowRangeOverlay/ShowPathOverlay/ClearAllHighlights 新 API
+- [x] GridManager: ShowRangeHighlight 核心算法（TSet 边界检测，仅边界边显示描边）
+- [x] GridManager: ShowRangeHighlightByCoords/ShowPathHighlight/ClearPathHighlight/ClearAllHighlights
+- [x] GridManager: 颜色配置蓝图可调（MoveEdgeColor/MoveOverlayColor/AttackEdge.../SkillEdge.../PathOverlayColor）
+- [x] GridManager: 已缓存高亮格子，ClearAllHighlights 仅清缓存（不遍历全图）
+- [x] PlayerController: 11 处调用点迁移到新 API
+- [x] 生成 T_HexEdge.png（100x6px）和 T_HexOverlay.png（177x204px）贴图
+- [x] UE 编辑器：导入贴图 → 创建 PaperSprite → 配置到 GridManager 蓝图
+- [x] UE 编辑器：调试边线精灵缩放（匹配实际 HexSize）
 
 ## Known Issues / Notes
 - `FindBestCasterPosition` and `SelectBestSkill` cannot be `const` because `GetCurrentTile()` is non-const

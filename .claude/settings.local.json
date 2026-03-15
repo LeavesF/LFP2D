@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(\"D:/UE/UE_5.5/Engine/Build/BatchFiles/Build.bat\" LFP2D Win64 Development \"D:/UE_Projects/LFP2D/LFP2D.uproject\" -waitmutex)"
+    ]
+  }
+}
