@@ -67,6 +67,9 @@ void ULFPMapEditorComponent::ApplyToolToTile(ALFPHexTile* Tile)
 		if (ULFPTerrainDataAsset* TerrainDA = GM->GetTerrainDataForType(BrushTerrainType))
 		{
 			Tile->SetTerrainData(TerrainDA);
+			// 更新该格子及邻居的地形过渡
+			FLFPHexCoordinates Coord = Tile->GetCoordinates();
+			GM->UpdateTransitionsAround(Coord.Q, Coord.R);
 		}
 		break;
 
@@ -86,7 +89,11 @@ void ULFPMapEditorComponent::ApplyToolToTile(ALFPHexTile* Tile)
 	case ELFPMapEditorTool::MET_RemoveTile:
 		{
 			FLFPHexCoordinates Coord = Tile->GetCoordinates();
-			GM->RemoveTile(Coord.Q, Coord.R);
+			int32 RemovedQ = Coord.Q;
+			int32 RemovedR = Coord.R;
+			GM->RemoveTile(RemovedQ, RemovedR);
+			// 更新被移除格子周围邻居的过渡
+			GM->UpdateTransitionsAround(RemovedQ, RemovedR);
 		}
 		break;
 
@@ -105,6 +112,8 @@ void ULFPMapEditorComponent::ApplyToolToCoord(int32 Q, int32 R)
 	if (CurrentTool == ELFPMapEditorTool::MET_AddTile)
 	{
 		GM->AddTile(Q, R);
+		// 更新新格子及邻居的地形过渡
+		GM->UpdateTransitionsAround(Q, R);
 	}
 }
 

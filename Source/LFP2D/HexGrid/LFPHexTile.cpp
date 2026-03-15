@@ -4,6 +4,8 @@
 #include "LFP2D/HexGrid/LFPHexTile.h"
 #include "LFP2D/HexGrid/LFPTerrainDataAsset.h"
 #include "PaperSpriteComponent.h"
+#include "Materials/MaterialInstanceDynamic.h"
+#include "Engine/Texture2D.h"
 
 // Sets default values
 ALFPHexTile::ALFPHexTile()
@@ -38,6 +40,17 @@ ALFPHexTile::ALFPHexTile()
 		EdgeSpriteComponents[i] = CreateDefaultSubobject<UPaperSpriteComponent>(CompName);
 		EdgeSpriteComponents[i]->SetupAttachment(RootComponent);
 		EdgeSpriteComponents[i]->SetVisibility(false);
+	}
+
+	// 创建 6 个过渡精灵组件（Z=0.15，介于基础地形和覆盖层之间）
+	TransitionComponents.SetNum(6);
+	for (int32 i = 0; i < 6; i++)
+	{
+		FName CompName = *FString::Printf(TEXT("TransitionSprite_%d"), i);
+		TransitionComponents[i] = CreateDefaultSubobject<UPaperSpriteComponent>(CompName);
+		TransitionComponents[i]->SetupAttachment(RootComponent);
+		TransitionComponents[i]->SetRelativeLocation(FVector(0, 0, 0.15f));
+		TransitionComponents[i]->SetVisibility(false);
 	}
 }
 
@@ -203,6 +216,12 @@ void ALFPHexTile::SetTerrainData(ULFPTerrainDataAsset* InTerrainData)
 			DefaultSprite = TerrainData->DefaultSprite;
 			SpriteComponent->SetSprite(DefaultSprite);
 		}
+
+		// 更新基础材质的纹理参数
+		if (BaseMID && TerrainData->TerrainTexture)
+		{
+			BaseMID->SetTextureParameterValue(TEXT("TerrainTexture"), TerrainData->TerrainTexture);
+		}
 	}
 }
 
@@ -216,9 +235,87 @@ void ALFPHexTile::SetDecorationByID(FName InID, UPaperSprite* InSprite)
 	}
 }
 
+// ============== 地形过渡系统实现 ==============
 
-//void ALFPHexTile::SetSelected(bool bSelect)
-//{
-//	bIsSelect = bSelect;
-//}
+void ALFPHexTile::InitializeTransitionComponents(UPaperSprite* HexSprite,
+	UMaterialInterface* BaseTerrainMat, UMaterialInterface* TransitionMat,
+	float TextureScale, float InHexMaskScale, float InHexMaskYScale)
+{
+	if (!BaseTerrainMat || !TransitionMat || !HexSprite) return;
 
+	// 为基础地形精灵创建动态材质
+	BaseMID = UMaterialInstanceDynamic::Create(BaseTerrainMat, this);
+	if (BaseMID)
+	{
+		BaseMID->SetScalarParameterValue(TEXT("TextureScale"), TextureScale);
+		BaseMID->SetScalarParameterValue(TEXT("HexMaskScale"), InHexMaskScale);
+		BaseMID->SetScalarParameterValue(TEXT("HexMaskYScale"), InHexMaskYScale);
+		SpriteComponent->SetMaterial(0, BaseMID);
+	}
+
+	// 为每个过渡组件创建动态材质
+	TransitionMIDs.SetNum(6);
+
+	// 方向到角度的映射（对应 HexDirections: 东0°, 东北60°, 西北120°, 西180°, 西南240°, 东南300°）
+	const float DirAngles[6] = { 0.f, 60.f, 120.f, 180.f, 240.f, 300.f };
+
+	for (int32 i = 0; i < 6; i++)
+	{
+		if (!TransitionComponents.IsValidIndex(i) || !TransitionComponents[i]) continue;
+
+		// 设置精灵（使用相同的六角精灵覆盖整个格子区域）
+		TransitionComponents[i]->SetSprite(HexSprite);
+
+		// 创建动态材质实例
+		TransitionMIDs[i] = UMaterialInstanceDynamic::Create(TransitionMat, this);
+		if (TransitionMIDs[i])
+		{
+			TransitionMIDs[i]->SetScalarParameterValue(TEXT("TextureScale"), TextureScale);
+			TransitionMIDs[i]->SetScalarParameterValue(TEXT("MaskAngle"), DirAngles[i]);
+			TransitionMIDs[i]->SetScalarParameterValue(TEXT("HexMaskScale"), InHexMaskScale);
+			TransitionMIDs[i]->SetScalarParameterValue(TEXT("HexMaskYScale"), InHexMaskYScale);
+			TransitionComponents[i]->SetMaterial(0, TransitionMIDs[i]);
+		}
+
+		TransitionComponents[i]->SetVisibility(false);
+	}
+}
+
+void ALFPHexTile::UpdateBaseMaterial(UTexture2D* InTerrainTexture, float TextureScale)
+{
+	if (BaseMID && InTerrainTexture)
+	{
+		BaseMID->SetTextureParameterValue(TEXT("TerrainTexture"), InTerrainTexture);
+		BaseMID->SetScalarParameterValue(TEXT("TextureScale"), TextureScale);
+	}
+}
+
+void ALFPHexTile::ShowTransition(int32 DirIndex, UTexture2D* NeighborTexture, float TextureScale)
+{
+	if (!TransitionComponents.IsValidIndex(DirIndex) || !TransitionComponents[DirIndex]) return;
+	if (!TransitionMIDs.IsValidIndex(DirIndex) || !TransitionMIDs[DirIndex]) return;
+	if (!NeighborTexture) return;
+
+	TransitionMIDs[DirIndex]->SetTextureParameterValue(TEXT("NeighborTexture"), NeighborTexture);
+	TransitionMIDs[DirIndex]->SetScalarParameterValue(TEXT("TextureScale"), TextureScale);
+	TransitionComponents[DirIndex]->SetVisibility(true);
+}
+
+void ALFPHexTile::HideTransition(int32 DirIndex)
+{
+	if (TransitionComponents.IsValidIndex(DirIndex) && TransitionComponents[DirIndex])
+	{
+		TransitionComponents[DirIndex]->SetVisibility(false);
+	}
+}
+
+void ALFPHexTile::ClearAllTransitions()
+{
+	for (int32 i = 0; i < TransitionComponents.Num(); i++)
+	{
+		if (TransitionComponents[i])
+		{
+			TransitionComponents[i]->SetVisibility(false);
+		}
+	}
+}

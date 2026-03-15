@@ -10,6 +10,9 @@
 
 class UPaperSpriteComponent;
 class UPaperSprite;
+class UMaterialInterface;
+class UMaterialInstanceDynamic;
+class UTexture2D;
 class ALFPTacticsUnit;
 class ULFPTerrainDataAsset;
 enum class ELFPSpawnFaction : uint8;
@@ -279,6 +282,25 @@ public:
 	// 清除所有高亮（覆盖层 + 所有边缘）
 	void ClearAllHighlights();
 
+	// ============== 地形过渡系统 ==============
+
+	// 初始化过渡组件（由 GridManager 在生成格子后调用）
+	void InitializeTransitionComponents(UPaperSprite* HexSprite,
+		UMaterialInterface* BaseTerrainMat, UMaterialInterface* TransitionMat,
+		float TextureScale, float InHexMaskScale, float InHexMaskYScale);
+
+	// 更新基础地形材质纹理参数
+	void UpdateBaseMaterial(UTexture2D* InTerrainTexture, float TextureScale);
+
+	// 显示指定方向的过渡（DirIndex 对应 HexDirections 0-5）
+	void ShowTransition(int32 DirIndex, UTexture2D* NeighborTexture, float TextureScale);
+
+	// 隐藏指定方向的过渡
+	void HideTransition(int32 DirIndex);
+
+	// 清除所有过渡
+	void ClearAllTransitions();
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UPaperSpriteComponent> SpriteComponent;
 
@@ -297,4 +319,18 @@ public:
 public:
 	UFUNCTION(BlueprintCallable, Category = "Hex Math")
 	bool IsTargetHexInLine(FLFPHexCoordinates Coord);
+
+	// ============== 地形过渡组件 ==============
+protected:
+	// 6 个过渡精灵组件（每个方向一个，Z=0.15）
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	TArray<TObjectPtr<UPaperSpriteComponent>> TransitionComponents;
+
+	// 基础地形动态材质实例
+	UPROPERTY()
+	TObjectPtr<UMaterialInstanceDynamic> BaseMID;
+
+	// 6 个过渡层动态材质实例
+	UPROPERTY()
+	TArray<TObjectPtr<UMaterialInstanceDynamic>> TransitionMIDs;
 };

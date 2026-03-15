@@ -35,4 +35,12 @@ public:
 	// 显示名称（UI 用）
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Terrain|Visuals")
 	FText DisplayName;
+
+	// 渲染优先级（数值越大越优先，高优先级地形覆盖低优先级边缘）
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Terrain|Visuals")
+	int32 RenderPriority = 0;
+
+	// 地形 Tileable 纹理（用于 World-Space UV 连续渲染）
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Terrain|Visuals")
+	TObjectPtr<UTexture2D> TerrainTexture = nullptr;
 };

@@ -89,6 +89,9 @@ void ALFPHexGridManager::GenerateGrid(int32 Width, int32 Height)
 			SpawnTileAt(offsetQ, r, DefaultType);
 		}
 	}
+
+	// 所有格子生成后批量更新过渡
+	UpdateAllTransitions();
 }
 
 void ALFPHexGridManager::ClearGrid()
@@ -151,6 +154,14 @@ ALFPHexTile* ALFPHexGridManager::SpawnTileAt(int32 Q, int32 R, ELFPTerrainType T
 	// 初始化边缘和覆盖层组件
 	NewTile->InitializeEdgeComponents(EdgeHighlightSprite, RangeOverlaySprite, HexSize, VerticalScale);
 
+	// 初始化过渡组件（如果启用且材质已配置）
+	if (bEnableTerrainTransition && TerrainBaseMaterial && TerrainTransitionMaterial && TransitionHexSprite)
+	{
+		NewTile->InitializeTransitionComponents(TransitionHexSprite,
+			TerrainBaseMaterial, TerrainTransitionMaterial,
+			TerrainTextureScale, HexMaskScale, HexMaskYScale);
+	}
+
 	GridMap.Add(Key, NewTile);
 	return NewTile;
 }
@@ -199,6 +210,9 @@ void ALFPHexGridManager::LoadMapFromDataTable(UDataTable* InMapData)
 	}
 
 	UE_LOG(LogTemp, Log, TEXT("LoadMapFromDataTable: 加载了 %d 个格子"), AllRows.Num());
+
+	// 所有格子加载后批量更新过渡
+	UpdateAllTransitions();
 }
 
 bool ALFPHexGridManager::LoadMapFromCSV(const FString& CSVFilePath)
@@ -945,4 +959,103 @@ FLFPHexCoordinates ALFPHexGridManager::RoundToHex(float q, float r)
 	}
 
 	return FLFPHexCoordinates(rx, rz);
+}
+
+// ============== 地形过渡系统实现 ==============
+
+void ALFPHexGridManager::UpdateTileTransitions(ALFPHexTile* Tile)
+{
+	if (!Tile || !bEnableTerrainTransition) return;
+
+	ULFPTerrainDataAsset* TileTerrainData = Tile->GetTerrainData();
+	if (!TileTerrainData)
+	{
+		Tile->ClearAllTransitions();
+		return;
+	}
+
+	// 更新基础材质的纹理参数
+	if (TileTerrainData->TerrainTexture)
+	{
+		Tile->UpdateBaseMaterial(TileTerrainData->TerrainTexture, TerrainTextureScale);
+	}
+
+	FLFPHexCoordinates TileCoord = Tile->GetCoordinates();
+
+	for (int32 DirIdx = 0; DirIdx < 6; DirIdx++)
+	{
+		FLFPHexCoordinates NeighborCoord(
+			TileCoord.Q + HexDirections[DirIdx].Q,
+			TileCoord.R + HexDirections[DirIdx].R
+		);
+
+		ALFPHexTile* Neighbor = GetTileAtCoordinates(NeighborCoord);
+
+		if (!Neighbor)
+		{
+			Tile->HideTransition(DirIdx);
+			continue;
+		}
+
+		ULFPTerrainDataAsset* NeighborTerrainData = Neighbor->GetTerrainData();
+
+		// 同种地形或邻居无地形数据 → 不显示过渡
+		if (!NeighborTerrainData || NeighborTerrainData->TerrainType == TileTerrainData->TerrainType)
+		{
+			Tile->HideTransition(DirIdx);
+			continue;
+		}
+
+		// 邻居优先级更高 → 显示邻居纹理的过渡覆盖
+		if (NeighborTerrainData->RenderPriority > TileTerrainData->RenderPriority
+			&& NeighborTerrainData->TerrainTexture)
+		{
+			Tile->ShowTransition(DirIdx, NeighborTerrainData->TerrainTexture, TerrainTextureScale);
+		}
+		else
+		{
+			Tile->HideTransition(DirIdx);
+		}
+	}
+}
+
+void ALFPHexGridManager::UpdateAllTransitions()
+{
+	if (!bEnableTerrainTransition) return;
+
+	for (auto& Pair : GridMap)
+	{
+		if (Pair.Value)
+		{
+			UpdateTileTransitions(Pair.Value);
+		}
+	}
+}
+
+void ALFPHexGridManager::UpdateTransitionsAround(int32 Q, int32 R)
+{
+	if (!bEnableTerrainTransition) return;
+
+	// 更新目标格子本身
+	FIntPoint Key(Q, R);
+	if (ALFPHexTile* const* FoundTile = GridMap.Find(Key))
+	{
+		UpdateTileTransitions(*FoundTile);
+	}
+
+	// 更新所有邻居（因为它们的过渡可能因目标格子变化而改变）
+	FLFPHexCoordinates CenterCoord(Q, R);
+	for (int32 DirIdx = 0; DirIdx < 6; DirIdx++)
+	{
+		FLFPHexCoordinates NeighborCoord(
+			CenterCoord.Q + HexDirections[DirIdx].Q,
+			CenterCoord.R + HexDirections[DirIdx].R
+		);
+
+		ALFPHexTile* Neighbor = GetTileAtCoordinates(NeighborCoord);
+		if (Neighbor)
+		{
+			UpdateTileTransitions(Neighbor);
+		}
+	}
 }

@@ -11,6 +11,7 @@
 class ULFPTerrainDataAsset;
 class UDataTable;
 class UPaperSprite;
+class UMaterialInterface;
 
 
 UCLASS()
@@ -169,6 +170,49 @@ private:
 
 	// 六边形方向数组（静态常量）
 	static const TArray<FLFPHexCoordinates> HexDirections;
+
+public:
+	// ============== 地形过渡系统 ==============
+
+	// 基础地形材质（World-Space UV）
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Terrain|Transition")
+	TObjectPtr<UMaterialInterface> TerrainBaseMaterial;
+
+	// 过渡层材质（Alpha 遮罩混合）
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Terrain|Transition")
+	TObjectPtr<UMaterialInterface> TerrainTransitionMaterial;
+
+	// 过渡层精灵（六角形，覆盖整个格子区域）
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Terrain|Transition")
+	TObjectPtr<UPaperSprite> TransitionHexSprite;
+
+	// 纹理缩放（值越大纹理显示越大、重复越少。建议为 HexSize 的 10~20 倍）
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Terrain|Transition", meta = (ClampMin = "0.1"))
+	float TerrainTextureScale = 1500.0f;
+
+	// 是否启用过渡效果
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Terrain|Transition")
+	bool bEnableTerrainTransition = true;
+
+	// 六角遮罩大小（1.0 = 精确匹配精灵边界，>1 稍大可避免缝隙）
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Terrain|Transition", meta = (ClampMin = "0.5", ClampMax = "2.0"))
+	float HexMaskScale = 1.05f;
+
+	// 六角遮罩 Y 轴缩放（调整六角形纵向比例，1.0 = 正六角形）
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Terrain|Transition", meta = (ClampMin = "0.1", ClampMax = "3.0"))
+	float HexMaskYScale = 1.0f;
+
+	// 更新单个格子的所有过渡
+	UFUNCTION(BlueprintCallable, Category = "Terrain|Transition")
+	void UpdateTileTransitions(ALFPHexTile* Tile);
+
+	// 更新所有格子的过渡
+	UFUNCTION(BlueprintCallable, Category = "Terrain|Transition")
+	void UpdateAllTransitions();
+
+	// 更新指定坐标及其邻居的过渡（用于编辑器修改后）
+	UFUNCTION(BlueprintCallable, Category = "Terrain|Transition")
+	void UpdateTransitionsAround(int32 Q, int32 R);
 
 public:
     UFUNCTION(BlueprintCallable, Category = "Hex Grid")
