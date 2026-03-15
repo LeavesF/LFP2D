@@ -23,6 +23,22 @@ ALFPHexTile::ALFPHexTile()
 	DecorationSpriteComponent = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("DecorationSpriteComponent"));
 	DecorationSpriteComponent->SetupAttachment(RootComponent);
 	DecorationSpriteComponent->SetRelativeLocation(FVector(0, 0, 0.5f));
+
+	// 创建范围覆盖层精灵（半透明填充，Z=0.3f）
+	OverlaySpriteComponent = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("OverlaySpriteComponent"));
+	OverlaySpriteComponent->SetupAttachment(RootComponent);
+	OverlaySpriteComponent->SetRelativeLocation(FVector(0, 0, 0.3f));
+	OverlaySpriteComponent->SetVisibility(false);
+
+	// 创建 6 个边缘精灵组件
+	EdgeSpriteComponents.SetNum(6);
+	for (int32 i = 0; i < 6; i++)
+	{
+		FName CompName = *FString::Printf(TEXT("EdgeSprite_%d"), i);
+		EdgeSpriteComponents[i] = CreateDefaultSubobject<UPaperSpriteComponent>(CompName);
+		EdgeSpriteComponents[i]->SetupAttachment(RootComponent);
+		EdgeSpriteComponents[i]->SetVisibility(false);
+	}
 }
 
 // Called when the game starts or when spawned
@@ -49,35 +65,109 @@ void ALFPHexTile::Highlight(bool bActive)
 	// Todo
 }
 
-void ALFPHexTile::SetMovementHighlight(bool bActive)
+void ALFPHexTile::InitializeEdgeComponents(UPaperSprite* EdgeSprite, UPaperSprite* OverlaySprite, float InHexSize, float InVerticalScale)
 {
-	if (bActive && MovementRangeSprite)
+	// 设置覆盖层精灵
+	if (OverlaySpriteComponent && OverlaySprite)
 	{
-		SpriteComponent->SetSprite(MovementRangeSprite);
+		OverlaySpriteComponent->SetSprite(OverlaySprite);
+		OverlaySpriteComponent->SetVisibility(false);
+		OverlaySpriteComponent->SetRelativeRotation(FRotator(0, 0, 90.f));
 	}
-	else if (DefaultSprite)
+
+	// 计算每条边的位置和旋转（平顶六边形，30° 偏移，与 DrawDebugHexagon 一致）
+	const float AngleOffset = 30.0f;
+	const float HorizontalRadius = InHexSize;
+	const float VerticalRadius = InHexSize * InVerticalScale;
+
+	for (int32 i = 0; i < 6; i++)
 	{
-		SpriteComponent->SetSprite(DefaultSprite);
-	}
-	else if (!DefaultSprite)
-	{
-		SpriteComponent->SetSprite(nullptr);
+		if (!EdgeSpriteComponents.IsValidIndex(i) || !EdgeSpriteComponents[i]) continue;
+
+		// 顶点 i 和 顶点 (i+1)%6
+		float Angle1 = FMath::DegreesToRadians(60.0f * i + AngleOffset);
+		float Angle2 = FMath::DegreesToRadians(60.0f * ((i + 1) % 6) + AngleOffset);
+
+		FVector V1(HorizontalRadius * FMath::Cos(Angle1), VerticalRadius * FMath::Sin(Angle1), 0);
+		FVector V2(HorizontalRadius * FMath::Cos(Angle2), VerticalRadius * FMath::Sin(Angle2), 0);
+
+		// 边中点
+		FVector Midpoint = (V1 + V2) * 0.5f;
+		Midpoint.Z = 1.0f; // 在装饰层之上
+
+		// 边方向角度
+		FVector EdgeDir = V2 - V1;
+		float EdgeAngle = FMath::RadiansToDegrees(FMath::Atan2(EdgeDir.Y, EdgeDir.X));
+
+		EdgeSpriteComponents[i]->SetSprite(EdgeSprite);
+		EdgeSpriteComponents[i]->SetRelativeLocation(Midpoint);
+		// Paper2D 精灵在 XY 平面旋转，使用 Yaw（绕 Z 轴）
+		EdgeSpriteComponents[i]->SetRelativeRotation(FRotator(0, EdgeAngle, 90.f));
+		EdgeSpriteComponents[i]->SetVisibility(false);
+
+		// 根据边长缩放精灵（假设精灵原始宽度覆盖标准边长）
+		float EdgeLength = EdgeDir.Size();
+		// 缩放将在配置精灵资产后根据实际尺寸调整
 	}
 }
 
-void ALFPHexTile::SetAttackHighlight(bool bActive)
+void ALFPHexTile::ShowEdge(int32 DirIndex, FLinearColor Color)
 {
-	if (bActive && AttackRangeSprite)
+	if (EdgeSpriteComponents.IsValidIndex(DirIndex) && EdgeSpriteComponents[DirIndex])
 	{
-		SpriteComponent->SetSprite(AttackRangeSprite);
+		EdgeSpriteComponents[DirIndex]->SetSpriteColor(Color);
+		EdgeSpriteComponents[DirIndex]->SetVisibility(true);
 	}
-	else if (DefaultSprite)
+}
+
+void ALFPHexTile::HideEdge(int32 DirIndex)
+{
+	if (EdgeSpriteComponents.IsValidIndex(DirIndex) && EdgeSpriteComponents[DirIndex])
 	{
-		SpriteComponent->SetSprite(DefaultSprite);
+		EdgeSpriteComponents[DirIndex]->SetVisibility(false);
 	}
-	else if (!DefaultSprite)
+}
+
+void ALFPHexTile::ShowRangeOverlay(FLinearColor Color)
+{
+	if (OverlaySpriteComponent)
 	{
-		SpriteComponent->SetSprite(nullptr);
+		OverlaySpriteComponent->SetSpriteColor(Color);
+		OverlaySpriteComponent->SetVisibility(true);
+	}
+}
+
+void ALFPHexTile::ShowPathOverlay(bool bActive, FLinearColor Color)
+{
+	if (OverlaySpriteComponent)
+	{
+		if (bActive)
+		{
+			OverlaySpriteComponent->SetSpriteColor(Color);
+			OverlaySpriteComponent->SetVisibility(true);
+		}
+		else
+		{
+			OverlaySpriteComponent->SetVisibility(false);
+		}
+	}
+}
+
+void ALFPHexTile::ClearAllHighlights()
+{
+	// 隐藏覆盖层
+	if (OverlaySpriteComponent)
+	{
+		OverlaySpriteComponent->SetVisibility(false);
+	}
+
+	// 隐藏所有边缘
+	for (int32 i = 0; i < EdgeSpriteComponents.Num(); i++)
+	{
+		if (EdgeSpriteComponents[i])
+		{
+			EdgeSpriteComponents[i]->SetVisibility(false);
+		}
 	}
 }
 
@@ -126,37 +216,6 @@ void ALFPHexTile::SetDecorationByID(FName InID, UPaperSprite* InSprite)
 	}
 }
 
-void ALFPHexTile::SetRangeSprite(EUnitRange UnitRange)
-{
-	switch (UnitRange)
-	{
-	case EUnitRange::UR_Default:
-		SpriteComponent->SetSprite(DefaultSprite);
-		break;
-	case EUnitRange::UR_Move:
-		SpriteComponent->SetSprite(MovementRangeSprite);
-		break;
-	case EUnitRange::UR_Attack:
-		SpriteComponent->SetSprite(AttackRangeSprite);
-		break;
-	case EUnitRange::UR_SkillEffect:
-		SpriteComponent->SetSprite(SkillEffectRangeSprite);
-	default:
-		break;
-	}
-}
-
-void ALFPHexTile::SetPathHighlight(bool bActive)
-{
-	if (bActive && PathSprite)
-	{
-		SpriteComponent->SetSprite(PathSprite);
-	}
-	else if (MovementRangeSprite)
-	{
-		SpriteComponent->SetSprite(MovementRangeSprite);
-	}
-}
 
 //void ALFPHexTile::SetSelected(bool bSelect)
 //{

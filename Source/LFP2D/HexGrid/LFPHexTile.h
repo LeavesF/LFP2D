@@ -259,21 +259,25 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Hex Tile")
 	void SetDecorationByID(FName InID, UPaperSprite* InSprite);
 
-	// 设置RangeSprite层级
-	UFUNCTION(BlueprintCallable, Category = "Hex Tile")
-	void SetRangeSprite(EUnitRange UnitRange = EUnitRange::UR_Default);
+	// ============== 高亮系统 ==============
 
-	// 设置路径高亮层级
-	UFUNCTION(BlueprintCallable, Category = "Hex Tile")
-	void SetPathHighlight(bool bActive);
+	// 初始化边缘和覆盖层组件（由 GridManager 在生成格子后调用）
+	void InitializeEdgeComponents(UPaperSprite* EdgeSprite, UPaperSprite* OverlaySprite, float InHexSize, float InVerticalScale);
 
-	// 设置移动范围高亮层级
-	UFUNCTION(BlueprintCallable, Category = "Hex Tile")
-	void SetMovementHighlight(bool bActive);
+	// 显示指定方向的边缘高亮（方向索引 0-5，对应 HexDirections）
+	void ShowEdge(int32 DirIndex, FLinearColor Color);
 
-	// 设置攻击范围高亮层级
-	UFUNCTION(BlueprintCallable, Category = "Hex Tile")
-	void SetAttackHighlight(bool bActive);
+	// 隐藏指定方向的边缘高亮
+	void HideEdge(int32 DirIndex);
+
+	// 显示范围覆盖层（传入颜色）
+	void ShowRangeOverlay(FLinearColor Color);
+
+	// 显示路径覆盖层（传入颜色）
+	void ShowPathOverlay(bool bActive, FLinearColor Color = FLinearColor::Transparent);
+
+	// 清除所有高亮（覆盖层 + 所有边缘）
+	void ClearAllHighlights();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UPaperSpriteComponent> SpriteComponent;
@@ -281,17 +285,13 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UPaperSprite> DefaultSprite;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Sprites")
-	TObjectPtr<UPaperSprite> PathSprite;
+	// 覆盖层精灵组件（半透明填充）
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<UPaperSpriteComponent> OverlaySpriteComponent;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Sprites")
-	TObjectPtr<UPaperSprite> MovementRangeSprite;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Sprites")
-	TObjectPtr<UPaperSprite> AttackRangeSprite;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Sprites")
-	TObjectPtr<UPaperSprite> SkillEffectRangeSprite;
+	// 6 个边缘精灵组件
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TArray<TObjectPtr<UPaperSpriteComponent>> EdgeSpriteComponents;
 
 /////////////////	Math	///////////////
 public:

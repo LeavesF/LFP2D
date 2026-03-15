@@ -190,12 +190,73 @@ protected:
 
 
 public:
-    UFUNCTION(BlueprintCallable, Category = "Hex Grid")
-    void UpdateGridSpriteWithTiles(EPlayControlState CurrentControlState, TArray<ALFPHexTile*>& Tiles);
+	// ============== 范围高亮系统 ==============
 
-    UFUNCTION(BlueprintCallable, Category = "Hex Grid")
-    void UpdateGridSpriteWithCoords(EPlayControlState CurrentControlState, TArray<FLFPHexCoordinates>& Coords);
+	// 边缘高亮精灵（通用白色线段，通过颜色区分类型，在蓝图中配置）
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Highlight")
+	TObjectPtr<UPaperSprite> EdgeHighlightSprite;
 
-    UFUNCTION(BlueprintCallable, Category = "Hex Grid")
-    void ResetGridSprite();
+	// 范围覆盖层精灵（白色六边形，半透明填充，在蓝图中配置）
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Highlight")
+	TObjectPtr<UPaperSprite> RangeOverlaySprite;
+
+	// ---- 颜色配置（蓝图可调） ----
+
+	// 移动范围 - 边缘颜色
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Highlight|Move")
+	FLinearColor MoveEdgeColor = FLinearColor(0.2f, 0.5f, 1.0f, 0.8f);
+
+	// 移动范围 - 覆盖层颜色
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Highlight|Move")
+	FLinearColor MoveOverlayColor = FLinearColor(0.2f, 0.5f, 1.0f, 0.25f);
+
+	// 攻击范围 - 边缘颜色
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Highlight|Attack")
+	FLinearColor AttackEdgeColor = FLinearColor(1.0f, 0.2f, 0.2f, 0.8f);
+
+	// 攻击范围 - 覆盖层颜色
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Highlight|Attack")
+	FLinearColor AttackOverlayColor = FLinearColor(1.0f, 0.2f, 0.2f, 0.25f);
+
+	// 技能效果范围 - 边缘颜色
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Highlight|Skill")
+	FLinearColor SkillEdgeColor = FLinearColor(0.2f, 1.0f, 0.4f, 0.8f);
+
+	// 技能效果范围 - 覆盖层颜色
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Highlight|Skill")
+	FLinearColor SkillOverlayColor = FLinearColor(0.2f, 1.0f, 0.4f, 0.25f);
+
+	// 路径 - 覆盖层颜色
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Highlight|Path")
+	FLinearColor PathOverlayColor = FLinearColor(1.0f, 0.9f, 0.3f, 0.35f);
+
+	// 根据范围类型获取对应颜色
+	FLinearColor GetEdgeColorForRange(EUnitRange HexRangeType) const;
+	FLinearColor GetOverlayColorForRange(EUnitRange HexRangeType) const;
+
+	// 显示范围高亮（带边界描边检测）
+	UFUNCTION(BlueprintCallable, Category = "Hex Grid")
+	void ShowRangeHighlight(const TArray<ALFPHexTile*>& RangeTiles, EUnitRange HexRangeType);
+
+	// 显示范围高亮（坐标版）
+	UFUNCTION(BlueprintCallable, Category = "Hex Grid")
+	void ShowRangeHighlightByCoords(const TArray<FLFPHexCoordinates>& Coords, EUnitRange HexRangeType);
+
+	// 显示路径高亮
+	UFUNCTION(BlueprintCallable, Category = "Hex Grid")
+	void ShowPathHighlight(const TArray<ALFPHexTile*>& PathTiles);
+
+	// 清除路径高亮（保留范围高亮）
+	UFUNCTION(BlueprintCallable, Category = "Hex Grid")
+	void ClearPathHighlight();
+
+	// 清除所有高亮
+	UFUNCTION(BlueprintCallable, Category = "Hex Grid")
+	void ClearAllHighlights();
+
+private:
+	// 当前高亮的格子缓存
+	TArray<ALFPHexTile*> CurrentHighlightedTiles;
+	TArray<ALFPHexTile*> CurrentPathTiles;
+	EUnitRange CurrentHighlightRange = EUnitRange::UR_Default;
 };

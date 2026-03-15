@@ -626,11 +626,7 @@ void ALFPTacticsPlayerController::ShowUnitRange(EUnitRange UnitRange)
 {
     if (!SelectedUnit || !GridManager) return;
 
-    GridManager->ResetGridSprite();
-    /*for (ALFPHexTile* Tile : CacheRangeTiles)
-    {
-        Tile->SetRangeSprite(EUnitRange::UR_Default);
-    }*/
+    GridManager->ClearAllHighlights();
     CacheRangeTiles.Empty();
     MovementRangeTiles.Empty();
 
@@ -645,19 +641,16 @@ void ALFPTacticsPlayerController::ShowUnitRange(EUnitRange UnitRange)
 		if (UnitTile)
 		{
 			CacheRangeTiles= MovementRangeTiles = GridManager->GetTilesInRange(UnitTile, SelectedUnit->GetMovementRange());
-			// 高亮显示这些格子
-            GridManager->UpdateGridSpriteWithTiles(CurrentControlState, MovementRangeTiles);
+			// 显示范围高亮（描边 + 填充）
+            GridManager->ShowRangeHighlight(MovementRangeTiles, EUnitRange::UR_Move);
 		}
         break;
 	}
     case EUnitRange::UR_Attack:
 		// 获取可攻击范围
         CacheRangeTiles = SelectedUnit->GetAttackRangeTiles();
-		// 高亮显示这些格子
-		for (ALFPHexTile* Tile : CacheRangeTiles)
-		{
-			Tile->SetRangeSprite(EUnitRange::UR_Attack);
-		}
+		// 显示范围高亮（描边 + 填充）
+		GridManager->ShowRangeHighlight(CacheRangeTiles, EUnitRange::UR_Attack);
         break;
     default:
         break;
@@ -676,28 +669,26 @@ void ALFPTacticsPlayerController::ShowPathToSelectedTile()
     {
         CurrentPath = GridManager->FindPath(UnitTile, SelectedTile);
 
-        // 高亮显示路径（设置不同颜色）
-        for (ALFPHexTile* Tile : CurrentPath)
-        {
-            Tile->SetPathHighlight(true);
-        }
+        // 高亮显示路径
+        GridManager->ShowPathHighlight(CurrentPath);
     }
 }
 
 void ALFPTacticsPlayerController::HidePathToDefault()
 {
-    for (ALFPHexTile* Tile : CurrentPath)
+    if (GridManager)
     {
-        Tile->SetMovementHighlight(false);
+        GridManager->ClearPathHighlight();
+        GridManager->ClearAllHighlights();
     }
     CurrentPath.Empty();
 }
 
 void ALFPTacticsPlayerController::HidePathToRange()
 {
-    for (ALFPHexTile* Tile : CurrentPath)
+    if (GridManager)
     {
-        Tile->SetMovementHighlight(true);
+        GridManager->ClearPathHighlight();
     }
     CurrentPath.Empty();
 }
@@ -889,7 +880,7 @@ void ALFPTacticsPlayerController::HandleSkillTargetSelecting(ULFPSkillBase* Skil
     {
         bIsReleaseSkill = true;
         CurrentControlState = EPlayControlState::SkillReleaseState;
-        GridManager->UpdateGridSpriteWithCoords(CurrentControlState, TargetTilesCoord);
+        GridManager->ShowRangeHighlightByCoords(TargetTilesCoord, EUnitRange::UR_SkillEffect);
     }
     //// 高亮目标格子
     //if (GridManager)
@@ -925,31 +916,22 @@ void ALFPTacticsPlayerController::HandleSkillTargetSelecting(ULFPSkillBase* Skil
 
 void ALFPTacticsPlayerController::ShowEnemyPlanPreview(ALFPTacticsUnit* EnemyUnit)
 {
-    if (!EnemyUnit || !EnemyUnit->HasActionPlan()) return;
+    if (!EnemyUnit || !EnemyUnit->HasActionPlan() || !GridManager) return;
 
     PreviewedEnemy = EnemyUnit;
     const FEnemyActionPlan& Plan = EnemyUnit->CurrentActionPlan;
 
     // 高亮技能效果范围格子
     PreviewEffectTiles = Plan.EffectAreaTiles;
-    for (ALFPHexTile* Tile : PreviewEffectTiles)
-    {
-        if (Tile)
-        {
-            Tile->SetRangeSprite(EUnitRange::UR_SkillEffect);
-        }
-    }
+    GridManager->ShowRangeHighlight(PreviewEffectTiles, EUnitRange::UR_SkillEffect);
 }
 
 void ALFPTacticsPlayerController::HideEnemyPlanPreview()
 {
-    // 恢复预览格子为默认状态
-    for (ALFPHexTile* Tile : PreviewEffectTiles)
+    // 清除预览格子高亮
+    if (GridManager)
     {
-        if (Tile)
-        {
-            Tile->SetRangeSprite(EUnitRange::UR_Default);
-        }
+        GridManager->ClearAllHighlights();
     }
     PreviewEffectTiles.Empty();
     PreviewedEnemy = nullptr;
@@ -1031,13 +1013,8 @@ void ALFPTacticsPlayerController::OnDeploymentPhaseStarted()
     if (GridManager)
     {
         PlayerSpawnTiles = GridManager->GetSpawnPoints(ELFPSpawnFaction::SF_Player);
-        for (ALFPHexTile* Tile : PlayerSpawnTiles)
-        {
-            if (Tile)
-            {
-                Tile->SetMovementHighlight(true);
-            }
-        }
+        // 高亮显示出生点
+        GridManager->ShowRangeHighlight(PlayerSpawnTiles, EUnitRange::UR_Move);
     }
 
     // 获取队伍数据
@@ -1091,6 +1068,7 @@ void ALFPTacticsPlayerController::StartPlacingUnit(int32 PartyIndex)
     // 在鼠标位置生成预览单位
     FVector UnitSpawnLoc = FVector(0, 0, 50.f);
     FActorSpawnParameters SpawnParams;
+    SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
     PlacingUnitPreview = GetWorld()->SpawnActor<ALFPTacticsUnit>(UnitClass, UnitSpawnLoc, FRotator::ZeroRotator, SpawnParams);
 
     if (PlacingUnitPreview)
@@ -1194,13 +1172,8 @@ void ALFPTacticsPlayerController::ConfirmDeployment()
     if (!bIsInDeployment) return;
 
     // 取消高亮
-    for (ALFPHexTile* Tile : PlayerSpawnTiles)
-    {
-        if (Tile)
-        {
-            Tile->SetMovementHighlight(false);
-        }
-    }
+    // 清除出生点高亮
+    GridManager->ClearAllHighlights();
     PlayerSpawnTiles.Empty();
 
     // 移除布置 UI
