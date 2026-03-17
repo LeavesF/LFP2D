@@ -257,7 +257,7 @@ void ALFPHexTile::InitializeTransitionComponents(UPaperSprite* HexSprite,
 	TransitionMIDs.SetNum(6);
 
 	// 方向到角度的映射（对应 HexDirections: 东0°, 东北60°, 西北120°, 西180°, 西南240°, 东南300°）
-	const float DirAngles[6] = { 0.f, 60.f, 120.f, 180.f, 240.f, 300.f };
+	const float DirAngles[6] = { 0.f, -60.f, -120.f, -180.f, -240.f, -300.f };
 
 	for (int32 i = 0; i < 6; i++)
 	{
