@@ -237,13 +237,11 @@ void ALFPHexTile::SetDecorationByID(FName InID, UPaperSprite* InSprite)
 
 // ============== 地形过渡系统实现 ==============
 
-void ALFPHexTile::InitializeTransitionComponents(UPaperSprite* HexSprite,
-	UMaterialInterface* BaseTerrainMat, UMaterialInterface* TransitionMat,
+void ALFPHexTile::InitializeBaseMaterial(UMaterialInterface* BaseTerrainMat,
 	float TextureScale, float InHexMaskScale, float InHexMaskYScale)
 {
-	if (!BaseTerrainMat || !TransitionMat || !HexSprite) return;
+	if (!BaseTerrainMat) return;
 
-	// 为基础地形精灵创建动态材质
 	BaseMID = UMaterialInstanceDynamic::Create(BaseTerrainMat, this);
 	if (BaseMID)
 	{
@@ -252,6 +250,13 @@ void ALFPHexTile::InitializeTransitionComponents(UPaperSprite* HexSprite,
 		BaseMID->SetScalarParameterValue(TEXT("HexMaskYScale"), InHexMaskYScale);
 		SpriteComponent->SetMaterial(0, BaseMID);
 	}
+}
+
+void ALFPHexTile::InitializeTransitionComponents(UPaperSprite* HexSprite,
+	UMaterialInterface* TransitionMat,
+	float TextureScale, float InHexMaskScale, float InHexMaskYScale)
+{
+	if (!TransitionMat || !HexSprite) return;
 
 	// 为每个过渡组件创建动态材质
 	TransitionMIDs.SetNum(6);

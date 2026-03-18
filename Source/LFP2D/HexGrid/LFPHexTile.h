@@ -284,9 +284,13 @@ public:
 
 	// ============== 地形过渡系统 ==============
 
+	// 初始化基础地形材质（World-Space UV，独立于过渡系统）
+	void InitializeBaseMaterial(UMaterialInterface* BaseTerrainMat,
+		float TextureScale, float InHexMaskScale, float InHexMaskYScale);
+
 	// 初始化过渡组件（由 GridManager 在生成格子后调用）
 	void InitializeTransitionComponents(UPaperSprite* HexSprite,
-		UMaterialInterface* BaseTerrainMat, UMaterialInterface* TransitionMat,
+		UMaterialInterface* TransitionMat,
 		float TextureScale, float InHexMaskScale, float InHexMaskYScale);
 
 	// 更新基础地形材质纹理参数

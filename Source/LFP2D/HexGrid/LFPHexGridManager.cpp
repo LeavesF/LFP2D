@@ -154,11 +154,18 @@ ALFPHexTile* ALFPHexGridManager::SpawnTileAt(int32 Q, int32 R, ELFPTerrainType T
 	// 初始化边缘和覆盖层组件
 	NewTile->InitializeEdgeComponents(EdgeHighlightSprite, RangeOverlaySprite, HexSize, VerticalScale);
 
-	// 初始化过渡组件（如果启用且材质已配置）
-	if (bEnableTerrainTransition && TerrainBaseMaterial && TerrainTransitionMaterial && TransitionHexSprite)
+	// 初始化基础地形材质（始终应用）
+	if (TerrainBaseMaterial)
+	{
+		NewTile->InitializeBaseMaterial(TerrainBaseMaterial,
+			TerrainTextureScale, HexMaskScale, HexMaskYScale);
+	}
+
+	// 初始化过渡组件（仅在启用时）
+	if (bEnableTerrainTransition && TerrainTransitionMaterial && TransitionHexSprite)
 	{
 		NewTile->InitializeTransitionComponents(TransitionHexSprite,
-			TerrainBaseMaterial, TerrainTransitionMaterial,
+			TerrainTransitionMaterial,
 			TerrainTextureScale, HexMaskScale, HexMaskYScale);
 	}
 

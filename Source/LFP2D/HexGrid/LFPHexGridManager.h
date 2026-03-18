@@ -192,7 +192,7 @@ public:
 
 	// 是否启用过渡效果
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Terrain|Transition")
-	bool bEnableTerrainTransition = true;
+	bool bEnableTerrainTransition = false;
 
 	// 六角遮罩大小（1.0 = 精确匹配精灵边界，>1 稍大可避免缝隙）
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Terrain|Transition", meta = (ClampMin = "0.5", ClampMax = "2.0"))
