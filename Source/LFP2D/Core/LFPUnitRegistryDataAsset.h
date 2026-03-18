@@ -23,6 +23,14 @@ struct FLFPUnitRegistryEntry
 	// 单位图标（UI 用）
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit Registry")
 	TObjectPtr<UTexture2D> Icon = nullptr;
+
+	// 该单位的阶级（用于 UI 显示，如 1/2/3）
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit Registry")
+	int32 Tier = 1;
+
+	// 可进化的目标 TypeID 列表（空=终阶，多个=分支选择）
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit Registry|Evolution")
+	TArray<FName> EvolutionTargets;
 };
 
 /**
@@ -45,4 +53,16 @@ public:
 	// 获取蓝图类
 	UFUNCTION(BlueprintPure, Category = "Unit Registry")
 	TSubclassOf<ALFPTacticsUnit> GetUnitClass(FName TypeID) const;
+
+	// 获取指定 TypeID 的进化目标列表
+	UFUNCTION(BlueprintPure, Category = "Unit Registry|Evolution")
+	TArray<FName> GetEvolutionTargets(FName TypeID) const;
+
+	// 是否可进化（有进化目标）
+	UFUNCTION(BlueprintPure, Category = "Unit Registry|Evolution")
+	bool CanEvolve(FName TypeID) const;
+
+	// 获取阶级
+	UFUNCTION(BlueprintPure, Category = "Unit Registry")
+	int32 GetUnitTier(FName TypeID) const;
 };

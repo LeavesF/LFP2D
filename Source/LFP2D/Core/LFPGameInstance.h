@@ -275,6 +275,18 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Party")
 	void RemoveReserveUnit(int32 SlotIndex);
 
+	// ============== 单位升阶 ==============
+
+	// 查找可合并的 TypeID 列表（同 TypeID 出现 >= 2 次且注册表中有进化目标）
+	UFUNCTION(BlueprintCallable, Category = "Party")
+	TArray<FLFPUnitEntry> GetMergeablePairs() const;
+
+	// 执行合并：移除指定的两个单位，添加进化目标新单位
+	// TargetTypeID: 进化目标 TypeID（分支选择时由 UI 传入）
+	UFUNCTION(BlueprintCallable, Category = "Party")
+	bool MergeUnits(bool bSourceAIsParty, int32 SourceAIndex,
+		bool bSourceBIsParty, int32 SourceBIndex, FName TargetTypeID);
+
 protected:
 	// 待处理的战斗请求
 	UPROPERTY()

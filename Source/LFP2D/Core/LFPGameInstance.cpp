@@ -1,4 +1,5 @@
 #include "LFP2D/Core/LFPGameInstance.h"
+#include "LFP2D/Core/LFPUnitRegistryDataAsset.h"
 #include "Kismet/GameplayStatics.h"
 #include "Camera/PlayerCameraManager.h"
 
@@ -179,4 +180,107 @@ void ULFPGameInstance::RemoveReserveUnit(int32 SlotIndex)
 		UE_LOG(LogTemp, Log, TEXT("移除备战营槽 %d: %s"), SlotIndex, *ReserveUnits[SlotIndex].TypeID.ToString());
 		ReserveUnits.RemoveAt(SlotIndex);
 	}
+}
+
+// ============== 单位升阶 ==============
+
+TArray<FLFPUnitEntry> ULFPGameInstance::GetMergeablePairs() const
+{
+	// 统计每个 TypeID 的出现次数
+	TMap<FName, int32> CountMap;
+
+	for (const FLFPUnitEntry& Unit : PartyUnits)
+	{
+		if (Unit.IsValid())
+		{
+			CountMap.FindOrAdd(Unit.TypeID, 0)++;
+		}
+	}
+	for (const FLFPUnitEntry& Unit : ReserveUnits)
+	{
+		if (Unit.IsValid())
+		{
+			CountMap.FindOrAdd(Unit.TypeID, 0)++;
+		}
+	}
+
+	// 筛选出现 >= 2 次且注册表中有进化目标的 TypeID
+	TArray<FLFPUnitEntry> Result;
+	for (const auto& Pair : CountMap)
+	{
+		if (Pair.Value >= 2 && UnitRegistry && UnitRegistry->CanEvolve(Pair.Key))
+		{
+			FLFPUnitEntry Entry;
+			Entry.TypeID = Pair.Key;
+			Entry.Tier = UnitRegistry->GetUnitTier(Pair.Key);
+			Result.Add(Entry);
+		}
+	}
+
+	return Result;
+}
+
+bool ULFPGameInstance::MergeUnits(bool bSourceAIsParty, int32 SourceAIndex,
+	bool bSourceBIsParty, int32 SourceBIndex, FName TargetTypeID)
+{
+	TArray<FLFPUnitEntry>& ArrayA = bSourceAIsParty ? PartyUnits : ReserveUnits;
+	TArray<FLFPUnitEntry>& ArrayB = bSourceBIsParty ? PartyUnits : ReserveUnits;
+
+	if (!ArrayA.IsValidIndex(SourceAIndex) || !ArrayB.IsValidIndex(SourceBIndex))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("MergeUnits: 无效的槽位索引"));
+		return false;
+	}
+
+	const FLFPUnitEntry& UnitA = ArrayA[SourceAIndex];
+	const FLFPUnitEntry& UnitB = ArrayB[SourceBIndex];
+
+	// 验证两个源单位 TypeID 相同
+	if (UnitA.TypeID != UnitB.TypeID)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("MergeUnits: 单位类型不匹配 (%s vs %s)"),
+			*UnitA.TypeID.ToString(), *UnitB.TypeID.ToString());
+		return false;
+	}
+
+	// 验证 TargetTypeID 在进化目标列表中
+	if (!UnitRegistry)
+	{
+		UE_LOG(LogTemp, Error, TEXT("MergeUnits: 注册表未配置"));
+		return false;
+	}
+
+	TArray<FName> Targets = UnitRegistry->GetEvolutionTargets(UnitA.TypeID);
+	if (!Targets.Contains(TargetTypeID))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("MergeUnits: %s 不是 %s 的有效进化目标"),
+			*TargetTypeID.ToString(), *UnitA.TypeID.ToString());
+		return false;
+	}
+
+	// 创建进化后的新单位
+	FLFPUnitEntry NewUnit;
+	NewUnit.TypeID = TargetTypeID;
+	NewUnit.Tier = UnitRegistry->GetUnitTier(TargetTypeID);
+
+	// 移除两个源单位（同一数组时先移除大索引避免偏移）
+	if (bSourceAIsParty == bSourceBIsParty)
+	{
+		int32 First = FMath::Max(SourceAIndex, SourceBIndex);
+		int32 Second = FMath::Min(SourceAIndex, SourceBIndex);
+		ArrayA.RemoveAt(First);
+		ArrayA.RemoveAt(Second);
+	}
+	else
+	{
+		ArrayA.RemoveAt(SourceAIndex);
+		ArrayB.RemoveAt(SourceBIndex);
+	}
+
+	TryAddUnit(NewUnit);
+
+	UE_LOG(LogTemp, Log, TEXT("进化成功: %s × 2 → %s (T%d)"),
+		*UnitA.TypeID.ToString(), *TargetTypeID.ToString(), NewUnit.Tier);
+
+	return true;
 }
