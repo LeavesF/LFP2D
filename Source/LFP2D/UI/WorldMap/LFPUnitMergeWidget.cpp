@@ -7,9 +7,9 @@
 #include "Components/HorizontalBoxSlot.h"
 #include "Engine/Texture2D.h"
 
-void ULFPUnitMergeWidget::NativeConstruct()
+void ULFPUnitMergeWidget::NativeOnInitialized()
 {
-	Super::NativeConstruct();
+	Super::NativeOnInitialized();
 
 	if (Button_SlotA) Button_SlotA->OnClicked.AddDynamic(this, &ULFPUnitMergeWidget::OnSlotAClicked);
 	if (Button_SlotB) Button_SlotB->OnClicked.AddDynamic(this, &ULFPUnitMergeWidget::OnSlotBClicked);
@@ -204,53 +204,20 @@ void ULFPUnitMergeWidget::UpdatePreview()
 	bool bCanMerge = false;
 	SelectedEvolutionTarget = NAME_None;
 
-	// 清空分支选择
+	// 清空进化目标展示
 	if (Box_EvolutionChoices) Box_EvolutionChoices->ClearChildren();
 	EvolutionChoiceButtons.Empty();
 	EvolutionButtonToTargetMap.Empty();
 
 	if (!SlotA.bIsEmpty && !SlotB.bIsEmpty && CachedRegistry)
 	{
-		// 检查匹配：同 TypeID
 		if (SlotA.Unit.TypeID == SlotB.Unit.TypeID)
 		{
 			TArray<FName> Targets = CachedRegistry->GetEvolutionTargets(SlotA.Unit.TypeID);
 
-			if (Targets.Num() == 1)
+			if (Targets.Num() >= 1)
 			{
-				// 唯一进化目标 → 直接显示预览
-				SelectedEvolutionTarget = Targets[0];
-				bCanMerge = true;
-
-				FLFPUnitRegistryEntry TargetEntry;
-				if (CachedRegistry->FindEntry(SelectedEvolutionTarget, TargetEntry))
-				{
-					if (Image_PreviewIcon && TargetEntry.Icon)
-					{
-						Image_PreviewIcon->SetBrushFromTexture(TargetEntry.Icon);
-						Image_PreviewIcon->SetRenderOpacity(1.f);
-					}
-					if (Text_PreviewName)
-					{
-						FString PreviewText = FString::Printf(TEXT("%s %s"),
-							*TargetEntry.DisplayName.ToString(), *MakeTierStars(TargetEntry.Tier));
-						Text_PreviewName->SetText(FText::FromString(PreviewText));
-					}
-				}
-			}
-			else if (Targets.Num() > 1)
-			{
-				// 多个进化目标 → 显示分支选择
-				if (Text_PreviewName)
-				{
-					Text_PreviewName->SetText(FText::FromString(TEXT("请选择进化方向")));
-				}
-				if (Image_PreviewIcon)
-				{
-					Image_PreviewIcon->SetRenderOpacity(0.2f);
-				}
-
-				// 为每个分支创建选择按钮
+				// 为每个进化目标创建图标按钮
 				for (const FName& TargetID : Targets)
 				{
 					FLFPUnitRegistryEntry TargetEntry;
@@ -265,23 +232,62 @@ void ULFPUnitMergeWidget::UpdatePreview()
 					UHorizontalBoxSlot* BoxSlot = Box_EvolutionChoices->AddChildToHorizontalBox(ChoiceBtn);
 					if (BoxSlot)
 					{
-						BoxSlot->SetPadding(FMargin(8.f));
+						BoxSlot->SetPadding(FMargin(30.f));
+						BoxSlot->SetHorizontalAlignment(HAlign_Center);
+						BoxSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
 					}
 
-					// 设置按钮图标
 					if (TargetEntry.Icon)
 					{
 						FButtonStyle Style = ChoiceBtn->GetStyle();
-						Style.Normal.SetResourceObject(TargetEntry.Icon);
-						Style.Normal.ImageSize = FVector2D(80.f, 80.f);
 						Style.Hovered.SetResourceObject(TargetEntry.Icon);
-						Style.Hovered.ImageSize = FVector2D(80.f, 80.f);
-						Style.Pressed.SetResourceObject(TargetEntry.Icon);
-						Style.Pressed.ImageSize = FVector2D(80.f, 80.f);
+						Style.Hovered.ImageSize = FVector2D(220.f, 80.f);
+
+						if (Targets.Num() == 1)
+						{
+							// 单目标：三态一致，看起来不像按钮
+							Style.Normal = Style.Hovered;
+							Style.Pressed = Style.Hovered;
+						}
+						else
+						{
+							Style.Normal.SetResourceObject(TargetEntry.Icon);
+							Style.Normal.ImageSize = FVector2D(220.f, 80.f);
+							Style.Pressed.SetResourceObject(TargetEntry.Icon);
+							Style.Pressed.ImageSize = FVector2D(220.f, 80.f);
+						}
+
 						ChoiceBtn->SetStyle(Style);
 					}
 
-					ChoiceBtn->OnClicked.AddDynamic(this, &ULFPUnitMergeWidget::OnEvolutionChoiceClicked);
+					// 多目标时需要点击选择
+					if (Targets.Num() > 1)
+					{
+						ChoiceBtn->OnClicked.AddDynamic(this, &ULFPUnitMergeWidget::OnEvolutionChoiceClicked);
+					}
+				}
+
+				if (Targets.Num() == 1)
+				{
+					// 唯一目标 → 自动选中，直接可合并
+					SelectedEvolutionTarget = Targets[0];
+					bCanMerge = true;
+
+					FLFPUnitRegistryEntry TargetEntry;
+					if (CachedRegistry->FindEntry(SelectedEvolutionTarget, TargetEntry) && Text_PreviewName)
+					{
+						FString PreviewText = FString::Printf(TEXT("%s %s"),
+							*TargetEntry.DisplayName.ToString(), *MakeTierStars(TargetEntry.Tier));
+						Text_PreviewName->SetText(FText::FromString(PreviewText));
+					}
+				}
+				else
+				{
+					// 多目标 → 等待玩家选择
+					if (Text_PreviewName)
+					{
+						Text_PreviewName->SetText(FText::FromString(TEXT("请选择进化方向")));
+					}
 				}
 			}
 			else
@@ -291,35 +297,21 @@ void ULFPUnitMergeWidget::UpdatePreview()
 				{
 					Text_PreviewName->SetText(FText::FromString(TEXT("已达终阶")));
 				}
-				if (Image_PreviewIcon)
-				{
-					Image_PreviewIcon->SetRenderOpacity(0.2f);
-				}
 			}
 		}
 		else
 		{
-			// TypeID 不同
 			if (Text_PreviewName)
 			{
 				Text_PreviewName->SetText(FText::FromString(TEXT("无法合并")));
-			}
-			if (Image_PreviewIcon)
-			{
-				Image_PreviewIcon->SetRenderOpacity(0.2f);
 			}
 		}
 	}
 	else
 	{
-		// 合成框未满
 		if (Text_PreviewName)
 		{
 			Text_PreviewName->SetText(FText::FromString(TEXT("请选择两个相同单位")));
-		}
-		if (Image_PreviewIcon)
-		{
-			Image_PreviewIcon->SetRenderOpacity(0.2f);
 		}
 	}
 
@@ -331,22 +323,43 @@ void ULFPUnitMergeWidget::UpdatePreview()
 
 void ULFPUnitMergeWidget::OnEvolutionChoiceClicked()
 {
-	// 找到点击的分支按钮
 	for (const auto& Pair : EvolutionButtonToTargetMap)
 	{
 		if (Pair.Key && Pair.Key->IsHovered())
 		{
 			SelectedEvolutionTarget = Pair.Value;
 
-			// 更新预览为选中的目标
+			// 更新所有分支按钮样式：选中的三态一致，未选中的恢复 hover/press 效果
+			for (const auto& BtnPair : EvolutionButtonToTargetMap)
+			{
+				UButton* Btn = BtnPair.Key;
+				if (!Btn) continue;
+
+				FLFPUnitRegistryEntry Entry;
+				if (!CachedRegistry || !CachedRegistry->FindEntry(BtnPair.Value, Entry) || !Entry.Icon) continue;
+
+				FButtonStyle Style = Btn->GetStyle();
+				if (Btn == Pair.Key)
+				{
+					// 选中：三态一致，看起来像静态图片
+					Style.Normal = Style.Hovered;
+					Style.Pressed = Style.Hovered;
+				}
+				else
+				{
+					// 未选中：恢复正常交互样式
+					Style.Normal.SetResourceObject(Entry.Icon);
+					Style.Normal.ImageSize = Style.Hovered.ImageSize;
+					Style.Pressed.SetResourceObject(Entry.Icon);
+					Style.Pressed.ImageSize = Style.Hovered.ImageSize;
+				}
+				Btn->SetStyle(Style);
+				Btn->SetRenderOpacity(Btn == Pair.Key ? 1.f : 0.4f);
+			}
+
 			FLFPUnitRegistryEntry TargetEntry;
 			if (CachedRegistry && CachedRegistry->FindEntry(SelectedEvolutionTarget, TargetEntry))
 			{
-				if (Image_PreviewIcon && TargetEntry.Icon)
-				{
-					Image_PreviewIcon->SetBrushFromTexture(TargetEntry.Icon);
-					Image_PreviewIcon->SetRenderOpacity(1.f);
-				}
 				if (Text_PreviewName)
 				{
 					FString PreviewText = FString::Printf(TEXT("%s %s"),
@@ -355,7 +368,6 @@ void ULFPUnitMergeWidget::OnEvolutionChoiceClicked()
 				}
 			}
 
-			// 启用合并按钮
 			if (Button_Merge)
 			{
 				Button_Merge->SetIsEnabled(true);

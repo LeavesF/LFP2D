@@ -56,7 +56,7 @@ public:
 	FOnMergeWidgetClosed OnClosed;
 
 protected:
-	virtual void NativeConstruct() override;
+	virtual void NativeOnInitialized() override;
 
 private:
 	// 刷新底部单位 icon 栏
@@ -99,9 +99,9 @@ private:
 protected:
 	// ==== BindWidget 控件 ====
 
-	// 预览框
+	// 进化目标展示容器（单目标/多分支统一用此容器）
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
-	TObjectPtr<UImage> Image_PreviewIcon;
+	TObjectPtr<UHorizontalBox> Box_EvolutionChoices;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
 	TObjectPtr<UTextBlock> Text_PreviewName;
@@ -139,10 +139,6 @@ protected:
 	// 标题
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
 	TObjectPtr<UTextBlock> Text_Title;
-
-	// 分支选择容器（多个进化目标时显示）
-	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
-	TObjectPtr<UHorizontalBox> Box_EvolutionChoices;
 
 	// ==== 运行时数据 ====
 
