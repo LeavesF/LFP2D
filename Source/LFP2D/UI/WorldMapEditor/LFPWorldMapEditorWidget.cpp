@@ -45,6 +45,7 @@ void ULFPWorldMapEditorWidget::NativeConstruct()
 		NodeTypeComboBox->AddOption(TEXT("WNT_Boss"));
 		NodeTypeComboBox->AddOption(TEXT("WNT_QuestNPC"));
 		NodeTypeComboBox->AddOption(TEXT("WNT_SkillNode"));
+		NodeTypeComboBox->AddOption(TEXT("WNT_EvolutionTower"));
 		NodeTypeComboBox->SetSelectedOption(TEXT("WNT_Battle"));
 	}
 
@@ -118,6 +119,7 @@ void ULFPWorldMapEditorWidget::OnNodeTypeChanged(FString SelectedItem, ESelectIn
 		{TEXT("WNT_Boss"), ELFPWorldNodeType::WNT_Boss},
 		{TEXT("WNT_QuestNPC"), ELFPWorldNodeType::WNT_QuestNPC},
 		{TEXT("WNT_SkillNode"), ELFPWorldNodeType::WNT_SkillNode},
+		{TEXT("WNT_EvolutionTower"), ELFPWorldNodeType::WNT_EvolutionTower},
 	};
 
 	if (const ELFPWorldNodeType* Found = NodeTypeMap.Find(SelectedItem))

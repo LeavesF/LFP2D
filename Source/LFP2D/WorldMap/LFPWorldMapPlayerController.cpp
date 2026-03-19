@@ -5,6 +5,7 @@
 #include "LFP2D/WorldMap/LFPWorldMapPlayerState.h"
 #include "LFP2D/WorldMap/LFPWorldMapEditorComponent.h"
 #include "LFP2D/UI/WorldMapEditor/LFPWorldMapEditorWidget.h"
+#include "LFP2D/UI/WorldMap/LFPUnitMergeWidget.h"
 #include "LFP2D/Core/LFPGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 #include "Camera/PlayerCameraManager.h"
@@ -454,6 +455,10 @@ void ALFPWorldMapPlayerController::EnterNode(ALFPWorldMapNode* Node)
 		UE_LOG(LogTemp, Log, TEXT("技能节点 %d"), Node->NodeID);
 		break;
 
+	case ELFPWorldNodeType::WNT_EvolutionTower:
+		OpenEvolutionTower();
+		break;
+
 	default:
 		break;
 	}
@@ -540,4 +545,35 @@ void ALFPWorldMapPlayerController::OnPawnMoveCompleted()
 		PendingEnterNode = nullptr;
 		EnterNode(NodeToEnter);
 	}
+}
+
+void ALFPWorldMapPlayerController::OpenEvolutionTower()
+{
+	ULFPGameInstance* GI = Cast<ULFPGameInstance>(GetGameInstance());
+	if (!GI || !UnitMergeWidgetClass) return;
+
+	if (!UnitMergeWidget)
+	{
+		UnitMergeWidget = CreateWidget<ULFPUnitMergeWidget>(this, UnitMergeWidgetClass);
+		if (UnitMergeWidget)
+		{
+			UnitMergeWidget->OnClosed.AddDynamic(this, &ALFPWorldMapPlayerController::OnUnitMergeWidgetClosed);
+			UnitMergeWidget->AddToViewport();
+		}
+	}
+	else
+	{
+		UnitMergeWidget->SetVisibility(ESlateVisibility::Visible);
+		UnitMergeWidget->AddToViewport();
+	}
+
+	if (UnitMergeWidget)
+	{
+		UnitMergeWidget->Setup(GI, GI->UnitRegistry);
+	}
+}
+
+void ALFPWorldMapPlayerController::OnUnitMergeWidgetClosed()
+{
+	UE_LOG(LogTemp, Log, TEXT("升华塔: 升阶面板已关闭"));
 }

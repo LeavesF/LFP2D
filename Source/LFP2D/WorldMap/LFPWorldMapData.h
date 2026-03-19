@@ -14,7 +14,8 @@ enum class ELFPWorldNodeType : uint8
 	WNT_Town        UMETA(DisplayName = "城镇"),
 	WNT_Boss        UMETA(DisplayName = "Boss"),
 	WNT_QuestNPC    UMETA(DisplayName = "任务NPC"),
-	WNT_SkillNode   UMETA(DisplayName = "技能节点")
+	WNT_SkillNode   UMETA(DisplayName = "技能节点"),
+	WNT_EvolutionTower UMETA(DisplayName = "升华塔")
 };
 
 /**

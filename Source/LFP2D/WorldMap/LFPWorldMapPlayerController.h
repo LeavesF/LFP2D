@@ -9,6 +9,7 @@ class ALFPWorldMapManager;
 class ALFPWorldMapNode;
 class ULFPWorldMapEditorComponent;
 class ULFPWorldMapEditorWidget;
+class ULFPUnitMergeWidget;
 class UInputMappingContext;
 class UInputAction;
 
@@ -107,6 +108,21 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<ULFPWorldMapEditorWidget> WorldMapEditorWidget;
+
+	// ============== 升华塔（升阶面板） ==============
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<ULFPUnitMergeWidget> UnitMergeWidgetClass;
+
+	UPROPERTY()
+	TObjectPtr<ULFPUnitMergeWidget> UnitMergeWidget;
+
+	// 打开升阶面板
+	void OpenEvolutionTower();
+
+	// 升阶面板关闭回调
+	UFUNCTION()
+	void OnUnitMergeWidgetClosed();
 
 	// ============== 相机 ==============
 
