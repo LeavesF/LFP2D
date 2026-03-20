@@ -1,0 +1,202 @@
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPGameInstance.cpp:38:void ULFPGameInstance::SaveWorldMapSnapshot(const FLFPWorldMapSnapshot& Snapshot)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPGameInstance.cpp:40:	WorldMapSnapshot = Snapshot;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPGameInstance.cpp:41:	WorldMapSnapshot.bIsValid = true;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPGameInstance.cpp:80:void ULFPGameInstance::TransitionToWorldMap(const FString& WorldMapLevelName)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPGameInstance.cpp:85:	FString LevelName = WorldMapLevelName.IsEmpty() ? DefaultWorldMapLevelName : WorldMapLevelName;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPGameInstance.cpp:253:	TArray<FName> Targets = UnitRegistry->GetEvolutionTargets(UnitA.TypeID);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPUnitRegistryDataAsset.h:32:	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit Registry|Evolution")
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPUnitRegistryDataAsset.h:33:	TArray<FName> EvolutionTargets;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPUnitRegistryDataAsset.h:58:	UFUNCTION(BlueprintPure, Category = "Unit Registry|Evolution")
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPUnitRegistryDataAsset.h:59:	TArray<FName> GetEvolutionTargets(FName TypeID) const;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPUnitRegistryDataAsset.h:62:	UFUNCTION(BlueprintPure, Category = "Unit Registry|Evolution")
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPUnitRegistryDataAsset.cpp:22:TArray<FName> ULFPUnitRegistryDataAsset::GetEvolutionTargets(FName TypeID) const
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPUnitRegistryDataAsset.cpp:26:		return Found->EvolutionTargets;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPUnitRegistryDataAsset.cpp:35:		return Found->EvolutionTargets.Num() > 0;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPTurnGameMode.h:36:	bool IsWorldMapBattle() const { return CachedBattleRequest.bIsValid; }
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPTurnGameMode.cpp:146:        GI->TransitionToWorldMap(TEXT(""));
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPGameInstance.h:7:class ALFPWorldMapNode;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPGameInstance.h:99:struct FLFPWorldMapSnapshot
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPGameInstance.h:105:	FString WorldMapName;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPGameInstance.h:164:	void SaveWorldMapSnapshot(const FLFPWorldMapSnapshot& Snapshot);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPGameInstance.h:168:	const FLFPWorldMapSnapshot& GetWorldMapSnapshot() const { return WorldMapSnapshot; }
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPGameInstance.h:182:	void TransitionToWorldMap(const FString& WorldMapLevelName);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPGameInstance.h:194:	FString DefaultWorldMapLevelName = TEXT("Test_WorldMap");
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPGameInstance.h:301:	FLFPWorldMapSnapshot WorldMapSnapshot;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapData.h:5:#include "LFPWorldMapData.generated.h"
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapData.h:9:enum class ELFPWorldNodeType : uint8
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapData.h:13:	WNT_Shop        UMETA(DisplayName = "商店"),
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapData.h:14:	WNT_Town        UMETA(DisplayName = "城镇"),
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapData.h:18:	WNT_EvolutionTower UMETA(DisplayName = "升华塔")
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapData.h:44:	ELFPWorldNodeType NodeType = ELFPWorldNodeType::WNT_Battle;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:1:#include "LFP2D/UI/WorldMapEditor/LFPWorldMapEditorWidget.h"
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:2:#include "LFP2D/WorldMap/LFPWorldMapNode.h"
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:9:void ULFPWorldMapEditorWidget::NativeConstruct()
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:14:	if (PlaceNodeButton) PlaceNodeButton->OnClicked.AddDynamic(this, &ULFPWorldMapEditorWidget::OnPlaceNodeClicked);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:15:	if (RemoveNodeButton) RemoveNodeButton->OnClicked.AddDynamic(this, &ULFPWorldMapEditorWidget::OnRemoveNodeClicked);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:16:	if (MoveNodeButton) MoveNodeButton->OnClicked.AddDynamic(this, &ULFPWorldMapEditorWidget::OnMoveNodeClicked);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:17:	if (ConnectEdgeButton) ConnectEdgeButton->OnClicked.AddDynamic(this, &ULFPWorldMapEditorWidget::OnConnectEdgeClicked);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:18:	if (RemoveEdgeButton) RemoveEdgeButton->OnClicked.AddDynamic(this, &ULFPWorldMapEditorWidget::OnRemoveEdgeClicked);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:19:	if (SetParamsButton) SetParamsButton->OnClicked.AddDynamic(this, &ULFPWorldMapEditorWidget::OnSetParamsClicked);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:20:	if (EditBattleMapButton) EditBattleMapButton->OnClicked.AddDynamic(this, &ULFPWorldMapEditorWidget::OnEditBattleMapClicked);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:23:	if (NodeTypeComboBox) NodeTypeComboBox->OnSelectionChanged.AddDynamic(this, &ULFPWorldMapEditorWidget::OnNodeTypeChanged);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:24:	if (StarRatingInput) StarRatingInput->OnTextCommitted.AddDynamic(this, &ULFPWorldMapEditorWidget::OnStarRatingChanged);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:25:	if (CanEscapeCheckBox) CanEscapeCheckBox->OnCheckStateChanged.AddDynamic(this, &ULFPWorldMapEditorWidget::OnCanEscapeChanged);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:26:	if (BattleMapNameInput) BattleMapNameInput->OnTextCommitted.AddDynamic(this, &ULFPWorldMapEditorWidget::OnBattleMapNameChanged);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:27:	if (EventIDInput) EventIDInput->OnTextCommitted.AddDynamic(this, &ULFPWorldMapEditorWidget::OnEventIDChanged);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:28:	if (EdgeTurnCostInput) EdgeTurnCostInput->OnTextCommitted.AddDynamic(this, &ULFPWorldMapEditorWidget::OnEdgeTurnCostChanged);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:29:	if (BaseGoldRewardInput) BaseGoldRewardInput->OnTextCommitted.AddDynamic(this, &ULFPWorldMapEditorWidget::OnBaseGoldRewardChanged);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:30:	if (BaseFoodRewardInput) BaseFoodRewardInput->OnTextCommitted.AddDynamic(this, &ULFPWorldMapEditorWidget::OnBaseFoodRewardChanged);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:33:	if (SaveWorldMapButton) SaveWorldMapButton->OnClicked.AddDynamic(this, &ULFPWorldMapEditorWidget::OnSaveClicked);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:34:	if (LoadWorldMapButton) LoadWorldMapButton->OnClicked.AddDynamic(this, &ULFPWorldMapEditorWidget::OnLoadClicked);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:35:	if (NewWorldMapButton) NewWorldMapButton->OnClicked.AddDynamic(this, &ULFPWorldMapEditorWidget::OnNewMapClicked);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:38:	if (NodeTypeComboBox)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:40:		NodeTypeComboBox->ClearOptions();
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:41:		NodeTypeComboBox->AddOption(TEXT("WNT_Battle"));
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:42:		NodeTypeComboBox->AddOption(TEXT("WNT_Event"));
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:43:		NodeTypeComboBox->AddOption(TEXT("WNT_Shop"));
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:44:		NodeTypeComboBox->AddOption(TEXT("WNT_Town"));
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:45:		NodeTypeComboBox->AddOption(TEXT("WNT_Boss"));
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:46:		NodeTypeComboBox->AddOption(TEXT("WNT_QuestNPC"));
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:47:		NodeTypeComboBox->AddOption(TEXT("WNT_SkillNode"));
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:48:		NodeTypeComboBox->AddOption(TEXT("WNT_EvolutionTower"));
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:49:		NodeTypeComboBox->SetSelectedOption(TEXT("WNT_Battle"));
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:60:void ULFPWorldMapEditorWidget::InitializeEditor(ULFPWorldMapEditorComponent* EditorComp)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:66:		EditorComponent->OnToolChanged.AddDynamic(this, &ULFPWorldMapEditorWidget::UpdateToolIndicator);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:67:		EditorComponent->OnNodeSelected.AddDynamic(this, &ULFPWorldMapEditorWidget::UpdateNodeInfo);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:73:void ULFPWorldMapEditorWidget::OnPlaceNodeClicked()
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:75:	if (EditorComponent) EditorComponent->SetCurrentTool(ELFPWorldMapEditorTool::WMET_PlaceNode);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:78:void ULFPWorldMapEditorWidget::OnRemoveNodeClicked()
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:80:	if (EditorComponent) EditorComponent->SetCurrentTool(ELFPWorldMapEditorTool::WMET_RemoveNode);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:83:void ULFPWorldMapEditorWidget::OnMoveNodeClicked()
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:85:	if (EditorComponent) EditorComponent->SetCurrentTool(ELFPWorldMapEditorTool::WMET_MoveNode);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:88:void ULFPWorldMapEditorWidget::OnConnectEdgeClicked()
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:90:	if (EditorComponent) EditorComponent->SetCurrentTool(ELFPWorldMapEditorTool::WMET_ConnectEdge);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:93:void ULFPWorldMapEditorWidget::OnRemoveEdgeClicked()
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:95:	if (EditorComponent) EditorComponent->SetCurrentTool(ELFPWorldMapEditorTool::WMET_RemoveEdge);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:98:void ULFPWorldMapEditorWidget::OnSetParamsClicked()
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:100:	if (EditorComponent) EditorComponent->SetCurrentTool(ELFPWorldMapEditorTool::WMET_SetNodeParams);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:103:void ULFPWorldMapEditorWidget::OnEditBattleMapClicked()
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:110:void ULFPWorldMapEditorWidget::OnNodeTypeChanged(FString SelectedItem, ESelectInfo::Type SelectionType)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:114:	static const TMap<FString, ELFPWorldNodeType> NodeTypeMap = {
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:115:		{TEXT("WNT_Battle"), ELFPWorldNodeType::WNT_Battle},
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:116:		{TEXT("WNT_Event"), ELFPWorldNodeType::WNT_Event},
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:117:		{TEXT("WNT_Shop"), ELFPWorldNodeType::WNT_Shop},
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:118:		{TEXT("WNT_Town"), ELFPWorldNodeType::WNT_Town},
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:119:		{TEXT("WNT_Boss"), ELFPWorldNodeType::WNT_Boss},
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:120:		{TEXT("WNT_QuestNPC"), ELFPWorldNodeType::WNT_QuestNPC},
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:121:		{TEXT("WNT_SkillNode"), ELFPWorldNodeType::WNT_SkillNode},
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:122:		{TEXT("WNT_EvolutionTower"), ELFPWorldNodeType::WNT_EvolutionTower},
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:125:	if (const ELFPWorldNodeType* Found = NodeTypeMap.Find(SelectedItem))
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:127:		EditorComponent->SetBrushNodeType(*Found);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:131:void ULFPWorldMapEditorWidget::OnStarRatingChanged(const FText& Text, ETextCommit::Type CommitType)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:138:void ULFPWorldMapEditorWidget::OnCanEscapeChanged(bool bIsChecked)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:143:void ULFPWorldMapEditorWidget::OnBattleMapNameChanged(const FText& Text, ETextCommit::Type CommitType)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:148:void ULFPWorldMapEditorWidget::OnEventIDChanged(const FText& Text, ETextCommit::Type CommitType)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:153:void ULFPWorldMapEditorWidget::OnEdgeTurnCostChanged(const FText& Text, ETextCommit::Type CommitType)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:160:void ULFPWorldMapEditorWidget::OnBaseGoldRewardChanged(const FText& Text, ETextCommit::Type CommitType)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:167:void ULFPWorldMapEditorWidget::OnBaseFoodRewardChanged(const FText& Text, ETextCommit::Type CommitType)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:176:void ULFPWorldMapEditorWidget::OnSaveClicked()
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:178:	if (!EditorComponent || !WorldMapFileNameInput) return;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:180:	FString MapName = WorldMapFileNameInput->GetText().ToString();
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:187:	if (EditorComponent->SaveWorldMap(MapName))
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:193:void ULFPWorldMapEditorWidget::OnLoadClicked()
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:195:	if (!EditorComponent || !WorldMapFileNameInput) return;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:197:	FString MapName = WorldMapFileNameInput->GetText().ToString();
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:204:	if (EditorComponent->LoadWorldMap(MapName))
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:210:void ULFPWorldMapEditorWidget::OnNewMapClicked()
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:212:	if (EditorComponent) EditorComponent->NewWorldMap();
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:217:void ULFPWorldMapEditorWidget::UpdateToolIndicator(ELFPWorldMapEditorTool NewTool)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:221:	static const TMap<ELFPWorldMapEditorTool, FString> ToolNames = {
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:222:		{ELFPWorldMapEditorTool::WMET_None, TEXT("无")},
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:223:		{ELFPWorldMapEditorTool::WMET_PlaceNode, TEXT("放置节点")},
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:224:		{ELFPWorldMapEditorTool::WMET_RemoveNode, TEXT("删除节点")},
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:225:		{ELFPWorldMapEditorTool::WMET_MoveNode, TEXT("移动节点")},
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:226:		{ELFPWorldMapEditorTool::WMET_ConnectEdge, TEXT("连接边")},
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:227:		{ELFPWorldMapEditorTool::WMET_RemoveEdge, TEXT("删除边")},
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:228:		{ELFPWorldMapEditorTool::WMET_SetNodeParams, TEXT("设置参数")},
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:229:		{ELFPWorldMapEditorTool::WMET_EditBattleMap, TEXT("编辑战斗地图")},
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:238:void ULFPWorldMapEditorWidget::UpdateNodeInfo(ALFPWorldMapNode* Node)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:249:	FString TypeStr = UEnum::GetValueAsString(Node->NodeType);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:254:	if (Node->NodeType == ELFPWorldNodeType::WNT_Battle)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:259:	else if (Node->NodeType == ELFPWorldNodeType::WNT_Event)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEdge.cpp:1:#include "LFP2D/WorldMap/LFPWorldMapEdge.h"
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEdge.cpp:4:ALFPWorldMapEdge::ALFPWorldMapEdge()
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEdge.cpp:19:void ALFPWorldMapEdge::InitFromRowData(const FLFPWorldEdgeRow& Row)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEdge.cpp:26:FLFPWorldEdgeRow ALFPWorldMapEdge::ExportToRowData() const
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEdge.cpp:35:void ALFPWorldMapEdge::UpdateVisualPosition(FVector StartPos, FVector EndPos)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEdge.cpp:61:void ALFPWorldMapEdge::SetEdgeSprite(UPaperSprite* InSprite)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEdge.cpp:69:void ALFPWorldMapEdge::SetHighlighted(bool bHighlight)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:1:#include "LFP2D/UI/WorldMap/LFPUnitMergeWidget.h"
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:205:	SelectedEvolutionTarget = NAME_None;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:208:	if (Box_EvolutionChoices) Box_EvolutionChoices->ClearChildren();
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:209:	EvolutionChoiceButtons.Empty();
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:210:	EvolutionButtonToTargetMap.Empty();
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:217:			TArray<FName> Targets = CachedRegistry->GetEvolutionTargets(SlotA.Unit.TypeID);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:222:				SelectedEvolutionTarget = Targets[0];
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:226:				if (CachedRegistry->FindEntry(SelectedEvolutionTarget, TargetEntry))
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:260:					if (!ChoiceBtn || !Box_EvolutionChoices) continue;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:262:					EvolutionChoiceButtons.Add(ChoiceBtn);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:263:					EvolutionButtonToTargetMap.Add(ChoiceBtn, TargetID);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:265:					UHorizontalBoxSlot* BoxSlot = Box_EvolutionChoices->AddChildToHorizontalBox(ChoiceBtn);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:284:					ChoiceBtn->OnClicked.AddDynamic(this, &ULFPUnitMergeWidget::OnEvolutionChoiceClicked);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:332:void ULFPUnitMergeWidget::OnEvolutionChoiceClicked()
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:335:	for (const auto& Pair : EvolutionButtonToTargetMap)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:339:			SelectedEvolutionTarget = Pair.Value;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:343:			if (CachedRegistry && CachedRegistry->FindEntry(SelectedEvolutionTarget, TargetEntry))
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:371:	if (SelectedEvolutionTarget == NAME_None) return;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:376:		SelectedEvolutionTarget);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:380:		UE_LOG(LogTemp, Log, TEXT("升阶 Widget: 进化成功 → %s"), *SelectedEvolutionTarget.ToString());
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitReplacementWidget.cpp:1:#include "LFP2D/UI/WorldMap/LFPUnitReplacementWidget.h"
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:85:	UFUNCTION() void OnEvolutionChoiceClicked();
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:145:	TObjectPtr<UHorizontalBox> Box_EvolutionChoices;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:160:	FName SelectedEvolutionTarget;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:168:	TArray<TObjectPtr<UButton>> EvolutionChoiceButtons;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:179:	TMap<UButton*, FName> EvolutionButtonToTargetMap;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:5:#include "LFP2D/WorldMap/LFPWorldMapEditorComponent.h"
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:6:#include "LFPWorldMapEditorWidget.generated.h"
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:19:class LFP2D_API ULFPWorldMapEditorWidget : public UUserWidget
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:26:	void InitializeEditor(ULFPWorldMapEditorComponent* EditorComp);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:42:	UFUNCTION() void OnNodeTypeChanged(FString SelectedItem, ESelectInfo::Type SelectionType);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:57:	UFUNCTION() void UpdateToolIndicator(ELFPWorldMapEditorTool NewTool);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:60:	UFUNCTION() void UpdateNodeInfo(ALFPWorldMapNode* Node);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:89:	TObjectPtr<UComboBoxString> NodeTypeComboBox;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:114:	TObjectPtr<UEditableTextBox> WorldMapFileNameInput;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:117:	TObjectPtr<UButton> SaveWorldMapButton;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:120:	TObjectPtr<UButton> LoadWorldMapButton;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:123:	TObjectPtr<UButton> NewWorldMapButton;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:134:	TObjectPtr<ULFPWorldMapEditorComponent> EditorComponent;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEdge.h:5:#include "LFP2D/WorldMap/LFPWorldMapData.h"
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEdge.h:6:#include "LFPWorldMapEdge.generated.h"
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEdge.h:12:class LFP2D_API ALFPWorldMapEdge : public AActor
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEdge.h:17:	ALFPWorldMapEdge();
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:1:#include "LFP2D/WorldMap/LFPWorldMapEditorComponent.h"
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:2:#include "LFP2D/WorldMap/LFPWorldMapManager.h"
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:3:#include "LFP2D/WorldMap/LFPWorldMapNode.h"
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:4:#include "LFP2D/WorldMap/LFPWorldMapEdge.h"
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:8:ULFPWorldMapEditorComponent::ULFPWorldMapEditorComponent()
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:13:void ULFPWorldMapEditorComponent::BeginPlay()
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:18:ALFPWorldMapManager* ULFPWorldMapEditorComponent::GetWorldMapManager() const
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:20:	if (!CachedWorldMapManager)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:23:		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALFPWorldMapManager::StaticClass(), Managers);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:26:			CachedWorldMapManager = Cast<ALFPWorldMapManager>(Managers[0]);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:29:	return CachedWorldMapManager;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:32:void ULFPWorldMapEditorComponent::ToggleEditorMode()
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:36:	ALFPWorldMapManager* Manager = GetWorldMapManager();
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:45:				if (ALFPWorldMapNode* Node = Pair.Value)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:55:				if (ALFPWorldMapEdge* Edge = Pair.Value)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:65:		CurrentTool = ELFPWorldMapEditorTool::WMET_None;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:80:void ULFPWorldMapEditorComponent::SetCurrentTool(ELFPWorldMapEditorTool Tool)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:90:ALFPWorldMapNode* ULFPWorldMapEditorComponent::PlaceNodeAt(FVector2D WorldPos)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:94:	ALFPWorldMapManager* Manager = GetWorldMapManager();
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:98:	ALFPWorldMapNode* NewNode = Manager->SpawnNode(NewID, WorldPos, BrushNodeType);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:120:void ULFPWorldMapEditorComponent::SelectNode(ALFPWorldMapNode* Node)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:139:void ULFPWorldMapEditorComponent::ApplyParamsToSelectedNode()
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:143:	SelectedNode->NodeType = BrushNodeType;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:152:	ALFPWorldMapManager* Manager = GetWorldMapManager();
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:155:		if (auto* VisualData = Manager->GetNodeVisualForType(BrushNodeType))
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:164:void ULFPWorldMapEditorComponent::HandleEdgeConnection(ALFPWorldMapNode* Node)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:168:	ALFPWorldMapManager* Manager = GetWorldMapManager();
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:194:void ULFPWorldMapEditorComponent::HandleEdgeRemoval(ALFPWorldMapNode* Node)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:198:	ALFPWorldMapManager* Manager = GetWorldMapManager();
+
+[Showing results with pagination = limit: 200, offset: 0]

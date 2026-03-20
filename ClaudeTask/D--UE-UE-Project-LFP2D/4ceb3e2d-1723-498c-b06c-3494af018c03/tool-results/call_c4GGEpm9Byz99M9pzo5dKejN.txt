@@ -1,0 +1,202 @@
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\LFP2D.vcxproj:557:[Omitted long matching line]
+d:\UE\UE_Project\LFP2D\ClaudeTask\memory\architecture.md:86:- **城镇**：安全区，可反复进入。买卖/休息/接任务。有传送阵（部分需激活）用于城镇间快速穿梭
+d:\UE\UE_Project\LFP2D\ClaudeTask\memory\architecture.md:94:- 城镇节点：商店配置、传送阵状态
+d:\UE\UE_Project\LFP2D\Saved\Config\WindowsEditor\EditorPerProjectUserSettings.ini:1410:PortalRpc.TimeStamp=2026.02.16-10.30.44
+d:\UE\UE_Project\LFP2D\Saved\Config\WindowsEditor\EditorPerProjectUserSettings.ini:1411:PortalRpc.LastCompileMethod=External
+d:\UE\UE_Project\LFP2D\Saved\Config\WindowsEditor\EditorPerProjectUserSettings.ini:1412:PortalServices.TimeStamp=2026.02.16-10.30.44
+d:\UE\UE_Project\LFP2D\Saved\Config\WindowsEditor\EditorPerProjectUserSettings.ini:1413:PortalServices.LastCompileMethod=External
+d:\UE\UE_Project\LFP2D\Saved\Config\WindowsEditor\EditorPerProjectUserSettings.ini:3777:TimeWarpDisplay=Both
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\ClaudeTask\memory\architecture.md:86:- **城镇**：安全区，可反复进入。买卖/休息/接任务。有传送阵（部分需激活）用于城镇间快速穿梭
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\ClaudeTask\memory\architecture.md:94:- 城镇节点：商店配置、传送阵状态
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:4267:    <Filter Include="Plugins\Animation\AnimationWarping">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:4270:    <None Include="..\..\..\..\UE_5.5\Engine\Plugins\Animation\AnimationWarping\AnimationWarping.uplugin">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:4271:      <Filter>Plugins\Animation\AnimationWarping</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:4657:    <Filter Include="Plugins\Animation\MotionWarping">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:4660:    <None Include="..\..\..\..\UE_5.5\Engine\Plugins\Animation\MotionWarping\MotionWarping.uplugin">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:4661:      <Filter>Plugins\Animation\MotionWarping</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:9619:    <None Include="..\..\..\..\UE_5.5\Engine\Plugins\Experimental\TextureGraph\Shaders\Expressions\Expression_Warp.usf">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:11824:    <Filter Include="Plugins\Portal">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:11827:    <Filter Include="Plugins\Portal\LauncherChunkInstaller">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:11830:    <None Include="..\..\..\..\UE_5.5\Engine\Plugins\Portal\LauncherChunkInstaller\LauncherChunkInstaller.uplugin">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:11831:      <Filter>Plugins\Portal\LauncherChunkInstaller</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:15289:    <Filter Include="Plugins\Runtime\WarpUtils">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:15292:    <None Include="..\..\..\..\UE_5.5\Engine\Plugins\Runtime\WarpUtils\WarpUtils.uplugin">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:15293:      <Filter>Plugins\Runtime\WarpUtils</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:15295:    <Filter Include="Plugins\Runtime\WarpUtils\Resources">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:15298:    <None Include="..\..\..\..\UE_5.5\Engine\Plugins\Runtime\WarpUtils\Resources\Icon128.png">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:15299:      <Filter>Plugins\Runtime\WarpUtils\Resources</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:15301:    <Filter Include="Plugins\Runtime\WarpUtils\Shaders">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:15304:    <Filter Include="Plugins\Runtime\WarpUtils\Shaders\Private">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:15307:    <None Include="..\..\..\..\UE_5.5\Engine\Plugins\Runtime\WarpUtils\Shaders\Private\PFMExporterShaders.usf">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:15308:      <Filter>Plugins\Runtime\WarpUtils\Shaders\Private</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:38452:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Editor\MovieSceneTools\Private\MovieSceneTimeWarpVariantCustomization.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:38455:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Editor\MovieSceneTools\Private\MovieSceneTimeWarpVariantCustomization.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:38596:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Editor\MovieSceneTools\Private\Channels\TimeWarpChannelCurveModel.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:38737:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Editor\MovieSceneTools\Private\MVVM\ViewModels\TimeWarpChannelModel.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:38740:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Editor\MovieSceneTools\Private\MVVM\ViewModels\TimeWarpChannelModel.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:38950:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Editor\MovieSceneTools\Private\TrackEditors\TimeWarpTrackEditor.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:39199:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Editor\MovieSceneTools\Public\Channels\TimeWarpChannelCurveModel.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:39283:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Editor\MovieSceneTools\Public\TrackEditors\TimeWarpTrackEditor.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:43516:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Editor\Sequencer\Private\Filters\Filters\SequencerTrackFilter_TimeWarp.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:43519:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Editor\Sequencer\Private\Filters\Filters\SequencerTrackFilter_TimeWarp.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:43885:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Editor\Sequencer\Private\MVVM\ViewModels\OutlinerIndicators\TimeWarpOutlinerIndicatorBuilder.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:43888:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Editor\Sequencer\Private\MVVM\ViewModels\OutlinerIndicators\TimeWarpOutlinerIndicatorBuilder.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:44026:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Editor\Sequencer\Private\Widgets\OutlinerIndicators\STimeWarpIndicatorWidget.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:44029:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Editor\Sequencer\Private\Widgets\OutlinerIndicators\STimeWarpIndicatorWidget.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:50905:    <Filter Include="Source\Editor\VREditor\Private\Teleporter">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:50908:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Editor\VREditor\Private\Teleporter\VREditorAutoScaler.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:50909:      <Filter>Source\Editor\VREditor\Private\Teleporter</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:50911:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Editor\VREditor\Private\Teleporter\VREditorAutoScaler.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:50912:      <Filter>Source\Editor\VREditor\Private\Teleporter</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:50914:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Editor\VREditor\Private\Teleporter\VREditorTeleporter.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:50915:      <Filter>Source\Editor\VREditor\Private\Teleporter</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:50989:    <Filter Include="Source\Editor\VREditor\Public\Teleporter">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:50992:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Editor\VREditor\Public\Teleporter\VREditorTeleporter.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:50993:      <Filter>Source\Editor\VREditor\Public\Teleporter</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:68482:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Engine\Classes\Components\LightmassPortalComponent.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:69784:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Engine\Classes\Lightmass\LightmassPortal.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:73240:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Engine\Private\Components\PortalComponent.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:91876:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\MovieScene\Private\Channels\MovieSceneTimeWarpChannel.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:92125:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\MovieScene\Private\Evaluation\MovieSceneTimeWarping.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:92239:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\MovieScene\Private\Sections\MovieSceneTimeWarpSection.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:92296:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\MovieScene\Private\Tracks\MovieSceneTimeWarpTrack.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:92308:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\MovieScene\Private\Variants\MovieSceneTimeWarpCurve.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:92311:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\MovieScene\Private\Variants\MovieSceneTimeWarpGetter.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:92314:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\MovieScene\Private\Variants\MovieSceneTimeWarpVariant.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:92317:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\MovieScene\Private\Variants\MovieSceneTimeWarpVariantPayloads.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:92569:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\MovieScene\Public\Channels\MovieSceneTimeWarpChannel.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:92941:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\MovieScene\Public\Evaluation\MovieSceneTimeWarping.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:93088:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\MovieScene\Public\Sections\MovieSceneTimeWarpSection.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:93106:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\MovieScene\Public\Tracks\MovieSceneTimeWarpTrack.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:93121:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\MovieScene\Public\Variants\MovieSceneTimeWarpCurve.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:93124:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\MovieScene\Public\Variants\MovieSceneTimeWarpGetter.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:93127:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\MovieScene\Public\Variants\MovieSceneTimeWarpVariant.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:93130:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\MovieScene\Public\Variants\MovieSceneTimeWarpVariantPayloads.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98896:    <Filter Include="Source\Runtime\Portal">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98899:    <Filter Include="Source\Runtime\Portal\LauncherCheck">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98902:    <None Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Portal\LauncherCheck\LauncherCheck.Build.cs">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98903:      <Filter>Source\Runtime\Portal\LauncherCheck</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98905:    <Filter Include="Source\Runtime\Portal\LauncherCheck\Private">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98908:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Portal\LauncherCheck\Private\LauncherCheckModule.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98909:      <Filter>Source\Runtime\Portal\LauncherCheck\Private</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98911:    <Filter Include="Source\Runtime\Portal\LauncherCheck\Public">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98914:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Portal\LauncherCheck\Public\ILauncherCheckModule.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98915:      <Filter>Source\Runtime\Portal\LauncherCheck\Public</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98917:    <Filter Include="Source\Runtime\Portal\LauncherPlatform">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98920:    <None Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Portal\LauncherPlatform\LauncherPlatform.Build.cs">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98921:      <Filter>Source\Runtime\Portal\LauncherPlatform</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98923:    <Filter Include="Source\Runtime\Portal\LauncherPlatform\Private">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98926:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Portal\LauncherPlatform\Private\ILauncherPlatform.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98927:      <Filter>Source\Runtime\Portal\LauncherPlatform\Private</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98929:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Portal\LauncherPlatform\Private\LauncherPlatformModule.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98930:      <Filter>Source\Runtime\Portal\LauncherPlatform\Private</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98932:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Portal\LauncherPlatform\Private\LauncherPlatformPrivatePCH.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98933:      <Filter>Source\Runtime\Portal\LauncherPlatform\Private</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98935:    <Filter Include="Source\Runtime\Portal\LauncherPlatform\Private\Linux">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98938:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Portal\LauncherPlatform\Private\Linux\LauncherPlatformLinux.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98939:      <Filter>Source\Runtime\Portal\LauncherPlatform\Private\Linux</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98941:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Portal\LauncherPlatform\Private\Linux\LauncherPlatformLinux.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98942:      <Filter>Source\Runtime\Portal\LauncherPlatform\Private\Linux</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98944:    <Filter Include="Source\Runtime\Portal\LauncherPlatform\Private\Mac">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98947:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Portal\LauncherPlatform\Private\Mac\LauncherPlatformMac.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98948:      <Filter>Source\Runtime\Portal\LauncherPlatform\Private\Mac</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98950:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Portal\LauncherPlatform\Private\Mac\LauncherPlatformMac.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98951:      <Filter>Source\Runtime\Portal\LauncherPlatform\Private\Mac</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98953:    <Filter Include="Source\Runtime\Portal\LauncherPlatform\Private\Windows">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98956:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Portal\LauncherPlatform\Private\Windows\LauncherPlatformWindows.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98957:      <Filter>Source\Runtime\Portal\LauncherPlatform\Private\Windows</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98959:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Portal\LauncherPlatform\Private\Windows\LauncherPlatformWindows.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98960:      <Filter>Source\Runtime\Portal\LauncherPlatform\Private\Windows</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98962:    <Filter Include="Source\Runtime\Portal\LauncherPlatform\Public">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98965:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Portal\LauncherPlatform\Public\ILauncherPlatform.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98966:      <Filter>Source\Runtime\Portal\LauncherPlatform\Public</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98968:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Portal\LauncherPlatform\Public\LauncherPlatformModule.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98969:      <Filter>Source\Runtime\Portal\LauncherPlatform\Public</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98971:    <Filter Include="Source\Runtime\Portal\Messages">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98974:    <None Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Portal\Messages\PortalMessages.Build.cs">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98975:      <Filter>Source\Runtime\Portal\Messages</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98977:    <Filter Include="Source\Runtime\Portal\Messages\Private">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98980:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Portal\Messages\Private\PortalMessagesModule.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98981:      <Filter>Source\Runtime\Portal\Messages\Private</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98983:    <Filter Include="Source\Runtime\Portal\Messages\Public">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98986:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Portal\Messages\Public\PortalApplicationWindowMessages.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98987:      <Filter>Source\Runtime\Portal\Messages\Public</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98989:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Portal\Messages\Public\PortalPackageInstallerMessages.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98990:      <Filter>Source\Runtime\Portal\Messages\Public</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98992:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Portal\Messages\Public\PortalUserLoginMessages.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98993:      <Filter>Source\Runtime\Portal\Messages\Public</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98995:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Portal\Messages\Public\PortalUserMessages.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98996:      <Filter>Source\Runtime\Portal\Messages\Public</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:98998:    <Filter Include="Source\Runtime\Portal\Proxies">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99001:    <None Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Portal\Proxies\PortalProxies.Build.cs">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99002:      <Filter>Source\Runtime\Portal\Proxies</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99004:    <Filter Include="Source\Runtime\Portal\Proxies\Private">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99007:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Portal\Proxies\Private\PortalProxiesModule.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99008:      <Filter>Source\Runtime\Portal\Proxies\Private</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99010:    <Filter Include="Source\Runtime\Portal\Proxies\Private\Account">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99013:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Portal\Proxies\Private\Account\PortalUserLoginProxy.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99014:      <Filter>Source\Runtime\Portal\Proxies\Private\Account</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99016:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Portal\Proxies\Private\Account\PortalUserLoginProxy.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99017:      <Filter>Source\Runtime\Portal\Proxies\Private\Account</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99019:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Portal\Proxies\Private\Account\PortalUserProxy.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99020:      <Filter>Source\Runtime\Portal\Proxies\Private\Account</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99022:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Portal\Proxies\Private\Account\PortalUserProxy.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99023:      <Filter>Source\Runtime\Portal\Proxies\Private\Account</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99025:    <Filter Include="Source\Runtime\Portal\Proxies\Private\Application">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99028:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Portal\Proxies\Private\Application\PortalApplicationWindowProxy.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99029:      <Filter>Source\Runtime\Portal\Proxies\Private\Application</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99031:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Portal\Proxies\Private\Application\PortalApplicationWindowProxy.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99032:      <Filter>Source\Runtime\Portal\Proxies\Private\Application</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99034:    <Filter Include="Source\Runtime\Portal\Proxies\Private\Package">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99037:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Portal\Proxies\Private\Package\PortalPackageInstallerProxy.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99038:      <Filter>Source\Runtime\Portal\Proxies\Private\Package</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99040:    <Filter Include="Source\Runtime\Portal\Rpc">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99043:    <None Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Portal\Rpc\PortalRpc.Build.cs">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99044:      <Filter>Source\Runtime\Portal\Rpc</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99046:    <Filter Include="Source\Runtime\Portal\Rpc\Private">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99049:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Portal\Rpc\Private\PortalRpcDefines.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99050:      <Filter>Source\Runtime\Portal\Rpc\Private</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99052:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Portal\Rpc\Private\PortalRpcLocator.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99053:      <Filter>Source\Runtime\Portal\Rpc\Private</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99055:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Portal\Rpc\Private\PortalRpcLocator.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99056:      <Filter>Source\Runtime\Portal\Rpc\Private</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99058:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Portal\Rpc\Private\PortalRpcMessages.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99059:      <Filter>Source\Runtime\Portal\Rpc\Private</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99061:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Portal\Rpc\Private\PortalRpcModule.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99062:      <Filter>Source\Runtime\Portal\Rpc\Private</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99064:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Portal\Rpc\Private\PortalRpcResponder.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99065:      <Filter>Source\Runtime\Portal\Rpc\Private</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99067:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Portal\Rpc\Private\PortalRpcResponder.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99068:      <Filter>Source\Runtime\Portal\Rpc\Private</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99070:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Portal\Rpc\Private\PortalRpcServer.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99071:      <Filter>Source\Runtime\Portal\Rpc\Private</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99073:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Portal\Rpc\Private\PortalRpcServer.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99074:      <Filter>Source\Runtime\Portal\Rpc\Private</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99076:    <Filter Include="Source\Runtime\Portal\Rpc\Public">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99079:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Portal\Rpc\Public\IPortalRpcLocator.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99080:      <Filter>Source\Runtime\Portal\Rpc\Public</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99082:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Portal\Rpc\Public\IPortalRpcModule.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99083:      <Filter>Source\Runtime\Portal\Rpc\Public</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99085:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Portal\Rpc\Public\IPortalRpcResponder.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99086:      <Filter>Source\Runtime\Portal\Rpc\Public</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99088:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Portal\Rpc\Public\IPortalRpcServer.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99089:      <Filter>Source\Runtime\Portal\Rpc\Public</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99091:    <Filter Include="Source\Runtime\Portal\Services">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99094:    <None Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Portal\Services\PortalServices.Build.cs">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99095:      <Filter>Source\Runtime\Portal\Services</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99097:    <Filter Include="Source\Runtime\Portal\Services\Private">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99100:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Portal\Services\Private\PortalServiceLocator.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99101:      <Filter>Source\Runtime\Portal\Services\Private</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99103:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Portal\Services\Private\PortalServiceLocator.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99104:      <Filter>Source\Runtime\Portal\Services\Private</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99106:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Portal\Services\Private\PortalServicesModule.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99107:      <Filter>Source\Runtime\Portal\Services\Private</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99109:    <Filter Include="Source\Runtime\Portal\Services\Public">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99112:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Portal\Services\Public\IPortalService.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99113:      <Filter>Source\Runtime\Portal\Services\Public</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99115:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Portal\Services\Public\IPortalServiceLocator.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99116:      <Filter>Source\Runtime\Portal\Services\Public</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99118:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Portal\Services\Public\IPortalServiceProvider.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:99119:      <Filter>Source\Runtime\Portal\Services\Public</Filter>
+
+[Showing results with pagination = limit: 200, offset: 0]

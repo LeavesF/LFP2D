@@ -1,0 +1,194 @@
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerState.cpp:69:		if (!Neighbor->PrerequisiteNodeIDs.IsEmpty())
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerState.cpp:72:			Neighbor->PrerequisiteNodeIDs.ParseIntoArray(PrereqIDs, TEXT(";"), true);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:43:	UFUNCTION() void OnStarRatingChanged(const FText& Text, ETextCommit::Type CommitType);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:45:	UFUNCTION() void OnBattleMapNameChanged(const FText& Text, ETextCommit::Type CommitType);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:46:	UFUNCTION() void OnEventIDChanged(const FText& Text, ETextCommit::Type CommitType);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:48:	UFUNCTION() void OnBaseGoldRewardChanged(const FText& Text, ETextCommit::Type CommitType);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:49:	UFUNCTION() void OnBaseFoodRewardChanged(const FText& Text, ETextCommit::Type CommitType);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:92:	TObjectPtr<UEditableTextBox> StarRatingInput;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:98:	TObjectPtr<UEditableTextBox> BattleMapNameInput;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:101:	TObjectPtr<UEditableTextBox> EventIDInput;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:107:	TObjectPtr<UEditableTextBox> BaseGoldRewardInput;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:110:	TObjectPtr<UEditableTextBox> BaseFoodRewardInput;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:130:	TObjectPtr<UTextBlock> SelectedNodeInfoText;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.h:166:	TObjectPtr<ALFPWorldMapNode> SelectedNode;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapGameMode.cpp:43:		WorldMapManager->LoadWorldMap(Snapshot.WorldMapName);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapGameMode.cpp:71:		WorldMapManager->LoadWorldMap(DefaultWorldMapName);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:165:				WorldMapEditorComponent->RemoveSelectedNode();
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:174:			else if (WorldMapEditorComponent->GetSelectedNode())
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:183:					WorldMapEditorComponent->MoveSelectedNodeTo(FVector2D(HitPoint.X, HitPoint.Y));
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:206:				WorldMapEditorComponent->ApplyParamsToSelectedNode();
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:256:	if (SelectedNode)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:258:		SelectedNode->SetHighlighted(false);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:259:		SelectedNode = nullptr;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:349:	if (SelectedNode)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:351:		SelectedNode->SetHighlighted(false);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:354:	SelectedNode = Node;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:356:	if (SelectedNode)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:358:		SelectedNode->SetHighlighted(true);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:435:		UE_LOG(LogTemp, Log, TEXT("事件节点 %d: EventID=%s"), Node->NodeID, *Node->EventID);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:502:	Request.BattleMapName = BattleNode->BattleMapName;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:503:	Request.StarRating = BattleNode->StarRating;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:504:	Request.bCanEscape = BattleNode->bCanEscape;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:505:	Request.BaseGoldReward = BattleNode->BaseGoldReward;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:506:	Request.BaseFoodReward = BattleNode->BaseFoodReward;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEdge.h:32:	void InitFromRowData(const FLFPWorldEdgeRow& Row);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEdge.h:33:	FLFPWorldEdgeRow ExportToRowData() const;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.h:28:DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWorldEditorNodeSelected, ALFPWorldMapNode*, SelectedNode);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.h:59:	void SetBrushNodeType(ELFPWorldNodeType InType) { BrushNodeType = InType; }
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.h:62:	void SetBrushStarRating(int32 InRating) { BrushStarRating = FMath::Clamp(InRating, 1, 5); }
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.h:68:	void SetBrushBattleMapName(const FString& InName) { BrushBattleMapName = InName; }
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.h:71:	void SetBrushEventID(const FString& InID) { BrushEventID = InID; }
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.h:77:	void SetBrushBaseGoldReward(int32 InGold) { BrushBaseGoldReward = FMath::Max(0, InGold); }
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.h:80:	void SetBrushBaseFoodReward(int32 InFood) { BrushBaseFoodReward = FMath::Max(0, InFood); }
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.h:94:	void ApplyParamsToSelectedNode();
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.h:102:	void MoveSelectedNodeTo(FVector2D NewPos);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.h:106:	void RemoveSelectedNode();
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.h:122:	bool SaveWorldMap(const FString& MapName);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.h:125:	bool LoadWorldMap(const FString& MapName);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.h:147:	ALFPWorldMapNode* GetSelectedNode() const { return SelectedNode; }
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.h:170:	int32 BrushStarRating = 1;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.h:176:	FString BrushBattleMapName;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.h:179:	FString BrushEventID;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.h:186:	int32 BrushBaseGoldReward = 0;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.h:190:	int32 BrushBaseFoodReward = 0;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.h:194:	TObjectPtr<ALFPWorldMapNode> SelectedNode;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEdge.cpp:19:void ALFPWorldMapEdge::InitFromRowData(const FLFPWorldEdgeRow& Row)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEdge.cpp:26:FLFPWorldEdgeRow ALFPWorldMapEdge::ExportToRowData() const
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPTurnGameMode.cpp:23:                *CachedBattleRequest.BattleMapName,
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPTurnGameMode.cpp:24:                CachedBattleRequest.StarRating);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPTurnGameMode.cpp:43:    // 如果有 BattleMapName，从 CSV 加载地图
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPTurnGameMode.cpp:44:    if (GridManager && !CachedBattleRequest.BattleMapName.IsEmpty())
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPTurnGameMode.cpp:46:        FString CSVPath = FPaths::ProjectSavedDir() / TEXT("Maps") / CachedBattleRequest.BattleMapName + TEXT(".csv");
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPTurnGameMode.cpp:49:            UE_LOG(LogTemp, Log, TEXT("战斗模式: 从 CSV 加载地图 %s"), *CachedBattleRequest.BattleMapName);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPTurnGameMode.cpp:84:        Result.GoldReward = CachedBattleRequest.BaseGoldReward + AccumulatedDropGold;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPTurnGameMode.cpp:85:        Result.FoodReward = CachedBattleRequest.BaseFoodReward + AccumulatedDropFood;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPGameInstance.cpp:11:		Request.SourceNodeID, *Request.BattleMapName, Request.StarRating);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapNode.h:33:	FString BattleMapName;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapNode.h:36:	int32 StarRating = 1;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapNode.h:39:	bool bCanEscape = true;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapNode.h:43:	int32 BaseGoldReward = 0;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapNode.h:47:	int32 BaseFoodReward = 0;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapNode.h:52:	FString EventID;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapNode.h:57:	FString PrerequisiteNodeIDs;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapNode.h:72:	void InitFromRowData(const FLFPWorldNodeRow& Row);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapNode.h:75:	FLFPWorldNodeRow ExportToRowData() const;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:24:	if (StarRatingInput) StarRatingInput->OnTextCommitted.AddDynamic(this, &ULFPWorldMapEditorWidget::OnStarRatingChanged);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:26:	if (BattleMapNameInput) BattleMapNameInput->OnTextCommitted.AddDynamic(this, &ULFPWorldMapEditorWidget::OnBattleMapNameChanged);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:27:	if (EventIDInput) EventIDInput->OnTextCommitted.AddDynamic(this, &ULFPWorldMapEditorWidget::OnEventIDChanged);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:29:	if (BaseGoldRewardInput) BaseGoldRewardInput->OnTextCommitted.AddDynamic(this, &ULFPWorldMapEditorWidget::OnBaseGoldRewardChanged);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:30:	if (BaseFoodRewardInput) BaseFoodRewardInput->OnTextCommitted.AddDynamic(this, &ULFPWorldMapEditorWidget::OnBaseFoodRewardChanged);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:53:	if (StarRatingInput) StarRatingInput->SetText(FText::FromString(TEXT("1")));
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:56:	if (BaseGoldRewardInput) BaseGoldRewardInput->SetText(FText::FromString(TEXT("0")));
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:57:	if (BaseFoodRewardInput) BaseFoodRewardInput->SetText(FText::FromString(TEXT("0")));
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:127:		EditorComponent->SetBrushNodeType(*Found);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:131:void ULFPWorldMapEditorWidget::OnStarRatingChanged(const FText& Text, ETextCommit::Type CommitType)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:135:	EditorComponent->SetBrushStarRating(Rating);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:143:void ULFPWorldMapEditorWidget::OnBattleMapNameChanged(const FText& Text, ETextCommit::Type CommitType)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:145:	if (EditorComponent) EditorComponent->SetBrushBattleMapName(Text.ToString());
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:148:void ULFPWorldMapEditorWidget::OnEventIDChanged(const FText& Text, ETextCommit::Type CommitType)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:150:	if (EditorComponent) EditorComponent->SetBrushEventID(Text.ToString());
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:160:void ULFPWorldMapEditorWidget::OnBaseGoldRewardChanged(const FText& Text, ETextCommit::Type CommitType)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:164:	EditorComponent->SetBrushBaseGoldReward(Gold);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:167:void ULFPWorldMapEditorWidget::OnBaseFoodRewardChanged(const FText& Text, ETextCommit::Type CommitType)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:171:	EditorComponent->SetBrushBaseFoodReward(Food);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:187:	if (EditorComponent->SaveWorldMap(MapName))
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:204:	if (EditorComponent->LoadWorldMap(MapName))
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:240:	if (!SelectedNodeInfoText) return;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:244:		SelectedNodeInfoText->SetText(FText::FromString(TEXT("未选中")));
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:257:			Node->StarRating, *Node->BattleMapName, Node->BaseGoldReward, Node->BaseFoodReward);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:261:		Info += FString::Printf(TEXT(" | 事件: %s"), *Node->EventID);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:264:	SelectedNodeInfoText->SetText(FText::FromString(Info));
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapData.h:50:	FString BattleMapName;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapData.h:54:	int32 StarRating = 1;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapData.h:58:	bool bCanEscape = true;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapData.h:62:	int32 BaseGoldReward = 0;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapData.h:66:	int32 BaseFoodReward = 0;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapData.h:72:	FString EventID;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapData.h:78:	FString PrerequisiteNodeIDs;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:66:		SelectedNode = nullptr;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:107:		NewNode->BattleMapName = BrushBattleMapName;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:108:		NewNode->StarRating = BrushStarRating;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:109:		NewNode->bCanEscape = BrushCanEscape;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:110:		NewNode->EventID = BrushEventID;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:111:		NewNode->BaseGoldReward = BrushBaseGoldReward;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:112:		NewNode->BaseFoodReward = BrushBaseFoodReward;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:123:	if (SelectedNode)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:125:		SelectedNode->SetHighlighted(false);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:128:	SelectedNode = Node;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:131:	if (SelectedNode)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:133:		SelectedNode->SetHighlighted(true);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:136:	OnNodeSelected.Broadcast(SelectedNode);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:139:void ULFPWorldMapEditorComponent::ApplyParamsToSelectedNode()
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:141:	if (!SelectedNode) return;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:143:	SelectedNode->NodeType = BrushNodeType;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:144:	SelectedNode->BattleMapName = BrushBattleMapName;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:145:	SelectedNode->StarRating = BrushStarRating;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:146:	SelectedNode->bCanEscape = BrushCanEscape;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:147:	SelectedNode->EventID = BrushEventID;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:148:	SelectedNode->BaseGoldReward = BrushBaseGoldReward;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:149:	SelectedNode->BaseFoodReward = BrushBaseFoodReward;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:157:			SelectedNode->SetNodeVisualData(VisualData);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:161:	UE_LOG(LogTemp, Log, TEXT("应用参数到节点 ID %d"), SelectedNode->NodeID);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:230:void ULFPWorldMapEditorComponent::MoveSelectedNodeTo(FVector2D NewPos)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:232:	if (!SelectedNode) return;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:234:	SelectedNode->SetPosition2D(NewPos);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:240:	TArray<ALFPWorldMapNode*> Neighbors = Manager->GetNeighbors(SelectedNode->NodeID);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:243:		if (ALFPWorldMapEdge* Edge = Manager->GetEdge(SelectedNode->NodeID, Neighbor->NodeID))
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:245:			Edge->UpdateVisualPosition(SelectedNode->GetActorLocation(), Neighbor->GetActorLocation());
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:249:	UE_LOG(LogTemp, Log, TEXT("移动节点 %d 到 (%.1f, %.1f)"), SelectedNode->NodeID, NewPos.X, NewPos.Y);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:252:void ULFPWorldMapEditorComponent::RemoveSelectedNode()
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:254:	if (!SelectedNode) return;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:259:	int32 NodeID = SelectedNode->NodeID;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:261:	SelectedNode = nullptr;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:268:	if (!SelectedNode)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:274:	if (SelectedNode->NodeType != ELFPWorldNodeType::WNT_Battle)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:280:	if (SelectedNode->BattleMapName.IsEmpty())
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:295:	bool bLoaded = BattleEditor->LoadMap(SelectedNode->BattleMapName);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:309:	UE_LOG(LogTemp, Log, TEXT("进入战斗地图编辑: %s"), *SelectedNode->BattleMapName);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:317:	if (BattleEditor && SelectedNode)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:320:		BattleEditor->SaveMap(SelectedNode->BattleMapName);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:333:bool ULFPWorldMapEditorComponent::SaveWorldMap(const FString& MapName)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:338:	return Manager->SaveWorldMap(MapName);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:341:bool ULFPWorldMapEditorComponent::LoadWorldMap(const FString& MapName)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:346:	return Manager->LoadWorldMap(MapName);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapNode.cpp:27:void ALFPWorldMapNode::InitFromRowData(const FLFPWorldNodeRow& Row)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapNode.cpp:31:	BattleMapName = Row.BattleMapName;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapNode.cpp:32:	StarRating = Row.StarRating;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapNode.cpp:33:	bCanEscape = Row.bCanEscape;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapNode.cpp:34:	BaseGoldReward = Row.BaseGoldReward;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapNode.cpp:35:	BaseFoodReward = Row.BaseFoodReward;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapNode.cpp:36:	EventID = Row.EventID;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapNode.cpp:37:	PrerequisiteNodeIDs = Row.PrerequisiteNodeIDs;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapNode.cpp:42:FLFPWorldNodeRow ALFPWorldMapNode::ExportToRowData() const
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapNode.cpp:50:	Row.BattleMapName = BattleMapName;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapNode.cpp:51:	Row.StarRating = StarRating;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapNode.cpp:52:	Row.bCanEscape = bCanEscape;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapNode.cpp:53:	Row.BaseGoldReward = BaseGoldReward;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapNode.cpp:54:	Row.BaseFoodReward = BaseFoodReward;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapNode.cpp:55:	Row.EventID = EventID;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapNode.cpp:56:	Row.PrerequisiteNodeIDs = PrerequisiteNodeIDs;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPGameInstance.h:39:	FString BattleMapName;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPGameInstance.h:43:	int32 StarRating = 1;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPGameInstance.h:47:	bool bCanEscape = true;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPGameInstance.h:51:	int32 BaseGoldReward = 0;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPGameInstance.h:55:	int32 BaseFoodReward = 0;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapManager.h:72:	bool SaveWorldMap(const FString& MapName);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapManager.h:75:	bool LoadWorldMap(const FString& MapName);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapManager.h:168:	TMap<ELFPWorldNodeType, TObjectPtr<ULFPWorldNodeDataAsset>> NodeVisualRegistry;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:299:bool ALFPWorldMapManager::SaveWorldMap(const FString& MapName)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:307:bool ALFPWorldMapManager::LoadWorldMap(const FString& MapName)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:347:	FString CSVContent = TEXT("---,NodeID,PosX,PosY,NodeType,BattleMapName,StarRating,bCanEscape,EventID,PrerequisiteNodeIDs\n");
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:354:		FLFPWorldNodeRow Row = Node->ExportToRowData();
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:367:			*Row.BattleMapName,
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:368:			Row.StarRating,
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:369:			Row.bCanEscape ? TEXT("True") : TEXT("False"),
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:370:			*Row.EventID,
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:371:			*Row.PrerequisiteNodeIDs);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:404:		FLFPWorldEdgeRow Row = Edge->ExportToRowData();
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:463:			Node->InitFromRowData(*Row);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:514:			Result.Add(Pair.Value->ExportToRowData());
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:527:			Result.Add(Pair.Value->ExportToRowData());
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:537:	if (const TObjectPtr<ULFPWorldNodeDataAsset>* Found = NodeVisualRegistry.Find(NodeType))
+
+[Showing results with pagination = limit: 250, offset: 0]

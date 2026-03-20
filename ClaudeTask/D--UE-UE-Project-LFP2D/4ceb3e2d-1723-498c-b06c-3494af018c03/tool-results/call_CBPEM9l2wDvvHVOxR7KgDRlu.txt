@@ -1,0 +1,202 @@
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldNodeDataAsset.h:11: * 世界地图节点视觉数据资产：定义每种节点类型的显示属性
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldNodeDataAsset.h:19:	// 节点类型
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldNodeDataAsset.h:21:	ELFPWorldNodeType NodeType = ELFPWorldNodeType::WNT_Battle;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.h:67:	void EnterNode(ALFPWorldMapNode* Node);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.h:107:	TSubclassOf<ULFPWorldMapEditorWidget> WorldMapEditorWidgetClass;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.h:115:	TSubclassOf<ULFPUnitMergeWidget> UnitMergeWidgetClass;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.h:170:	TObjectPtr<ALFPWorldMapNode> PendingEnterNode;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:234:			EnterNode(ClickedNode);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:272:		if (!WorldMapEditorWidget && WorldMapEditorWidgetClass)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:274:			WorldMapEditorWidget = CreateWidget<ULFPWorldMapEditorWidget>(this, WorldMapEditorWidgetClass);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:375:	PendingEnterNode = Node;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:386:		PendingEnterNode = nullptr;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:420:void ALFPWorldMapPlayerController::EnterNode(ALFPWorldMapNode* Node)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:424:	UE_LOG(LogTemp, Log, TEXT("进入节点 %d，类型: %d"), Node->NodeID, (int32)Node->NodeType);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:426:	switch (Node->NodeType)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:428:	case ELFPWorldNodeType::WNT_Battle:
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:429:	case ELFPWorldNodeType::WNT_Boss:
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:433:	case ELFPWorldNodeType::WNT_Event:
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:438:	case ELFPWorldNodeType::WNT_Shop:
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:443:	case ELFPWorldNodeType::WNT_Town:
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:448:	case ELFPWorldNodeType::WNT_QuestNPC:
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:453:	case ELFPWorldNodeType::WNT_SkillNode:
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:458:	case ELFPWorldNodeType::WNT_EvolutionTower:
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:542:	if (PendingEnterNode)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:544:		ALFPWorldMapNode* NodeToEnter = PendingEnterNode;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:545:		PendingEnterNode = nullptr;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:546:		EnterNode(NodeToEnter);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:553:	if (!GI || !UnitMergeWidgetClass) return;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:557:		UnitMergeWidget = CreateWidget<ULFPUnitMergeWidget>(this, UnitMergeWidgetClass);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapNode.h:26:	// 节点类型
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapNode.h:28:	ELFPWorldNodeType NodeType = ELFPWorldNodeType::WNT_Battle;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapNode.cpp:30:	NodeType = Row.NodeType;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapNode.cpp:49:	Row.NodeType = NodeType;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapManager.h:31:	ALFPWorldMapNode* SpawnNode(int32 NodeID, FVector2D Position, ELFPWorldNodeType NodeType);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapManager.h:95:	// 获取节点类型对应的视觉数据
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapManager.h:97:	ULFPWorldNodeDataAsset* GetNodeVisualForType(ELFPWorldNodeType NodeType) const;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapManager.h:166:	// 节点类型视觉注册表（蓝图中配置）
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapManager.h:168:	TMap<ELFPWorldNodeType, TObjectPtr<ULFPWorldNodeDataAsset>> NodeVisualRegistry;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:25:ALFPWorldMapNode* ALFPWorldMapManager::SpawnNode(int32 NodeID, FVector2D Position, ELFPWorldNodeType NodeType)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:50:	NewNode->NodeType = NodeType;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:54:	if (ULFPWorldNodeDataAsset* VisualData = GetNodeVisualForType(NodeType))
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:347:	FString CSVContent = TEXT("---,NodeID,PosX,PosY,NodeType,BattleMapName,StarRating,bCanEscape,EventID,PrerequisiteNodeIDs\n");
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:357:		// 节点类型枚举名
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:358:		FString NodeTypeStr = UEnum::GetValueAsString(Row.NodeType);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:359:		NodeTypeStr = NodeTypeStr.RightChop(NodeTypeStr.Find(TEXT("::")) + 2);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:366:			*NodeTypeStr,
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:460:		ALFPWorldMapNode* Node = SpawnNode(Row->NodeID, FVector2D(Row->PosX, Row->PosY), Row->NodeType);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:535:ULFPWorldNodeDataAsset* ALFPWorldMapManager::GetNodeVisualForType(ELFPWorldNodeType NodeType) const
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:537:	if (const TObjectPtr<ULFPWorldNodeDataAsset>* Found = NodeVisualRegistry.Find(NodeType))
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:708:		switch (TargetNode->NodeType)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:710:		case ELFPWorldNodeType::WNT_Battle:
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:711:		case ELFPWorldNodeType::WNT_Event:
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:712:		case ELFPWorldNodeType::WNT_Boss:
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapGameMode.h:55:	TSubclassOf<ULFPUnitReplacementWidget> ReplacementWidgetClass;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapGameMode.cpp:156:	if (!ReplacementWidgetClass)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapGameMode.cpp:158:		UE_LOG(LogTemp, Warning, TEXT("ReplacementWidgetClass 未配置，放弃单位 %s"), *NextUnit.TypeID.ToString());
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapGameMode.cpp:171:		ReplacementWidget = CreateWidget<ULFPUnitReplacementWidget>(PC, ReplacementWidgetClass);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.h:59:	void SetBrushNodeType(ELFPWorldNodeType InType) { BrushNodeType = InType; }
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.h:143:	FOnWorldEditorNodeSelected OnNodeSelected;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.h:167:	ELFPWorldNodeType BrushNodeType = ELFPWorldNodeType::WNT_Battle;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:98:	ALFPWorldMapNode* NewNode = Manager->SpawnNode(NewID, WorldPos, BrushNodeType);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:136:	OnNodeSelected.Broadcast(SelectedNode);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:143:	SelectedNode->NodeType = BrushNodeType;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:151:	// 更新视觉（节点类型可能变了）
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:155:		if (auto* VisualData = Manager->GetNodeVisualForType(BrushNodeType))
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:274:	if (SelectedNode->NodeType != ELFPWorldNodeType::WNT_Battle)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapData.h:7:// 世界地图节点类型
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapData.h:9:enum class ELFPWorldNodeType : uint8
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapData.h:42:	// 节点类型
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapData.h:44:	ELFPWorldNodeType NodeType = ELFPWorldNodeType::WNT_Battle;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\Unit\LFPTacticsUnit.h:483:    TSubclassOf<class ULFPPlannedSkillIconWidget> PlannedSkillIconWidgetClass;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\Unit\LFPTacticsUnit.cpp:868:        if (PlannedSkillIconWidgetClass && !PlannedSkillIconComponent->GetWidget())
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\Unit\LFPTacticsUnit.cpp:870:            PlannedSkillIconComponent->SetWidgetClass(PlannedSkillIconWidgetClass);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:42:	UFUNCTION() void OnNodeTypeChanged(FString SelectedItem, ESelectInfo::Type SelectionType);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:89:	TObjectPtr<UComboBoxString> NodeTypeComboBox;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:23:	if (NodeTypeComboBox) NodeTypeComboBox->OnSelectionChanged.AddDynamic(this, &ULFPWorldMapEditorWidget::OnNodeTypeChanged);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:37:	// 填充节点类型下拉框
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:38:	if (NodeTypeComboBox)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:40:		NodeTypeComboBox->ClearOptions();
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:41:		NodeTypeComboBox->AddOption(TEXT("WNT_Battle"));
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:42:		NodeTypeComboBox->AddOption(TEXT("WNT_Event"));
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:43:		NodeTypeComboBox->AddOption(TEXT("WNT_Shop"));
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:44:		NodeTypeComboBox->AddOption(TEXT("WNT_Town"));
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:45:		NodeTypeComboBox->AddOption(TEXT("WNT_Boss"));
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:46:		NodeTypeComboBox->AddOption(TEXT("WNT_QuestNPC"));
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:47:		NodeTypeComboBox->AddOption(TEXT("WNT_SkillNode"));
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:48:		NodeTypeComboBox->AddOption(TEXT("WNT_EvolutionTower"));
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:49:		NodeTypeComboBox->SetSelectedOption(TEXT("WNT_Battle"));
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:67:		EditorComponent->OnNodeSelected.AddDynamic(this, &ULFPWorldMapEditorWidget::UpdateNodeInfo);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:110:void ULFPWorldMapEditorWidget::OnNodeTypeChanged(FString SelectedItem, ESelectInfo::Type SelectionType)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:114:	static const TMap<FString, ELFPWorldNodeType> NodeTypeMap = {
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:115:		{TEXT("WNT_Battle"), ELFPWorldNodeType::WNT_Battle},
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:116:		{TEXT("WNT_Event"), ELFPWorldNodeType::WNT_Event},
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:117:		{TEXT("WNT_Shop"), ELFPWorldNodeType::WNT_Shop},
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:118:		{TEXT("WNT_Town"), ELFPWorldNodeType::WNT_Town},
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:119:		{TEXT("WNT_Boss"), ELFPWorldNodeType::WNT_Boss},
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:120:		{TEXT("WNT_QuestNPC"), ELFPWorldNodeType::WNT_QuestNPC},
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:121:		{TEXT("WNT_SkillNode"), ELFPWorldNodeType::WNT_SkillNode},
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:122:		{TEXT("WNT_EvolutionTower"), ELFPWorldNodeType::WNT_EvolutionTower},
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:125:	if (const ELFPWorldNodeType* Found = NodeTypeMap.Find(SelectedItem))
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:127:		EditorComponent->SetBrushNodeType(*Found);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:248:	// 节点类型名
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:249:	FString TypeStr = UEnum::GetValueAsString(Node->NodeType);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:254:	if (Node->NodeType == ELFPWorldNodeType::WNT_Battle)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:259:	else if (Node->NodeType == ELFPWorldNodeType::WNT_Event)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\Fighting\LFPTurnSpeedListWidget.cpp:70:			Icon = CreateWidget<ULFPTurnSpeedIconWidget>(this, UnitIconClass);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\Fighting\LFPTurnSpeedListWidget.cpp:99:	//		UUserWidget* IconWidget = CreateWidget<UUserWidget>(this, UnitIconClass);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.cpp:76:            ULFPSkillButtonWidget* SkillButton = CreateWidget<ULFPSkillButtonWidget>(this, SkillButtonClass);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\Player\LFPTacticsPlayerController.h:250:    TSubclassOf<class UUserWidget> TurnSpeedWidgetClass;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\Player\LFPTacticsPlayerController.h:256:    TSubclassOf<class UUserWidget> SkillSelectionWidgetClass;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\Player\LFPTacticsPlayerController.h:264:	TSubclassOf<ULFPMapEditorWidget> MapEditorWidgetClass;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\Player\LFPTacticsPlayerController.h:350:    TSubclassOf<ULFPDeploymentWidget> DeploymentWidgetClass;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:72:    if (TurnSpeedWidgetClass)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:74:        TurnSpeedListWidget = CreateWidget<ULFPTurnSpeedListWidget>(this, TurnSpeedWidgetClass);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:837:    if (SkillSelectionWidgetClass)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:841:            SkillSelectionWidget = CreateWidget<ULFPSkillSelectionWidget>(this, SkillSelectionWidgetClass);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:976:        if (!MapEditorWidget && MapEditorWidgetClass)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:978:            MapEditorWidget = CreateWidget<ULFPMapEditorWidget>(this, MapEditorWidgetClass);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:1029:    if (DeploymentWidgetClass && !DeploymentWidget)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:1031:        DeploymentWidget = CreateWidget<ULFPDeploymentWidget>(this, DeploymentWidgetClass);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\Core\LFPTurnGameMode.h:84:	TSubclassOf<ULFPBattleResultWidget> BattleResultWidgetClass;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\Core\LFPTurnGameMode.cpp:93:    if (BattleResultWidgetClass)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\Core\LFPTurnGameMode.cpp:98:            BattleResultWidget = CreateWidget<ULFPBattleResultWidget>(PC, BattleResultWidgetClass);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\Core\LFPGameInstance.cpp:70:			UGameplayStatics::OpenLevel(this, FName(*CapturedLevelName));
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\Core\LFPGameInstance.cpp:76:		UGameplayStatics::OpenLevel(this, FName(*LevelName));
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\Core\LFPGameInstance.cpp:104:			UGameplayStatics::OpenLevel(this, FName(*CapturedLevelName));
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\Core\LFPGameInstance.cpp:110:		UGameplayStatics::OpenLevel(this, FName(*LevelName));
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Saved\WorldMaps\testworld_nodes.csv:1:---,NodeID,PosX,PosY,NodeType,BattleMapName,StarRating,bCanEscape,EventID,PrerequisiteNodeIDs
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldNodeDataAsset.h:11: * 世界地图节点视觉数据资产：定义每种节点类型的显示属性
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldNodeDataAsset.h:19:	// 节点类型
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldNodeDataAsset.h:21:	ELFPWorldNodeType NodeType = ELFPWorldNodeType::WNT_Battle;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.h:67:	void EnterNode(ALFPWorldMapNode* Node);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.h:107:	TSubclassOf<ULFPWorldMapEditorWidget> WorldMapEditorWidgetClass;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.h:115:	TSubclassOf<ULFPUnitMergeWidget> UnitMergeWidgetClass;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.h:170:	TObjectPtr<ALFPWorldMapNode> PendingEnterNode;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:234:			EnterNode(ClickedNode);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:272:		if (!WorldMapEditorWidget && WorldMapEditorWidgetClass)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:274:			WorldMapEditorWidget = CreateWidget<ULFPWorldMapEditorWidget>(this, WorldMapEditorWidgetClass);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:375:	PendingEnterNode = Node;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:386:		PendingEnterNode = nullptr;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:420:void ALFPWorldMapPlayerController::EnterNode(ALFPWorldMapNode* Node)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:424:	UE_LOG(LogTemp, Log, TEXT("进入节点 %d，类型: %d"), Node->NodeID, (int32)Node->NodeType);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:426:	switch (Node->NodeType)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:428:	case ELFPWorldNodeType::WNT_Battle:
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:429:	case ELFPWorldNodeType::WNT_Boss:
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:433:	case ELFPWorldNodeType::WNT_Event:
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:438:	case ELFPWorldNodeType::WNT_Shop:
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:443:	case ELFPWorldNodeType::WNT_Town:
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:448:	case ELFPWorldNodeType::WNT_QuestNPC:
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:453:	case ELFPWorldNodeType::WNT_SkillNode:
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:458:	case ELFPWorldNodeType::WNT_EvolutionTower:
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:542:	if (PendingEnterNode)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:544:		ALFPWorldMapNode* NodeToEnter = PendingEnterNode;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:545:		PendingEnterNode = nullptr;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:546:		EnterNode(NodeToEnter);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:553:	if (!GI || !UnitMergeWidgetClass) return;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:557:		UnitMergeWidget = CreateWidget<ULFPUnitMergeWidget>(this, UnitMergeWidgetClass);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapNode.h:26:	// 节点类型
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapNode.h:28:	ELFPWorldNodeType NodeType = ELFPWorldNodeType::WNT_Battle;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapNode.cpp:30:	NodeType = Row.NodeType;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapNode.cpp:49:	Row.NodeType = NodeType;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapManager.h:31:	ALFPWorldMapNode* SpawnNode(int32 NodeID, FVector2D Position, ELFPWorldNodeType NodeType);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapManager.h:95:	// 获取节点类型对应的视觉数据
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapManager.h:97:	ULFPWorldNodeDataAsset* GetNodeVisualForType(ELFPWorldNodeType NodeType) const;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapManager.h:166:	// 节点类型视觉注册表（蓝图中配置）
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapManager.h:168:	TMap<ELFPWorldNodeType, TObjectPtr<ULFPWorldNodeDataAsset>> NodeVisualRegistry;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:25:ALFPWorldMapNode* ALFPWorldMapManager::SpawnNode(int32 NodeID, FVector2D Position, ELFPWorldNodeType NodeType)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:50:	NewNode->NodeType = NodeType;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:54:	if (ULFPWorldNodeDataAsset* VisualData = GetNodeVisualForType(NodeType))
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:347:	FString CSVContent = TEXT("---,NodeID,PosX,PosY,NodeType,BattleMapName,StarRating,bCanEscape,EventID,PrerequisiteNodeIDs\n");
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:357:		// 节点类型枚举名
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:358:		FString NodeTypeStr = UEnum::GetValueAsString(Row.NodeType);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:359:		NodeTypeStr = NodeTypeStr.RightChop(NodeTypeStr.Find(TEXT("::")) + 2);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:366:			*NodeTypeStr,
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:460:		ALFPWorldMapNode* Node = SpawnNode(Row->NodeID, FVector2D(Row->PosX, Row->PosY), Row->NodeType);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:535:ULFPWorldNodeDataAsset* ALFPWorldMapManager::GetNodeVisualForType(ELFPWorldNodeType NodeType) const
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:537:	if (const TObjectPtr<ULFPWorldNodeDataAsset>* Found = NodeVisualRegistry.Find(NodeType))
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:708:		switch (TargetNode->NodeType)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:710:		case ELFPWorldNodeType::WNT_Battle:
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:711:		case ELFPWorldNodeType::WNT_Event:
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:712:		case ELFPWorldNodeType::WNT_Boss:
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapGameMode.h:55:	TSubclassOf<ULFPUnitReplacementWidget> ReplacementWidgetClass;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapGameMode.cpp:156:	if (!ReplacementWidgetClass)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapGameMode.cpp:158:		UE_LOG(LogTemp, Warning, TEXT("ReplacementWidgetClass 未配置，放弃单位 %s"), *NextUnit.TypeID.ToString());
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapGameMode.cpp:171:		ReplacementWidget = CreateWidget<ULFPUnitReplacementWidget>(PC, ReplacementWidgetClass);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.h:59:	void SetBrushNodeType(ELFPWorldNodeType InType) { BrushNodeType = InType; }
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.h:143:	FOnWorldEditorNodeSelected OnNodeSelected;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.h:167:	ELFPWorldNodeType BrushNodeType = ELFPWorldNodeType::WNT_Battle;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:98:	ALFPWorldMapNode* NewNode = Manager->SpawnNode(NewID, WorldPos, BrushNodeType);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:136:	OnNodeSelected.Broadcast(SelectedNode);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:143:	SelectedNode->NodeType = BrushNodeType;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:151:	// 更新视觉（节点类型可能变了）
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:155:		if (auto* VisualData = Manager->GetNodeVisualForType(BrushNodeType))
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:274:	if (SelectedNode->NodeType != ELFPWorldNodeType::WNT_Battle)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapData.h:7:// 世界地图节点类型
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapData.h:9:enum class ELFPWorldNodeType : uint8
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapData.h:42:	// 节点类型
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapData.h:44:	ELFPWorldNodeType NodeType = ELFPWorldNodeType::WNT_Battle;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Unit\LFPTacticsUnit.h:483:    TSubclassOf<class ULFPPlannedSkillIconWidget> PlannedSkillIconWidgetClass;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Unit\LFPTacticsUnit.cpp:868:        if (PlannedSkillIconWidgetClass && !PlannedSkillIconComponent->GetWidget())
+
+[Showing results with pagination = limit: 200, offset: 0]

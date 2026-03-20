@@ -1,0 +1,202 @@
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.h:112:	// ============== 升华塔（升阶面板） ==============
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.h:121:	void OpenEvolutionTower();
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:458:	case ELFPWorldNodeType::WNT_EvolutionTower:
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:459:		OpenEvolutionTower();
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:550:void ALFPWorldMapPlayerController::OpenEvolutionTower()
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:578:	UE_LOG(LogTemp, Log, TEXT("升华塔: 升阶面板已关闭"));
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapData.h:18:	WNT_EvolutionTower UMETA(DisplayName = "升华塔")
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:48:		NodeTypeComboBox->AddOption(TEXT("WNT_EvolutionTower"));
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:122:		{TEXT("WNT_EvolutionTower"), ELFPWorldNodeType::WNT_EvolutionTower},
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:85:	UFUNCTION() void OnEvolutionChoiceClicked();
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:143:	// 分支选择容器（多个进化目标时显示）
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:145:	TObjectPtr<UHorizontalBox> Box_EvolutionChoices;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:159:	// 当前选中的进化目标（分支选择时使用）
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:160:	FName SelectedEvolutionTarget;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:168:	TArray<TObjectPtr<UButton>> EvolutionChoiceButtons;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:179:	TMap<UButton*, FName> EvolutionButtonToTargetMap;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:205:	SelectedEvolutionTarget = NAME_None;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:208:	if (Box_EvolutionChoices) Box_EvolutionChoices->ClearChildren();
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:209:	EvolutionChoiceButtons.Empty();
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:210:	EvolutionButtonToTargetMap.Empty();
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:217:			TArray<FName> Targets = CachedRegistry->GetEvolutionTargets(SlotA.Unit.TypeID);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:221:				// 唯一进化目标 → 直接显示预览
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:222:				SelectedEvolutionTarget = Targets[0];
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:226:				if (CachedRegistry->FindEntry(SelectedEvolutionTarget, TargetEntry))
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:243:				// 多个进化目标 → 显示分支选择
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:246:					Text_PreviewName->SetText(FText::FromString(TEXT("请选择进化方向")));
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:260:					if (!ChoiceBtn || !Box_EvolutionChoices) continue;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:262:					EvolutionChoiceButtons.Add(ChoiceBtn);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:263:					EvolutionButtonToTargetMap.Add(ChoiceBtn, TargetID);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:265:					UHorizontalBoxSlot* BoxSlot = Box_EvolutionChoices->AddChildToHorizontalBox(ChoiceBtn);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:284:					ChoiceBtn->OnClicked.AddDynamic(this, &ULFPUnitMergeWidget::OnEvolutionChoiceClicked);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:289:				// 无进化目标（终阶）
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:332:void ULFPUnitMergeWidget::OnEvolutionChoiceClicked()
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:335:	for (const auto& Pair : EvolutionButtonToTargetMap)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:339:			SelectedEvolutionTarget = Pair.Value;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:343:			if (CachedRegistry && CachedRegistry->FindEntry(SelectedEvolutionTarget, TargetEntry))
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:371:	if (SelectedEvolutionTarget == NAME_None) return;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:376:		SelectedEvolutionTarget);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:380:		UE_LOG(LogTemp, Log, TEXT("升阶 Widget: 进化成功 → %s"), *SelectedEvolutionTarget.ToString());
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\Core\LFPUnitRegistryDataAsset.h:31:	// 可进化的目标 TypeID 列表（空=终阶，多个=分支选择）
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\Core\LFPUnitRegistryDataAsset.h:32:	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit Registry|Evolution")
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\Core\LFPUnitRegistryDataAsset.h:33:	TArray<FName> EvolutionTargets;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\Core\LFPUnitRegistryDataAsset.h:57:	// 获取指定 TypeID 的进化目标列表
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\Core\LFPUnitRegistryDataAsset.h:58:	UFUNCTION(BlueprintPure, Category = "Unit Registry|Evolution")
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\Core\LFPUnitRegistryDataAsset.h:59:	TArray<FName> GetEvolutionTargets(FName TypeID) const;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\Core\LFPUnitRegistryDataAsset.h:61:	// 是否可进化（有进化目标）
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\Core\LFPUnitRegistryDataAsset.h:62:	UFUNCTION(BlueprintPure, Category = "Unit Registry|Evolution")
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\Core\LFPUnitRegistryDataAsset.h:63:	bool CanEvolve(FName TypeID) const;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\Core\LFPUnitRegistryDataAsset.cpp:22:TArray<FName> ULFPUnitRegistryDataAsset::GetEvolutionTargets(FName TypeID) const
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\Core\LFPUnitRegistryDataAsset.cpp:26:		return Found->EvolutionTargets;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\Core\LFPUnitRegistryDataAsset.cpp:31:bool ULFPUnitRegistryDataAsset::CanEvolve(FName TypeID) const
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\Core\LFPUnitRegistryDataAsset.cpp:35:		return Found->EvolutionTargets.Num() > 0;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\Core\LFPGameInstance.h:280:	// 查找可合并的 TypeID 列表（同 TypeID 出现 >= 2 次且注册表中有进化目标）
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\Core\LFPGameInstance.h:284:	// 执行合并：移除指定的两个单位，添加进化目标新单位
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\Core\LFPGameInstance.h:285:	// TargetTypeID: 进化目标 TypeID（分支选择时由 UI 传入）
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\Core\LFPGameInstance.cpp:207:	// 筛选出现 >= 2 次且注册表中有进化目标的 TypeID
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\Core\LFPGameInstance.cpp:211:		if (Pair.Value >= 2 && UnitRegistry && UnitRegistry->CanEvolve(Pair.Key))
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\Core\LFPGameInstance.cpp:246:	// 验证 TargetTypeID 在进化目标列表中
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\Core\LFPGameInstance.cpp:253:	TArray<FName> Targets = UnitRegistry->GetEvolutionTargets(UnitA.TypeID);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\Core\LFPGameInstance.cpp:256:		UE_LOG(LogTemp, Warning, TEXT("MergeUnits: %s 不是 %s 的有效进化目标"),
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\Core\LFPGameInstance.cpp:261:	// 创建进化后的新单位
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\Core\LFPGameInstance.cpp:282:	UE_LOG(LogTemp, Log, TEXT("进化成功: %s × 2 → %s (T%d)"),
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\ClaudeTask\plans\dreamy-churning-pizza.md:1:# 世界地图添加升华塔节点
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\ClaudeTask\plans\dreamy-churning-pizza.md:5:玩家需要在世界地图上有一个专门的节点类型"升华塔"用于单位升阶。到达该节点后打开 WBP_UnitMerge 面板。
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\ClaudeTask\plans\dreamy-churning-pizza.md:13:WNT_EvolutionTower UMETA(DisplayName = "升华塔")
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\ClaudeTask\plans\dreamy-churning-pizza.md:27:void OpenEvolutionTower();
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\ClaudeTask\plans\dreamy-churning-pizza.md:38:case ELFPWorldNodeType::WNT_EvolutionTower:
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\ClaudeTask\plans\dreamy-churning-pizza.md:39:    OpenEvolutionTower();
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\ClaudeTask\plans\dreamy-churning-pizza.md:43:`OpenEvolutionTower()` 实现：创建 UnitMergeWidget，调用 `Setup(GI, GI->UnitRegistry)`，绑定 `OnClosed` 委托。
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\ClaudeTask\plans\dreamy-churning-pizza.md:47:- 在 NodeVisualRegistry 中为 `WNT_EvolutionTower` 配置视觉数据资产
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\ClaudeTask\plans\dreamy-churning-pizza.md:48:- 在世界地图 CSV 中添加升华塔节点
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\ClaudeTask\plans\dreamy-churning-pizza.md:52:编译通过后，在世界地图编辑器中放置一个 WNT_EvolutionTower 节点，玩家移动到该节点后应自动打开升阶面板。
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Saved\WorldMaps\testworld_nodes.csv:7:6,6,-218.166504,478.988373,WNT_EvolutionTower,,1,True,,
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.h:112:	// ============== 升华塔（升阶面板） ==============
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.h:121:	void OpenEvolutionTower();
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:458:	case ELFPWorldNodeType::WNT_EvolutionTower:
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:459:		OpenEvolutionTower();
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:550:void ALFPWorldMapPlayerController::OpenEvolutionTower()
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:578:	UE_LOG(LogTemp, Log, TEXT("升华塔: 升阶面板已关闭"));
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapData.h:18:	WNT_EvolutionTower UMETA(DisplayName = "升华塔")
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:48:		NodeTypeComboBox->AddOption(TEXT("WNT_EvolutionTower"));
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:122:		{TEXT("WNT_EvolutionTower"), ELFPWorldNodeType::WNT_EvolutionTower},
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:85:	UFUNCTION() void OnEvolutionChoiceClicked();
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:143:	// 分支选择容器（多个进化目标时显示）
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:145:	TObjectPtr<UHorizontalBox> Box_EvolutionChoices;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:159:	// 当前选中的进化目标（分支选择时使用）
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:160:	FName SelectedEvolutionTarget;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:168:	TArray<TObjectPtr<UButton>> EvolutionChoiceButtons;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:179:	TMap<UButton*, FName> EvolutionButtonToTargetMap;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:205:	SelectedEvolutionTarget = NAME_None;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:208:	if (Box_EvolutionChoices) Box_EvolutionChoices->ClearChildren();
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:209:	EvolutionChoiceButtons.Empty();
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:210:	EvolutionButtonToTargetMap.Empty();
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:217:			TArray<FName> Targets = CachedRegistry->GetEvolutionTargets(SlotA.Unit.TypeID);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:221:				// 唯一进化目标 → 直接显示预览
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:222:				SelectedEvolutionTarget = Targets[0];
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:226:				if (CachedRegistry->FindEntry(SelectedEvolutionTarget, TargetEntry))
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:243:				// 多个进化目标 → 显示分支选择
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:246:					Text_PreviewName->SetText(FText::FromString(TEXT("请选择进化方向")));
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:260:					if (!ChoiceBtn || !Box_EvolutionChoices) continue;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:262:					EvolutionChoiceButtons.Add(ChoiceBtn);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:263:					EvolutionButtonToTargetMap.Add(ChoiceBtn, TargetID);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:265:					UHorizontalBoxSlot* BoxSlot = Box_EvolutionChoices->AddChildToHorizontalBox(ChoiceBtn);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:284:					ChoiceBtn->OnClicked.AddDynamic(this, &ULFPUnitMergeWidget::OnEvolutionChoiceClicked);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:289:				// 无进化目标（终阶）
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:332:void ULFPUnitMergeWidget::OnEvolutionChoiceClicked()
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:335:	for (const auto& Pair : EvolutionButtonToTargetMap)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:339:			SelectedEvolutionTarget = Pair.Value;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:343:			if (CachedRegistry && CachedRegistry->FindEntry(SelectedEvolutionTarget, TargetEntry))
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:371:	if (SelectedEvolutionTarget == NAME_None) return;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:376:		SelectedEvolutionTarget);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:380:		UE_LOG(LogTemp, Log, TEXT("升阶 Widget: 进化成功 → %s"), *SelectedEvolutionTarget.ToString());
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPUnitRegistryDataAsset.h:31:	// 可进化的目标 TypeID 列表（空=终阶，多个=分支选择）
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPUnitRegistryDataAsset.h:32:	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit Registry|Evolution")
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPUnitRegistryDataAsset.h:33:	TArray<FName> EvolutionTargets;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPUnitRegistryDataAsset.h:57:	// 获取指定 TypeID 的进化目标列表
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPUnitRegistryDataAsset.h:58:	UFUNCTION(BlueprintPure, Category = "Unit Registry|Evolution")
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPUnitRegistryDataAsset.h:59:	TArray<FName> GetEvolutionTargets(FName TypeID) const;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPUnitRegistryDataAsset.h:61:	// 是否可进化（有进化目标）
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPUnitRegistryDataAsset.h:62:	UFUNCTION(BlueprintPure, Category = "Unit Registry|Evolution")
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPUnitRegistryDataAsset.h:63:	bool CanEvolve(FName TypeID) const;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPUnitRegistryDataAsset.cpp:22:TArray<FName> ULFPUnitRegistryDataAsset::GetEvolutionTargets(FName TypeID) const
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPUnitRegistryDataAsset.cpp:26:		return Found->EvolutionTargets;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPUnitRegistryDataAsset.cpp:31:bool ULFPUnitRegistryDataAsset::CanEvolve(FName TypeID) const
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPUnitRegistryDataAsset.cpp:35:		return Found->EvolutionTargets.Num() > 0;
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPGameInstance.h:280:	// 查找可合并的 TypeID 列表（同 TypeID 出现 >= 2 次且注册表中有进化目标）
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPGameInstance.h:284:	// 执行合并：移除指定的两个单位，添加进化目标新单位
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPGameInstance.h:285:	// TargetTypeID: 进化目标 TypeID（分支选择时由 UI 传入）
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPGameInstance.cpp:207:	// 筛选出现 >= 2 次且注册表中有进化目标的 TypeID
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPGameInstance.cpp:211:		if (Pair.Value >= 2 && UnitRegistry && UnitRegistry->CanEvolve(Pair.Key))
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPGameInstance.cpp:246:	// 验证 TargetTypeID 在进化目标列表中
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPGameInstance.cpp:253:	TArray<FName> Targets = UnitRegistry->GetEvolutionTargets(UnitA.TypeID);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPGameInstance.cpp:256:		UE_LOG(LogTemp, Warning, TEXT("MergeUnits: %s 不是 %s 的有效进化目标"),
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPGameInstance.cpp:261:	// 创建进化后的新单位
+d:\UE\UE_Project\LFP2D\Source\LFP2D\Core\LFPGameInstance.cpp:282:	UE_LOG(LogTemp, Log, TEXT("进化成功: %s × 2 → %s (T%d)"),
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.h:112:	// ============== 升华塔（升阶面板） ==============
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.h:121:	void OpenEvolutionTower();
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:458:	case ELFPWorldNodeType::WNT_EvolutionTower:
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:459:		OpenEvolutionTower();
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:550:void ALFPWorldMapPlayerController::OpenEvolutionTower()
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:578:	UE_LOG(LogTemp, Log, TEXT("升华塔: 升阶面板已关闭"));
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapData.h:18:	WNT_EvolutionTower UMETA(DisplayName = "升华塔")
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a0ceee22\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.h:112:	// ============== 升华塔（升阶面板） ==============
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a0ceee22\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.h:121:	void OpenEvolutionTower();
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a0ceee22\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:458:	case ELFPWorldNodeType::WNT_EvolutionTower:
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a0ceee22\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:459:		OpenEvolutionTower();
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a0ceee22\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:550:void ALFPWorldMapPlayerController::OpenEvolutionTower()
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a0ceee22\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:578:	UE_LOG(LogTemp, Log, TEXT("升华塔: 升阶面板已关闭"));
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:48:		NodeTypeComboBox->AddOption(TEXT("WNT_EvolutionTower"));
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:122:		{TEXT("WNT_EvolutionTower"), ELFPWorldNodeType::WNT_EvolutionTower},
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a0ceee22\Source\LFP2D\WorldMap\LFPWorldMapData.h:18:	WNT_EvolutionTower UMETA(DisplayName = "升华塔")
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:85:	UFUNCTION() void OnEvolutionChoiceClicked();
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:102:	// 进化目标展示容器（单目标/多分支统一用此容器）
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:104:	TObjectPtr<UHorizontalBox> Box_EvolutionChoices;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:155:	// 当前选中的进化目标（分支选择时使用）
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:156:	FName SelectedEvolutionTarget;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:164:	TArray<TObjectPtr<UButton>> EvolutionChoiceButtons;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:175:	TMap<UButton*, FName> EvolutionButtonToTargetMap;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:205:	SelectedEvolutionTarget = NAME_None;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:207:	// 清空进化目标展示
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:208:	if (Box_EvolutionChoices) Box_EvolutionChoices->ClearChildren();
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:209:	EvolutionChoiceButtons.Empty();
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:210:	EvolutionButtonToTargetMap.Empty();
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:216:			TArray<FName> Targets = CachedRegistry->GetEvolutionTargets(SlotA.Unit.TypeID);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:220:				// 为每个进化目标创建图标按钮
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:227:					if (!ChoiceBtn || !Box_EvolutionChoices) continue;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:229:					EvolutionChoiceButtons.Add(ChoiceBtn);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:230:					EvolutionButtonToTargetMap.Add(ChoiceBtn, TargetID);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:232:					UHorizontalBoxSlot* BoxSlot = Box_EvolutionChoices->AddChildToHorizontalBox(ChoiceBtn);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:266:						ChoiceBtn->OnClicked.AddDynamic(this, &ULFPUnitMergeWidget::OnEvolutionChoiceClicked);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:273:					SelectedEvolutionTarget = Targets[0];
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:277:					if (CachedRegistry->FindEntry(SelectedEvolutionTarget, TargetEntry) && Text_PreviewName)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:289:						Text_PreviewName->SetText(FText::FromString(TEXT("请选择进化方向")));
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:295:				// 无进化目标（终阶）
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:324:void ULFPUnitMergeWidget::OnEvolutionChoiceClicked()
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:326:	for (const auto& Pair : EvolutionButtonToTargetMap)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:330:			SelectedEvolutionTarget = Pair.Value;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:333:			for (const auto& BtnPair : EvolutionButtonToTargetMap)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:361:			if (CachedRegistry && CachedRegistry->FindEntry(SelectedEvolutionTarget, TargetEntry))
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:383:	if (SelectedEvolutionTarget == NAME_None) return;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:388:		SelectedEvolutionTarget);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:392:		UE_LOG(LogTemp, Log, TEXT("升阶 Widget: 进化成功 → %s"), *SelectedEvolutionTarget.ToString());
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a0ceee22\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:48:		NodeTypeComboBox->AddOption(TEXT("WNT_EvolutionTower"));
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a0ceee22\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:122:		{TEXT("WNT_EvolutionTower"), ELFPWorldNodeType::WNT_EvolutionTower},
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a0ceee22\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:85:	UFUNCTION() void OnEvolutionChoiceClicked();
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a0ceee22\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:143:	// 分支选择容器（多个进化目标时显示）
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a0ceee22\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:145:	TObjectPtr<UHorizontalBox> Box_EvolutionChoices;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a0ceee22\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:159:	// 当前选中的进化目标（分支选择时使用）
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a0ceee22\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:160:	FName SelectedEvolutionTarget;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a0ceee22\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:168:	TArray<TObjectPtr<UButton>> EvolutionChoiceButtons;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a0ceee22\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:179:	TMap<UButton*, FName> EvolutionButtonToTargetMap;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a0ceee22\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:205:	SelectedEvolutionTarget = NAME_None;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a0ceee22\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:208:	if (Box_EvolutionChoices) Box_EvolutionChoices->ClearChildren();
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a0ceee22\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:209:	EvolutionChoiceButtons.Empty();
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a0ceee22\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:210:	EvolutionButtonToTargetMap.Empty();
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a0ceee22\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:217:			TArray<FName> Targets = CachedRegistry->GetEvolutionTargets(SlotA.Unit.TypeID);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a0ceee22\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:221:				// 唯一进化目标 → 直接显示预览
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a0ceee22\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:222:				SelectedEvolutionTarget = Targets[0];
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a0ceee22\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:226:				if (CachedRegistry->FindEntry(SelectedEvolutionTarget, TargetEntry))
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a0ceee22\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:243:				// 多个进化目标 → 显示分支选择
+
+[Showing results with pagination = limit: 200, offset: 0]

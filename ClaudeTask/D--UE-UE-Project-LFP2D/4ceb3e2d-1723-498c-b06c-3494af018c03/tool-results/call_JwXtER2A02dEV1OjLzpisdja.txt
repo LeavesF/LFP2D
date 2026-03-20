@@ -1,0 +1,202 @@
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapPlayerState.h:8:class ALFPWorldMapNode;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapPlayerState.h:11:DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerNodeChanged, ALFPWorldMapNode*, NewNode);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:5:#include "LFP2D/WorldMap/LFPWorldMapEditorComponent.h"
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:6:#include "LFPWorldMapEditorWidget.generated.h"
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:19:class LFP2D_API ULFPWorldMapEditorWidget : public UUserWidget
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:26:	void InitializeEditor(ULFPWorldMapEditorComponent* EditorComp);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:60:	UFUNCTION() void UpdateNodeInfo(ALFPWorldMapNode* Node);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:134:	TObjectPtr<ULFPWorldMapEditorComponent> EditorComponent;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\Core\LFPGameInstance.h:7:class ALFPWorldMapNode;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapPlayerState.cpp:3:#include "LFP2D/WorldMap/LFPWorldMapNode.h"
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapPlayerState.cpp:29:	ALFPWorldMapNode* TargetNode = Manager->GetNode(TargetNodeID);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapPlayerState.cpp:62:	TArray<ALFPWorldMapNode*> Neighbors = Manager->GetNeighbors(CurrentNodeID);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapPlayerState.cpp:63:	for (ALFPWorldMapNode* Neighbor : Neighbors)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:1:#include "LFP2D/UI/WorldMapEditor/LFPWorldMapEditorWidget.h"
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:2:#include "LFP2D/WorldMap/LFPWorldMapNode.h"
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:9:void ULFPWorldMapEditorWidget::NativeConstruct()
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:14:	if (PlaceNodeButton) PlaceNodeButton->OnClicked.AddDynamic(this, &ULFPWorldMapEditorWidget::OnPlaceNodeClicked);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:15:	if (RemoveNodeButton) RemoveNodeButton->OnClicked.AddDynamic(this, &ULFPWorldMapEditorWidget::OnRemoveNodeClicked);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:16:	if (MoveNodeButton) MoveNodeButton->OnClicked.AddDynamic(this, &ULFPWorldMapEditorWidget::OnMoveNodeClicked);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:17:	if (ConnectEdgeButton) ConnectEdgeButton->OnClicked.AddDynamic(this, &ULFPWorldMapEditorWidget::OnConnectEdgeClicked);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:18:	if (RemoveEdgeButton) RemoveEdgeButton->OnClicked.AddDynamic(this, &ULFPWorldMapEditorWidget::OnRemoveEdgeClicked);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:19:	if (SetParamsButton) SetParamsButton->OnClicked.AddDynamic(this, &ULFPWorldMapEditorWidget::OnSetParamsClicked);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:20:	if (EditBattleMapButton) EditBattleMapButton->OnClicked.AddDynamic(this, &ULFPWorldMapEditorWidget::OnEditBattleMapClicked);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:23:	if (NodeTypeComboBox) NodeTypeComboBox->OnSelectionChanged.AddDynamic(this, &ULFPWorldMapEditorWidget::OnNodeTypeChanged);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:24:	if (StarRatingInput) StarRatingInput->OnTextCommitted.AddDynamic(this, &ULFPWorldMapEditorWidget::OnStarRatingChanged);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:25:	if (CanEscapeCheckBox) CanEscapeCheckBox->OnCheckStateChanged.AddDynamic(this, &ULFPWorldMapEditorWidget::OnCanEscapeChanged);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:26:	if (BattleMapNameInput) BattleMapNameInput->OnTextCommitted.AddDynamic(this, &ULFPWorldMapEditorWidget::OnBattleMapNameChanged);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:27:	if (EventIDInput) EventIDInput->OnTextCommitted.AddDynamic(this, &ULFPWorldMapEditorWidget::OnEventIDChanged);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:28:	if (EdgeTurnCostInput) EdgeTurnCostInput->OnTextCommitted.AddDynamic(this, &ULFPWorldMapEditorWidget::OnEdgeTurnCostChanged);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:29:	if (BaseGoldRewardInput) BaseGoldRewardInput->OnTextCommitted.AddDynamic(this, &ULFPWorldMapEditorWidget::OnBaseGoldRewardChanged);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:30:	if (BaseFoodRewardInput) BaseFoodRewardInput->OnTextCommitted.AddDynamic(this, &ULFPWorldMapEditorWidget::OnBaseFoodRewardChanged);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:33:	if (SaveWorldMapButton) SaveWorldMapButton->OnClicked.AddDynamic(this, &ULFPWorldMapEditorWidget::OnSaveClicked);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:34:	if (LoadWorldMapButton) LoadWorldMapButton->OnClicked.AddDynamic(this, &ULFPWorldMapEditorWidget::OnLoadClicked);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:35:	if (NewWorldMapButton) NewWorldMapButton->OnClicked.AddDynamic(this, &ULFPWorldMapEditorWidget::OnNewMapClicked);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:60:void ULFPWorldMapEditorWidget::InitializeEditor(ULFPWorldMapEditorComponent* EditorComp)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:66:		EditorComponent->OnToolChanged.AddDynamic(this, &ULFPWorldMapEditorWidget::UpdateToolIndicator);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:67:		EditorComponent->OnNodeSelected.AddDynamic(this, &ULFPWorldMapEditorWidget::UpdateNodeInfo);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:73:void ULFPWorldMapEditorWidget::OnPlaceNodeClicked()
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:78:void ULFPWorldMapEditorWidget::OnRemoveNodeClicked()
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:83:void ULFPWorldMapEditorWidget::OnMoveNodeClicked()
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:88:void ULFPWorldMapEditorWidget::OnConnectEdgeClicked()
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:93:void ULFPWorldMapEditorWidget::OnRemoveEdgeClicked()
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:98:void ULFPWorldMapEditorWidget::OnSetParamsClicked()
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:103:void ULFPWorldMapEditorWidget::OnEditBattleMapClicked()
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:110:void ULFPWorldMapEditorWidget::OnNodeTypeChanged(FString SelectedItem, ESelectInfo::Type SelectionType)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:131:void ULFPWorldMapEditorWidget::OnStarRatingChanged(const FText& Text, ETextCommit::Type CommitType)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:138:void ULFPWorldMapEditorWidget::OnCanEscapeChanged(bool bIsChecked)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:143:void ULFPWorldMapEditorWidget::OnBattleMapNameChanged(const FText& Text, ETextCommit::Type CommitType)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:148:void ULFPWorldMapEditorWidget::OnEventIDChanged(const FText& Text, ETextCommit::Type CommitType)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:153:void ULFPWorldMapEditorWidget::OnEdgeTurnCostChanged(const FText& Text, ETextCommit::Type CommitType)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:160:void ULFPWorldMapEditorWidget::OnBaseGoldRewardChanged(const FText& Text, ETextCommit::Type CommitType)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:167:void ULFPWorldMapEditorWidget::OnBaseFoodRewardChanged(const FText& Text, ETextCommit::Type CommitType)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:176:void ULFPWorldMapEditorWidget::OnSaveClicked()
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:193:void ULFPWorldMapEditorWidget::OnLoadClicked()
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:210:void ULFPWorldMapEditorWidget::OnNewMapClicked()
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:217:void ULFPWorldMapEditorWidget::UpdateToolIndicator(ELFPWorldMapEditorTool NewTool)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:238:void ULFPWorldMapEditorWidget::UpdateNodeInfo(ALFPWorldMapNode* Node)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.h:9:class ALFPWorldMapNode;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.h:10:class ULFPWorldMapEditorComponent;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.h:11:class ULFPWorldMapEditorWidget;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.h:12:class ULFPUnitMergeWidget;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.h:51:	void SelectNode(ALFPWorldMapNode* Node);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.h:55:	void MoveToNode(ALFPWorldMapNode* Node);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.h:67:	void EnterNode(ALFPWorldMapNode* Node);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.h:71:	void EnterBattle(ALFPWorldMapNode* BattleNode);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.h:104:	TObjectPtr<ULFPWorldMapEditorComponent> WorldMapEditorComponent;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.h:107:	TSubclassOf<ULFPWorldMapEditorWidget> WorldMapEditorWidgetClass;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.h:110:	TObjectPtr<ULFPWorldMapEditorWidget> WorldMapEditorWidget;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.h:115:	TSubclassOf<ULFPUnitMergeWidget> UnitMergeWidgetClass;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.h:118:	TObjectPtr<ULFPUnitMergeWidget> UnitMergeWidget;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.h:166:	TObjectPtr<ALFPWorldMapNode> SelectedNode;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.h:170:	TObjectPtr<ALFPWorldMapNode> PendingEnterNode;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.h:173:	TArray<ALFPWorldMapNode*> ReachableNodes;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:2:#include "LFP2D/WorldMap/LFPWorldMapNode.h"
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:25:ALFPWorldMapNode* ALFPWorldMapManager::SpawnNode(int32 NodeID, FVector2D Position, ELFPWorldNodeType NodeType)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:44:	ALFPWorldMapNode* NewNode = GetWorld()->SpawnActor<ALFPWorldMapNode>(
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:78:	ALFPWorldMapNode** Found = NodeMap.Find(NodeID);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:109:ALFPWorldMapNode* ALFPWorldMapManager::GetNode(int32 NodeID) const
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:118:TArray<ALFPWorldMapNode*> ALFPWorldMapManager::GetNeighbors(int32 NodeID) const
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:120:	TArray<ALFPWorldMapNode*> Result;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:125:			if (ALFPWorldMapNode* Node = GetNode(NeighborID))
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:192:	ALFPWorldMapNode* FromNode = NodeMap[FromID];
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:193:	ALFPWorldMapNode* ToNode = NodeMap[ToID];
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:351:		ALFPWorldMapNode* Node = Pair.Value;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:460:		ALFPWorldMapNode* Node = SpawnNode(Row->NodeID, FVector2D(Row->PosX, Row->PosY), Row->NodeType);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:632:	ALFPWorldMapNode* StartNode = GetNode(StartNodeID);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:669:		ALFPWorldMapNode* TargetNode = GetNode(TargetNodeID);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:705:	ALFPWorldMapNode* TargetNode = GetNode(TargetNodeID);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:738:		if (ALFPWorldMapNode* Node = GetNode(NodeID))
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\Fighting\LFPDeploymentWidget.cpp:1:#include "LFP2D/UI/Fighting/LFPDeploymentWidget.h"
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\Fighting\LFPDeploymentWidget.cpp:6:void ULFPDeploymentWidget::NativeConstruct()
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\Fighting\LFPDeploymentWidget.cpp:11:	if (Button_Unit0) Button_Unit0->OnClicked.AddDynamic(this, &ULFPDeploymentWidget::OnUnit0Clicked);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\Fighting\LFPDeploymentWidget.cpp:12:	if (Button_Unit1) Button_Unit1->OnClicked.AddDynamic(this, &ULFPDeploymentWidget::OnUnit1Clicked);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\Fighting\LFPDeploymentWidget.cpp:13:	if (Button_Unit2) Button_Unit2->OnClicked.AddDynamic(this, &ULFPDeploymentWidget::OnUnit2Clicked);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\Fighting\LFPDeploymentWidget.cpp:14:	if (Button_Confirm) Button_Confirm->OnClicked.AddDynamic(this, &ULFPDeploymentWidget::OnConfirmClicked);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\Fighting\LFPDeploymentWidget.cpp:17:void ULFPDeploymentWidget::Setup(const TArray<FLFPUnitEntry>& PartyUnits, ULFPUnitRegistryDataAsset* Registry)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\Fighting\LFPDeploymentWidget.cpp:64:void ULFPDeploymentWidget::MarkUnitPlaced(int32 PartyIndex, bool bPlaced)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\Fighting\LFPDeploymentWidget.cpp:84:void ULFPDeploymentWidget::SetConfirmEnabled(bool bEnabled)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\Fighting\LFPDeploymentWidget.cpp:93:void ULFPDeploymentWidget::MarkUnitSelecting(int32 PartyIndex)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\Fighting\LFPDeploymentWidget.cpp:98:void ULFPDeploymentWidget::UpdateSlotVisual(int32 Index)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\Fighting\LFPDeploymentWidget.cpp:128:void ULFPDeploymentWidget::OnUnit0Clicked()
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\Fighting\LFPDeploymentWidget.cpp:133:void ULFPDeploymentWidget::OnUnit1Clicked()
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\Fighting\LFPDeploymentWidget.cpp:138:void ULFPDeploymentWidget::OnUnit2Clicked()
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\Fighting\LFPDeploymentWidget.cpp:143:void ULFPDeploymentWidget::OnConfirmClicked()
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\Fighting\LFPDeploymentWidget.cpp:153:UButton* ULFPDeploymentWidget::GetUnitButton(int32 Index) const
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\Fighting\LFPDeploymentWidget.cpp:164:UImage* ULFPDeploymentWidget::GetUnitImage(int32 Index) const
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:3:#include "LFP2D/WorldMap/LFPWorldMapNode.h"
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:6:#include "LFP2D/WorldMap/LFPWorldMapEditorComponent.h"
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:7:#include "LFP2D/UI/WorldMapEditor/LFPWorldMapEditorWidget.h"
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:8:#include "LFP2D/UI/WorldMap/LFPUnitMergeWidget.h"
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:20:	WorldMapEditorComponent = CreateDefaultSubobject<ULFPWorldMapEditorComponent>(TEXT("WorldMapEditorComponent"));
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:141:		ALFPWorldMapNode* ClickedNode = Cast<ALFPWorldMapNode>(HitResult.GetActor());
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:223:	ALFPWorldMapNode* ClickedNode = Cast<ALFPWorldMapNode>(HitResult.GetActor());
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:274:			WorldMapEditorWidget = CreateWidget<ULFPWorldMapEditorWidget>(this, WorldMapEditorWidgetClass);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:346:void ALFPWorldMapPlayerController::SelectNode(ALFPWorldMapNode* Node)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:362:void ALFPWorldMapPlayerController::MoveToNode(ALFPWorldMapNode* Node)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:400:		if (ALFPWorldMapNode* Node = Manager->GetNode(NodeID))
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:410:	for (ALFPWorldMapNode* Node : ReachableNodes)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:420:void ALFPWorldMapPlayerController::EnterNode(ALFPWorldMapNode* Node)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:467:void ALFPWorldMapPlayerController::EnterBattle(ALFPWorldMapNode* BattleNode)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:544:		ALFPWorldMapNode* NodeToEnter = PendingEnterNode;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:557:		UnitMergeWidget = CreateWidget<ULFPUnitMergeWidget>(this, UnitMergeWidgetClass);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\Fighting\LFPDeploymentWidget.h:6:#include "LFPDeploymentWidget.generated.h"
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\Fighting\LFPDeploymentWidget.h:19:class LFP2D_API ULFPDeploymentWidget : public UUserWidget
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapGameMode.h:9:class ULFPUnitReplacementWidget;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapGameMode.h:55:	TSubclassOf<ULFPUnitReplacementWidget> ReplacementWidgetClass;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapGameMode.h:68:	TObjectPtr<ULFPUnitReplacementWidget> ReplacementWidget;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.cpp:4:#include "LFP2D/UI/Fighting/LFPSkillSelectionWidget.h"
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.cpp:15:ULFPSkillSelectionWidget::ULFPSkillSelectionWidget(const FObjectInitializer& ObjectInitializer)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.cpp:23:void ULFPSkillSelectionWidget::NativeConstruct()
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.cpp:41:void ULFPSkillSelectionWidget::InitializeSkillsInfo(ALFPTacticsUnit* Unit, ALFPTacticsPlayerController* PC)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.cpp:51:        TurnManager->OnFactionAPChanged.RemoveDynamic(this, &ULFPSkillSelectionWidget::OnFactionAPChanged);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.cpp:52:        TurnManager->OnFactionAPChanged.AddDynamic(this, &ULFPSkillSelectionWidget::OnFactionAPChanged);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.cpp:84:                //SkillButton->OnSkillSelected.AddDynamic(this, &ULFPSkillSelectionWidget::OnSkillSelected);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.cpp:119:void ULFPSkillSelectionWidget::OnSkillSelected(ULFPSkillBase* Skill)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.cpp:141:void ULFPSkillSelectionWidget::UpdateSkillDetails(ULFPSkillBase* Skill)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.cpp:203:void ULFPSkillSelectionWidget::UpdateUnitInfo()
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.cpp:219:void ULFPSkillSelectionWidget::UpdateConfirmButtonState()
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.cpp:261:void ULFPSkillSelectionWidget::OnConfirmClicked()
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.cpp:283:void ULFPSkillSelectionWidget::OnCancelClicked()
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.cpp:295:void ULFPSkillSelectionWidget::RefreshSkillButtons()
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.cpp:318:FReply ULFPSkillSelectionWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.cpp:335:void ULFPSkillSelectionWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.cpp:350:void ULFPSkillSelectionWidget::Show()
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.cpp:369:void ULFPSkillSelectionWidget::Hide()
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.cpp:385:void ULFPSkillSelectionWidget::SetSkillFilter(const FGameplayTagContainer& FilterTags)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.cpp:397:void ULFPSkillSelectionWidget::ClearSkillFilter()
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.cpp:409:TArray<ULFPSkillBase*> ULFPSkillSelectionWidget::GetFilteredSkills(ALFPTacticsUnit* Unit) const
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.cpp:436:void ULFPSkillSelectionWidget::OnFactionAPChanged(EUnitAffiliation Faction, int32 NewAP)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.cpp:446:void ULFPSkillSelectionWidget::SortSkills(ESkillSortMethod SortMethod)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.cpp:520:void ULFPSkillSelectionWidget::OnSkillHovered(ULFPSkillBase* Skill)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.cpp:540:void ULFPSkillSelectionWidget::OnSkillUnhovered()
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapNode.h:6:#include "LFPWorldMapNode.generated.h"
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapNode.h:13:class LFP2D_API ALFPWorldMapNode : public AActor
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapNode.h:18:	ALFPWorldMapNode();
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:10:#include "LFP2D/UI/Fighting/LFPSkillSelectionWidget.h"
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:12:#include "LFP2D/UI/Fighting/LFPDeploymentWidget.h"
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:841:            SkillSelectionWidget = CreateWidget<ULFPSkillSelectionWidget>(this, SkillSelectionWidgetClass);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:1031:        DeploymentWidget = CreateWidget<ULFPDeploymentWidget>(this, DeploymentWidgetClass);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapGameMode.cpp:3:#include "LFP2D/WorldMap/LFPWorldMapNode.h"
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapGameMode.cpp:7:#include "LFP2D/UI/WorldMap/LFPUnitReplacementWidget.h"
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapGameMode.cpp:95:		ALFPWorldMapNode* Node = WorldMapManager->GetNode(Result.SourceNodeID);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapGameMode.cpp:171:		ReplacementWidget = CreateWidget<ULFPUnitReplacementWidget>(PC, ReplacementWidgetClass);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:1:#include "LFP2D/WorldMap/LFPWorldMapEditorComponent.h"
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:3:#include "LFP2D/WorldMap/LFPWorldMapNode.h"
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:8:ULFPWorldMapEditorComponent::ULFPWorldMapEditorComponent()
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:13:void ULFPWorldMapEditorComponent::BeginPlay()
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:18:ALFPWorldMapManager* ULFPWorldMapEditorComponent::GetWorldMapManager() const
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:32:void ULFPWorldMapEditorComponent::ToggleEditorMode()
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:45:				if (ALFPWorldMapNode* Node = Pair.Value)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:80:void ULFPWorldMapEditorComponent::SetCurrentTool(ELFPWorldMapEditorTool Tool)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:90:ALFPWorldMapNode* ULFPWorldMapEditorComponent::PlaceNodeAt(FVector2D WorldPos)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:98:	ALFPWorldMapNode* NewNode = Manager->SpawnNode(NewID, WorldPos, BrushNodeType);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:120:void ULFPWorldMapEditorComponent::SelectNode(ALFPWorldMapNode* Node)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:139:void ULFPWorldMapEditorComponent::ApplyParamsToSelectedNode()
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:164:void ULFPWorldMapEditorComponent::HandleEdgeConnection(ALFPWorldMapNode* Node)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:194:void ULFPWorldMapEditorComponent::HandleEdgeRemoval(ALFPWorldMapNode* Node)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:230:void ULFPWorldMapEditorComponent::MoveSelectedNodeTo(FVector2D NewPos)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:240:	TArray<ALFPWorldMapNode*> Neighbors = Manager->GetNeighbors(SelectedNode->NodeID);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:241:	for (ALFPWorldMapNode* Neighbor : Neighbors)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:252:void ULFPWorldMapEditorComponent::RemoveSelectedNode()
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:266:void ULFPWorldMapEditorComponent::EnterBattleMapEditor()
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:312:void ULFPWorldMapEditorComponent::ReturnFromBattleMapEditor()
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:333:bool ULFPWorldMapEditorComponent::SaveWorldMap(const FString& MapName)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:341:bool ULFPWorldMapEditorComponent::LoadWorldMap(const FString& MapName)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:349:TArray<FString> ULFPWorldMapEditorComponent::GetSavedWorldMapList()
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:357:void ULFPWorldMapEditorComponent::NewWorldMap()
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\Player\LFPTacticsPlayerController.h:23:class ULFPSkillSelectionWidget;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\Player\LFPTacticsPlayerController.h:26:class ULFPDeploymentWidget;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\Player\LFPTacticsPlayerController.h:260:    TObjectPtr<ULFPSkillSelectionWidget> SkillSelectionWidget;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\Player\LFPTacticsPlayerController.h:350:    TSubclassOf<ULFPDeploymentWidget> DeploymentWidgetClass;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\Player\LFPTacticsPlayerController.h:353:    TObjectPtr<ULFPDeploymentWidget> DeploymentWidget;
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMap\LFPUnitReplacementWidget.h:6:#include "LFPUnitReplacementWidget.generated.h"
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMap\LFPUnitReplacementWidget.h:17:class LFP2D_API ULFPUnitReplacementWidget : public UUserWidget
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.h:13:#include "LFPSkillSelectionWidget.generated.h"
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.h:39:class LFP2D_API ULFPSkillSelectionWidget : public UUserWidget
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.h:45:    ULFPSkillSelectionWidget(const FObjectInitializer& ObjectInitializer);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapNode.cpp:1:#include "LFP2D/WorldMap/LFPWorldMapNode.h"
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapNode.cpp:5:ALFPWorldMapNode::ALFPWorldMapNode()
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapNode.cpp:27:void ALFPWorldMapNode::InitFromRowData(const FLFPWorldNodeRow& Row)
+
+[Showing results with pagination = limit: 200, offset: 0]

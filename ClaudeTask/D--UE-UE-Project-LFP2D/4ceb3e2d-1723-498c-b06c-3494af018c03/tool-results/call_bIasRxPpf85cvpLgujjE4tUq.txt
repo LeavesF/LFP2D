@@ -1,0 +1,202 @@
+d:\UE\UE_Project\LFP2D\.vs\LFP2D\BlueprintCache\LFP2D.json:1:[Omitted long matching line]
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:438:	case ELFPWorldNodeType::WNT_Shop:
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:439:		// TODO: 打开商店 UI
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:440:		UE_LOG(LogTemp, Log, TEXT("商店节点 %d"), Node->NodeID);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapManager.h:133:	void RestoreTriggeredNodes(const TSet<int32>& TriggeredNodeIDs);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:734:void ALFPWorldMapManager::RestoreTriggeredNodes(const TSet<int32>& TriggeredNodeIDs)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapGameMode.cpp:55:		WorldMapManager->RestoreTriggeredNodes(Snapshot.TriggeredNodeIDs);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\WorldMap\LFPWorldMapData.h:13:	WNT_Shop        UMETA(DisplayName = "商店"),
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:43:		NodeTypeComboBox->AddOption(TEXT("WNT_Shop"));
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:117:		{TEXT("WNT_Shop"), ELFPWorldNodeType::WNT_Shop},
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\ClaudeTask\plans\glimmering-bubbling-parnas.md:5:LFP2D 已完成战斗地图系统（六角格、地形、编辑器、CSV 保存/加载）。下一步是实现世界地图系统——节点-边网络，玩家在节点间移动消耗回合，触发战斗/事件/商店等。设计方案已在 architecture.md 第 9 节记录。
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\ClaudeTask\plans\glimmering-bubbling-parnas.md:26:**ELFPWorldNodeType**: `WNT_Battle`, `WNT_Event`, `WNT_Shop`, `WNT_Town`, `WNT_Boss`, `WNT_QuestNPC`, `WNT_SkillNode`
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\Saved\WorldMaps\testworld_nodes.csv:6:5,5,548.347900,996.212891,WNT_Shop,,1,True,,
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:438:	case ELFPWorldNodeType::WNT_Shop:
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:439:		// TODO: 打开商店 UI
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:440:		UE_LOG(LogTemp, Log, TEXT("商店节点 %d"), Node->NodeID);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapManager.h:133:	void RestoreTriggeredNodes(const TSet<int32>& TriggeredNodeIDs);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:734:void ALFPWorldMapManager::RestoreTriggeredNodes(const TSet<int32>& TriggeredNodeIDs)
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapGameMode.cpp:55:		WorldMapManager->RestoreTriggeredNodes(Snapshot.TriggeredNodeIDs);
+d:\UE\UE_Project\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapData.h:13:	WNT_Shop        UMETA(DisplayName = "商店"),
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:43:		NodeTypeComboBox->AddOption(TEXT("WNT_Shop"));
+d:\UE\UE_Project\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:117:		{TEXT("WNT_Shop"), ELFPWorldNodeType::WNT_Shop},
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:438:	case ELFPWorldNodeType::WNT_Shop:
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:439:		// TODO: 打开商店 UI
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:440:		UE_LOG(LogTemp, Log, TEXT("商店节点 %d"), Node->NodeID);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapManager.h:133:	void RestoreTriggeredNodes(const TSet<int32>& TriggeredNodeIDs);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:734:void ALFPWorldMapManager::RestoreTriggeredNodes(const TSet<int32>& TriggeredNodeIDs)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapGameMode.cpp:55:		WorldMapManager->RestoreTriggeredNodes(Snapshot.TriggeredNodeIDs);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\WorldMap\LFPWorldMapData.h:13:	WNT_Shop        UMETA(DisplayName = "商店"),
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a0ceee22\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:438:	case ELFPWorldNodeType::WNT_Shop:
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a0ceee22\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:439:		// TODO: 打开商店 UI
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a0ceee22\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:440:		UE_LOG(LogTemp, Log, TEXT("商店节点 %d"), Node->NodeID);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:43:		NodeTypeComboBox->AddOption(TEXT("WNT_Shop"));
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:117:		{TEXT("WNT_Shop"), ELFPWorldNodeType::WNT_Shop},
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a0ceee22\Source\LFP2D\WorldMap\LFPWorldMapManager.h:133:	void RestoreTriggeredNodes(const TSet<int32>& TriggeredNodeIDs);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a0ceee22\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:734:void ALFPWorldMapManager::RestoreTriggeredNodes(const TSet<int32>& TriggeredNodeIDs)
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a0ceee22\Source\LFP2D\WorldMap\LFPWorldMapGameMode.cpp:55:		WorldMapManager->RestoreTriggeredNodes(Snapshot.TriggeredNodeIDs);
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a0ceee22\Source\LFP2D\WorldMap\LFPWorldMapData.h:13:	WNT_Shop        UMETA(DisplayName = "商店"),
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a0ceee22\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:43:		NodeTypeComboBox->AddOption(TEXT("WNT_Shop"));
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a0ceee22\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:117:		{TEXT("WNT_Shop"), ELFPWorldNodeType::WNT_Shop},
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\Saved\WorldMaps\testworld_nodes.csv:6:5,5,548.347900,996.212891,WNT_Shop,,1,True,,
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a0ceee22\Saved\WorldMaps\testworld_nodes.csv:6:5,5,548.347900,996.212891,WNT_Shop,,1,True,,
+d:\UE\UE_Project\LFP2D\Saved\WorldMaps\testworld_nodes.csv:6:5,5,548.347900,996.212891,WNT_Shop,,1,True,,
+d:\UE\UE_Project\LFP2D\Saved\SourceControl\UncontrolledChangelists.json:47:				"D:/UE/UE_Project/LFP2D/Content/Art/WorldMap/Node/ShopNode.uasset",
+d:\UE\UE_Project\LFP2D\Saved\SourceControl\UncontrolledChangelists.json:113:				"D:/UE/UE_Project/LFP2D/Content/WorldMap/Node/DA_WorldNode_Store.uasset",
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\ClaudeTask\memory\progress.md:95:- [x] 节点触发标记（战斗/事件/Boss 首次触发后标记，商店/城镇可反复进入）
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\ClaudeTask\memory\progress.md:100:- [x] WorldMapPlayerController::EnterNode 按节点类型分发（战斗/事件/商店等）
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\ClaudeTask\memory\progress.md:106:- [x] Manager: GetCurrentWorldMapName/SetCurrentWorldMapName、RestoreTriggeredNodes、LoadWorldMap 记录地图名
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\ClaudeTask\memory\architecture.md:11:- `FEnemyActionPlan`: stores EnemyUnit, PlannedSkill, TargetUnit, TargetTile, CasterPositionTile, EffectAreaTiles
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\ClaudeTask\memory\architecture.md:32:- `RecoverPriority()`: restores priority each round. Called in OnTurnStart.
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\ClaudeTask\memory\architecture.md:35:1. `AllocateEnemySkills()`: collects all AP-costing skills from all enemies, sorts by GetEffectivePriority() descending, greedily allocates faction AP (one skill per unit max). Stores in `TMap<ALFPTacticsUnit*, ULFPSkillBase*> AllocatedSkills`.
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\ClaudeTask\memory\architecture.md:62:Map data stored as DataTable/CSV, runtime editor for map creation:
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\ClaudeTask\memory\architecture.md:85:- **商店**：购买道具、单位
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\ClaudeTask\memory\architecture.md:94:- 城镇节点：商店配置、传送阵状态
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\ClaudeTask\memory\architecture.md:115:  - 节点交互（进入战斗/事件/商店）
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\ClaudeTask\memory\architecture.md:148:- **道具系统**：遗物模式，全队生效（非单位装备）。通过战斗掉落、事件、支线任务、商店获得
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\ClaudeTask\memory\progress.md:95:- [x] 节点触发标记（战斗/事件/Boss 首次触发后标记，商店/城镇可反复进入）
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\ClaudeTask\memory\progress.md:100:- [x] WorldMapPlayerController::EnterNode 按节点类型分发（战斗/事件/商店等）
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\ClaudeTask\memory\progress.md:106:- [x] Manager: GetCurrentWorldMapName/SetCurrentWorldMapName、RestoreTriggeredNodes、LoadWorldMap 记录地图名
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\ClaudeTask\memory\architecture.md:11:- `FEnemyActionPlan`: stores EnemyUnit, PlannedSkill, TargetUnit, TargetTile, CasterPositionTile, EffectAreaTiles
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\ClaudeTask\memory\architecture.md:32:- `RecoverPriority()`: restores priority each round. Called in OnTurnStart.
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\ClaudeTask\memory\architecture.md:35:1. `AllocateEnemySkills()`: collects all AP-costing skills from all enemies, sorts by GetEffectivePriority() descending, greedily allocates faction AP (one skill per unit max). Stores in `TMap<ALFPTacticsUnit*, ULFPSkillBase*> AllocatedSkills`.
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\ClaudeTask\memory\architecture.md:62:Map data stored as DataTable/CSV, runtime editor for map creation:
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\ClaudeTask\memory\architecture.md:85:- **商店**：购买道具、单位
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\ClaudeTask\memory\architecture.md:94:- 城镇节点：商店配置、传送阵状态
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\ClaudeTask\memory\architecture.md:115:  - 节点交互（进入战斗/事件/商店）
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-a3e5ed7b\ClaudeTask\memory\architecture.md:148:- **道具系统**：遗物模式，全队生效（非单位装备）。通过战斗掉落、事件、支线任务、商店获得
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\ClaudeTask\plans\glimmering-bubbling-parnas.md:5:LFP2D 已完成战斗地图系统（六角格、地形、编辑器、CSV 保存/加载）。下一步是实现世界地图系统——节点-边网络，玩家在节点间移动消耗回合，触发战斗/事件/商店等。设计方案已在 architecture.md 第 9 节记录。
+d:\UE\UE_Project\LFP2D\.claude\worktrees\agent-af25153c\ClaudeTask\plans\glimmering-bubbling-parnas.md:26:**ELFPWorldNodeType**: `WNT_Battle`, `WNT_Event`, `WNT_Shop`, `WNT_Town`, `WNT_Boss`, `WNT_QuestNPC`, `WNT_SkillNode`
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:17257:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\CQTest\Private\Components\PIENetworkTestStateRestorer.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:17329:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\CQTest\Public\Components\PIENetworkTestStateRestorer.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:17959:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\DerivedDataCache\Private\DerivedDataCacheStore.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:17962:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\DerivedDataCache\Private\DerivedDataCacheStore.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:17965:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\DerivedDataCache\Private\DerivedDataCacheStoreAsync.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:17968:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\DerivedDataCache\Private\DerivedDataCacheStoreHierarchy.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:17971:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\DerivedDataCache\Private\DerivedDataCacheStoreThrottle.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:17974:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\DerivedDataCache\Private\DerivedDataCacheStoreVerify.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:17986:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\DerivedDataCache\Private\DerivedDataLegacyCacheStore.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:17989:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\DerivedDataCache\Private\DerivedDataLegacyCacheStore.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:18007:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\DerivedDataCache\Private\FileSystemCacheStore.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:18013:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\DerivedDataCache\Private\HttpCacheStore.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:18016:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\DerivedDataCache\Private\MemoryCacheStore.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:18019:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\DerivedDataCache\Private\MemoryCacheStore.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:18022:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\DerivedDataCache\Private\PakFileCacheStore.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:18025:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\DerivedDataCache\Private\PakFileCacheStore.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:18028:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\DerivedDataCache\Private\S3CacheStore.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:18031:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\DerivedDataCache\Private\ZenCacheStore.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:18049:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\DerivedDataCache\Private\Tests\CacheStoreTest.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:18052:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\DerivedDataCache\Private\Tests\HttpCacheStoreTest.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:18175:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\DerivedDataCache\Tests\DerivedDataCacheStoreHierarchyTest.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:18178:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\DerivedDataCache\Tests\TestCacheStore.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:18181:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\DerivedDataCache\Tests\TestCacheStore.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19471:    <Filter Include="Source\Developer\IoStoreUtilities">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19474:    <None Include="..\..\..\..\UE_5.5\Engine\Source\Developer\IoStoreUtilities\IoStoreUtilities.Build.cs">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19475:      <Filter>Source\Developer\IoStoreUtilities</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19477:    <Filter Include="Source\Developer\IoStoreUtilities\Internal">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19480:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\IoStoreUtilities\Internal\CookedPackageStore.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19481:      <Filter>Source\Developer\IoStoreUtilities\Internal</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19483:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\IoStoreUtilities\Internal\PackageStoreOptimizer.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19484:      <Filter>Source\Developer\IoStoreUtilities\Internal</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19486:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\IoStoreUtilities\Internal\ZenStoreHttpClient.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19487:      <Filter>Source\Developer\IoStoreUtilities\Internal</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19489:    <Filter Include="Source\Developer\IoStoreUtilities\Private">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19492:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\IoStoreUtilities\Private\CookArtifactReaderCommon.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19493:      <Filter>Source\Developer\IoStoreUtilities\Private</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19495:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\IoStoreUtilities\Private\CookedPackageStore.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19496:      <Filter>Source\Developer\IoStoreUtilities\Private</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19498:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\IoStoreUtilities\Private\CookMetadataFiles.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19499:      <Filter>Source\Developer\IoStoreUtilities\Private</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19501:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\IoStoreUtilities\Private\CookMetadataFiles.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19502:      <Filter>Source\Developer\IoStoreUtilities\Private</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19504:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\IoStoreUtilities\Private\IoStoreLooseFiles.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19505:      <Filter>Source\Developer\IoStoreUtilities\Private</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19507:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\IoStoreUtilities\Private\IoStoreLooseFiles.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19508:      <Filter>Source\Developer\IoStoreUtilities\Private</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19510:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\IoStoreUtilities\Private\IoStoreUtilities.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19511:      <Filter>Source\Developer\IoStoreUtilities\Private</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19513:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\IoStoreUtilities\Private\IoStoreWriter.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19514:      <Filter>Source\Developer\IoStoreUtilities\Private</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19516:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\IoStoreUtilities\Private\IoStoreWriter.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19517:      <Filter>Source\Developer\IoStoreUtilities\Private</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19519:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\IoStoreUtilities\Private\LayeredCookArtifactReader.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19520:      <Filter>Source\Developer\IoStoreUtilities\Private</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19522:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\IoStoreUtilities\Private\LooseFilesCookArtifactReader.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19523:      <Filter>Source\Developer\IoStoreUtilities\Private</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19525:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\IoStoreUtilities\Private\PackageStoreOptimizer.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19526:      <Filter>Source\Developer\IoStoreUtilities\Private</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19528:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\IoStoreUtilities\Private\ZenCookArtifactReader.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19529:      <Filter>Source\Developer\IoStoreUtilities\Private</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19531:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\IoStoreUtilities\Private\ZenFileSystemManifest.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19532:      <Filter>Source\Developer\IoStoreUtilities\Private</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19534:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\IoStoreUtilities\Private\ZenFileSystemManifest.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19535:      <Filter>Source\Developer\IoStoreUtilities\Private</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19537:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\IoStoreUtilities\Private\ZenStoreHttpClient.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19538:      <Filter>Source\Developer\IoStoreUtilities\Private</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19540:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\IoStoreUtilities\Private\ZenStoreWriter.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19541:      <Filter>Source\Developer\IoStoreUtilities\Private</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19543:    <Filter Include="Source\Developer\IoStoreUtilities\Public">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19546:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\IoStoreUtilities\Public\CookArtifactReader.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19547:      <Filter>Source\Developer\IoStoreUtilities\Public</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19549:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\IoStoreUtilities\Public\CookArtifactReaderCommon.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19550:      <Filter>Source\Developer\IoStoreUtilities\Public</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19552:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\IoStoreUtilities\Public\IoStoreUtilities.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19553:      <Filter>Source\Developer\IoStoreUtilities\Public</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19555:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\IoStoreUtilities\Public\LayeredCookArtifactReader.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19556:      <Filter>Source\Developer\IoStoreUtilities\Public</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19558:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\IoStoreUtilities\Public\LooseFilesCookArtifactReader.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19559:      <Filter>Source\Developer\IoStoreUtilities\Public</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19561:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\IoStoreUtilities\Public\PackageStoreWriter.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19562:      <Filter>Source\Developer\IoStoreUtilities\Public</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19564:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\IoStoreUtilities\Public\ZenCookArtifactReader.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19565:      <Filter>Source\Developer\IoStoreUtilities\Public</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19567:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\IoStoreUtilities\Public\ZenStoreWriter.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:19568:      <Filter>Source\Developer\IoStoreUtilities\Public</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:24088:    <Filter Include="Source\Developer\TraceAnalysis\Private\Store">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:24091:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\TraceAnalysis\Private\Store\CborPayload.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:24092:      <Filter>Source\Developer\TraceAnalysis\Private\Store</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:24094:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\TraceAnalysis\Private\Store\StoreClient.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:24095:      <Filter>Source\Developer\TraceAnalysis\Private\Store</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:24097:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\TraceAnalysis\Private\Store\StoreConnection.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:24098:      <Filter>Source\Developer\TraceAnalysis\Private\Store</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:24121:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\TraceAnalysis\Public\Trace\StoreClient.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:24124:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\TraceAnalysis\Public\Trace\StoreConnection.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:24127:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\TraceAnalysis\Public\Trace\StoreService.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:24454:    <Filter Include="Source\Developer\TraceInsightsFrontend\Private\InsightsFrontend\StoreService">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:24457:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\TraceInsightsFrontend\Private\InsightsFrontend\StoreService\DiagnosticsSessionAnalyzer.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:24458:      <Filter>Source\Developer\TraceInsightsFrontend\Private\InsightsFrontend\StoreService</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:24460:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\TraceInsightsFrontend\Private\InsightsFrontend\StoreService\DiagnosticsSessionAnalyzer.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:24461:      <Filter>Source\Developer\TraceInsightsFrontend\Private\InsightsFrontend\StoreService</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:24463:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\TraceInsightsFrontend\Private\InsightsFrontend\StoreService\StoreBrowser.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:24464:      <Filter>Source\Developer\TraceInsightsFrontend\Private\InsightsFrontend\StoreService</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:24466:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\TraceInsightsFrontend\Private\InsightsFrontend\StoreService\StoreBrowser.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:24467:      <Filter>Source\Developer\TraceInsightsFrontend\Private\InsightsFrontend\StoreService</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:24469:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\TraceInsightsFrontend\Private\InsightsFrontend\StoreService\TraceServerControl.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:24470:      <Filter>Source\Developer\TraceInsightsFrontend\Private\InsightsFrontend\StoreService</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:24496:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\TraceInsightsFrontend\Private\InsightsFrontend\Tests\FunctionalTests\TraceStoreWindowTests.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:24538:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\TraceInsightsFrontend\Private\InsightsFrontend\Widgets\STraceStoreWindow.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:24541:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\TraceInsightsFrontend\Private\InsightsFrontend\Widgets\STraceStoreWindow.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:24565:    <Filter Include="Source\Developer\TraceInsightsFrontend\Public\InsightsFrontend\StoreService">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:24568:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\TraceInsightsFrontend\Public\InsightsFrontend\StoreService\TraceServerControl.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:24569:      <Filter>Source\Developer\TraceInsightsFrontend\Public\InsightsFrontend\StoreService</Filter>
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:25936:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\TraceServices\Private\Common\StringStore.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:25939:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\TraceServices\Private\Common\StringStore.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:26236:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Developer\TraceServices\Public\Common\CachedStringStore.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:42376:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Editor\SequenceRecorder\Private\PropertiesToRecordForClassDetailsCustomization.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:42379:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Editor\SequenceRecorder\Private\PropertiesToRecordForClassDetailsCustomization.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:46717:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Editor\UnrealEd\Classes\Commandlets\IoStoreCommandlet.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:48007:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Editor\UnrealEd\Private\PackageRestore.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:48010:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Editor\UnrealEd\Private\PackageRestore.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:48544:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Editor\UnrealEd\Private\Commandlets\IoStoreCommandlet.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:48772:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Editor\UnrealEd\Private\Cooker\IoStoreCookOnTheFlyRequestManager.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:48775:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Editor\UnrealEd\Private\Cooker\IoStoreCookOnTheFlyRequestManager.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:54076:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Analytics\Analytics\Private\AnalyticsPropertyStore.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:54085:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Analytics\Analytics\Private\Tests\AnalyticsPropertyStoreTests.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:54103:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Analytics\Analytics\Public\AnalyticsPropertyStore.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:54115:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Analytics\Analytics\Public\Interfaces\IAnalyticsPropertyStore.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:55615:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\ApplicationCore\Private\Windows\TextStoreACP.cpp">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:55939:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\ApplicationCore\Public\Windows\TextStoreACP.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:60238:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Core\Internal\IO\IoStore.h">
+d:\UE\UE_Project\LFP2D\Intermediate\ProjectFiles\UE5.vcxproj.filters:61228:    <ClCompile Include="..\..\..\..\UE_5.5\Engine\Source\Runtime\Core\Private\IO\IoStore.cpp">
+
+[Showing results with pagination = limit: 200, offset: 0]
