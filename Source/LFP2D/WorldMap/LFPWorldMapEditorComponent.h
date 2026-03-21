@@ -79,6 +79,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "World Map Editor|Brush")
 	void SetBrushBaseFoodReward(int32 InFood) { BrushBaseFoodReward = FMath::Max(0, InFood); }
 
+	UFUNCTION(BlueprintCallable, Category = "World Map Editor|Brush")
+	void SetBrushTownBuildingList(const FString& InList) { BrushTownBuildingList = InList; }
+
 	// ==== 操作方法 ====
 
 	// 在世界坐标处放置新节点
@@ -188,6 +191,10 @@ protected:
 	// 基础食物奖励
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Brush")
 	int32 BrushBaseFoodReward = 0;
+
+	// 城镇建筑列表（分号分隔）
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Brush")
+	FString BrushTownBuildingList;
 
 	// 选中的节点（移动/连接/参数编辑用）
 	UPROPERTY()

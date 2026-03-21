@@ -1,7 +1,7 @@
----,NodeID,PosX,PosY,NodeType,BattleMapName,StarRating,bCanEscape,EventID,PrerequisiteNodeIDs
-0,0,601.846191,-524.273987,WNT_Battle,,1,True,,
-1,1,71.214951,7.245561,WNT_Battle,test,2,True,,
-2,2,168.154022,1032.969238,WNT_Battle,test,4,True,,
-4,4,417.081390,112.303909,WNT_Town,,1,True,,
-5,5,548.347900,996.212891,WNT_Shop,,1,True,,
-6,6,-218.166504,478.988373,WNT_EvolutionTower,,1,True,,
+---,NodeID,PosX,PosY,NodeType,BattleMapName,StarRating,bCanEscape,BaseGoldReward,BaseFoodReward,EventID,TownBuildingList,PrerequisiteNodeIDs
+0,0,601.846191,-524.273987,WNT_Battle,,1,True,0,0,,,
+1,1,71.214951,7.245561,WNT_Battle,test,2,True,0,0,,,
+2,2,168.154022,1032.969238,WNT_Battle,test,4,True,0,0,,,
+4,4,417.081390,112.303909,WNT_Town,,1,True,0,0,,EvolutionTower,
+5,5,548.347900,996.212891,WNT_Shop,,1,True,0,0,,,
+6,6,-218.166504,478.988373,WNT_EvolutionTower,,1,True,0,0,,,

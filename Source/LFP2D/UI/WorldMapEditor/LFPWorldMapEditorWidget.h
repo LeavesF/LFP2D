@@ -48,6 +48,9 @@ private:
 	UFUNCTION() void OnBaseGoldRewardChanged(const FText& Text, ETextCommit::Type CommitType);
 	UFUNCTION() void OnBaseFoodRewardChanged(const FText& Text, ETextCommit::Type CommitType);
 
+	// 城镇建筑勾选回调（任意一个变化时重新拼接字符串）
+	UFUNCTION() void OnTownBuildingCheckChanged(bool bIsChecked);
+
 	// 保存/加载回调
 	UFUNCTION() void OnSaveClicked();
 	UFUNCTION() void OnLoadClicked();
@@ -109,6 +112,22 @@ protected:
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
 	TObjectPtr<UEditableTextBox> BaseFoodRewardInput;
 
+	// 城镇建筑勾选框（每个建筑类型一个 CheckBox）
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+	TObjectPtr<UCheckBox> TownCheck_Shop;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+	TObjectPtr<UCheckBox> TownCheck_EvolutionTower;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+	TObjectPtr<UCheckBox> TownCheck_Teleport;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+	TObjectPtr<UCheckBox> TownCheck_QuestNPC;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+	TObjectPtr<UCheckBox> TownCheck_SkillNode;
+
 	// 文件操作
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
 	TObjectPtr<UEditableTextBox> WorldMapFileNameInput;
@@ -132,4 +151,7 @@ protected:
 	// 编辑器组件引用
 	UPROPERTY()
 	TObjectPtr<ULFPWorldMapEditorComponent> EditorComponent;
+
+	// 从勾选框状态拼接建筑列表字符串并同步到 Brush
+	void SyncTownBuildingChecksToBrush();
 };

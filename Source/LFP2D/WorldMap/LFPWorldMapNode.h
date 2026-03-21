@@ -51,6 +51,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Node|Event")
 	FString EventID;
 
+	// ==== 城镇参数 ====
+
+	// 城镇建筑列表字符串（分号分隔）
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Node|Town")
+	FString TownBuildingList;
+
 	// ==== 解锁条件 ====
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Node")

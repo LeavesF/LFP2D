@@ -6,6 +6,7 @@
 #include "LFP2D/WorldMap/LFPWorldMapEditorComponent.h"
 #include "LFP2D/UI/WorldMapEditor/LFPWorldMapEditorWidget.h"
 #include "LFP2D/UI/WorldMap/LFPUnitMergeWidget.h"
+#include "LFP2D/UI/Town/LFPTownWidget.h"
 #include "LFP2D/Core/LFPGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 #include "Camera/PlayerCameraManager.h"
@@ -441,8 +442,7 @@ void ALFPWorldMapPlayerController::EnterNode(ALFPWorldMapNode* Node)
 		break;
 
 	case ELFPWorldNodeType::WNT_Town:
-		// TODO: 进入城镇
-		UE_LOG(LogTemp, Log, TEXT("城镇节点 %d"), Node->NodeID);
+		OpenTown(Node);
 		break;
 
 	case ELFPWorldNodeType::WNT_QuestNPC:
@@ -576,4 +576,93 @@ void ALFPWorldMapPlayerController::OpenEvolutionTower()
 void ALFPWorldMapPlayerController::OnUnitMergeWidgetClosed()
 {
 	UE_LOG(LogTemp, Log, TEXT("升华塔: 升阶面板已关闭"));
+
+	// 如果是从城镇里打开的升华塔，关闭后重新显示城镇面板
+	if (TownWidget && TownWidget->IsInViewport())
+	{
+		TownWidget->SetVisibility(ESlateVisibility::Visible);
+	}
+}
+
+void ALFPWorldMapPlayerController::OpenTown(ALFPWorldMapNode* TownNode)
+{
+	if (!TownNode || !TownWidgetClass) return;
+
+	// 解析建筑列表
+	TArray<ELFPTownBuildingType> BuildingTypes = LFPTownUtils::ParseBuildingList(TownNode->TownBuildingList);
+
+	if (BuildingTypes.Num() == 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("城镇节点 %d: 建筑列表为空"), TownNode->NodeID);
+		return;
+	}
+
+	// 创建或显示 TownWidget
+	if (!TownWidget)
+	{
+		TownWidget = CreateWidget<ULFPTownWidget>(this, TownWidgetClass);
+		if (TownWidget)
+		{
+			TownWidget->OnClosed.AddDynamic(this, &ALFPWorldMapPlayerController::OnTownWidgetClosed);
+			TownWidget->OnBuildingRequested.AddDynamic(this, &ALFPWorldMapPlayerController::OnTownBuildingRequested);
+			TownWidget->AddToViewport();
+		}
+	}
+	else
+	{
+		TownWidget->SetVisibility(ESlateVisibility::Visible);
+		TownWidget->AddToViewport();
+	}
+
+	if (TownWidget)
+	{
+		TownWidget->Setup(BuildingTypes);
+	}
+
+	UE_LOG(LogTemp, Log, TEXT("城镇节点 %d: 打开城镇面板，建筑数量 %d"), TownNode->NodeID, BuildingTypes.Num());
+}
+
+void ALFPWorldMapPlayerController::OnTownWidgetClosed()
+{
+	UE_LOG(LogTemp, Log, TEXT("城镇: 城镇面板已关闭"));
+}
+
+void ALFPWorldMapPlayerController::OnTownBuildingRequested(ELFPTownBuildingType BuildingType)
+{
+	UE_LOG(LogTemp, Log, TEXT("城镇: 请求打开建筑 %s"), *LFPTownUtils::BuildingTypeToString(BuildingType));
+
+	switch (BuildingType)
+	{
+	case ELFPTownBuildingType::TBT_EvolutionTower:
+		// 隐藏城镇面板，打开升华塔
+		if (TownWidget)
+		{
+			TownWidget->SetVisibility(ESlateVisibility::Hidden);
+		}
+		OpenEvolutionTower();
+		break;
+
+	case ELFPTownBuildingType::TBT_Shop:
+		// TODO: 打开商店 UI
+		UE_LOG(LogTemp, Log, TEXT("城镇: 商店功能尚未实现"));
+		break;
+
+	case ELFPTownBuildingType::TBT_Teleport:
+		// TODO: 打开传送阵 UI
+		UE_LOG(LogTemp, Log, TEXT("城镇: 传送阵功能尚未实现"));
+		break;
+
+	case ELFPTownBuildingType::TBT_QuestNPC:
+		// TODO: 打开任务对话
+		UE_LOG(LogTemp, Log, TEXT("城镇: 任务NPC功能尚未实现"));
+		break;
+
+	case ELFPTownBuildingType::TBT_SkillNode:
+		// TODO: 打开技能树 UI
+		UE_LOG(LogTemp, Log, TEXT("城镇: 技能节点功能尚未实现"));
+		break;
+
+	default:
+		break;
+	}
 }

@@ -110,6 +110,7 @@ ALFPWorldMapNode* ULFPWorldMapEditorComponent::PlaceNodeAt(FVector2D WorldPos)
 		NewNode->EventID = BrushEventID;
 		NewNode->BaseGoldReward = BrushBaseGoldReward;
 		NewNode->BaseFoodReward = BrushBaseFoodReward;
+		NewNode->TownBuildingList = BrushTownBuildingList;
 
 		UE_LOG(LogTemp, Log, TEXT("放置节点 ID %d 在 (%.1f, %.1f)"), NewID, WorldPos.X, WorldPos.Y);
 	}
@@ -147,6 +148,7 @@ void ULFPWorldMapEditorComponent::ApplyParamsToSelectedNode()
 	SelectedNode->EventID = BrushEventID;
 	SelectedNode->BaseGoldReward = BrushBaseGoldReward;
 	SelectedNode->BaseFoodReward = BrushBaseFoodReward;
+	SelectedNode->TownBuildingList = BrushTownBuildingList;
 
 	// 更新视觉（节点类型可能变了）
 	ALFPWorldMapManager* Manager = GetWorldMapManager();

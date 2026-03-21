@@ -71,6 +71,12 @@ struct FLFPWorldNodeRow : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Node|Event")
 	FString EventID;
 
+	// ==== 城镇节点参数 ====
+
+	// 城镇建筑列表（分号分隔，如 "Shop;EvolutionTower;Teleport"）
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Node|Town")
+	FString TownBuildingList;
+
 	// ==== 解锁条件 ====
 
 	// 前置节点 ID 列表（分号分隔，如 "0;3;5"）

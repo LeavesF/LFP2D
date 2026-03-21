@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "InputActionValue.h"
+#include "LFP2D/Town/LFPTownData.h"
 #include "LFPWorldMapPlayerController.generated.h"
 
 class ALFPWorldMapManager;
@@ -10,6 +11,7 @@ class ALFPWorldMapNode;
 class ULFPWorldMapEditorComponent;
 class ULFPWorldMapEditorWidget;
 class ULFPUnitMergeWidget;
+class ULFPTownWidget;
 class UInputMappingContext;
 class UInputAction;
 
@@ -123,6 +125,25 @@ protected:
 	// 升阶面板关闭回调
 	UFUNCTION()
 	void OnUnitMergeWidgetClosed();
+
+	// ============== 城镇系统 ==============
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<ULFPTownWidget> TownWidgetClass;
+
+	UPROPERTY()
+	TObjectPtr<ULFPTownWidget> TownWidget;
+
+	// 打开城镇面板
+	void OpenTown(ALFPWorldMapNode* TownNode);
+
+	// 城镇面板关闭回调
+	UFUNCTION()
+	void OnTownWidgetClosed();
+
+	// 城镇建筑功能请求回调
+	UFUNCTION()
+	void OnTownBuildingRequested(ELFPTownBuildingType BuildingType);
 
 	// ============== 相机 ==============
 

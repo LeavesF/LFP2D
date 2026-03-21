@@ -29,6 +29,13 @@ void ULFPWorldMapEditorWidget::NativeConstruct()
 	if (BaseGoldRewardInput) BaseGoldRewardInput->OnTextCommitted.AddDynamic(this, &ULFPWorldMapEditorWidget::OnBaseGoldRewardChanged);
 	if (BaseFoodRewardInput) BaseFoodRewardInput->OnTextCommitted.AddDynamic(this, &ULFPWorldMapEditorWidget::OnBaseFoodRewardChanged);
 
+	// 城镇建筑勾选框
+	if (TownCheck_Shop) TownCheck_Shop->OnCheckStateChanged.AddDynamic(this, &ULFPWorldMapEditorWidget::OnTownBuildingCheckChanged);
+	if (TownCheck_EvolutionTower) TownCheck_EvolutionTower->OnCheckStateChanged.AddDynamic(this, &ULFPWorldMapEditorWidget::OnTownBuildingCheckChanged);
+	if (TownCheck_Teleport) TownCheck_Teleport->OnCheckStateChanged.AddDynamic(this, &ULFPWorldMapEditorWidget::OnTownBuildingCheckChanged);
+	if (TownCheck_QuestNPC) TownCheck_QuestNPC->OnCheckStateChanged.AddDynamic(this, &ULFPWorldMapEditorWidget::OnTownBuildingCheckChanged);
+	if (TownCheck_SkillNode) TownCheck_SkillNode->OnCheckStateChanged.AddDynamic(this, &ULFPWorldMapEditorWidget::OnTownBuildingCheckChanged);
+
 	// 绑定保存/加载按钮
 	if (SaveWorldMapButton) SaveWorldMapButton->OnClicked.AddDynamic(this, &ULFPWorldMapEditorWidget::OnSaveClicked);
 	if (LoadWorldMapButton) LoadWorldMapButton->OnClicked.AddDynamic(this, &ULFPWorldMapEditorWidget::OnLoadClicked);
@@ -171,6 +178,25 @@ void ULFPWorldMapEditorWidget::OnBaseFoodRewardChanged(const FText& Text, ETextC
 	EditorComponent->SetBrushBaseFoodReward(Food);
 }
 
+void ULFPWorldMapEditorWidget::OnTownBuildingCheckChanged(bool bIsChecked)
+{
+	SyncTownBuildingChecksToBrush();
+}
+
+void ULFPWorldMapEditorWidget::SyncTownBuildingChecksToBrush()
+{
+	if (!EditorComponent) return;
+
+	TArray<FString> Parts;
+	if (TownCheck_Shop && TownCheck_Shop->IsChecked()) Parts.Add(TEXT("Shop"));
+	if (TownCheck_EvolutionTower && TownCheck_EvolutionTower->IsChecked()) Parts.Add(TEXT("EvolutionTower"));
+	if (TownCheck_Teleport && TownCheck_Teleport->IsChecked()) Parts.Add(TEXT("Teleport"));
+	if (TownCheck_QuestNPC && TownCheck_QuestNPC->IsChecked()) Parts.Add(TEXT("QuestNPC"));
+	if (TownCheck_SkillNode && TownCheck_SkillNode->IsChecked()) Parts.Add(TEXT("SkillNode"));
+
+	EditorComponent->SetBrushTownBuildingList(FString::Join(Parts, TEXT(";")));
+}
+
 // ============== 保存/加载 ==============
 
 void ULFPWorldMapEditorWidget::OnSaveClicked()
@@ -259,6 +285,18 @@ void ULFPWorldMapEditorWidget::UpdateNodeInfo(ALFPWorldMapNode* Node)
 	else if (Node->NodeType == ELFPWorldNodeType::WNT_Event)
 	{
 		Info += FString::Printf(TEXT(" | 事件: %s"), *Node->EventID);
+	}
+	else if (Node->NodeType == ELFPWorldNodeType::WNT_Town)
+	{
+		Info += FString::Printf(TEXT(" | 建筑: %s"), *Node->TownBuildingList);
+
+		// 同步勾选框状态
+		FString BL = Node->TownBuildingList;
+		if (TownCheck_Shop) TownCheck_Shop->SetIsChecked(BL.Contains(TEXT("Shop")));
+		if (TownCheck_EvolutionTower) TownCheck_EvolutionTower->SetIsChecked(BL.Contains(TEXT("EvolutionTower")));
+		if (TownCheck_Teleport) TownCheck_Teleport->SetIsChecked(BL.Contains(TEXT("Teleport")));
+		if (TownCheck_QuestNPC) TownCheck_QuestNPC->SetIsChecked(BL.Contains(TEXT("QuestNPC")));
+		if (TownCheck_SkillNode) TownCheck_SkillNode->SetIsChecked(BL.Contains(TEXT("SkillNode")));
 	}
 
 	SelectedNodeInfoText->SetText(FText::FromString(Info));
