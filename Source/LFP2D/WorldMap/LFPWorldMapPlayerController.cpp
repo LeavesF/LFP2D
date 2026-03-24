@@ -6,6 +6,7 @@
 #include "LFP2D/WorldMap/LFPWorldMapEditorComponent.h"
 #include "LFP2D/UI/WorldMapEditor/LFPWorldMapEditorWidget.h"
 #include "LFP2D/UI/WorldMap/LFPUnitMergeWidget.h"
+#include "LFP2D/UI/WorldMap/LFPShopWidget.h"
 #include "LFP2D/UI/Town/LFPTownWidget.h"
 #include "LFP2D/Core/LFPGameInstance.h"
 #include "Kismet/GameplayStatics.h"
@@ -437,8 +438,7 @@ void ALFPWorldMapPlayerController::EnterNode(ALFPWorldMapNode* Node)
 		break;
 
 	case ELFPWorldNodeType::WNT_Shop:
-		// TODO: 打开商店 UI
-		UE_LOG(LogTemp, Log, TEXT("商店节点 %d"), Node->NodeID);
+		OpenShop(Node, false);
 		break;
 
 	case ELFPWorldNodeType::WNT_Town:
@@ -584,6 +584,70 @@ void ALFPWorldMapPlayerController::OnUnitMergeWidgetClosed()
 	}
 }
 
+void ALFPWorldMapPlayerController::OpenShop(ALFPWorldMapNode* ShopNode, bool bReturnToTownOnClose)
+{
+	if (!ShopNode || !ShopWidgetClass)
+	{
+		return;
+	}
+
+	ULFPGameInstance* GI = Cast<ULFPGameInstance>(GetGameInstance());
+	if (!GI || ShopNode->ShopID == NAME_None)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("商店节点 %d: ShopID 无效"), ShopNode->NodeID);
+		if (bReturnToTownOnClose && TownWidget && TownWidget->IsInViewport())
+		{
+			TownWidget->SetVisibility(ESlateVisibility::Visible);
+		}
+		return;
+	}
+
+	FLFPShopDefinition ShopDefinition;
+	if (!GI->FindShopDefinition(ShopNode->ShopID, ShopDefinition))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("商店配置不存在: %s"), *ShopNode->ShopID.ToString());
+		if (bReturnToTownOnClose && TownWidget && TownWidget->IsInViewport())
+		{
+			TownWidget->SetVisibility(ESlateVisibility::Visible);
+		}
+		return;
+	}
+
+	bReturnToTownAfterShopClose = bReturnToTownOnClose;
+
+	if (!ShopWidget)
+	{
+		ShopWidget = CreateWidget<ULFPShopWidget>(this, ShopWidgetClass);
+		if (ShopWidget)
+		{
+			ShopWidget->OnClosed.AddDynamic(this, &ALFPWorldMapPlayerController::OnShopWidgetClosed);
+			ShopWidget->AddToViewport();
+		}
+	}
+	else
+	{
+		ShopWidget->SetVisibility(ESlateVisibility::Visible);
+		ShopWidget->AddToViewport();
+	}
+
+	if (ShopWidget)
+	{
+		ShopWidget->Setup(GI, ShopNode->ShopID, ShopDefinition);
+	}
+}
+
+void ALFPWorldMapPlayerController::OnShopWidgetClosed()
+{
+	UE_LOG(LogTemp, Log, TEXT("商店: 商店面板已关闭"));
+
+	if (bReturnToTownAfterShopClose && TownWidget && TownWidget->IsInViewport())
+	{
+		TownWidget->SetVisibility(ESlateVisibility::Visible);
+	}
+
+	bReturnToTownAfterShopClose = false;
+}
+
 void ALFPWorldMapPlayerController::OpenTown(ALFPWorldMapNode* TownNode)
 {
 	if (!TownNode || !TownWidgetClass) return;
@@ -643,8 +707,14 @@ void ALFPWorldMapPlayerController::OnTownBuildingRequested(ELFPTownBuildingType 
 		break;
 
 	case ELFPTownBuildingType::TBT_Shop:
-		// TODO: 打开商店 UI
-		UE_LOG(LogTemp, Log, TEXT("城镇: 商店功能尚未实现"));
+		if (TownWidget)
+		{
+			TownWidget->SetVisibility(ESlateVisibility::Hidden);
+		}
+		if (SelectedNode && SelectedNode->NodeType == ELFPWorldNodeType::WNT_Town)
+		{
+			OpenShop(SelectedNode, true);
+		}
 		break;
 
 	case ELFPTownBuildingType::TBT_Teleport:

@@ -47,6 +47,7 @@ private:
 	UFUNCTION() void OnEdgeTurnCostChanged(const FText& Text, ETextCommit::Type CommitType);
 	UFUNCTION() void OnBaseGoldRewardChanged(const FText& Text, ETextCommit::Type CommitType);
 	UFUNCTION() void OnBaseFoodRewardChanged(const FText& Text, ETextCommit::Type CommitType);
+	UFUNCTION() void OnShopIDChanged(const FText& Text, ETextCommit::Type CommitType);
 
 	// 城镇建筑勾选回调（任意一个变化时重新拼接字符串）
 	UFUNCTION() void OnTownBuildingCheckChanged(bool bIsChecked);
@@ -111,6 +112,9 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
 	TObjectPtr<UEditableTextBox> BaseFoodRewardInput;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+	TObjectPtr<UEditableTextBox> ShopIDInput;
 
 	// 城镇建筑勾选框（每个建筑类型一个 CheckBox）
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))

@@ -57,6 +57,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Node|Town")
 	FString TownBuildingList;
 
+	// 商店配置 ID
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Node|Shop")
+	FName ShopID = NAME_None;
+
 	// ==== 解锁条件 ====
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Node")

@@ -28,6 +28,7 @@ void ULFPWorldMapEditorWidget::NativeConstruct()
 	if (EdgeTurnCostInput) EdgeTurnCostInput->OnTextCommitted.AddDynamic(this, &ULFPWorldMapEditorWidget::OnEdgeTurnCostChanged);
 	if (BaseGoldRewardInput) BaseGoldRewardInput->OnTextCommitted.AddDynamic(this, &ULFPWorldMapEditorWidget::OnBaseGoldRewardChanged);
 	if (BaseFoodRewardInput) BaseFoodRewardInput->OnTextCommitted.AddDynamic(this, &ULFPWorldMapEditorWidget::OnBaseFoodRewardChanged);
+	if (ShopIDInput) ShopIDInput->OnTextCommitted.AddDynamic(this, &ULFPWorldMapEditorWidget::OnShopIDChanged);
 
 	// 城镇建筑勾选框
 	if (TownCheck_Shop) TownCheck_Shop->OnCheckStateChanged.AddDynamic(this, &ULFPWorldMapEditorWidget::OnTownBuildingCheckChanged);
@@ -62,6 +63,7 @@ void ULFPWorldMapEditorWidget::NativeConstruct()
 	if (EdgeTurnCostInput) EdgeTurnCostInput->SetText(FText::FromString(TEXT("1")));
 	if (BaseGoldRewardInput) BaseGoldRewardInput->SetText(FText::FromString(TEXT("0")));
 	if (BaseFoodRewardInput) BaseFoodRewardInput->SetText(FText::FromString(TEXT("0")));
+	if (ShopIDInput) ShopIDInput->SetText(FText::GetEmpty());
 }
 
 void ULFPWorldMapEditorWidget::InitializeEditor(ULFPWorldMapEditorComponent* EditorComp)
@@ -178,6 +180,12 @@ void ULFPWorldMapEditorWidget::OnBaseFoodRewardChanged(const FText& Text, ETextC
 	EditorComponent->SetBrushBaseFoodReward(Food);
 }
 
+void ULFPWorldMapEditorWidget::OnShopIDChanged(const FText& Text, ETextCommit::Type CommitType)
+{
+	if (!EditorComponent) return;
+	EditorComponent->SetBrushShopID(FName(*Text.ToString()));
+}
+
 void ULFPWorldMapEditorWidget::OnTownBuildingCheckChanged(bool bIsChecked)
 {
 	SyncTownBuildingChecksToBrush();
@@ -288,7 +296,7 @@ void ULFPWorldMapEditorWidget::UpdateNodeInfo(ALFPWorldMapNode* Node)
 	}
 	else if (Node->NodeType == ELFPWorldNodeType::WNT_Town)
 	{
-		Info += FString::Printf(TEXT(" | 建筑: %s"), *Node->TownBuildingList);
+		Info += FString::Printf(TEXT(" | 建筑: %s | 商店: %s"), *Node->TownBuildingList, *Node->ShopID.ToString());
 
 		// 同步勾选框状态
 		FString BL = Node->TownBuildingList;
@@ -297,6 +305,12 @@ void ULFPWorldMapEditorWidget::UpdateNodeInfo(ALFPWorldMapNode* Node)
 		if (TownCheck_Teleport) TownCheck_Teleport->SetIsChecked(BL.Contains(TEXT("Teleport")));
 		if (TownCheck_QuestNPC) TownCheck_QuestNPC->SetIsChecked(BL.Contains(TEXT("QuestNPC")));
 		if (TownCheck_SkillNode) TownCheck_SkillNode->SetIsChecked(BL.Contains(TEXT("SkillNode")));
+		if (ShopIDInput) ShopIDInput->SetText(FText::FromName(Node->ShopID));
+	}
+	else if (Node->NodeType == ELFPWorldNodeType::WNT_Shop)
+	{
+		Info += FString::Printf(TEXT(" | 商店: %s"), *Node->ShopID.ToString());
+		if (ShopIDInput) ShopIDInput->SetText(FText::FromName(Node->ShopID));
 	}
 
 	SelectedNodeInfoText->SetText(FText::FromString(Info));

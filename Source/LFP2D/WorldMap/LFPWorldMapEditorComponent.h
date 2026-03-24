@@ -82,6 +82,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "World Map Editor|Brush")
 	void SetBrushTownBuildingList(const FString& InList) { BrushTownBuildingList = InList; }
 
+	UFUNCTION(BlueprintCallable, Category = "World Map Editor|Brush")
+	void SetBrushShopID(FName InShopID) { BrushShopID = InShopID; }
+
 	// ==== 操作方法 ====
 
 	// 在世界坐标处放置新节点
@@ -195,6 +198,10 @@ protected:
 	// 城镇建筑列表（分号分隔）
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Brush")
 	FString BrushTownBuildingList;
+
+	// 商店配置 ID
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Brush")
+	FName BrushShopID = NAME_None;
 
 	// 选中的节点（移动/连接/参数编辑用）
 	UPROPERTY()

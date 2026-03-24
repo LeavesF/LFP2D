@@ -2,10 +2,14 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
+#include "LFP2D/Shop/LFPRelicTypes.h"
 #include "LFPGameInstance.generated.h"
 
 class ALFPWorldMapNode;
+class ALFPTacticsUnit;
 class ULFPUnitRegistryDataAsset;
+class ULFPRelicDataAsset;
+class ULFPShopDataAsset;
 
 // 轻量单位数据：跨关卡保存用
 USTRUCT(BlueprintType)
@@ -224,6 +228,48 @@ public:
 	// 获取食物
 	UFUNCTION(BlueprintPure, Category = "Resources")
 	int32 GetFood() const { return Food; }
+
+	// 是否有足够金币
+	UFUNCTION(BlueprintPure, Category = "Resources")
+	bool CanAffordGold(int32 Amount) const { return Gold >= Amount; }
+
+	// 扣除金币
+	UFUNCTION(BlueprintCallable, Category = "Resources")
+	bool SpendGold(int32 Amount);
+
+	// ============== 遗物 / 商店系统 ==============
+
+	// 遗物数据资产
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Relic")
+	TObjectPtr<ULFPRelicDataAsset> RelicDataAsset;
+
+	// 商店数据资产
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shop")
+	TObjectPtr<ULFPShopDataAsset> ShopDataAsset;
+
+	// 已拥有遗物 ID 集合
+	UPROPERTY(BlueprintReadOnly, Category = "Relic")
+	TSet<FName> OwnedRelicIDs;
+
+	// 是否已拥有遗物
+	UFUNCTION(BlueprintPure, Category = "Relic")
+	bool HasRelic(FName RelicID) const;
+
+	// 查找遗物定义
+	UFUNCTION(BlueprintPure, Category = "Relic")
+	bool FindRelicDefinition(FName RelicID, FLFPRelicDefinition& OutDefinition) const;
+
+	// 查找商店定义
+	UFUNCTION(BlueprintPure, Category = "Shop")
+	bool FindShopDefinition(FName ShopID, FLFPShopDefinition& OutDefinition) const;
+
+	// 购买遗物
+	UFUNCTION(BlueprintCallable, Category = "Shop")
+	bool TryPurchaseRelic(FName RelicID, int32 Price);
+
+	// 对单位应用当前已拥有的遗物效果
+	UFUNCTION(BlueprintCallable, Category = "Relic")
+	void ApplyOwnedRelicsToUnit(ALFPTacticsUnit* Unit) const;
 
 	// ============== 编队系统 ==============
 

@@ -11,6 +11,7 @@ class ALFPWorldMapNode;
 class ULFPWorldMapEditorComponent;
 class ULFPWorldMapEditorWidget;
 class ULFPUnitMergeWidget;
+class ULFPShopWidget;
 class ULFPTownWidget;
 class UInputMappingContext;
 class UInputAction;
@@ -126,6 +127,19 @@ protected:
 	UFUNCTION()
 	void OnUnitMergeWidgetClosed();
 
+	// ============== 商店 ==============
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<ULFPShopWidget> ShopWidgetClass;
+
+	UPROPERTY()
+	TObjectPtr<ULFPShopWidget> ShopWidget;
+
+	void OpenShop(ALFPWorldMapNode* ShopNode, bool bReturnToTownOnClose);
+
+	UFUNCTION()
+	void OnShopWidgetClosed();
+
 	// ============== 城镇系统 ==============
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
@@ -192,6 +206,9 @@ protected:
 
 	// 可达节点缓存（高亮用）
 	TArray<ALFPWorldMapNode*> ReachableNodes;
+
+	// 当前商店关闭后是否返回城镇
+	bool bReturnToTownAfterShopClose = false;
 
 	// 棋子移动完成回调
 	UFUNCTION()

@@ -77,6 +77,10 @@ struct FLFPWorldNodeRow : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Node|Town")
 	FString TownBuildingList;
 
+	// 商店配置 ID（对应商店数据资产中的键）
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Node|Shop")
+	FName ShopID = NAME_None;
+
 	// ==== 解锁条件 ====
 
 	// 前置节点 ID 列表（分号分隔，如 "0;3;5"）

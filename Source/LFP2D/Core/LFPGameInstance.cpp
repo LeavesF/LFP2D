@@ -1,5 +1,8 @@
 #include "LFP2D/Core/LFPGameInstance.h"
 #include "LFP2D/Core/LFPUnitRegistryDataAsset.h"
+#include "LFP2D/Shop/LFPRelicDataAsset.h"
+#include "LFP2D/Shop/LFPShopDataAsset.h"
+#include "LFP2D/Unit/LFPTacticsUnit.h"
 #include "Kismet/GameplayStatics.h"
 #include "Camera/PlayerCameraManager.h"
 
@@ -123,6 +126,112 @@ void ULFPGameInstance::AddFood(int32 Amount)
 {
 	Food += Amount;
 	UE_LOG(LogTemp, Log, TEXT("食物变动: %+d, 当前: %d"), Amount, Food);
+}
+
+bool ULFPGameInstance::SpendGold(int32 Amount)
+{
+	if (Amount < 0)
+	{
+		return false;
+	}
+
+	if (!CanAffordGold(Amount))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("金币不足: 需要 %d, 当前 %d"), Amount, Gold);
+		return false;
+	}
+
+	Gold -= Amount;
+	UE_LOG(LogTemp, Log, TEXT("金币变动: -%d, 当前: %d"), Amount, Gold);
+	return true;
+}
+
+bool ULFPGameInstance::HasRelic(FName RelicID) const
+{
+	return RelicID != NAME_None && OwnedRelicIDs.Contains(RelicID);
+}
+
+bool ULFPGameInstance::FindRelicDefinition(FName RelicID, FLFPRelicDefinition& OutDefinition) const
+{
+	return RelicDataAsset ? RelicDataAsset->FindRelicDefinition(RelicID, OutDefinition) : false;
+}
+
+bool ULFPGameInstance::FindShopDefinition(FName ShopID, FLFPShopDefinition& OutDefinition) const
+{
+	return ShopDataAsset ? ShopDataAsset->FindShopDefinition(ShopID, OutDefinition) : false;
+}
+
+bool ULFPGameInstance::TryPurchaseRelic(FName RelicID, int32 Price)
+{
+	if (RelicID == NAME_None)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("TryPurchaseRelic: RelicID 无效"));
+		return false;
+	}
+
+	FLFPRelicDefinition RelicDefinition;
+	if (!FindRelicDefinition(RelicID, RelicDefinition))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("TryPurchaseRelic: 未找到遗物 %s"), *RelicID.ToString());
+		return false;
+	}
+
+	if (HasRelic(RelicID))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("TryPurchaseRelic: 已拥有遗物 %s"), *RelicID.ToString());
+		return false;
+	}
+
+	if (!SpendGold(Price))
+	{
+		return false;
+	}
+
+	OwnedRelicIDs.Add(RelicID);
+	UE_LOG(LogTemp, Log, TEXT("购买遗物成功: %s"), *RelicID.ToString());
+	return true;
+}
+
+void ULFPGameInstance::ApplyOwnedRelicsToUnit(ALFPTacticsUnit* Unit) const
+{
+	if (!Unit || !RelicDataAsset)
+	{
+		return;
+	}
+
+	for (const FName& RelicID : OwnedRelicIDs)
+	{
+		FLFPRelicDefinition Definition;
+		if (!RelicDataAsset->FindRelicDefinition(RelicID, Definition))
+		{
+			continue;
+		}
+
+		for (const FLFPRelicEffectEntry& Effect : Definition.Effects)
+		{
+			switch (Effect.EffectType)
+			{
+			case ELFPRelicEffectType::RET_MaxHealthFlat:
+				Unit->MaxHealth += Effect.Value;
+				break;
+			case ELFPRelicEffectType::RET_AttackFlat:
+				Unit->AttackPower += Effect.Value;
+				break;
+			case ELFPRelicEffectType::RET_DefenseFlat:
+				Unit->Defense += Effect.Value;
+				break;
+			case ELFPRelicEffectType::RET_SpeedFlat:
+				Unit->Speed += Effect.Value;
+				break;
+			default:
+				break;
+			}
+		}
+	}
+
+	Unit->MaxHealth = FMath::Max(Unit->MaxHealth, 1);
+	Unit->CurrentHealth = Unit->MaxHealth;
+	Unit->OnHealthChangedDelegate.Broadcast(Unit->CurrentHealth, Unit->MaxHealth);
 }
 
 // ============== 编队系统 ==============
