@@ -6,7 +6,6 @@
 #include "LFPGameInstance.generated.h"
 
 class ALFPWorldMapNode;
-class ALFPTacticsUnit;
 class ULFPUnitRegistryDataAsset;
 class ULFPRelicDataAsset;
 class ULFPShopDataAsset;
@@ -266,10 +265,6 @@ public:
 	// 购买遗物
 	UFUNCTION(BlueprintCallable, Category = "Shop")
 	bool TryPurchaseRelic(FName RelicID, int32 Price);
-
-	// 对单位应用当前已拥有的遗物效果
-	UFUNCTION(BlueprintCallable, Category = "Relic")
-	void ApplyOwnedRelicsToUnit(ALFPTacticsUnit* Unit) const;
 
 	// ============== 编队系统 ==============
 

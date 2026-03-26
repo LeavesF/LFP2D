@@ -2,7 +2,6 @@
 #include "LFP2D/Core/LFPUnitRegistryDataAsset.h"
 #include "LFP2D/Shop/LFPRelicDataAsset.h"
 #include "LFP2D/Shop/LFPShopDataAsset.h"
-#include "LFP2D/Unit/LFPTacticsUnit.h"
 #include "Kismet/GameplayStatics.h"
 #include "Camera/PlayerCameraManager.h"
 
@@ -190,48 +189,6 @@ bool ULFPGameInstance::TryPurchaseRelic(FName RelicID, int32 Price)
 	OwnedRelicIDs.Add(RelicID);
 	UE_LOG(LogTemp, Log, TEXT("购买遗物成功: %s"), *RelicID.ToString());
 	return true;
-}
-
-void ULFPGameInstance::ApplyOwnedRelicsToUnit(ALFPTacticsUnit* Unit) const
-{
-	if (!Unit || !RelicDataAsset)
-	{
-		return;
-	}
-
-	for (const FName& RelicID : OwnedRelicIDs)
-	{
-		FLFPRelicDefinition Definition;
-		if (!RelicDataAsset->FindRelicDefinition(RelicID, Definition))
-		{
-			continue;
-		}
-
-		for (const FLFPRelicEffectEntry& Effect : Definition.Effects)
-		{
-			switch (Effect.EffectType)
-			{
-			case ELFPRelicEffectType::RET_MaxHealthFlat:
-				Unit->MaxHealth += Effect.Value;
-				break;
-			case ELFPRelicEffectType::RET_AttackFlat:
-				Unit->AttackPower += Effect.Value;
-				break;
-			case ELFPRelicEffectType::RET_DefenseFlat:
-				Unit->Defense += Effect.Value;
-				break;
-			case ELFPRelicEffectType::RET_SpeedFlat:
-				Unit->Speed += Effect.Value;
-				break;
-			default:
-				break;
-			}
-		}
-	}
-
-	Unit->MaxHealth = FMath::Max(Unit->MaxHealth, 1);
-	Unit->CurrentHealth = Unit->MaxHealth;
-	Unit->OnHealthChangedDelegate.Broadcast(Unit->CurrentHealth, Unit->MaxHealth);
 }
 
 // ============== 编队系统 ==============

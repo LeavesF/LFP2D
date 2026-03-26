@@ -1076,7 +1076,6 @@ void ALFPTacticsPlayerController::StartPlacingUnit(int32 PartyIndex)
         PlacingUnitPreview->Affiliation = EUnitAffiliation::UA_Player;
         PlacingUnitPreview->UnitTypeID = Entry.TypeID;
         PlacingUnitPreview->UnitTier = Entry.Tier;
-        GI->ApplyOwnedRelicsToUnit(PlacingUnitPreview);
     }
 
     PlacingPartyIndex = PartyIndex;
