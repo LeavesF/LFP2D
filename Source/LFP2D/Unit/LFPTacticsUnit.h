@@ -471,15 +471,15 @@ public:
     FName UnitTypeID = NAME_None;
 
     // 单位阶级
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Identity")
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Unit Identity")
     int32 UnitTier = 1;
 
     // 单位种族
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Identity")
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Unit Identity")
     ELFPUnitRace UnitRace = ELFPUnitRace::UR_None;
 
     // 特殊标签
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Identity")
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Unit Identity")
     FGameplayTagContainer SpecialTags;
 
     // 生成轻量单位数据（用于捕获、保存）

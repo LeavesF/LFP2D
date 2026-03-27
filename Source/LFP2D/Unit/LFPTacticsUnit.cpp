@@ -152,6 +152,7 @@ void ALFPTacticsUnit::AddCurrentMaxHealth(int32 Delta, bool bKeepHealthRatio)
     {
         CurrentHealth = FMath::Clamp(CurrentHealth + Delta, 0, CurrentMaxHealth);
     }
+    OnHealthChangedDelegate.Broadcast(CurrentHealth, CurrentMaxHealth);
 }
 
 void ALFPTacticsUnit::AddCurrentSpeed(int32 Delta)
