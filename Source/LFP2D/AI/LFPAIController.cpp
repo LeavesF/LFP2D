@@ -157,7 +157,7 @@ float ALFPAIController::CalculateThreatValue(ALFPTacticsUnit* Target) const
     if (!ControlledUnit || !Target) return 0.0f;
 
     // 威胁值 = 目标攻击力 * (1 - 目标当前血量/最大血量)
-    float ThreatValue = Target->GetAttackPower() * (1.0f - (float)Target->GetCurrentHealth() / Target->GetMaxHealth());
+    float ThreatValue = Target->GetCurrentAttack() * (1.0f - (float)Target->GetCurrentHealth() / Target->GetMaxHealth());
 
     // 距离因素（越近威胁越大）
     int32 Distance = FLFPHexCoordinates::Distance(

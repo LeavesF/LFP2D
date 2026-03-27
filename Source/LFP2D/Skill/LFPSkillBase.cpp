@@ -137,7 +137,7 @@ float ULFPSkillBase::CalculateHatredValue_Implementation(ALFPTacticsUnit* Caster
     if (!Caster || !Target) return 0.0f;
 
     // 基础仇恨 = 目标攻击力（威胁越大越优先打）
-    float Hatred = (float)Target->GetAttackPower();
+    float Hatred = (float)Target->GetCurrentAttack();
 
     // 距离系数（越近仇恨越高）
     int32 Dist = FLFPHexCoordinates::Distance(

@@ -1,7 +1,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "Engine/DataAsset.h"
+#include "LFP2D/Unit/LFPTacticsUnit.h"
 #include "LFPUnitRegistryDataAsset.generated.h"
 
 class ALFPTacticsUnit;
@@ -27,6 +29,22 @@ struct FLFPUnitRegistryEntry
 	// 该单位的阶级（用于 UI 显示，如 1/2/3）
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit Registry")
 	int32 Tier = 1;
+
+	// 单位种族（唯一标签）
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit Registry|Identity")
+	ELFPUnitRace Race = ELFPUnitRace::UR_None;
+
+	// 特殊标签（可自由配置多个）
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit Registry|Identity")
+	FGameplayTagContainer SpecialTags;
+
+	// 基础属性模板
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit Registry|Stats")
+	FLFPUnitBaseStats BaseStats;
+
+	// 高级属性模板
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit Registry|Stats")
+	FLFPUnitAdvancedStats AdvancedStats;
 
 	// 可进化的目标 TypeID 列表（空=终阶，多个=分支选择）
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit Registry|Evolution")

@@ -11,6 +11,8 @@
 #include "LFP2D/HexGrid/LFPHexGridManager.h"
 #include "LFP2D/Turn/LFPTurnManager.h"
 #include "LFP2D/Core/LFPTurnGameMode.h"
+#include "LFP2D/Core/LFPGameInstance.h"
+#include "LFP2D/Core/LFPUnitRegistryDataAsset.h"
 #include "LFP2D/UI/Fighting/LFPHealthBarWidget.h"
 #include "LFP2D/UI/Fighting/LFPPlannedSkillIconWidget.h"
 #include "Kismet/GameplayStatics.h"
@@ -33,7 +35,7 @@ ALFPTacticsUnit::ALFPTacticsUnit()
     SpriteComponent->SetRelativeLocation(FVector(0, 0, 0)); // 在根组件上方
 
     // 默认值
-    CurrentMovePoints = MaxMovePoints;
+    ResetCurrentStatsToBase();
     CurrentPathIndex = -1;
     MoveProgress = 0.0f;
 
@@ -57,9 +59,128 @@ ALFPTacticsUnit::ALFPTacticsUnit()
     PlannedSkillIconComponent->SetVisibility(false); // 默认隐藏
 }
 
+bool ALFPTacticsUnit::InitializeFromRegistry(ULFPUnitRegistryDataAsset* Registry)
+{
+    if (bStatsInitialized)
+    {
+        return true;
+    }
+
+    if (!Registry || UnitTypeID == NAME_None)
+    {
+        return false;
+    }
+
+    FLFPUnitRegistryEntry Entry;
+    if (!Registry->FindEntry(UnitTypeID, Entry))
+    {
+        return false;
+    }
+
+    ApplyRegistryEntry(Entry);
+    bStatsInitialized = true;
+    return true;
+}
+
+void ALFPTacticsUnit::ApplyRegistryEntry(const FLFPUnitRegistryEntry& Entry)
+{
+    UnitRace = Entry.Race;
+    SpecialTags = Entry.SpecialTags;
+
+    BaseAttack = Entry.BaseStats.Attack;
+    BaseMaxHealth = Entry.BaseStats.MaxHealth;
+    BaseMaxMovePoints = Entry.BaseStats.MaxMovePoints;
+    BaseSpeed = Entry.BaseStats.Speed;
+
+    BaseAttackCount = Entry.AdvancedStats.AttackCount;
+    BaseActionCount = Entry.AdvancedStats.ActionCount;
+    BasePhysicalBlock = Entry.AdvancedStats.PhysicalBlock;
+    BaseSpellDefense = Entry.AdvancedStats.SpellDefense;
+    BaseWeight = Entry.AdvancedStats.Weight;
+
+    ResetCurrentStatsToBase();
+}
+
+void ALFPTacticsUnit::ResetCurrentStatsToBase(bool bResetHealth)
+{
+    CurrentAttack = BaseAttack;
+    CurrentMaxHealth = BaseMaxHealth;
+    CurrentMaxMovePoints = BaseMaxMovePoints;
+    CurrentSpeed = BaseSpeed;
+    CurrentAttackCount = BaseAttackCount;
+    CurrentActionCount = BaseActionCount;
+    CurrentPhysicalBlock = BasePhysicalBlock;
+    CurrentSpellDefense = BaseSpellDefense;
+    CurrentWeight = BaseWeight;
+
+    AttackPower = CurrentAttack;
+    MaxHealth = CurrentMaxHealth;
+    MaxMovePoints = CurrentMaxMovePoints;
+    Speed = CurrentSpeed;
+    Defense = CurrentPhysicalBlock;
+
+    if (bResetHealth)
+    {
+        CurrentHealth = CurrentMaxHealth;
+    }
+    else
+    {
+        CurrentHealth = FMath::Clamp(CurrentHealth, 0, CurrentMaxHealth);
+    }
+
+    CurrentMovePoints = CurrentMaxMovePoints;
+}
+
+void ALFPTacticsUnit::AddCurrentAttack(int32 Delta)
+{
+    CurrentAttack = FMath::Max(0, CurrentAttack + Delta);
+    AttackPower = CurrentAttack;
+}
+
+void ALFPTacticsUnit::AddCurrentMaxHealth(int32 Delta, bool bKeepHealthRatio)
+{
+    const int32 OldMaxHealth = CurrentMaxHealth;
+    CurrentMaxHealth = FMath::Max(1, CurrentMaxHealth + Delta);
+    MaxHealth = CurrentMaxHealth;
+
+    if (bKeepHealthRatio && OldMaxHealth > 0)
+    {
+        const float HealthRatio = static_cast<float>(CurrentHealth) / OldMaxHealth;
+        CurrentHealth = FMath::Clamp(FMath::RoundToInt(CurrentMaxHealth * HealthRatio), 0, CurrentMaxHealth);
+    }
+    else
+    {
+        CurrentHealth = FMath::Clamp(CurrentHealth + Delta, 0, CurrentMaxHealth);
+    }
+}
+
+void ALFPTacticsUnit::AddCurrentSpeed(int32 Delta)
+{
+    CurrentSpeed = FMath::Max(0, CurrentSpeed + Delta);
+    Speed = CurrentSpeed;
+}
+
+void ALFPTacticsUnit::AddCurrentPhysicalBlock(int32 Delta)
+{
+    CurrentPhysicalBlock = FMath::Max(0, CurrentPhysicalBlock + Delta);
+    Defense = CurrentPhysicalBlock;
+}
+
 void ALFPTacticsUnit::BeginPlay()
 {
     Super::BeginPlay();
+
+    if (!bStatsInitialized)
+    {
+        if (ULFPGameInstance* GI = Cast<ULFPGameInstance>(GetGameInstance()))
+        {
+            InitializeFromRegistry(GI->UnitRegistry);
+        }
+        else
+        {
+            ResetCurrentStatsToBase();
+        }
+    }
 
     // 注册到回合管理器
     if (ALFPTurnManager* TurnManager = GetTurnManager())
@@ -79,7 +200,7 @@ void ALFPTacticsUnit::BeginPlay()
     SetCurrentCoordinates(SpawnPoint);
 
 	// 初始化血量
-    CurrentHealth = MaxHealth;
+    CurrentHealth = FMath::Clamp(CurrentHealth, 0, GetCurrentMaxHealth());
 	InitializeHealthBar();
 
     PlannedSkillIconComponent->SetRelativeLocation(FVector(0, SkillIconTopDist, 0)); // 在血条上方
@@ -252,7 +373,7 @@ void ALFPTacticsUnit::FinishMove()
 
 void ALFPTacticsUnit::ResetForNewRound()
 {
-    CurrentMovePoints = MaxMovePoints;
+    CurrentMovePoints = CurrentMaxMovePoints;
     bHasActed = false;
 
     // 重置精灵视觉效果
@@ -440,12 +561,11 @@ void ALFPTacticsUnit::TakeDamage(int32 Damage)
     if (bIsDead) return;
 
 	// 计算实际伤害（考虑防御）
-	int32 ActualDamage = FMath::Max(Damage - Defense, 1);
-	int32 OldHealth = CurrentHealth;
+	int32 ActualDamage = FMath::Max(Damage - GetPhysicalBlock(), 1);
 	CurrentHealth = FMath::Max(CurrentHealth - ActualDamage, 0);
 
 	// 广播血量变化事件
-	OnHealthChangedDelegate.Broadcast(CurrentHealth, MaxHealth);
+	OnHealthChangedDelegate.Broadcast(CurrentHealth, GetCurrentMaxHealth());
 
 	// 蓝图事件
 	OnTakeDamage(ActualDamage);
@@ -461,11 +581,10 @@ void ALFPTacticsUnit::Heal(int32 Amount)
 {
 	if (bIsDead) return;
 
-	int32 OldHealth = CurrentHealth;
-	CurrentHealth = FMath::Min(CurrentHealth + Amount, MaxHealth);
+	CurrentHealth = FMath::Min(CurrentHealth + Amount, GetCurrentMaxHealth());
 
 	// 广播血量变化事件
-	OnHealthChangedDelegate.Broadcast(CurrentHealth, MaxHealth);
+	OnHealthChangedDelegate.Broadcast(CurrentHealth, GetCurrentMaxHealth());
 
 	// 蓝图事件
 	OnHeal(Amount);
@@ -508,7 +627,7 @@ void ALFPTacticsUnit::ApplyDamageToTarget(ALFPTacticsUnit* Target)
     if (!Target || Target->bIsDead) return;
 
     // 基础伤害计算
-    int32 Damage = AttackPower;
+    int32 Damage = GetCurrentAttack();
 
     // 伤害随机浮动（10% 范围）
     float RandomFactor = FMath::RandRange(0.9f, 1.1f);
@@ -652,7 +771,7 @@ ALFPHexTile* ALFPTacticsUnit::FindBestMovementTile(ALFPTacticsUnit* Target)
 float ALFPTacticsUnit::CalculateThreatValue(ALFPTacticsUnit* Target)
 {
     // 威胁值 = 目标攻击力
-    float ThreatValue = Target->GetAttackPower();
+    float ThreatValue = Target->GetCurrentAttack();
 
     // 距离因素（越近威胁越大）
     int32 Distance = FLFPHexCoordinates::Distance(
@@ -809,7 +928,7 @@ FLinearColor ALFPTacticsUnit::GetAffiliationColor() const
 void ALFPTacticsUnit::UpdateHealthUI()
 {
     // 在实际项目中，可以更新单位的血量UI
-    // 例如：HealthBarWidget->SetPercent((float)CurrentHealth / MaxHealth);
+    // 例如：HealthBarWidget->SetPercent((float)CurrentHealth / GetCurrentMaxHealth());
 }
 
 TArray<ULFPSkillBase*> ALFPTacticsUnit::GetAvailableSkills()

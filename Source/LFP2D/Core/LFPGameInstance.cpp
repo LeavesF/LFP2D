@@ -191,6 +191,44 @@ bool ULFPGameInstance::TryPurchaseRelic(FName RelicID, int32 Price)
 	return true;
 }
 
+void ULFPGameInstance::ApplyOwnedRelicsToUnit(ALFPTacticsUnit* Unit) const
+{
+	if (!Unit || !RelicDataAsset)
+	{
+		return;
+	}
+
+	for (const FName& RelicID : OwnedRelicIDs)
+	{
+		FLFPRelicDefinition Definition;
+		if (!FindRelicDefinition(RelicID, Definition))
+		{
+			continue;
+		}
+
+		for (const FLFPRelicEffectEntry& Effect : Definition.Effects)
+		{
+			switch (Effect.EffectType)
+			{
+			case ELFPRelicEffectType::RET_MaxHealthFlat:
+				Unit->AddCurrentMaxHealth(Effect.Value);
+				break;
+			case ELFPRelicEffectType::RET_AttackFlat:
+				Unit->AddCurrentAttack(Effect.Value);
+				break;
+			case ELFPRelicEffectType::RET_DefenseFlat:
+				Unit->AddCurrentPhysicalBlock(Effect.Value);
+				break;
+			case ELFPRelicEffectType::RET_SpeedFlat:
+				Unit->AddCurrentSpeed(Effect.Value);
+				break;
+			default:
+				break;
+			}
+		}
+	}
+}
+
 // ============== 编队系统 ==============
 
 bool ULFPGameInstance::TryAddUnit(const FLFPUnitEntry& Unit)
