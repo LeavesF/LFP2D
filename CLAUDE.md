@@ -28,12 +28,12 @@ Unreal Engine 5.5 C++ 项目，运行时模块为 **LFP2D**。
 
 ### 核心系统 (Source/LFP2D/)
 
-- **Core/** — `LFPTurnGameMode`: 战斗游戏模式，负责生成 HexGridManager 和 TurnManager，从 GameInstance 读取战斗请求，根据 BattleMapName 从 CSV 加载地图。`LFPGameInstance`: 跨关卡数据持久化（战斗请求/结果、世界地图快照、编队系统）。`LFPUnitRegistryDataAsset`: 单位注册表（TypeID → 蓝图类/图标映射）。
+- **Core/** — `LFPTurnGameMode`: 战斗游戏模式，负责生成 HexGridManager 和 TurnManager，从 GameInstance 读取战斗请求，根据 BattleMapName 从 CSV 加载地图。`LFPGameInstance`: 跨关卡数据持久化（战斗请求/结果、世界地图快照、编队系统、遗物效果应用）。`LFPUnitRegistryDataAsset`: 单位注册表（TypeID → 蓝图类、显示名、图标、Tier、种族、特殊标签、基础属性模板、高级属性模板）。
 - **Turn/** — `LFPTurnManager`: 速度制回合管理、回合周期、单位注册。管理战斗阶段流程（Deployment → EnemyPlanning → ActionPhase → RoundEnd）。管理阵营共享 AP 池。
   - `LFPBattleTypes.h`: 共享类型定义（`EBattlePhase`、`EUnitAffiliation`、`FEnemyActionPlan`）
 - **Player/** — `LFPTacticsPlayerController`: 玩家控制器，处理 Enhanced Input、摄像机控制（平移/拖拽/缩放）、单位选择、移动指令、技能释放、布置阶段交互。管理游戏状态（MoveState, SkillReleaseState）。
 - **HexGrid/** — `LFPHexGridManager` + `LFPHexTile`: 六角网格生成（立方体坐标 Q, R, S）、A* 寻路、范围计算、格子占用/可行走性、精灵图层高亮（移动/攻击/技能效果/路径）。
-- **Unit/** — `LFPTacticsUnit`: 核心单位 Actor，属性（HP、攻击、防御、移动范围、速度）、阵营（Player/Enemy/Neutral）、Timeline 移动动画、PaperSprite 渲染。AP 方法代理到 TurnManager 的阵营 AP 系统。
+- **Unit/** — `LFPTacticsUnit`: 核心单位 Actor，运行时持有单位种族、特殊标签、基础属性与当前属性双轨（攻击、最大血量、最大移动力、速度，以及高级属性如攻击次数、行动次数、物理格挡、法术防御、重量），支持从 UnitRegistry 初始化模板数据；阵营（Player/Enemy/Neutral）、Timeline 移动动画、PaperSprite 渲染。AP 方法代理到 TurnManager 的阵营 AP 系统。
 - **Skill/** — 技能系统：
   - `LFPSkillBase`（抽象基类）：定义释放范围和效果范围的六角坐标模式，支持多种目标类型，有冷却和 AP 消耗。三层检查：`IsAvailable()` → `CanReleaseFrom()` → `CanExecute()`。技能优先级系统（SkillPriority，使用后降低，每回合恢复）。
   - `LFPSkillComponent`（单位技能管理器）
@@ -59,6 +59,7 @@ PlayerController::BeginPlay()
   → 绑定 OnPhaseChanged 委托
   → 检测到 BP_Deployment → OnDeploymentPhaseStarted()
     → 高亮出生点、显示布置 UI、玩家放置单位
+    → 放置时：按 UnitTypeID/UnitTier 生成单位 → 从 UnitRegistry 初始化属性模板 → 应用已拥有遗物到当前属性
     → 确认 → EndDeploymentPhase() → 注册玩家单位 → BeginNewRound()
 
 TurnManager 每回合:

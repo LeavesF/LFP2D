@@ -1,0 +1,202 @@
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\AI\LFPAIController.cpp:60:    BlackboardComponent->SetValueAsBool("IsInAttackRange", false);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\AI\LFPAIController.cpp:61:    BlackboardComponent->SetValueAsBool("CanAttack", false);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\AI\LFPAIController.cpp:160:    float ThreatValue = Target->GetAttackPower() * (1.0f - (float)Target->GetCurrentHealth() / Target->GetMaxHealth());
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\AI\LFPAIController.cpp:200:    if (DistanceToTarget <= ControlledUnit->GetAttackRange())
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\AI\LFPAIController.cpp:334:        if (!Skill->bIsDefaultAttack)
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\AI\LFPAIController.cpp:349:        BestSkill = ControlledUnit->GetDefaultAttackSkill();
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPUnitRegistryDataAsset.h:5:#include "LFPUnitRegistryDataAsset.generated.h"
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPUnitRegistryDataAsset.h:11:struct FLFPUnitRegistryEntry
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPUnitRegistryDataAsset.h:16:	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit Registry")
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPUnitRegistryDataAsset.h:20:	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit Registry")
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPUnitRegistryDataAsset.h:24:	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit Registry")
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPUnitRegistryDataAsset.h:28:	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit Registry")
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPUnitRegistryDataAsset.h:32:	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit Registry|Evolution")
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPUnitRegistryDataAsset.h:40:class LFP2D_API ULFPUnitRegistryDataAsset : public UDataAsset
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPUnitRegistryDataAsset.h:46:	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit Registry")
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPUnitRegistryDataAsset.h:47:	TMap<FName, FLFPUnitRegistryEntry> UnitRegistry;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPUnitRegistryDataAsset.h:50:	UFUNCTION(BlueprintPure, Category = "Unit Registry")
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPUnitRegistryDataAsset.h:51:	bool FindEntry(FName TypeID, FLFPUnitRegistryEntry& OutEntry) const;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPUnitRegistryDataAsset.h:54:	UFUNCTION(BlueprintPure, Category = "Unit Registry")
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPUnitRegistryDataAsset.h:58:	UFUNCTION(BlueprintPure, Category = "Unit Registry|Evolution")
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPUnitRegistryDataAsset.h:62:	UFUNCTION(BlueprintPure, Category = "Unit Registry|Evolution")
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPUnitRegistryDataAsset.h:66:	UFUNCTION(BlueprintPure, Category = "Unit Registry")
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Skill\LFPSkillBase.h:146:    bool bIsDefaultAttack;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\HexGrid\LFPHexTile.h:150:	UR_Attack    UMETA(DisplayName = "Attack"),
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.h:169:	float CameraPanSpeed = 500.0f;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.h:172:	float CameraDragSpeed = 10.0f;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.h:175:	float CameraZoomSpeed = 100.0f;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\WorldMap\LFPWorldMapGameMode.cpp:176:		ReplacementWidget->Setup(NextUnit, GI->PartyUnits, GI->ReserveUnits, GI->UnitRegistry);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Skill\LFPSkillComponent.h:44:    ULFPSkillBase* GetDefaultAttackSkill() const;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Skill\LFPSkillComponent.h:61:    ULFPSkillBase* DefaultAttackSkill;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:11:#include "LFP2D/UI/Fighting/LFPTurnSpeedListWidget.h"
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:16:#include "LFP2D/Core/LFPUnitRegistryDataAsset.h"
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:30:    bIsAttacking = false;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:72:    if (TurnSpeedWidgetClass)
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:74:        TurnSpeedListWidget = CreateWidget<ULFPTurnSpeedListWidget>(this, TurnSpeedWidgetClass);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:75:        if (TurnSpeedListWidget)
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:77:            TurnSpeedListWidget->AddToViewport();
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:78:            TurnSpeedListWidget->InitializeTurnOrder(); // 初始化单位顺序
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:119:        EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Started, this, &ALFPTacticsPlayerController::OnAttackStarted);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:314:void ALFPTacticsPlayerController::OnAttackStarted(const FInputActionValue& Value)
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:319:        bIsAttacking = true;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:321:        ShowUnitRange(EUnitRange::UR_Attack);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:392:        if (bIsAttacking)
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:408:                    AttackTarget(SelectedUnit, Unit);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:447:    bIsAttacking = false;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:504:    CameraOffset += PanDirection * CameraPanSpeed * GetWorld()->GetDeltaSeconds();
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:538:    CameraOffset += PanDirection * CameraDragSpeed;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:552:    CurrentZoom = FMath::Clamp(CurrentZoom - ZoomValue * CameraZoomSpeed, MinZoomDistance, MaxZoomDistance);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:649:    case EUnitRange::UR_Attack:
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:651:        CacheRangeTiles = SelectedUnit->GetAttackRangeTiles();
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:653:		GridManager->ShowRangeHighlight(CacheRangeTiles, EUnitRange::UR_Attack);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:738:bool ALFPTacticsPlayerController::AttackTarget(ALFPTacticsUnit* Attacker, ALFPTacticsUnit* Target)
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:740:    if (!Attacker || !Target || !Attacker->CanAct())
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:746:    const int32 AttackCost = 1;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:748:    bIsAttacking = false;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:751:    if (!Attacker->HasEnoughActionPoints(AttackCost))
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:757:    bool bAttackSucceed = Attacker->AttackTarget(Target);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:759:    if (bAttackSucceed)
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:762:		Attacker->ConsumeActionPoints(AttackCost);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:771:    if (!Attacker->HasEnoughActionPoints(1))
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:773:		if (bAttackSucceed)
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:775:            SkipTurn(Attacker);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:779:    return bAttackSucceed;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:791:    bIsAttacking = false;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:1036:        DeploymentWidget->Setup(GI->PartyUnits, GI->UnitRegistry);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:1055:    if (!GI || !GI->UnitRegistry) return;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:1065:    TSubclassOf<ALFPTacticsUnit> UnitClass = GI->UnitRegistry->GetUnitClass(Entry.TypeID);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:1077:        PlacingUnitPreview->UnitTypeID = Entry.TypeID;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.h:22:class ULFPTurnSpeedListWidget;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.h:27:class ULFPUnitRegistryDataAsset;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.h:48:    void OnAttackStarted(const FInputActionValue& Value);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.h:83:    UInputAction* AttackAction;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.h:148:    bool bIsAttacking = false;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.h:178:    float CameraPanSpeed = 500.0f;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.h:181:    float CameraDragSpeed = 10.0f;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.h:185:    float CameraZoomSpeed = 100.0f;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.h:242:    bool AttackTarget(ALFPTacticsUnit* Attacker, ALFPTacticsUnit* Target);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.h:250:    TSubclassOf<class UUserWidget> TurnSpeedWidgetClass;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.h:253:    TObjectPtr<ULFPTurnSpeedListWidget> TurnSpeedListWidget;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPGameInstance.h:10:class ULFPUnitRegistryDataAsset;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPGameInstance.h:20:	// 单位类型 ID（对应 ULFPUnitRegistryDataAsset 中的键）
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPGameInstance.h:278:	TObjectPtr<ULFPUnitRegistryDataAsset> UnitRegistry;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPGameInstance.cpp:2:#include "LFP2D/Core/LFPUnitRegistryDataAsset.h"
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPGameInstance.cpp:217:			case ELFPRelicEffectType::RET_AttackFlat:
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPGameInstance.cpp:218:				Unit->AttackPower += Effect.Value;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPGameInstance.cpp:220:			case ELFPRelicEffectType::RET_DefenseFlat:
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPGameInstance.cpp:221:				Unit->Defense += Effect.Value;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPGameInstance.cpp:223:			case ELFPRelicEffectType::RET_SpeedFlat:
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPGameInstance.cpp:224:				Unit->Speed += Effect.Value;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPGameInstance.cpp:320:		if (Pair.Value >= 2 && UnitRegistry && UnitRegistry->CanEvolve(Pair.Key))
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPGameInstance.cpp:324:			Entry.Tier = UnitRegistry->GetUnitTier(Pair.Key);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPGameInstance.cpp:356:	if (!UnitRegistry)
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPGameInstance.cpp:362:	TArray<FName> Targets = UnitRegistry->GetEvolutionTargets(UnitA.TypeID);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPGameInstance.cpp:373:	NewUnit.Tier = UnitRegistry->GetUnitTier(TargetTypeID);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Shop\LFPRelicTypes.h:12:	RET_AttackFlat    UMETA(DisplayName = "攻击力"),
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Shop\LFPRelicTypes.h:13:	RET_DefenseFlat   UMETA(DisplayName = "防御力"),
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Shop\LFPRelicTypes.h:14:	RET_SpeedFlat     UMETA(DisplayName = "速度"),
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPUnitRegistryDataAsset.cpp:1:#include "LFP2D/Core/LFPUnitRegistryDataAsset.h"
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPUnitRegistryDataAsset.cpp:3:bool ULFPUnitRegistryDataAsset::FindEntry(FName TypeID, FLFPUnitRegistryEntry& OutEntry) const
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPUnitRegistryDataAsset.cpp:5:	if (const FLFPUnitRegistryEntry* Found = UnitRegistry.Find(TypeID))
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPUnitRegistryDataAsset.cpp:13:TSubclassOf<ALFPTacticsUnit> ULFPUnitRegistryDataAsset::GetUnitClass(FName TypeID) const
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPUnitRegistryDataAsset.cpp:15:	if (const FLFPUnitRegistryEntry* Found = UnitRegistry.Find(TypeID))
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPUnitRegistryDataAsset.cpp:22:TArray<FName> ULFPUnitRegistryDataAsset::GetEvolutionTargets(FName TypeID) const
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPUnitRegistryDataAsset.cpp:24:	if (const FLFPUnitRegistryEntry* Found = UnitRegistry.Find(TypeID))
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPUnitRegistryDataAsset.cpp:31:bool ULFPUnitRegistryDataAsset::CanEvolve(FName TypeID) const
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPUnitRegistryDataAsset.cpp:33:	if (const FLFPUnitRegistryEntry* Found = UnitRegistry.Find(TypeID))
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPUnitRegistryDataAsset.cpp:40:int32 ULFPUnitRegistryDataAsset::GetUnitTier(FName TypeID) const
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPUnitRegistryDataAsset.cpp:42:	if (const FLFPUnitRegistryEntry* Found = UnitRegistry.Find(TypeID))
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\HexGrid\LFPHexGridManager.h:150:	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Map Data|Registry")
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\HexGrid\LFPHexGridManager.h:151:	TMap<ELFPTerrainType, TObjectPtr<ULFPTerrainDataAsset>> TerrainRegistry;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\HexGrid\LFPHexGridManager.h:154:	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Map Data|Registry")
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\HexGrid\LFPHexGridManager.h:155:	TMap<FName, TObjectPtr<UPaperSprite>> DecorationRegistry;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\HexGrid\LFPHexGridManager.h:258:	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Highlight|Attack")
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\HexGrid\LFPHexGridManager.h:259:	FLinearColor AttackEdgeColor = FLinearColor(1.0f, 0.2f, 0.2f, 0.8f);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\HexGrid\LFPHexGridManager.h:262:	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Highlight|Attack")
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\HexGrid\LFPHexGridManager.h:263:	FLinearColor AttackOverlayColor = FLinearColor(1.0f, 0.2f, 0.2f, 0.25f);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Skill\LFPSkillBase.cpp:15:    bIsDefaultAttack = false;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Skill\LFPSkillBase.cpp:140:    float Hatred = (float)Target->GetAttackPower();
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Skill\LFPSkillBase.cpp:160://                Tile->SetRangeSprite(EUnitRange::UR_Attack);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:305:	CameraOffset += FVector(PanInput.X, PanInput.Y, 0) * CameraPanSpeed * GetWorld()->GetDeltaSeconds();
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:323:	CameraOffset -= FVector(-Delta.Y, Delta.X, 0) * CameraDragSpeed;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:335:	CurrentZoom = FMath::Clamp(CurrentZoom - ZoomDelta * CameraZoomSpeed, MinZoomDistance, MaxZoomDistance);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:572:		UnitMergeWidget->Setup(GI, GI->UnitRegistry);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Skill\LFPSkillComponent.cpp:14:    DefaultAttackSkill = nullptr;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Skill\LFPSkillComponent.cpp:59:    //if (!DefaultAttackSkill)
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Skill\LFPSkillComponent.cpp:61:    //    DefaultAttackSkill = NewObject<UAttackSkill>(this);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Skill\LFPSkillComponent.cpp:62:    //    DefaultAttackSkill->bIsDefaultAttack = true;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Skill\LFPSkillComponent.cpp:63:    //    DefaultAttackSkill->SkillName = FText::FromString("普通攻击");
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Skill\LFPSkillComponent.cpp:64:    //    Skills.Add(DefaultAttackSkill);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Skill\LFPSkillComponent.cpp:109:ULFPSkillBase* ULFPSkillComponent::GetDefaultAttackSkill() const
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Skill\LFPSkillComponent.cpp:111:    return DefaultAttackSkill;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPTurnGameMode.cpp:101:                BattleResultWidget->Setup(Result, GI->UnitRegistry);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:541:	if (const TObjectPtr<ULFPWorldNodeDataAsset>* Found = NodeVisualRegistry.Find(NodeType))
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\AI\BehaviorTree\BTTask_AttackTarget.cpp:4:#include "LFP2D/AI/BehaviorTree/BTTask_AttackTarget.h"
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\AI\BehaviorTree\BTTask_AttackTarget.cpp:9:UBTTask_AttackTarget::UBTTask_AttackTarget()
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\AI\BehaviorTree\BTTask_AttackTarget.cpp:12:    NodeName = "Attack Target";
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\AI\BehaviorTree\BTTask_AttackTarget.cpp:15:EBTNodeResult::Type UBTTask_AttackTarget::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\AI\BehaviorTree\BTTask_AttackTarget.cpp:29:    //ControlledUnit->OnAttackComplete.AddDynamic(this, &UBTTask_AttackTarget::OnAttackComplete);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\AI\BehaviorTree\BTTask_AttackTarget.cpp:33:    ControlledUnit->AttackTarget(TargetUnit);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\AI\BehaviorTree\BTTask_AttackTarget.cpp:38:void UBTTask_AttackTarget::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTNodeResult::Type TaskResult)
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\AI\BehaviorTree\BTTask_AttackTarget.cpp:43:        ControlledUnit->OnAttackComplete.RemoveDynamic(this, &UBTTask_AttackTarget::OnAttackComplete);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\AI\BehaviorTree\BTTask_AttackTarget.cpp:47:void UBTTask_AttackTarget::OnAttackComplete()
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\WorldMap\LFPWorldMapManager.h:167:	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Map|Registry")
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\WorldMap\LFPWorldMapManager.h:168:	TMap<ELFPWorldNodeType, TObjectPtr<ULFPWorldNodeDataAsset>> NodeVisualRegistry;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\WorldMap\LFPWorldMapManager.h:171:	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Map|Registry")
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\HexGrid\LFPHexGridManager.cpp:329:	if (const TObjectPtr<ULFPTerrainDataAsset>* Found = TerrainRegistry.Find(TerrainType))
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\HexGrid\LFPHexGridManager.cpp:340:	if (const TObjectPtr<UPaperSprite>* Found = DecorationRegistry.Find(DecorationID))
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\HexGrid\LFPHexGridManager.cpp:922:	case EUnitRange::UR_Attack:      return AttackEdgeColor;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\HexGrid\LFPHexGridManager.cpp:933:	case EUnitRange::UR_Attack:      return AttackOverlayColor;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\AI\BehaviorTree\BTService_UpdateConditions.cpp:27:    bool bInAttackRange = TargetUnit && ControlledUnit->IsTargetInAttackRange(TargetUnit);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\AI\BehaviorTree\BTService_UpdateConditions.cpp:28:    Blackboard->SetValueAsBool("IsInAttackRange", bInAttackRange);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\AI\BehaviorTree\BTService_UpdateConditions.cpp:31:    bool bCanAttack = TargetUnit && bInAttackRange && ControlledUnit->CanAct();
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\AI\BehaviorTree\BTService_UpdateConditions.cpp:32:    Blackboard->SetValueAsBool("CanAttack", bCanAttack);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\AI\BehaviorTree\BTService_UpdateConditions.cpp:35:    bool bShouldEndTurn = !TargetUnit || (ControlledUnit->HasActed() && !bCanAttack);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Unit\LFPTacticsUnit.h:156:    float MoveSpeed = 5.0f;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Unit\LFPTacticsUnit.h:178:    int32 GetSpeed() const { return Speed; }
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Unit\LFPTacticsUnit.h:199:    int32 Speed = 5; // 速度值，决定行动顺序
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Unit\LFPTacticsUnit.h:240:    int32 GetAttackPower() const { return AttackPower; }
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Unit\LFPTacticsUnit.h:264:    int32 AttackPower = 10;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Unit\LFPTacticsUnit.h:268:    int32 Defense = 5;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Unit\LFPTacticsUnit.h:286:    // 单位类型 ID（对应 ULFPUnitRegistryDataAsset 中的键）
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Unit\LFPTacticsUnit.h:288:    FName UnitTypeID = NAME_None;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Unit\LFPTacticsUnit.h:298:        Entry.TypeID = UnitTypeID;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Unit\LFPTacticsUnit.h:331:    bool AttackTarget(ALFPTacticsUnit* Target);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Unit\LFPTacticsUnit.h:349:    void PlayAttackAnimation(ALFPTacticsUnit* Target);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Unit\LFPTacticsUnit.h:353:    TArray<ALFPHexTile*> GetAttackRangeTiles();
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Unit\LFPTacticsUnit.h:357:    int32 GetAttackRange() { return AttackRange; }
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Unit\LFPTacticsUnit.h:361:    bool IsTargetInAttackRange(ALFPTacticsUnit* Target) const;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Unit\LFPTacticsUnit.h:375:    int32 AttackRange = 2;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Unit\LFPTacticsUnit.h:379:    bool bMeleeAttack = true;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Unit\LFPTacticsUnit.h:405:    //FSimpleMulticastDelegate OnAttackCompleteDelegate;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Unit\LFPTacticsUnit.h:416:    //void NotifyAttackComplete()
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Unit\LFPTacticsUnit.h:418:    //    OnAttackCompleteDelegate.Broadcast();
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Unit\LFPTacticsUnit.h:448:    ULFPSkillBase* GetDefaultAttackSkill();
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\AI\BehaviorTree\BTTask_AttackTarget.h:7:#include "BTTask_AttackTarget.generated.h"
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\AI\BehaviorTree\BTTask_AttackTarget.h:13:class LFP2D_API UBTTask_AttackTarget : public UBTTask_BlackboardBase
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\AI\BehaviorTree\BTTask_AttackTarget.h:18:    UBTTask_AttackTarget();
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\AI\BehaviorTree\BTTask_AttackTarget.h:25:    void OnAttackComplete();
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Turn\LFPTurnManager.h:111:    void SortUnitsBySpeed();
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Turn\LFPTurnManager.cpp:99:    SortUnitsBySpeed();
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Turn\LFPTurnManager.cpp:138:void ALFPTurnManager::SortUnitsBySpeed()
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Turn\LFPTurnManager.cpp:143:        return A.GetSpeed() > B.GetSpeed();
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Turn\LFPTurnManager.cpp:475:            SortUnitsBySpeed();
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:179:		case ELFPRelicEffectType::RET_AttackFlat:
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:182:		case ELFPRelicEffectType::RET_DefenseFlat:
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:185:		case ELFPRelicEffectType::RET_SpeedFlat:
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\Fighting\LFPBattleResultWidget.cpp:2:#include "LFP2D/Core/LFPUnitRegistryDataAsset.h"
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\Fighting\LFPBattleResultWidget.cpp:21:void ULFPBattleResultWidget::Setup(const FLFPBattleResult& Result, ULFPUnitRegistryDataAsset* Registry)
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\Fighting\LFPBattleResultWidget.cpp:24:	UnitRegistry = Registry;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\Fighting\LFPBattleResultWidget.cpp:70:					FLFPUnitRegistryEntry RegistryEntry;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\Fighting\LFPBattleResultWidget.cpp:71:					if (!UnitRegistry || !UnitRegistry->FindEntry(CapturedUnit.TypeID, RegistryEntry))
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\Fighting\LFPBattleResultWidget.cpp:81:					if (RegistryEntry.Icon)
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\Fighting\LFPBattleResultWidget.cpp:83:						IconImage->SetBrushFromTexture(RegistryEntry.Icon);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\Fighting\LFPBattleResultWidget.cpp:91:					NameText->SetText(RegistryEntry.DisplayName);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\WorldMap\LFPUnitReplacementWidget.h:8:class ULFPUnitRegistryDataAsset;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\WorldMap\LFPUnitReplacementWidget.h:28:		ULFPUnitRegistryDataAsset* Registry
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\WorldMap\LFPUnitReplacementWidget.h:54:	TObjectPtr<ULFPUnitRegistryDataAsset> UnitRegistry;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Unit\LFPTacticsUnit.cpp:396:        MoveProgress += MoveSpeed * DeltaTime;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Unit\LFPTacticsUnit.cpp:443:	int32 ActualDamage = FMath::Max(Damage - Defense, 1);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Unit\LFPTacticsUnit.cpp:474:bool ALFPTacticsUnit::AttackTarget(ALFPTacticsUnit* Target)
+
+[Showing results with pagination = limit: 200, offset: 0]

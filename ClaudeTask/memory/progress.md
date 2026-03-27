@@ -154,6 +154,17 @@
 - [x] UE 编辑器：导入贴图 → 创建 PaperSprite → 配置到 GridManager 蓝图
 - [x] UE 编辑器：调试边线精灵缩放（匹配实际 HexSize）
 
+### 单位构建体系（进行中）
+- [x] `ELFPUnitRace`、`FLFPUnitBaseStats`、`FLFPUnitAdvancedStats`
+- [x] `FLFPUnitRegistryEntry` 扩展（Race / SpecialTags / BaseStats / AdvancedStats）
+- [x] `ALFPTacticsUnit` 基础值/当前值双轨字段
+- [x] `InitializeFromRegistry()` / `ApplyRegistryEntry()` / `ResetCurrentStatsToBase()`
+- [x] 预放置单位 `BeginPlay()` 自动初始化注册表模板
+- [x] 部署生成单位先初始化模板，再应用遗物
+- [x] `ApplyOwnedRelicsToUnit()` 按当前值体系生效
+- [ ] 单位详情 UI：基础属性默认显示、高级属性折叠显示
+- [ ] 当属性偏离默认高级属性时自动显示高级属性
+
 ## Known Issues / Notes
 - `FindBestCasterPosition` and `SelectBestSkill` cannot be `const` because `GetCurrentTile()` is non-const
 - SkillBase `EvaluateConditionBonus()` returns 0 by default — override in Blueprint subclasses for context-aware priority bonuses

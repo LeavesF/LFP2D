@@ -1,0 +1,128 @@
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.h:27:class ULFPUnitRegistryDataAsset;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:16:#include "LFP2D/Core/LFPUnitRegistryDataAsset.h"
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:1024:    // 初始化已布置单位数组（与 PartyUnits 等长，初始全为 nullptr）
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:1026:    DeployedUnits.SetNum(GI->PartyUnits.Num());
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:1036:        DeploymentWidget->Setup(GI->PartyUnits, GI->UnitRegistry);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:1043:        PlayerSpawnTiles.Num(), GI->PartyUnits.Num());
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:1055:    if (!GI || !GI->UnitRegistry) return;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:1056:    if (!GI->PartyUnits.IsValidIndex(PartyIndex)) return;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:1064:    const FLFPUnitEntry& Entry = GI->PartyUnits[PartyIndex];
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:1065:    TSubclassOf<ALFPTacticsUnit> UnitClass = GI->UnitRegistry->GetUnitClass(Entry.TypeID);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:1072:    PlacingUnitPreview = GetWorld()->SpawnActor<ALFPTacticsUnit>(UnitClass, UnitSpawnLoc, FRotator::ZeroRotator, SpawnParams);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:1079:        GI->ApplyOwnedRelicsToUnit(PlacingUnitPreview);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\WorldMap\LFPWorldMapGameMode.cpp:176:		ReplacementWidget->Setup(NextUnit, GI->PartyUnits, GI->ReserveUnits, GI->UnitRegistry);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:572:		UnitMergeWidget->Setup(GI, GI->UnitRegistry);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Unit\LFPTacticsUnit.h:286:    // 单位类型 ID（对应 ULFPUnitRegistryDataAsset 中的键）
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPUnitRegistryDataAsset.h:5:#include "LFPUnitRegistryDataAsset.generated.h"
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPUnitRegistryDataAsset.h:11:struct FLFPUnitRegistryEntry
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPUnitRegistryDataAsset.h:40:class LFP2D_API ULFPUnitRegistryDataAsset : public UDataAsset
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPUnitRegistryDataAsset.h:47:	TMap<FName, FLFPUnitRegistryEntry> UnitRegistry;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPUnitRegistryDataAsset.h:51:	bool FindEntry(FName TypeID, FLFPUnitRegistryEntry& OutEntry) const;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPUnitRegistryDataAsset.h:55:	TSubclassOf<ALFPTacticsUnit> GetUnitClass(FName TypeID) const;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\Fighting\LFPDeploymentWidget.h:8:class ULFPUnitRegistryDataAsset;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\Fighting\LFPDeploymentWidget.h:26:	void Setup(const TArray<FLFPUnitEntry>& PartyUnits, ULFPUnitRegistryDataAsset* Registry);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\Fighting\LFPDeploymentWidget.h:81:	TArray<FLFPUnitEntry> CachedPartyUnits;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\Fighting\LFPDeploymentWidget.h:85:	TObjectPtr<ULFPUnitRegistryDataAsset> UnitRegistry;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\Fighting\LFPDeploymentWidget.cpp:2:#include "LFP2D/Core/LFPUnitRegistryDataAsset.h"
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\Fighting\LFPDeploymentWidget.cpp:17:void ULFPDeploymentWidget::Setup(const TArray<FLFPUnitEntry>& PartyUnits, ULFPUnitRegistryDataAsset* Registry)
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\Fighting\LFPDeploymentWidget.cpp:19:	CachedPartyUnits = PartyUnits;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\Fighting\LFPDeploymentWidget.cpp:20:	UnitRegistry = Registry;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\Fighting\LFPDeploymentWidget.cpp:38:		if (i < PartyUnits.Num() && PartyUnits[i].IsValid() && Registry)
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\Fighting\LFPDeploymentWidget.cpp:43:			FLFPUnitRegistryEntry Entry;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\Fighting\LFPDeploymentWidget.cpp:44:			if (Img && Registry->FindEntry(PartyUnits[i].TypeID, Entry) && Entry.Icon)
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\Fighting\LFPDeploymentWidget.cpp:73:	for (int32 i = 0; i < CachedPartyUnits.Num() && i < PlacedStates.Num(); i++)
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\Fighting\LFPDeploymentWidget.cpp:75:		if (CachedPartyUnits[i].IsValid() && !PlacedStates[i])
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPUnitRegistryDataAsset.cpp:1:#include "LFP2D/Core/LFPUnitRegistryDataAsset.h"
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPUnitRegistryDataAsset.cpp:3:bool ULFPUnitRegistryDataAsset::FindEntry(FName TypeID, FLFPUnitRegistryEntry& OutEntry) const
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPUnitRegistryDataAsset.cpp:5:	if (const FLFPUnitRegistryEntry* Found = UnitRegistry.Find(TypeID))
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPUnitRegistryDataAsset.cpp:13:TSubclassOf<ALFPTacticsUnit> ULFPUnitRegistryDataAsset::GetUnitClass(FName TypeID) const
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPUnitRegistryDataAsset.cpp:15:	if (const FLFPUnitRegistryEntry* Found = UnitRegistry.Find(TypeID))
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPUnitRegistryDataAsset.cpp:22:TArray<FName> ULFPUnitRegistryDataAsset::GetEvolutionTargets(FName TypeID) const
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPUnitRegistryDataAsset.cpp:24:	if (const FLFPUnitRegistryEntry* Found = UnitRegistry.Find(TypeID))
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPUnitRegistryDataAsset.cpp:31:bool ULFPUnitRegistryDataAsset::CanEvolve(FName TypeID) const
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPUnitRegistryDataAsset.cpp:33:	if (const FLFPUnitRegistryEntry* Found = UnitRegistry.Find(TypeID))
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPUnitRegistryDataAsset.cpp:40:int32 ULFPUnitRegistryDataAsset::GetUnitTier(FName TypeID) const
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPUnitRegistryDataAsset.cpp:42:	if (const FLFPUnitRegistryEntry* Found = UnitRegistry.Find(TypeID))
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\Fighting\LFPBattleResultWidget.h:11:class ULFPUnitRegistryDataAsset;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\Fighting\LFPBattleResultWidget.h:26:	void Setup(const FLFPBattleResult& Result, ULFPUnitRegistryDataAsset* Registry);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\Fighting\LFPBattleResultWidget.h:63:	TObjectPtr<ULFPUnitRegistryDataAsset> UnitRegistry;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\Fighting\LFPBattleResultWidget.cpp:2:#include "LFP2D/Core/LFPUnitRegistryDataAsset.h"
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\Fighting\LFPBattleResultWidget.cpp:21:void ULFPBattleResultWidget::Setup(const FLFPBattleResult& Result, ULFPUnitRegistryDataAsset* Registry)
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\Fighting\LFPBattleResultWidget.cpp:24:	UnitRegistry = Registry;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\Fighting\LFPBattleResultWidget.cpp:70:					FLFPUnitRegistryEntry RegistryEntry;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\Fighting\LFPBattleResultWidget.cpp:71:					if (!UnitRegistry || !UnitRegistry->FindEntry(CapturedUnit.TypeID, RegistryEntry))
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPTurnGameMode.cpp:101:                BattleResultWidget->Setup(Result, GI->UnitRegistry);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\WorldMap\LFPUnitReplacementWidget.cpp:3:#include "LFP2D/Core/LFPUnitRegistryDataAsset.h"
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\WorldMap\LFPUnitReplacementWidget.cpp:10:	ULFPUnitRegistryDataAsset* Registry)
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\WorldMap\LFPUnitReplacementWidget.cpp:13:	UnitRegistry = Registry;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\WorldMap\LFPUnitReplacementWidget.cpp:14:	// 蓝图子类中可直接读取 GameInstance 的 PartyUnits/ReserveUnits 来显示 UI
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:2:#include "LFP2D/Core/LFPUnitRegistryDataAsset.h"
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:23:void ULFPUnitMergeWidget::Setup(ULFPGameInstance* GI, ULFPUnitRegistryDataAsset* Registry)
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:33:	ULFPUnitRegistryDataAsset* Registry, const FLFPUnitEntry& Unit, bool bDisabled)
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:45:	FLFPUnitRegistryEntry RegEntry;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:46:	if (Registry && Registry->FindEntry(Unit.TypeID, RegEntry) && RegEntry.Icon)
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:74:	if (Box_PartyUnits) Box_PartyUnits->ClearChildren();
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:75:	if (Box_ReserveUnits) Box_ReserveUnits->ClearChildren();
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:78:	for (int32 i = 0; i < CachedGameInstance->PartyUnits.Num(); ++i)
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:80:		const FLFPUnitEntry& Unit = CachedGameInstance->PartyUnits[i];
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:86:		UButton* Btn = CreateUnitIconButton(this, Box_PartyUnits, CachedRegistry, Unit, bInSlot);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:99:	for (int32 i = 0; i < CachedGameInstance->ReserveUnits.Num(); ++i)
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:101:		const FLFPUnitEntry& Unit = CachedGameInstance->ReserveUnits[i];
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:107:		UButton* Btn = CreateUnitIconButton(this, Box_ReserveUnits, CachedRegistry, Unit, bInSlot);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:139:		? CachedGameInstance->PartyUnits
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:140:		: CachedGameInstance->ReserveUnits;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:223:					FLFPUnitRegistryEntry TargetEntry;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:224:					if (!CachedRegistry->FindEntry(TargetID, TargetEntry)) continue;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:276:					FLFPUnitRegistryEntry TargetEntry;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:277:					if (CachedRegistry->FindEntry(SelectedEvolutionTarget, TargetEntry) && Text_PreviewName)
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:338:				FLFPUnitRegistryEntry Entry;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:339:				if (!CachedRegistry || !CachedRegistry->FindEntry(BtnPair.Value, Entry) || !Entry.Icon) continue;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:360:			FLFPUnitRegistryEntry TargetEntry;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:361:			if (CachedRegistry && CachedRegistry->FindEntry(SelectedEvolutionTarget, TargetEntry))
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:422:		FLFPUnitRegistryEntry RegEntry;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:423:		if (CachedRegistry->FindEntry(InSlot.Unit.TypeID, RegEntry) && RegEntry.Icon)
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\WorldMap\LFPUnitReplacementWidget.h:8:class ULFPUnitRegistryDataAsset;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\WorldMap\LFPUnitReplacementWidget.h:28:		ULFPUnitRegistryDataAsset* Registry
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\WorldMap\LFPUnitReplacementWidget.h:54:	TObjectPtr<ULFPUnitRegistryDataAsset> UnitRegistry;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPGameInstance.h:10:class ULFPUnitRegistryDataAsset;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPGameInstance.h:20:	// 单位类型 ID（对应 ULFPUnitRegistryDataAsset 中的键）
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPGameInstance.h:272:	void ApplyOwnedRelicsToUnit(ALFPTacticsUnit* Unit) const;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPGameInstance.h:278:	TObjectPtr<ULFPUnitRegistryDataAsset> UnitRegistry;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPGameInstance.h:282:	TArray<FLFPUnitEntry> PartyUnits;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPGameInstance.h:286:	TArray<FLFPUnitEntry> ReserveUnits;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPGameInstance.h:302:	bool IsPartyFull() const { return PartyUnits.Num() >= MaxPartySize; }
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPGameInstance.h:306:	bool IsReserveFull() const { return ReserveUnits.Num() >= MaxReserveSize; }
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:8:class ULFPUnitRegistryDataAsset;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:52:	void Setup(ULFPGameInstance* GI, ULFPUnitRegistryDataAsset* Registry);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:134:	TObjectPtr<UHorizontalBox> Box_PartyUnits;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:137:	TObjectPtr<UHorizontalBox> Box_ReserveUnits;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:149:	TObjectPtr<ULFPUnitRegistryDataAsset> CachedRegistry;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPGameInstance.cpp:2:#include "LFP2D/Core/LFPUnitRegistryDataAsset.h"
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPGameInstance.cpp:195:void ULFPGameInstance::ApplyOwnedRelicsToUnit(ALFPTacticsUnit* Unit) const
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPGameInstance.cpp:245:		PartyUnits.Add(Unit);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPGameInstance.cpp:246:		UE_LOG(LogTemp, Log, TEXT("单位 %s 加入出战队伍（%d/%d）"), *Unit.TypeID.ToString(), PartyUnits.Num(), MaxPartySize);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPGameInstance.cpp:251:		ReserveUnits.Add(Unit);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPGameInstance.cpp:252:		UE_LOG(LogTemp, Log, TEXT("单位 %s 加入备战营（%d/%d）"), *Unit.TypeID.ToString(), ReserveUnits.Num(), MaxReserveSize);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPGameInstance.cpp:260:	if (PartyUnits.IsValidIndex(SlotIndex))
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPGameInstance.cpp:262:		UE_LOG(LogTemp, Log, TEXT("替换队伍槽 %d: %s → %s"), SlotIndex, *PartyUnits[SlotIndex].TypeID.ToString(), *NewUnit.TypeID.ToString());
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPGameInstance.cpp:263:		PartyUnits[SlotIndex] = NewUnit;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPGameInstance.cpp:269:	if (ReserveUnits.IsValidIndex(SlotIndex))
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPGameInstance.cpp:271:		UE_LOG(LogTemp, Log, TEXT("替换备战营槽 %d: %s → %s"), SlotIndex, *ReserveUnits[SlotIndex].TypeID.ToString(), *NewUnit.TypeID.ToString());
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPGameInstance.cpp:272:		ReserveUnits[SlotIndex] = NewUnit;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPGameInstance.cpp:278:	if (PartyUnits.IsValidIndex(SlotIndex))
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPGameInstance.cpp:280:		UE_LOG(LogTemp, Log, TEXT("移除队伍槽 %d: %s"), SlotIndex, *PartyUnits[SlotIndex].TypeID.ToString());
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPGameInstance.cpp:281:		PartyUnits.RemoveAt(SlotIndex);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPGameInstance.cpp:287:	if (ReserveUnits.IsValidIndex(SlotIndex))
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPGameInstance.cpp:289:		UE_LOG(LogTemp, Log, TEXT("移除备战营槽 %d: %s"), SlotIndex, *ReserveUnits[SlotIndex].TypeID.ToString());
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPGameInstance.cpp:290:		ReserveUnits.RemoveAt(SlotIndex);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPGameInstance.cpp:301:	for (const FLFPUnitEntry& Unit : PartyUnits)
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPGameInstance.cpp:308:	for (const FLFPUnitEntry& Unit : ReserveUnits)
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPGameInstance.cpp:320:		if (Pair.Value >= 2 && UnitRegistry && UnitRegistry->CanEvolve(Pair.Key))
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPGameInstance.cpp:324:			Entry.Tier = UnitRegistry->GetUnitTier(Pair.Key);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPGameInstance.cpp:335:	TArray<FLFPUnitEntry>& ArrayA = bSourceAIsParty ? PartyUnits : ReserveUnits;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPGameInstance.cpp:336:	TArray<FLFPUnitEntry>& ArrayB = bSourceBIsParty ? PartyUnits : ReserveUnits;
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPGameInstance.cpp:356:	if (!UnitRegistry)
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPGameInstance.cpp:362:	TArray<FName> Targets = UnitRegistry->GetEvolutionTargets(UnitA.TypeID);
+D:\UE_Project\LFP2D\.claude\worktrees\agent-a0e2216d\Source\LFP2D\Core\LFPGameInstance.cpp:373:	NewUnit.Tier = UnitRegistry->GetUnitTier(TargetTypeID);
+
+[Showing results with pagination = limit: 200, offset: 0]
