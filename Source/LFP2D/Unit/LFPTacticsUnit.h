@@ -40,10 +40,20 @@ enum class ELFPUnitRace : uint8
     UR_Dragon UMETA(DisplayName = "龙")
 };
 
+UENUM(BlueprintType)
+enum class ELFPAttackType : uint8
+{
+    AT_Physical UMETA(DisplayName = "物理"),
+    AT_Magical UMETA(DisplayName = "魔法")
+};
+
 USTRUCT(BlueprintType)
 struct FLFPUnitBaseStats
 {
     GENERATED_BODY()
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Stats")
+    ELFPAttackType AttackType = ELFPAttackType::AT_Physical;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Stats")
     int32 Attack = 10;
@@ -195,7 +205,9 @@ protected:
     UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Unit Stats")
     int32 MovementRange = 5;
 
-    // 基础属性模板
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Stats|Base")
+    ELFPAttackType BaseAttackType = ELFPAttackType::AT_Physical;
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Stats|Base")
     int32 BaseAttack = 10;
 
@@ -224,6 +236,9 @@ protected:
     int32 BaseWeight = 0;
 
     // 当前运行时属性
+    UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Unit State|Stats")
+    ELFPAttackType CurrentAttackType = ELFPAttackType::AT_Physical;
+
     UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Unit State|Stats")
     int32 CurrentAttack = 10;
 
@@ -380,6 +395,9 @@ public:
 	// 获取最大血量
 	UFUNCTION(BlueprintPure, Category = "Unit Combat")
 	int32 GetMaxHealth() const { return GetCurrentMaxHealth(); }
+
+    UFUNCTION(BlueprintPure, Category = "Unit Combat")
+    ELFPAttackType GetAttackType() const { return CurrentAttackType; }
 
     UFUNCTION(BlueprintPure, Category = "Unit Combat")
     int32 GetBaseAttack() const { return BaseAttack; }

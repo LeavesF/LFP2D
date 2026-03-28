@@ -87,6 +87,7 @@ void ALFPTacticsUnit::ApplyRegistryEntry(const FLFPUnitRegistryEntry& Entry)
     UnitRace = Entry.Race;
     SpecialTags = Entry.SpecialTags;
 
+    BaseAttackType = Entry.BaseStats.AttackType;
     BaseAttack = Entry.BaseStats.Attack;
     BaseMaxHealth = Entry.BaseStats.MaxHealth;
     BaseMaxMovePoints = Entry.BaseStats.MaxMovePoints;
@@ -103,6 +104,7 @@ void ALFPTacticsUnit::ApplyRegistryEntry(const FLFPUnitRegistryEntry& Entry)
 
 void ALFPTacticsUnit::ResetCurrentStatsToBase(bool bResetHealth)
 {
+    CurrentAttackType = BaseAttackType;
     CurrentAttack = BaseAttack;
     CurrentMaxHealth = BaseMaxHealth;
     CurrentMaxMovePoints = BaseMaxMovePoints;

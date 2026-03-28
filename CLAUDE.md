@@ -33,7 +33,7 @@ Unreal Engine 5.5 C++ 项目，运行时模块为 **LFP2D**。
   - `LFPBattleTypes.h`: 共享类型定义（`EBattlePhase`、`EUnitAffiliation`、`FEnemyActionPlan`）
 - **Player/** — `LFPTacticsPlayerController`: 玩家控制器，处理 Enhanced Input、摄像机控制（平移/拖拽/缩放）、单位选择、移动指令、技能释放、布置阶段交互。管理游戏状态（MoveState, SkillReleaseState）。
 - **HexGrid/** — `LFPHexGridManager` + `LFPHexTile`: 六角网格生成（立方体坐标 Q, R, S）、A* 寻路、范围计算、格子占用/可行走性、精灵图层高亮（移动/攻击/技能效果/路径）。
-- **Unit/** — `LFPTacticsUnit`: 核心单位 Actor，运行时持有单位种族、特殊标签、基础属性与当前属性双轨（攻击、最大血量、最大移动力、速度，以及高级属性如攻击次数、行动次数、物理格挡、法术防御、重量），支持从 UnitRegistry 初始化模板数据；阵营（Player/Enemy/Neutral）、Timeline 移动动画、PaperSprite 渲染。AP 方法代理到 TurnManager 的阵营 AP 系统。
+- **Unit/** — `LFPTacticsUnit`: 核心单位 Actor，运行时持有单位种族、特殊标签、基础属性与当前属性双轨（攻击、攻击类型、最大血量、最大移动力、速度，以及高级属性如攻击次数、行动次数、物理格挡、法术防御、重量），支持从 UnitRegistry 初始化模板数据；阵营（Player/Enemy/Neutral）、Timeline 移动动画、PaperSprite 渲染。AP 方法代理到 TurnManager 的阵营 AP 系统。
 - **Skill/** — 技能系统：
   - `LFPSkillBase`（抽象基类）：定义释放范围和效果范围的六角坐标模式，支持多种目标类型，有冷却和 AP 消耗。三层检查：`IsAvailable()` → `CanReleaseFrom()` → `CanExecute()`。技能优先级系统（SkillPriority，使用后降低，每回合恢复）。
   - `LFPSkillComponent`（单位技能管理器）
