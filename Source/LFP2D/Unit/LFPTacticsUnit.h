@@ -7,7 +7,7 @@
 #include "GameFramework/Actor.h"
 #include "LFP2D/HexGrid/LFPHexTile.h"
 #include "LFP2D/Turn/LFPBattleTypes.h"
-#include "LFP2D/Core/LFPGameInstance.h"
+#include "LFP2D/Unit/LFPUnitTypes.h"
 #include "Components/TimelineComponent.h"
 #include "PaperSpriteComponent.h"
 #include "LFPTacticsUnit.generated.h"
@@ -20,6 +20,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUnitDeathSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMoveFinishedSignature);
 
 // EUnitAffiliation 定义在 LFPBattleTypes.h 中
+// ELFPUnitRace 和 ELFPAttackType 定义在 LFPUnitTypes.h 中
 
 class ULFPSkillBase;
 class ALFPHexGridManager;
@@ -29,23 +30,6 @@ struct FLFPUnitRegistryEntry;
 class ULFPBetrayalCondition;
 class ALFPAIController;
 class ULFPSkillComponent;
-
-UENUM(BlueprintType)
-enum class ELFPUnitRace : uint8
-{
-    UR_None UMETA(DisplayName = "无"),
-    UR_Human UMETA(DisplayName = "人类"),
-    UR_WoodSpirit UMETA(DisplayName = "木灵"),
-    UR_Featherfolk UMETA(DisplayName = "羽裔"),
-    UR_Dragon UMETA(DisplayName = "龙")
-};
-
-UENUM(BlueprintType)
-enum class ELFPAttackType : uint8
-{
-    AT_Physical UMETA(DisplayName = "物理"),
-    AT_Magical UMETA(DisplayName = "魔法")
-};
 
 USTRUCT(BlueprintType)
 struct FLFPUnitBaseStats

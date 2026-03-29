@@ -17,6 +17,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Relic")
 	TMap<FName, FLFPRelicDefinition> RelicMap;
 
+	// 遗物组合规则
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Relic")
+	TArray<FLFPRelicSynergyRule> SynergyRules;
+
 	UFUNCTION(BlueprintPure, Category = "Relic")
 	bool FindRelicDefinition(FName RelicID, FLFPRelicDefinition& OutDefinition) const;
 };

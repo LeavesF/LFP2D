@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
+#include "LFP2D/Unit/LFPUnitTypes.h"
 #include "LFP2D/Shop/LFPRelicTypes.h"
 #include "LFPGameInstance.generated.h"
 
@@ -9,23 +10,6 @@ class ALFPTacticsUnit;
 class ULFPUnitRegistryDataAsset;
 class ULFPRelicDataAsset;
 class ULFPShopDataAsset;
-
-// 轻量单位数据：跨关卡保存用
-USTRUCT(BlueprintType)
-struct FLFPUnitEntry
-{
-	GENERATED_BODY()
-
-	// 单位类型 ID（对应 ULFPUnitRegistryDataAsset 中的键）
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit")
-	FName TypeID = NAME_None;
-
-	// 单位阶级
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit")
-	int32 Tier = 1;
-
-	bool IsValid() const { return TypeID != NAME_None; }
-};
 
 // 战斗请求：世界地图 → 战斗场景传递的数据
 USTRUCT(BlueprintType)
