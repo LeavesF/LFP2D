@@ -31,6 +31,7 @@ protected:
 private:
 	void RefreshShopUI();
 	void RefreshRelicList();
+	void RefreshOwnedRelicList();
 	void RefreshDetailPanel();
 	FString BuildEffectDescription(const FLFPRelicDefinition& Definition) const;
 
@@ -47,6 +48,9 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
 	TObjectPtr<UVerticalBox> Box_RelicList;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+	TObjectPtr<UVerticalBox> Box_OwnedRelicList;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
 	TObjectPtr<UImage> Image_SelectedRelic;

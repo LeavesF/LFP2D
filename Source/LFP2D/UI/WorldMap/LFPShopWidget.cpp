@@ -28,7 +28,9 @@ void ULFPShopWidget::RefreshShopUI()
 {
 	if (Text_Title)
 	{
-		Text_Title->SetText(CachedShopDefinition.DisplayName.IsEmpty() ? FText::FromString(TEXT("遗物商店")) : CachedShopDefinition.DisplayName);
+		const int32 OwnedCount = CachedGameInstance ? CachedGameInstance->GetOwnedRelicIDsArray().Num() : 0;
+		const FText BaseTitle = CachedShopDefinition.DisplayName.IsEmpty() ? FText::FromString(TEXT("遗物商店")) : CachedShopDefinition.DisplayName;
+		Text_Title->SetText(FText::FromString(FString::Printf(TEXT("%s（已拥有 %d）"), *BaseTitle.ToString(), OwnedCount)));
 	}
 
 	if (Text_Gold && CachedGameInstance)
@@ -37,6 +39,7 @@ void ULFPShopWidget::RefreshShopUI()
 	}
 
 	RefreshRelicList();
+	RefreshOwnedRelicList();
 	RefreshDetailPanel();
 }
 
@@ -96,6 +99,55 @@ void ULFPShopWidget::RefreshRelicList()
 		RelicButton->OnClicked.AddDynamic(this, &ULFPShopWidget::OnRelicButtonClicked);
 		RelicButtons.Add(RelicButton);
 		ButtonToRelicIndexMap.Add(RelicButton, i);
+	}
+}
+
+void ULFPShopWidget::RefreshOwnedRelicList()
+{
+	if (!Box_OwnedRelicList)
+	{
+		return;
+	}
+
+	Box_OwnedRelicList->ClearChildren();
+
+	if (!CachedGameInstance)
+	{
+		return;
+	}
+
+	const TArray<FName> OwnedRelicIDs = CachedGameInstance->GetOwnedRelicIDsArray();
+	if (OwnedRelicIDs.Num() == 0)
+	{
+		UTextBlock* EmptyText = NewObject<UTextBlock>(Box_OwnedRelicList);
+		if (EmptyText)
+		{
+			EmptyText->SetText(FText::FromString(TEXT("尚未拥有遗物")));
+			Box_OwnedRelicList->AddChildToVerticalBox(EmptyText);
+		}
+		return;
+	}
+
+	for (const FName& RelicID : OwnedRelicIDs)
+	{
+		FLFPRelicDefinition Definition;
+		if (!CachedGameInstance->FindRelicDefinition(RelicID, Definition))
+		{
+			continue;
+		}
+
+		UTextBlock* OwnedText = NewObject<UTextBlock>(Box_OwnedRelicList);
+		if (!OwnedText)
+		{
+			continue;
+		}
+
+		OwnedText->SetText(FText::FromString(FString::Printf(TEXT("%s\n%s"), *Definition.DisplayName.ToString(), *BuildEffectDescription(Definition))));
+		UVerticalBoxSlot* OwnedSlot = Box_OwnedRelicList->AddChildToVerticalBox(OwnedText);
+		if (OwnedSlot)
+		{
+			OwnedSlot->SetPadding(FMargin(4.f, 2.f));
+		}
 	}
 }
 

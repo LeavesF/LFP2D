@@ -254,6 +254,14 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Relic")
 	bool HasRelic(FName RelicID) const;
 
+	// 尝试将遗物加入已拥有列表
+	UFUNCTION(BlueprintCallable, Category = "Relic")
+	bool TryAddOwnedRelic(FName RelicID);
+
+	// 获取已拥有遗物 ID 列表
+	UFUNCTION(BlueprintPure, Category = "Relic")
+	TArray<FName> GetOwnedRelicIDsArray() const;
+
 	// 查找遗物定义
 	UFUNCTION(BlueprintPure, Category = "Relic")
 	bool FindRelicDefinition(FName RelicID, FLFPRelicDefinition& OutDefinition) const;

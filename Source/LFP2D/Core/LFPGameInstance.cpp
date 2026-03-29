@@ -150,6 +150,37 @@ bool ULFPGameInstance::HasRelic(FName RelicID) const
 	return RelicID != NAME_None && OwnedRelicIDs.Contains(RelicID);
 }
 
+bool ULFPGameInstance::TryAddOwnedRelic(FName RelicID)
+{
+	if (RelicID == NAME_None)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("TryAddOwnedRelic: RelicID 无效"));
+		return false;
+	}
+
+	FLFPRelicDefinition RelicDefinition;
+	if (!FindRelicDefinition(RelicID, RelicDefinition))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("TryAddOwnedRelic: 未找到遗物 %s"), *RelicID.ToString());
+		return false;
+	}
+
+	if (HasRelic(RelicID))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("TryAddOwnedRelic: 已拥有遗物 %s"), *RelicID.ToString());
+		return false;
+	}
+
+	OwnedRelicIDs.Add(RelicID);
+	UE_LOG(LogTemp, Log, TEXT("获得遗物成功: %s"), *RelicID.ToString());
+	return true;
+}
+
+TArray<FName> ULFPGameInstance::GetOwnedRelicIDsArray() const
+{
+	return OwnedRelicIDs.Array();
+}
+
 bool ULFPGameInstance::FindRelicDefinition(FName RelicID, FLFPRelicDefinition& OutDefinition) const
 {
 	return RelicDataAsset ? RelicDataAsset->FindRelicDefinition(RelicID, OutDefinition) : false;
@@ -168,25 +199,17 @@ bool ULFPGameInstance::TryPurchaseRelic(FName RelicID, int32 Price)
 		return false;
 	}
 
-	FLFPRelicDefinition RelicDefinition;
-	if (!FindRelicDefinition(RelicID, RelicDefinition))
-	{
-		UE_LOG(LogTemp, Warning, TEXT("TryPurchaseRelic: 未找到遗物 %s"), *RelicID.ToString());
-		return false;
-	}
-
-	if (HasRelic(RelicID))
-	{
-		UE_LOG(LogTemp, Warning, TEXT("TryPurchaseRelic: 已拥有遗物 %s"), *RelicID.ToString());
-		return false;
-	}
-
 	if (!SpendGold(Price))
 	{
 		return false;
 	}
 
-	OwnedRelicIDs.Add(RelicID);
+	if (!TryAddOwnedRelic(RelicID))
+	{
+		AddGold(Price);
+		return false;
+	}
+
 	UE_LOG(LogTemp, Log, TEXT("购买遗物成功: %s"), *RelicID.ToString());
 	return true;
 }
