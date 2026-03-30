@@ -1,0 +1,302 @@
+d:\UE_Projects\LFP2D\CLAUDE.md:31:- **Core/** — `LFPTurnGameMode`: 战斗游戏模式，负责生成 HexGridManager 和 TurnManager，从 GameInstance 读取战斗请求，根据 BattleMapName 从 CSV 加载地图。`LFPGameInstance`: 跨关卡数据持久化（战斗请求/结果、世界地图快照、编队系统、遗物效果应用）。`LFPUnitRegistryDataAsset`: 单位注册表（TypeID → 蓝图类、显示名、图标、Tier、种族、特殊标签、基础属性模板、高级属性模板）。
+d:\UE_Projects\LFP2D\CLAUDE.md:62:    → 放置时：按 UnitTypeID/UnitTier 生成单位 → 从 UnitRegistry 初始化属性模板 → 应用已拥有遗物到当前属性
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.h:5:#include "LFP2D/Shop/LFPRelicTypes.h"
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.h:33:	void RefreshRelicList();
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.h:35:	FString BuildEffectDescription(const FLFPRelicDefinition& Definition) const;
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.h:37:	UFUNCTION() void OnRelicButtonClicked();
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.h:49:	TObjectPtr<UVerticalBox> Box_RelicList;
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.h:52:	TObjectPtr<UImage> Image_SelectedRelic;
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.h:77:	int32 SelectedRelicIndex = INDEX_NONE;
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.h:80:	TArray<TObjectPtr<UButton>> RelicButtons;
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.h:82:	TMap<UButton*, int32> ButtonToRelicIndexMap;
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:23:	SelectedRelicIndex = CachedShopDefinition.RelicList.Num() > 0 ? 0 : INDEX_NONE;
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:31:		Text_Title->SetText(CachedShopDefinition.DisplayName.IsEmpty() ? FText::FromString(TEXT("遗物商店")) : CachedShopDefinition.DisplayName);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:39:	RefreshRelicList();
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:43:void ULFPShopWidget::RefreshRelicList()
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:45:	RelicButtons.Empty();
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:46:	ButtonToRelicIndexMap.Empty();
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:48:	if (Box_RelicList)
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:50:		Box_RelicList->ClearChildren();
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:53:	if (!CachedGameInstance || !Box_RelicList)
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:58:	for (int32 i = 0; i < CachedShopDefinition.RelicList.Num(); ++i)
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:60:		const FLFPShopRelicEntry& Entry = CachedShopDefinition.RelicList[i];
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:61:		FLFPRelicDefinition RelicDefinition;
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:62:		if (!CachedGameInstance->FindRelicDefinition(Entry.RelicID, RelicDefinition))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:67:		UButton* RelicButton = NewObject<UButton>(this);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:68:		if (!RelicButton)
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:73:		UTextBlock* Label = NewObject<UTextBlock>(RelicButton);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:77:			if (CachedGameInstance->HasRelic(Entry.RelicID))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:86:			Label->SetText(FText::FromString(FString::Printf(TEXT("%s - %d%s"), *RelicDefinition.DisplayName.ToString(), Entry.Price, *Suffix)));
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:87:			RelicButton->AddChild(Label);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:90:		UVerticalBoxSlot* ItemSlot = Box_RelicList->AddChildToVerticalBox(RelicButton);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:96:		RelicButton->OnClicked.AddDynamic(this, &ULFPShopWidget::OnRelicButtonClicked);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:97:		RelicButtons.Add(RelicButton);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:98:		ButtonToRelicIndexMap.Add(RelicButton, i);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:109:	if (!CachedShopDefinition.RelicList.IsValidIndex(SelectedRelicIndex))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:111:		if (Text_SelectedName) Text_SelectedName->SetText(FText::FromString(TEXT("未选择遗物")));
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:116:		if (Image_SelectedRelic) Image_SelectedRelic->SetBrushFromTexture(nullptr);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:120:	const FLFPShopRelicEntry& Entry = CachedShopDefinition.RelicList[SelectedRelicIndex];
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:121:	FLFPRelicDefinition Definition;
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:122:	if (!CachedGameInstance->FindRelicDefinition(Entry.RelicID, Definition))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:124:		if (Text_Status) Text_Status->SetText(FText::FromString(TEXT("遗物定义缺失")));
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:129:	if (Image_SelectedRelic)
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:131:		Image_SelectedRelic->SetBrushFromTexture(Definition.Icon);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:146:	bool bOwned = CachedGameInstance->HasRelic(Entry.RelicID);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:169:FString ULFPShopWidget::BuildEffectDescription(const FLFPRelicDefinition& Definition) const
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:172:	for (const FLFPRelicEffectEntry& Effect : Definition.Effects)
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:176:		case ELFPRelicEffectType::RET_MaxHealthFlat:
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:179:		case ELFPRelicEffectType::RET_AttackFlat:
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:182:		case ELFPRelicEffectType::RET_DefenseFlat:
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:185:		case ELFPRelicEffectType::RET_SpeedFlat:
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:196:void ULFPShopWidget::OnRelicButtonClicked()
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:198:	for (const auto& Pair : ButtonToRelicIndexMap)
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:202:			SelectedRelicIndex = Pair.Value;
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:211:	if (!CachedGameInstance || !CachedShopDefinition.RelicList.IsValidIndex(SelectedRelicIndex))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:216:	const FLFPShopRelicEntry& Entry = CachedShopDefinition.RelicList[SelectedRelicIndex];
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:217:	if (CachedGameInstance->TryPurchaseRelic(Entry.RelicID, Entry.Price))
+d:\UE_Projects\LFP2D\Source\LFP2D\Shop\LFPShopDataAsset.h:5:#include "LFP2D/Shop/LFPRelicTypes.h"
+d:\UE_Projects\LFP2D\Source\LFP2D\Shop\LFPRelicTypes.h:5:#include "LFPRelicTypes.generated.h"
+d:\UE_Projects\LFP2D\Source\LFP2D\Shop\LFPRelicTypes.h:7:// 遗物效果类型（第一期只做稳定的战斗数值被动）
+d:\UE_Projects\LFP2D\Source\LFP2D\Shop\LFPRelicTypes.h:9:enum class ELFPRelicEffectType : uint8
+d:\UE_Projects\LFP2D\Source\LFP2D\Shop\LFPRelicTypes.h:17:// 单条遗物效果
+d:\UE_Projects\LFP2D\Source\LFP2D\Shop\LFPRelicTypes.h:19:struct FLFPRelicEffectEntry
+d:\UE_Projects\LFP2D\Source\LFP2D\Shop\LFPRelicTypes.h:23:	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Relic")
+d:\UE_Projects\LFP2D\Source\LFP2D\Shop\LFPRelicTypes.h:24:	ELFPRelicEffectType EffectType = ELFPRelicEffectType::RET_MaxHealthFlat;
+d:\UE_Projects\LFP2D\Source\LFP2D\Shop\LFPRelicTypes.h:26:	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Relic")
+d:\UE_Projects\LFP2D\Source\LFP2D\Shop\LFPRelicTypes.h:30:// 遗物定义
+d:\UE_Projects\LFP2D\Source\LFP2D\Shop\LFPRelicTypes.h:32:struct FLFPRelicDefinition
+d:\UE_Projects\LFP2D\Source\LFP2D\Shop\LFPRelicTypes.h:36:	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Relic")
+d:\UE_Projects\LFP2D\Source\LFP2D\Shop\LFPRelicTypes.h:39:	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Relic")
+d:\UE_Projects\LFP2D\Source\LFP2D\Shop\LFPRelicTypes.h:42:	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Relic")
+d:\UE_Projects\LFP2D\Source\LFP2D\Shop\LFPRelicTypes.h:45:	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Relic")
+d:\UE_Projects\LFP2D\Source\LFP2D\Shop\LFPRelicTypes.h:46:	TArray<FLFPRelicEffectEntry> Effects;
+d:\UE_Projects\LFP2D\Source\LFP2D\Shop\LFPRelicTypes.h:51:struct FLFPShopRelicEntry
+d:\UE_Projects\LFP2D\Source\LFP2D\Shop\LFPRelicTypes.h:56:	FName RelicID = NAME_None;
+d:\UE_Projects\LFP2D\Source\LFP2D\Shop\LFPRelicTypes.h:72:	TArray<FLFPShopRelicEntry> RelicList;
+d:\UE_Projects\LFP2D\Source\LFP2D\Shop\LFPRelicDataAsset.h:5:#include "LFP2D/Shop/LFPRelicTypes.h"
+d:\UE_Projects\LFP2D\Source\LFP2D\Shop\LFPRelicDataAsset.h:6:#include "LFPRelicDataAsset.generated.h"
+d:\UE_Projects\LFP2D\Source\LFP2D\Shop\LFPRelicDataAsset.h:9: * 遗物注册表：RelicID -> 遗物定义
+d:\UE_Projects\LFP2D\Source\LFP2D\Shop\LFPRelicDataAsset.h:12:class LFP2D_API ULFPRelicDataAsset : public UDataAsset
+d:\UE_Projects\LFP2D\Source\LFP2D\Shop\LFPRelicDataAsset.h:17:	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Relic")
+d:\UE_Projects\LFP2D\Source\LFP2D\Shop\LFPRelicDataAsset.h:18:	TMap<FName, FLFPRelicDefinition> RelicMap;
+d:\UE_Projects\LFP2D\Source\LFP2D\Shop\LFPRelicDataAsset.h:20:	UFUNCTION(BlueprintPure, Category = "Relic")
+d:\UE_Projects\LFP2D\Source\LFP2D\Shop\LFPRelicDataAsset.h:21:	bool FindRelicDefinition(FName RelicID, FLFPRelicDefinition& OutDefinition) const;
+d:\UE_Projects\LFP2D\Source\LFP2D\Shop\LFPRelicDataAsset.cpp:1:#include "LFP2D/Shop/LFPRelicDataAsset.h"
+d:\UE_Projects\LFP2D\Source\LFP2D\Shop\LFPRelicDataAsset.cpp:3:bool ULFPRelicDataAsset::FindRelicDefinition(FName RelicID, FLFPRelicDefinition& OutDefinition) const
+d:\UE_Projects\LFP2D\Source\LFP2D\Shop\LFPRelicDataAsset.cpp:5:	if (const FLFPRelicDefinition* Found = RelicMap.Find(RelicID))
+d:\UE_Projects\LFP2D\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:1080:        GI->ApplyOwnedRelicsToUnit(PlacingUnitPreview);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.h:5:#include "LFP2D/Shop/LFPRelicTypes.h"
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.h:33:	void RefreshRelicList();
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.h:35:	FString BuildEffectDescription(const FLFPRelicDefinition& Definition) const;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.h:37:	UFUNCTION() void OnRelicButtonClicked();
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.h:49:	TObjectPtr<UVerticalBox> Box_RelicList;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.h:52:	TObjectPtr<UImage> Image_SelectedRelic;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.h:77:	int32 SelectedRelicIndex = INDEX_NONE;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.h:80:	TArray<TObjectPtr<UButton>> RelicButtons;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.h:82:	TMap<UButton*, int32> ButtonToRelicIndexMap;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:23:	SelectedRelicIndex = CachedShopDefinition.RelicList.Num() > 0 ? 0 : INDEX_NONE;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:31:		Text_Title->SetText(CachedShopDefinition.DisplayName.IsEmpty() ? FText::FromString(TEXT("遗物商店")) : CachedShopDefinition.DisplayName);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:39:	RefreshRelicList();
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:43:void ULFPShopWidget::RefreshRelicList()
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:45:	RelicButtons.Empty();
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:46:	ButtonToRelicIndexMap.Empty();
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:48:	if (Box_RelicList)
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:50:		Box_RelicList->ClearChildren();
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:53:	if (!CachedGameInstance || !Box_RelicList)
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:58:	for (int32 i = 0; i < CachedShopDefinition.RelicList.Num(); ++i)
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:60:		const FLFPShopRelicEntry& Entry = CachedShopDefinition.RelicList[i];
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:61:		FLFPRelicDefinition RelicDefinition;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:62:		if (!CachedGameInstance->FindRelicDefinition(Entry.RelicID, RelicDefinition))
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:67:		UButton* RelicButton = NewObject<UButton>(this);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:68:		if (!RelicButton)
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:73:		UTextBlock* Label = NewObject<UTextBlock>(RelicButton);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:77:			if (CachedGameInstance->HasRelic(Entry.RelicID))
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:86:			Label->SetText(FText::FromString(FString::Printf(TEXT("%s - %d%s"), *RelicDefinition.DisplayName.ToString(), Entry.Price, *Suffix)));
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:87:			RelicButton->AddChild(Label);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:90:		UVerticalBoxSlot* ItemSlot = Box_RelicList->AddChildToVerticalBox(RelicButton);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:96:		RelicButton->OnClicked.AddDynamic(this, &ULFPShopWidget::OnRelicButtonClicked);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:97:		RelicButtons.Add(RelicButton);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:98:		ButtonToRelicIndexMap.Add(RelicButton, i);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:109:	if (!CachedShopDefinition.RelicList.IsValidIndex(SelectedRelicIndex))
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:111:		if (Text_SelectedName) Text_SelectedName->SetText(FText::FromString(TEXT("未选择遗物")));
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:116:		if (Image_SelectedRelic) Image_SelectedRelic->SetBrushFromTexture(nullptr);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:120:	const FLFPShopRelicEntry& Entry = CachedShopDefinition.RelicList[SelectedRelicIndex];
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:121:	FLFPRelicDefinition Definition;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:122:	if (!CachedGameInstance->FindRelicDefinition(Entry.RelicID, Definition))
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:124:		if (Text_Status) Text_Status->SetText(FText::FromString(TEXT("遗物定义缺失")));
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:129:	if (Image_SelectedRelic)
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:131:		Image_SelectedRelic->SetBrushFromTexture(Definition.Icon);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:146:	bool bOwned = CachedGameInstance->HasRelic(Entry.RelicID);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:169:FString ULFPShopWidget::BuildEffectDescription(const FLFPRelicDefinition& Definition) const
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:172:	for (const FLFPRelicEffectEntry& Effect : Definition.Effects)
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:176:		case ELFPRelicEffectType::RET_MaxHealthFlat:
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:179:		case ELFPRelicEffectType::RET_AttackFlat:
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:182:		case ELFPRelicEffectType::RET_DefenseFlat:
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:185:		case ELFPRelicEffectType::RET_SpeedFlat:
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:196:void ULFPShopWidget::OnRelicButtonClicked()
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:198:	for (const auto& Pair : ButtonToRelicIndexMap)
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:202:			SelectedRelicIndex = Pair.Value;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:211:	if (!CachedGameInstance || !CachedShopDefinition.RelicList.IsValidIndex(SelectedRelicIndex))
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:216:	const FLFPShopRelicEntry& Entry = CachedShopDefinition.RelicList[SelectedRelicIndex];
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:217:	if (CachedGameInstance->TryPurchaseRelic(Entry.RelicID, Entry.Price))
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.h:5:#include "LFP2D/Shop/LFPRelicTypes.h"
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.h:10:class ULFPRelicDataAsset;
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.h:239:	// ============== 遗物 / 商店系统 ==============
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.h:241:	// 遗物数据资产
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.h:242:	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Relic")
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.h:243:	TObjectPtr<ULFPRelicDataAsset> RelicDataAsset;
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.h:249:	// 已拥有遗物 ID 集合
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.h:250:	UPROPERTY(BlueprintReadOnly, Category = "Relic")
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.h:251:	TSet<FName> OwnedRelicIDs;
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.h:253:	// 是否已拥有遗物
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.h:254:	UFUNCTION(BlueprintPure, Category = "Relic")
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.h:255:	bool HasRelic(FName RelicID) const;
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.h:257:	// 查找遗物定义
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.h:258:	UFUNCTION(BlueprintPure, Category = "Relic")
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.h:259:	bool FindRelicDefinition(FName RelicID, FLFPRelicDefinition& OutDefinition) const;
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.h:265:	// 购买遗物
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.h:267:	bool TryPurchaseRelic(FName RelicID, int32 Price);
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.h:269:	// 将已拥有遗物效果应用到单位当前属性
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.h:270:	UFUNCTION(BlueprintCallable, Category = "Relic")
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.h:271:	void ApplyOwnedRelicsToUnit(ALFPTacticsUnit* Unit) const;
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.cpp:3:#include "LFP2D/Shop/LFPRelicDataAsset.h"
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.cpp:148:bool ULFPGameInstance::HasRelic(FName RelicID) const
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.cpp:150:	return RelicID != NAME_None && OwnedRelicIDs.Contains(RelicID);
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.cpp:153:bool ULFPGameInstance::FindRelicDefinition(FName RelicID, FLFPRelicDefinition& OutDefinition) const
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.cpp:155:	return RelicDataAsset ? RelicDataAsset->FindRelicDefinition(RelicID, OutDefinition) : false;
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.cpp:163:bool ULFPGameInstance::TryPurchaseRelic(FName RelicID, int32 Price)
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.cpp:165:	if (RelicID == NAME_None)
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.cpp:167:		UE_LOG(LogTemp, Warning, TEXT("TryPurchaseRelic: RelicID 无效"));
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.cpp:171:	FLFPRelicDefinition RelicDefinition;
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.cpp:172:	if (!FindRelicDefinition(RelicID, RelicDefinition))
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.cpp:174:		UE_LOG(LogTemp, Warning, TEXT("TryPurchaseRelic: 未找到遗物 %s"), *RelicID.ToString());
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.cpp:178:	if (HasRelic(RelicID))
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.cpp:180:		UE_LOG(LogTemp, Warning, TEXT("TryPurchaseRelic: 已拥有遗物 %s"), *RelicID.ToString());
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.cpp:189:	OwnedRelicIDs.Add(RelicID);
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.cpp:190:	UE_LOG(LogTemp, Log, TEXT("购买遗物成功: %s"), *RelicID.ToString());
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.cpp:194:void ULFPGameInstance::ApplyOwnedRelicsToUnit(ALFPTacticsUnit* Unit) const
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.cpp:196:	if (!Unit || !RelicDataAsset)
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.cpp:201:	for (const FName& RelicID : OwnedRelicIDs)
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.cpp:203:		FLFPRelicDefinition Definition;
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.cpp:204:		if (!FindRelicDefinition(RelicID, Definition))
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.cpp:209:		for (const FLFPRelicEffectEntry& Effect : Definition.Effects)
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.cpp:213:			case ELFPRelicEffectType::RET_MaxHealthFlat:
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.cpp:216:			case ELFPRelicEffectType::RET_AttackFlat:
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.cpp:219:			case ELFPRelicEffectType::RET_DefenseFlat:
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.cpp:222:			case ELFPRelicEffectType::RET_SpeedFlat:
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.h:5:#include "LFP2D/Shop/LFPRelicTypes.h"
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.h:33:	void RefreshRelicList();
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.h:35:	FString BuildEffectDescription(const FLFPRelicDefinition& Definition) const;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.h:37:	UFUNCTION() void OnRelicButtonClicked();
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.h:49:	TObjectPtr<UVerticalBox> Box_RelicList;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.h:52:	TObjectPtr<UImage> Image_SelectedRelic;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.h:77:	int32 SelectedRelicIndex = INDEX_NONE;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.h:80:	TArray<TObjectPtr<UButton>> RelicButtons;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.h:82:	TMap<UButton*, int32> ButtonToRelicIndexMap;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:23:	SelectedRelicIndex = CachedShopDefinition.RelicList.Num() > 0 ? 0 : INDEX_NONE;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:31:		Text_Title->SetText(CachedShopDefinition.DisplayName.IsEmpty() ? FText::FromString(TEXT("遗物商店")) : CachedShopDefinition.DisplayName);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:39:	RefreshRelicList();
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:43:void ULFPShopWidget::RefreshRelicList()
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:45:	RelicButtons.Empty();
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:46:	ButtonToRelicIndexMap.Empty();
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:48:	if (Box_RelicList)
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:50:		Box_RelicList->ClearChildren();
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:53:	if (!CachedGameInstance || !Box_RelicList)
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:58:	for (int32 i = 0; i < CachedShopDefinition.RelicList.Num(); ++i)
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:60:		const FLFPShopRelicEntry& Entry = CachedShopDefinition.RelicList[i];
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:61:		FLFPRelicDefinition RelicDefinition;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:62:		if (!CachedGameInstance->FindRelicDefinition(Entry.RelicID, RelicDefinition))
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:67:		UButton* RelicButton = NewObject<UButton>(this);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:68:		if (!RelicButton)
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:73:		UTextBlock* Label = NewObject<UTextBlock>(RelicButton);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:77:			if (CachedGameInstance->HasRelic(Entry.RelicID))
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:86:			Label->SetText(FText::FromString(FString::Printf(TEXT("%s - %d%s"), *RelicDefinition.DisplayName.ToString(), Entry.Price, *Suffix)));
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:87:			RelicButton->AddChild(Label);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:90:		UVerticalBoxSlot* ItemSlot = Box_RelicList->AddChildToVerticalBox(RelicButton);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:96:		RelicButton->OnClicked.AddDynamic(this, &ULFPShopWidget::OnRelicButtonClicked);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:97:		RelicButtons.Add(RelicButton);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:98:		ButtonToRelicIndexMap.Add(RelicButton, i);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:109:	if (!CachedShopDefinition.RelicList.IsValidIndex(SelectedRelicIndex))
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:111:		if (Text_SelectedName) Text_SelectedName->SetText(FText::FromString(TEXT("未选择遗物")));
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:116:		if (Image_SelectedRelic) Image_SelectedRelic->SetBrushFromTexture(nullptr);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:120:	const FLFPShopRelicEntry& Entry = CachedShopDefinition.RelicList[SelectedRelicIndex];
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:121:	FLFPRelicDefinition Definition;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:122:	if (!CachedGameInstance->FindRelicDefinition(Entry.RelicID, Definition))
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:124:		if (Text_Status) Text_Status->SetText(FText::FromString(TEXT("遗物定义缺失")));
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:129:	if (Image_SelectedRelic)
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:131:		Image_SelectedRelic->SetBrushFromTexture(Definition.Icon);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:146:	bool bOwned = CachedGameInstance->HasRelic(Entry.RelicID);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:169:FString ULFPShopWidget::BuildEffectDescription(const FLFPRelicDefinition& Definition) const
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:172:	for (const FLFPRelicEffectEntry& Effect : Definition.Effects)
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:176:		case ELFPRelicEffectType::RET_MaxHealthFlat:
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:179:		case ELFPRelicEffectType::RET_AttackFlat:
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:182:		case ELFPRelicEffectType::RET_DefenseFlat:
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:185:		case ELFPRelicEffectType::RET_SpeedFlat:
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:196:void ULFPShopWidget::OnRelicButtonClicked()
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:198:	for (const auto& Pair : ButtonToRelicIndexMap)
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:202:			SelectedRelicIndex = Pair.Value;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:211:	if (!CachedGameInstance || !CachedShopDefinition.RelicList.IsValidIndex(SelectedRelicIndex))
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:216:	const FLFPShopRelicEntry& Entry = CachedShopDefinition.RelicList[SelectedRelicIndex];
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a46fc651\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:217:	if (CachedGameInstance->TryPurchaseRelic(Entry.RelicID, Entry.Price))
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Shop\LFPShopDataAsset.h:5:#include "LFP2D/Shop/LFPRelicTypes.h"
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Shop\LFPRelicTypes.h:5:#include "LFPRelicTypes.generated.h"
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Shop\LFPRelicTypes.h:7:// 遗物效果类型（第一期只做稳定的战斗数值被动）
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Shop\LFPRelicTypes.h:9:enum class ELFPRelicEffectType : uint8
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Shop\LFPRelicTypes.h:17:// 单条遗物效果
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Shop\LFPRelicTypes.h:19:struct FLFPRelicEffectEntry
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Shop\LFPRelicTypes.h:23:	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Relic")
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Shop\LFPRelicTypes.h:24:	ELFPRelicEffectType EffectType = ELFPRelicEffectType::RET_MaxHealthFlat;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Shop\LFPRelicTypes.h:26:	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Relic")
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Shop\LFPRelicTypes.h:30:// 遗物定义
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Shop\LFPRelicTypes.h:32:struct FLFPRelicDefinition
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Shop\LFPRelicTypes.h:36:	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Relic")
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Shop\LFPRelicTypes.h:39:	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Relic")
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Shop\LFPRelicTypes.h:42:	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Relic")
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Shop\LFPRelicTypes.h:45:	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Relic")
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Shop\LFPRelicTypes.h:46:	TArray<FLFPRelicEffectEntry> Effects;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Shop\LFPRelicTypes.h:51:struct FLFPShopRelicEntry
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Shop\LFPRelicTypes.h:56:	FName RelicID = NAME_None;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Shop\LFPRelicTypes.h:72:	TArray<FLFPShopRelicEntry> RelicList;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Shop\LFPRelicDataAsset.h:5:#include "LFP2D/Shop/LFPRelicTypes.h"
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Shop\LFPRelicDataAsset.h:6:#include "LFPRelicDataAsset.generated.h"
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Shop\LFPRelicDataAsset.h:9: * 遗物注册表：RelicID -> 遗物定义
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Shop\LFPRelicDataAsset.h:12:class LFP2D_API ULFPRelicDataAsset : public UDataAsset
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Shop\LFPRelicDataAsset.h:17:	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Relic")
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Shop\LFPRelicDataAsset.h:18:	TMap<FName, FLFPRelicDefinition> RelicMap;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Shop\LFPRelicDataAsset.h:20:	UFUNCTION(BlueprintPure, Category = "Relic")
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Shop\LFPRelicDataAsset.h:21:	bool FindRelicDefinition(FName RelicID, FLFPRelicDefinition& OutDefinition) const;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Shop\LFPRelicDataAsset.cpp:1:#include "LFP2D/Shop/LFPRelicDataAsset.h"
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Shop\LFPRelicDataAsset.cpp:3:bool ULFPRelicDataAsset::FindRelicDefinition(FName RelicID, FLFPRelicDefinition& OutDefinition) const
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Shop\LFPRelicDataAsset.cpp:5:	if (const FLFPRelicDefinition* Found = RelicMap.Find(RelicID))
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:1080:        GI->ApplyOwnedRelicsToUnit(PlacingUnitPreview);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Core\LFPGameInstance.h:5:#include "LFP2D/Shop/LFPRelicTypes.h"
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Core\LFPGameInstance.h:10:class ULFPRelicDataAsset;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Core\LFPGameInstance.h:239:	// ============== 遗物 / 商店系统 ==============
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Core\LFPGameInstance.h:241:	// 遗物数据资产
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Core\LFPGameInstance.h:242:	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Relic")
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Core\LFPGameInstance.h:243:	TObjectPtr<ULFPRelicDataAsset> RelicDataAsset;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Core\LFPGameInstance.h:249:	// 已拥有遗物 ID 集合
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Core\LFPGameInstance.h:250:	UPROPERTY(BlueprintReadOnly, Category = "Relic")
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Core\LFPGameInstance.h:251:	TSet<FName> OwnedRelicIDs;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Core\LFPGameInstance.h:253:	// 是否已拥有遗物
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Core\LFPGameInstance.h:254:	UFUNCTION(BlueprintPure, Category = "Relic")
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Core\LFPGameInstance.h:255:	bool HasRelic(FName RelicID) const;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Core\LFPGameInstance.h:257:	// 查找遗物定义
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Core\LFPGameInstance.h:258:	UFUNCTION(BlueprintPure, Category = "Relic")
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Core\LFPGameInstance.h:259:	bool FindRelicDefinition(FName RelicID, FLFPRelicDefinition& OutDefinition) const;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Core\LFPGameInstance.h:265:	// 购买遗物
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Core\LFPGameInstance.h:267:	bool TryPurchaseRelic(FName RelicID, int32 Price);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Core\LFPGameInstance.h:269:	// 将已拥有遗物效果应用到单位当前属性
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Core\LFPGameInstance.h:270:	UFUNCTION(BlueprintCallable, Category = "Relic")
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Core\LFPGameInstance.h:271:	void ApplyOwnedRelicsToUnit(ALFPTacticsUnit* Unit) const;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Core\LFPGameInstance.cpp:3:#include "LFP2D/Shop/LFPRelicDataAsset.h"
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Core\LFPGameInstance.cpp:148:bool ULFPGameInstance::HasRelic(FName RelicID) const
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Core\LFPGameInstance.cpp:150:	return RelicID != NAME_None && OwnedRelicIDs.Contains(RelicID);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Core\LFPGameInstance.cpp:153:bool ULFPGameInstance::FindRelicDefinition(FName RelicID, FLFPRelicDefinition& OutDefinition) const
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Core\LFPGameInstance.cpp:155:	return RelicDataAsset ? RelicDataAsset->FindRelicDefinition(RelicID, OutDefinition) : false;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Core\LFPGameInstance.cpp:163:bool ULFPGameInstance::TryPurchaseRelic(FName RelicID, int32 Price)
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Core\LFPGameInstance.cpp:165:	if (RelicID == NAME_None)
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Core\LFPGameInstance.cpp:167:		UE_LOG(LogTemp, Warning, TEXT("TryPurchaseRelic: RelicID 无效"));
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a63ae9da\Source\LFP2D\Core\LFPGameInstance.cpp:171:	FLFPRelicDefinition RelicDefinition;
+
+[Showing results with pagination = limit: 300, offset: 0]

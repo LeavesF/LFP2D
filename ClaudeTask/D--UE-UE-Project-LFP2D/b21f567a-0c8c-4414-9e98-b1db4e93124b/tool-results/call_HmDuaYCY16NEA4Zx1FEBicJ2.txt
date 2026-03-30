@@ -1,0 +1,252 @@
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:26:	void InitializeEditor(ULFPWorldMapEditorComponent* EditorComp);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:42:	UFUNCTION() void OnNodeTypeChanged(FString SelectedItem, ESelectInfo::Type SelectionType);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:67:	// ==== BindWidget 控件 ====
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:70:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:73:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:76:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:79:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:82:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:85:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:88:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:92:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:95:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:98:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:101:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:104:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:107:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:110:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:113:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:116:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:120:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:123:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:126:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:129:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:132:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:136:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:139:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:142:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:145:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:149:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:152:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:153:	TObjectPtr<UTextBlock> SelectedNodeInfoText;
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:14:	if (PlaceNodeButton) PlaceNodeButton->OnClicked.AddDynamic(this, &ULFPWorldMapEditorWidget::OnPlaceNodeClicked);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:15:	if (RemoveNodeButton) RemoveNodeButton->OnClicked.AddDynamic(this, &ULFPWorldMapEditorWidget::OnRemoveNodeClicked);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:16:	if (MoveNodeButton) MoveNodeButton->OnClicked.AddDynamic(this, &ULFPWorldMapEditorWidget::OnMoveNodeClicked);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:17:	if (ConnectEdgeButton) ConnectEdgeButton->OnClicked.AddDynamic(this, &ULFPWorldMapEditorWidget::OnConnectEdgeClicked);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:18:	if (RemoveEdgeButton) RemoveEdgeButton->OnClicked.AddDynamic(this, &ULFPWorldMapEditorWidget::OnRemoveEdgeClicked);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:19:	if (SetParamsButton) SetParamsButton->OnClicked.AddDynamic(this, &ULFPWorldMapEditorWidget::OnSetParamsClicked);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:20:	if (EditBattleMapButton) EditBattleMapButton->OnClicked.AddDynamic(this, &ULFPWorldMapEditorWidget::OnEditBattleMapClicked);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:41:	if (SaveWorldMapButton) SaveWorldMapButton->OnClicked.AddDynamic(this, &ULFPWorldMapEditorWidget::OnSaveClicked);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:42:	if (LoadWorldMapButton) LoadWorldMapButton->OnClicked.AddDynamic(this, &ULFPWorldMapEditorWidget::OnLoadClicked);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:43:	if (NewWorldMapButton) NewWorldMapButton->OnClicked.AddDynamic(this, &ULFPWorldMapEditorWidget::OnNewMapClicked);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:57:		NodeTypeComboBox->SetSelectedOption(TEXT("WNT_Battle"));
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:69:void ULFPWorldMapEditorWidget::InitializeEditor(ULFPWorldMapEditorComponent* EditorComp)
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:76:		EditorComponent->OnNodeSelected.AddDynamic(this, &ULFPWorldMapEditorWidget::UpdateNodeInfo);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:119:void ULFPWorldMapEditorWidget::OnNodeTypeChanged(FString SelectedItem, ESelectInfo::Type SelectionType)
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:134:	if (const ELFPWorldNodeType* Found = NodeTypeMap.Find(SelectedItem))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:274:	if (!SelectedNodeInfoText) return;
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:278:		SelectedNodeInfoText->SetText(FText::FromString(TEXT("未选中")));
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:316:	SelectedNodeInfoText->SetText(FText::FromString(Info));
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPBattleResultWidget.cpp:17:		Button_Confirm->OnClicked.AddDynamic(this, &ULFPBattleResultWidget::OnConfirmClicked);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPBattleResultWidget.cpp:86:					UVerticalBoxSlot* IconSlot = ItemBox->AddChildToVerticalBox(IconImage);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPBattleResultWidget.cpp:95:					UVerticalBoxSlot* TextSlot = ItemBox->AddChildToVerticalBox(NameText);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPBattleResultWidget.cpp:99:					UWrapBoxSlot* WrapSlot = Cast<UWrapBoxSlot>(Box_CapturedUnits->AddChild(ItemBox));
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\MapEditor\LFPMapEditorWidget.h:25:	void InitializeEditor(ULFPMapEditorComponent* EditorComp);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\MapEditor\LFPMapEditorWidget.h:40:	UFUNCTION() void OnTerrainTypeChanged(FString SelectedItem, ESelectInfo::Type SelectionType);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\MapEditor\LFPMapEditorWidget.h:41:	UFUNCTION() void OnDecorationIDChanged(FString SelectedItem, ESelectInfo::Type SelectionType);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\MapEditor\LFPMapEditorWidget.h:42:	UFUNCTION() void OnSpawnFactionChanged(FString SelectedItem, ESelectInfo::Type SelectionType);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\MapEditor\LFPMapEditorWidget.h:53:	// ==== BindWidget 控件 ====
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\MapEditor\LFPMapEditorWidget.h:56:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\MapEditor\LFPMapEditorWidget.h:59:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\MapEditor\LFPMapEditorWidget.h:62:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\MapEditor\LFPMapEditorWidget.h:65:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\MapEditor\LFPMapEditorWidget.h:68:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\MapEditor\LFPMapEditorWidget.h:71:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\MapEditor\LFPMapEditorWidget.h:75:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\MapEditor\LFPMapEditorWidget.h:79:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\MapEditor\LFPMapEditorWidget.h:83:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\MapEditor\LFPMapEditorWidget.h:87:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\MapEditor\LFPMapEditorWidget.h:91:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\MapEditor\LFPMapEditorWidget.h:95:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\MapEditor\LFPMapEditorWidget.h:99:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\MapEditor\LFPMapEditorWidget.h:102:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\MapEditor\LFPMapEditorWidget.h:105:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Town\LFPTownWidget.h:38:	virtual void NativeOnInitialized() override;
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Town\LFPTownWidget.h:55:	// ==== BindWidget 控件（在 UMG 蓝图中预先配置好图片和布局） ====
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Town\LFPTownWidget.h:57:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Town\LFPTownWidget.h:61:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Town\LFPTownWidget.h:65:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Town\LFPTownWidget.h:69:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Town\LFPTownWidget.h:73:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Town\LFPTownWidget.h:77:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Town\LFPTownWidget.h:81:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPDeploymentWidget.cpp:11:	if (Button_Unit0) Button_Unit0->OnClicked.AddDynamic(this, &ULFPDeploymentWidget::OnUnit0Clicked);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPDeploymentWidget.cpp:12:	if (Button_Unit1) Button_Unit1->OnClicked.AddDynamic(this, &ULFPDeploymentWidget::OnUnit1Clicked);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPDeploymentWidget.cpp:13:	if (Button_Unit2) Button_Unit2->OnClicked.AddDynamic(this, &ULFPDeploymentWidget::OnUnit2Clicked);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPDeploymentWidget.cpp:14:	if (Button_Confirm) Button_Confirm->OnClicked.AddDynamic(this, &ULFPDeploymentWidget::OnConfirmClicked);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPDeploymentWidget.cpp:130:	OnUnitSelected.Broadcast(0);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPDeploymentWidget.cpp:135:	OnUnitSelected.Broadcast(1);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPDeploymentWidget.cpp:140:	OnUnitSelected.Broadcast(2);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\MapEditor\LFPMapEditorWidget.cpp:12:	if (TerrainToolButton) TerrainToolButton->OnClicked.AddDynamic(this, &ULFPMapEditorWidget::OnTerrainToolClicked);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\MapEditor\LFPMapEditorWidget.cpp:13:	if (DecorationToolButton) DecorationToolButton->OnClicked.AddDynamic(this, &ULFPMapEditorWidget::OnDecorationToolClicked);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\MapEditor\LFPMapEditorWidget.cpp:14:	if (SpawnPointToolButton) SpawnPointToolButton->OnClicked.AddDynamic(this, &ULFPMapEditorWidget::OnSpawnPointToolClicked);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\MapEditor\LFPMapEditorWidget.cpp:15:	if (EventToolButton) EventToolButton->OnClicked.AddDynamic(this, &ULFPMapEditorWidget::OnEventToolClicked);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\MapEditor\LFPMapEditorWidget.cpp:16:	if (AddTileToolButton) AddTileToolButton->OnClicked.AddDynamic(this, &ULFPMapEditorWidget::OnAddTileToolClicked);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\MapEditor\LFPMapEditorWidget.cpp:17:	if (RemoveTileToolButton) RemoveTileToolButton->OnClicked.AddDynamic(this, &ULFPMapEditorWidget::OnRemoveTileToolClicked);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\MapEditor\LFPMapEditorWidget.cpp:25:	if (SaveButton) SaveButton->OnClicked.AddDynamic(this, &ULFPMapEditorWidget::OnSaveClicked);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\MapEditor\LFPMapEditorWidget.cpp:26:	if (LoadButton) LoadButton->OnClicked.AddDynamic(this, &ULFPMapEditorWidget::OnLoadClicked);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\MapEditor\LFPMapEditorWidget.cpp:27:	if (NewMapButton) NewMapButton->OnClicked.AddDynamic(this, &ULFPMapEditorWidget::OnNewMapClicked);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\MapEditor\LFPMapEditorWidget.cpp:42:		TerrainTypeComboBox->SetSelectedOption(TEXT("TT_Grass"));
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\MapEditor\LFPMapEditorWidget.cpp:53:		SpawnFactionComboBox->SetSelectedOption(TEXT("SF_Player"));
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\MapEditor\LFPMapEditorWidget.cpp:57:void ULFPMapEditorWidget::InitializeEditor(ULFPMapEditorComponent* EditorComp)
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\MapEditor\LFPMapEditorWidget.cpp:101:void ULFPMapEditorWidget::OnTerrainTypeChanged(FString SelectedItem, ESelectInfo::Type SelectionType)
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\MapEditor\LFPMapEditorWidget.cpp:118:	if (const ELFPTerrainType* Found = TerrainMap.Find(SelectedItem))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\MapEditor\LFPMapEditorWidget.cpp:124:void ULFPMapEditorWidget::OnDecorationIDChanged(FString SelectedItem, ESelectInfo::Type SelectionType)
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\MapEditor\LFPMapEditorWidget.cpp:127:	EditorComponent->SetBrushDecorationID(FName(*SelectedItem));
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\MapEditor\LFPMapEditorWidget.cpp:130:void ULFPMapEditorWidget::OnSpawnFactionChanged(FString SelectedItem, ESelectInfo::Type SelectionType)
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\MapEditor\LFPMapEditorWidget.cpp:141:	if (const ELFPSpawnFaction* Found = FactionMap.Find(SelectedItem))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPBattleResultWidget.h:35:	// ============== BindWidget ==============
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPBattleResultWidget.h:38:	UPROPERTY(BlueprintReadOnly, Category = "Battle Result", meta = (BindWidget))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPBattleResultWidget.h:42:	UPROPERTY(BlueprintReadOnly, Category = "Battle Result", meta = (BindWidget))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPBattleResultWidget.h:46:	UPROPERTY(BlueprintReadOnly, Category = "Battle Result", meta = (BindWidget))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPBattleResultWidget.h:50:	UPROPERTY(BlueprintReadOnly, Category = "Battle Result", meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPBattleResultWidget.h:54:	UPROPERTY(BlueprintReadOnly, Category = "Battle Result", meta = (BindWidget))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Town\LFPTownWidget.cpp:5:void ULFPTownWidget::NativeOnInitialized()
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Town\LFPTownWidget.cpp:7:	Super::NativeOnInitialized();
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Town\LFPTownWidget.cpp:9:	if (Button_Shop) Button_Shop->OnClicked.AddDynamic(this, &ULFPTownWidget::OnShopClicked);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Town\LFPTownWidget.cpp:10:	if (Button_EvolutionTower) Button_EvolutionTower->OnClicked.AddDynamic(this, &ULFPTownWidget::OnEvolutionTowerClicked);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Town\LFPTownWidget.cpp:11:	if (Button_Teleport) Button_Teleport->OnClicked.AddDynamic(this, &ULFPTownWidget::OnTeleportClicked);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Town\LFPTownWidget.cpp:12:	if (Button_QuestNPC) Button_QuestNPC->OnClicked.AddDynamic(this, &ULFPTownWidget::OnQuestNPCClicked);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Town\LFPTownWidget.cpp:13:	if (Button_SkillNode) Button_SkillNode->OnClicked.AddDynamic(this, &ULFPTownWidget::OnSkillNodeClicked);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Town\LFPTownWidget.cpp:14:	if (Button_Close) Button_Close->OnClicked.AddDynamic(this, &ULFPTownWidget::OnCloseClicked);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:59:	virtual void NativeOnInitialized() override;
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:63:	void RefreshUnitIcons();
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:100:	// ==== BindWidget 控件 ====
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:103:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:106:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:110:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:113:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:116:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:119:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:123:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:126:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:129:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:133:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:136:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:140:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.h:156:	FName SelectedEvolutionTarget;
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.h:29:	virtual void NativeOnInitialized() override;
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.h:32:	void RefreshShopUI();
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.h:33:	void RefreshRelicList();
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.h:34:	void RefreshDetailPanel();
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.h:42:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.h:45:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.h:48:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.h:51:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.h:52:	TObjectPtr<UImage> Image_SelectedRelic;
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.h:54:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.h:55:	TObjectPtr<UTextBlock> Text_SelectedName;
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.h:57:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.h:58:	TObjectPtr<UTextBlock> Text_SelectedDescription;
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.h:60:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.h:61:	TObjectPtr<UTextBlock> Text_SelectedPrice;
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.h:63:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.h:66:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.h:69:	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.h:77:	int32 SelectedRelicIndex = INDEX_NONE;
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPHealthBarWidget.h:47:	UPROPERTY(BlueprintReadOnly, Category = "Health Bar", meta = (BindWidget))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPHealthBarWidget.h:51:	UPROPERTY(BlueprintReadOnly, Category = "Health Bar", meta = (BindWidget))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPHealthBarWidget.h:80:	/*UPROPERTY(BlueprintReadOnly, Category = "Health Bar", meta = (BindWidget))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:10:void ULFPUnitMergeWidget::NativeOnInitialized()
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:12:	Super::NativeOnInitialized();
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:14:	if (Button_SlotA) Button_SlotA->OnClicked.AddDynamic(this, &ULFPUnitMergeWidget::OnSlotAClicked);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:15:	if (Button_SlotB) Button_SlotB->OnClicked.AddDynamic(this, &ULFPUnitMergeWidget::OnSlotBClicked);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:16:	if (Button_Merge) Button_Merge->OnClicked.AddDynamic(this, &ULFPUnitMergeWidget::OnMergeClicked);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:17:	if (Button_Clear) Button_Clear->OnClicked.AddDynamic(this, &ULFPUnitMergeWidget::OnClearClicked);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:18:	if (Button_Close) Button_Close->OnClicked.AddDynamic(this, &ULFPUnitMergeWidget::OnCloseClicked);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:28:	RefreshUnitIcons();
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:67:void ULFPUnitMergeWidget::RefreshUnitIcons()
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:94:			Btn->OnClicked.AddDynamic(this, &ULFPUnitMergeWidget::OnUnitIconClicked);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:115:			Btn->OnClicked.AddDynamic(this, &ULFPUnitMergeWidget::OnUnitIconClicked);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:168:	RefreshUnitIcons();
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:178:		RefreshUnitIcons();
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:189:		RefreshUnitIcons();
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:205:	SelectedEvolutionTarget = NAME_None;
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:266:						ChoiceBtn->OnClicked.AddDynamic(this, &ULFPUnitMergeWidget::OnEvolutionChoiceClicked);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:273:					SelectedEvolutionTarget = Targets[0];
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:277:					if (CachedRegistry->FindEntry(SelectedEvolutionTarget, TargetEntry) && Text_PreviewName)
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:330:			SelectedEvolutionTarget = Pair.Value;
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:361:			if (CachedRegistry && CachedRegistry->FindEntry(SelectedEvolutionTarget, TargetEntry))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:383:	if (SelectedEvolutionTarget == NAME_None) return;
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:388:		SelectedEvolutionTarget);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:392:		UE_LOG(LogTemp, Log, TEXT("升阶 Widget: 进化成功 → %s"), *SelectedEvolutionTarget.ToString());
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:396:	RefreshUnitIcons();
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPUnitMergeWidget.cpp:402:	RefreshUnitIcons();
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:10:void ULFPShopWidget::NativeOnInitialized()
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:12:	Super::NativeOnInitialized();
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:14:	if (Button_Purchase) Button_Purchase->OnClicked.AddDynamic(this, &ULFPShopWidget::OnPurchaseClicked);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:15:	if (Button_Close) Button_Close->OnClicked.AddDynamic(this, &ULFPShopWidget::OnCloseClicked);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:23:	SelectedRelicIndex = CachedShopDefinition.RelicList.Num() > 0 ? 0 : INDEX_NONE;
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:24:	RefreshShopUI();
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:27:void ULFPShopWidget::RefreshShopUI()
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:39:	RefreshRelicList();
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:40:	RefreshDetailPanel();
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:43:void ULFPShopWidget::RefreshRelicList()
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:87:			RelicButton->AddChild(Label);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:90:		UVerticalBoxSlot* ItemSlot = Box_RelicList->AddChildToVerticalBox(RelicButton);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:96:		RelicButton->OnClicked.AddDynamic(this, &ULFPShopWidget::OnRelicButtonClicked);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:102:void ULFPShopWidget::RefreshDetailPanel()
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:109:	if (!CachedShopDefinition.RelicList.IsValidIndex(SelectedRelicIndex))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:111:		if (Text_SelectedName) Text_SelectedName->SetText(FText::FromString(TEXT("未选择遗物")));
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:112:		if (Text_SelectedDescription) Text_SelectedDescription->SetText(FText::GetEmpty());
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:113:		if (Text_SelectedPrice) Text_SelectedPrice->SetText(FText::GetEmpty());
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:116:		if (Image_SelectedRelic) Image_SelectedRelic->SetBrushFromTexture(nullptr);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:120:	const FLFPShopRelicEntry& Entry = CachedShopDefinition.RelicList[SelectedRelicIndex];
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:129:	if (Image_SelectedRelic)
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:131:		Image_SelectedRelic->SetBrushFromTexture(Definition.Icon);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:133:	if (Text_SelectedName)
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:135:		Text_SelectedName->SetText(Definition.DisplayName);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:137:	if (Text_SelectedDescription)
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:139:		Text_SelectedDescription->SetText(FText::FromString(FString::Printf(TEXT("%s\n%s"), *Definition.Description.ToString(), *BuildEffectDescription(Definition))));
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:141:	if (Text_SelectedPrice)
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:143:		Text_SelectedPrice->SetText(FText::FromString(FString::Printf(TEXT("价格: %d"), Entry.Price)));
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:202:			SelectedRelicIndex = Pair.Value;
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:203:			RefreshDetailPanel();
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:211:	if (!CachedGameInstance || !CachedShopDefinition.RelicList.IsValidIndex(SelectedRelicIndex))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:216:	const FLFPShopRelicEntry& Entry = CachedShopDefinition.RelicList[SelectedRelicIndex];
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:219:		RefreshShopUI();
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPTurnSpeedListWidget.h:25:	void InitializeTurnOrder();
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPTurnSpeedListWidget.h:44:	UPROPERTY(meta = (BindWidget))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPTurnSpeedListWidget.h:48:	UPROPERTY(meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPTurnSpeedListWidget.h:51:	UPROPERTY(meta = (BindWidget))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPDeploymentWidget.h:12:DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDeploymentUnitSelected, int32, PartyIndex);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPDeploymentWidget.h:42:	FOnDeploymentUnitSelected OnUnitSelected;
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPDeploymentWidget.h:51:	// ============== BindWidget 绑定 ==============
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPDeploymentWidget.h:54:	UPROPERTY(BlueprintReadOnly, Category = "Deployment", meta = (BindWidget))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPDeploymentWidget.h:57:	UPROPERTY(BlueprintReadOnly, Category = "Deployment", meta = (BindWidget))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPDeploymentWidget.h:60:	UPROPERTY(BlueprintReadOnly, Category = "Deployment", meta = (BindWidget))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPDeploymentWidget.h:64:	UPROPERTY(BlueprintReadOnly, Category = "Deployment", meta = (BindWidget))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPDeploymentWidget.h:67:	UPROPERTY(BlueprintReadOnly, Category = "Deployment", meta = (BindWidget))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPDeploymentWidget.h:70:	UPROPERTY(BlueprintReadOnly, Category = "Deployment", meta = (BindWidget))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPDeploymentWidget.h:74:	UPROPERTY(BlueprintReadOnly, Category = "Deployment", meta = (BindWidget))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.h:34:DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSkillChosenSignature, ULFPSkillBase*, SelectedSkill);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.h:35:DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSkillConfirmedSignature, ULFPSkillBase*, SelectedSkill);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.h:45:    ULFPSkillSelectionWidget(const FObjectInitializer& ObjectInitializer);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.h:49:    void InitializeSkillsInfo(ALFPTacticsUnit* Unit, ALFPTacticsPlayerController* PC);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.h:73:    void RefreshSkillButtons();
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.h:83:    void OnSkillSelected(ULFPSkillBase* Skill);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.h:136:    UPROPERTY(BlueprintReadOnly, Category = "Skill Selection", meta = (BindWidget))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.h:140:    UPROPERTY(BlueprintReadOnly, Category = "Skill Selection", meta = (BindWidget))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.h:144:    UPROPERTY(BlueprintReadOnly, Category = "Skill Selection", meta = (BindWidget))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.h:148:    UPROPERTY(BlueprintReadOnly, Category = "Skill Selection", meta = (BindWidget))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.h:152:    UPROPERTY(BlueprintReadOnly, Category = "Skill Selection", meta = (BindWidget))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.h:156:    UPROPERTY(BlueprintReadOnly, Category = "Skill Selection", meta = (BindWidget))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.h:160:    //UPROPERTY(BlueprintReadOnly, Category = "Skill Selection", meta = (BindWidget))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.h:164:    //UPROPERTY(BlueprintReadOnly, Category = "Skill Selection", meta = (BindWidget))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.h:168:    UPROPERTY(BlueprintReadOnly, Category = "Skill Selection", meta = (BindWidgetOptional))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.h:172:    //UPROPERTY(BlueprintReadOnly, Category = "Skill Selection", meta = (BindWidget))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.h:176:    //UPROPERTY(BlueprintReadOnly, Category = "Skill Selection", meta = (BindWidget))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.h:180:    //UPROPERTY(BlueprintReadOnly, Category = "Skill Selection", meta = (BindWidget))
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.h:184:    //UPROPERTY(BlueprintReadOnly, Category = "Skill Selection", meta = (BindWidget))
+
+[Showing results with pagination = limit: 250, offset: 0]

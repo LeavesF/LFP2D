@@ -1,0 +1,135 @@
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\Shop\LFPShopDataAsset.h:9: * 商店配置表：ShopID -> 商店定义
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\Shop\LFPShopDataAsset.h:21:	bool FindShopDefinition(FName ShopID, FLFPShopDefinition& OutDefinition) const;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\Core\LFPGameInstance.cpp:158:bool ULFPGameInstance::FindShopDefinition(FName ShopID, FLFPShopDefinition& OutDefinition) const
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\Core\LFPGameInstance.cpp:160:	return ShopDataAsset ? ShopDataAsset->FindShopDefinition(ShopID, OutDefinition) : false;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\Core\LFPTurnGameMode.cpp:9:#include "LFP2D/UI/Fighting/LFPBattleResultWidget.h"
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\Core\LFPTurnGameMode.cpp:84:        Result.GoldReward = CachedBattleRequest.BaseGoldReward + AccumulatedDropGold;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\Core\LFPTurnGameMode.cpp:85:        Result.FoodReward = CachedBattleRequest.BaseFoodReward + AccumulatedDropFood;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\Core\LFPTurnGameMode.cpp:93:    if (BattleResultWidgetClass)
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\Core\LFPTurnGameMode.cpp:98:            BattleResultWidget = CreateWidget<ULFPBattleResultWidget>(PC, BattleResultWidgetClass);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\Core\LFPTurnGameMode.cpp:99:            if (BattleResultWidget)
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\Core\LFPTurnGameMode.cpp:101:                BattleResultWidget->Setup(Result, GI->UnitRegistry);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\Core\LFPTurnGameMode.cpp:102:                BattleResultWidget->OnConfirmPressed.AddDynamic(this, &ALFPTurnGameMode::OnBattleResultConfirmed);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\Core\LFPTurnGameMode.cpp:103:                BattleResultWidget->AddToViewport(100);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\Core\LFPTurnGameMode.cpp:107:                InputMode.SetWidgetToFocus(BattleResultWidget->TakeWidget());
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\Core\LFPTurnGameMode.cpp:129:    if (BattleResultWidget)
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\Core\LFPTurnGameMode.cpp:131:        BattleResultWidget->OnConfirmPressed.RemoveDynamic(this, &ALFPTurnGameMode::OnBattleResultConfirmed);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\Core\LFPTurnGameMode.cpp:132:        BattleResultWidget->RemoveFromParent();
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\Core\LFPTurnGameMode.cpp:133:        BattleResultWidget = nullptr;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\Shop\LFPShopDataAsset.cpp:3:bool ULFPShopDataAsset::FindShopDefinition(FName ShopID, FLFPShopDefinition& OutDefinition) const
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\Shop\LFPShopDataAsset.cpp:5:	if (const FLFPShopDefinition* Found = ShopMap.Find(ShopID))
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\Core\LFPTurnGameMode.h:13:class ULFPBattleResultWidget;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\Core\LFPTurnGameMode.h:84:	TSubclassOf<ULFPBattleResultWidget> BattleResultWidgetClass;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\Core\LFPTurnGameMode.h:88:	TObjectPtr<ULFPBattleResultWidget> BattleResultWidget;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:111:		NewNode->BaseGoldReward = BrushBaseGoldReward;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:112:		NewNode->BaseFoodReward = BrushBaseFoodReward;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:114:		NewNode->ShopID = BrushShopID;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:150:	SelectedNode->BaseGoldReward = BrushBaseGoldReward;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:151:	SelectedNode->BaseFoodReward = BrushBaseFoodReward;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:153:	SelectedNode->ShopID = BrushShopID;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapGameMode.cpp:105:			GI->AddGold(Result.GoldReward);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapGameMode.cpp:106:			GI->AddFood(Result.FoodReward);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapGameMode.cpp:107:			UE_LOG(LogTemp, Log, TEXT("战斗奖励: 金币 +%d, 食物 +%d"), Result.GoldReward, Result.FoodReward);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\Core\LFPGameInstance.h:54:	int32 BaseGoldReward = 0;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\Core\LFPGameInstance.h:58:	int32 BaseFoodReward = 0;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\Core\LFPGameInstance.h:89:	int32 GoldReward = 0;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\Core\LFPGameInstance.h:93:	int32 FoodReward = 0;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\Core\LFPGameInstance.h:263:	bool FindShopDefinition(FName ShopID, FLFPShopDefinition& OutDefinition) const;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapData.h:62:	int32 BaseGoldReward = 0;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapData.h:66:	int32 BaseFoodReward = 0;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapData.h:82:	FName ShopID = NAME_None;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:347:	FString CSVContent = TEXT("---,NodeID,PosX,PosY,NodeType,BattleMapName,StarRating,bCanEscape,BaseGoldReward,BaseFoodReward,EventID,TownBuildingList,ShopID,PrerequisiteNodeIDs\n");
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:370:			Row.BaseGoldReward,
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:371:			Row.BaseFoodReward,
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:374:			*Row.ShopID.ToString(),
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapNode.h:43:	int32 BaseGoldReward = 0;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapNode.h:47:	int32 BaseFoodReward = 0;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapNode.h:62:	FName ShopID = NAME_None;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.h:77:	void SetBrushBaseGoldReward(int32 InGold) { BrushBaseGoldReward = FMath::Max(0, InGold); }
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.h:80:	void SetBrushBaseFoodReward(int32 InFood) { BrushBaseFoodReward = FMath::Max(0, InFood); }
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.h:86:	void SetBrushShopID(FName InShopID) { BrushShopID = InShopID; }
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.h:192:	int32 BrushBaseGoldReward = 0;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.h:196:	int32 BrushBaseFoodReward = 0;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.h:204:	FName BrushShopID = NAME_None;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapNode.cpp:34:	BaseGoldReward = Row.BaseGoldReward;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapNode.cpp:35:	BaseFoodReward = Row.BaseFoodReward;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapNode.cpp:38:	ShopID = Row.ShopID;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapNode.cpp:55:	Row.BaseGoldReward = BaseGoldReward;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapNode.cpp:56:	Row.BaseFoodReward = BaseFoodReward;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapNode.cpp:59:	Row.ShopID = ShopID;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:9:#include "LFP2D/UI/WorldMap/LFPShopWidget.h"
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:505:	Request.BaseGoldReward = BattleNode->BaseGoldReward;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:506:	Request.BaseFoodReward = BattleNode->BaseFoodReward;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:589:	if (!ShopNode || !ShopWidgetClass)
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:595:	if (!GI || ShopNode->ShopID == NAME_None)
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:597:		UE_LOG(LogTemp, Warning, TEXT("商店节点 %d: ShopID 无效"), ShopNode->NodeID);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:606:	if (!GI->FindShopDefinition(ShopNode->ShopID, ShopDefinition))
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:608:		UE_LOG(LogTemp, Warning, TEXT("商店配置不存在: %s"), *ShopNode->ShopID.ToString());
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:618:	if (!ShopWidget)
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:620:		ShopWidget = CreateWidget<ULFPShopWidget>(this, ShopWidgetClass);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:621:		if (ShopWidget)
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:623:			ShopWidget->OnClosed.AddDynamic(this, &ALFPWorldMapPlayerController::OnShopWidgetClosed);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:624:			ShopWidget->AddToViewport();
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:629:		ShopWidget->SetVisibility(ESlateVisibility::Visible);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:630:		ShopWidget->AddToViewport();
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:633:	if (ShopWidget)
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:635:		ShopWidget->Setup(GI, ShopNode->ShopID, ShopDefinition);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:639:void ALFPWorldMapPlayerController::OnShopWidgetClosed()
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.h:14:class ULFPShopWidget;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.h:133:	TSubclassOf<ULFPShopWidget> ShopWidgetClass;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.h:136:	TObjectPtr<ULFPShopWidget> ShopWidget;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.h:141:	void OnShopWidgetClosed();
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:1:#include "LFP2D/UI/WorldMap/LFPShopWidget.h"
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:10:void ULFPShopWidget::NativeOnInitialized()
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:14:	if (Button_Purchase) Button_Purchase->OnClicked.AddDynamic(this, &ULFPShopWidget::OnPurchaseClicked);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:15:	if (Button_Close) Button_Close->OnClicked.AddDynamic(this, &ULFPShopWidget::OnCloseClicked);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:18:void ULFPShopWidget::Setup(ULFPGameInstance* GI, FName InShopID, const FLFPShopDefinition& InShopDefinition)
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:21:	CachedShopID = InShopID;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:27:void ULFPShopWidget::RefreshShopUI()
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:43:void ULFPShopWidget::RefreshRelicList()
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:96:		RelicButton->OnClicked.AddDynamic(this, &ULFPShopWidget::OnRelicButtonClicked);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:102:void ULFPShopWidget::RefreshDetailPanel()
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:169:FString ULFPShopWidget::BuildEffectDescription(const FLFPRelicDefinition& Definition) const
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:196:void ULFPShopWidget::OnRelicButtonClicked()
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:209:void ULFPShopWidget::OnPurchaseClicked()
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\UI\WorldMap\LFPShopWidget.cpp:223:void ULFPShopWidget::OnCloseClicked()
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\UI\Fighting\LFPBattleResultWidget.h:6:#include "LFPBattleResultWidget.generated.h"
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\UI\Fighting\LFPBattleResultWidget.h:19:class LFP2D_API ULFPBattleResultWidget : public UUserWidget
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:48:	UFUNCTION() void OnBaseGoldRewardChanged(const FText& Text, ETextCommit::Type CommitType);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:49:	UFUNCTION() void OnBaseFoodRewardChanged(const FText& Text, ETextCommit::Type CommitType);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:50:	UFUNCTION() void OnShopIDChanged(const FText& Text, ETextCommit::Type CommitType);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:111:	TObjectPtr<UEditableTextBox> BaseGoldRewardInput;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:114:	TObjectPtr<UEditableTextBox> BaseFoodRewardInput;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:117:	TObjectPtr<UEditableTextBox> ShopIDInput;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:29:	if (BaseGoldRewardInput) BaseGoldRewardInput->OnTextCommitted.AddDynamic(this, &ULFPWorldMapEditorWidget::OnBaseGoldRewardChanged);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:30:	if (BaseFoodRewardInput) BaseFoodRewardInput->OnTextCommitted.AddDynamic(this, &ULFPWorldMapEditorWidget::OnBaseFoodRewardChanged);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:31:	if (ShopIDInput) ShopIDInput->OnTextCommitted.AddDynamic(this, &ULFPWorldMapEditorWidget::OnShopIDChanged);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:64:	if (BaseGoldRewardInput) BaseGoldRewardInput->SetText(FText::FromString(TEXT("0")));
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:65:	if (BaseFoodRewardInput) BaseFoodRewardInput->SetText(FText::FromString(TEXT("0")));
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:66:	if (ShopIDInput) ShopIDInput->SetText(FText::GetEmpty());
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:169:void ULFPWorldMapEditorWidget::OnBaseGoldRewardChanged(const FText& Text, ETextCommit::Type CommitType)
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:173:	EditorComponent->SetBrushBaseGoldReward(Gold);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:176:void ULFPWorldMapEditorWidget::OnBaseFoodRewardChanged(const FText& Text, ETextCommit::Type CommitType)
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:180:	EditorComponent->SetBrushBaseFoodReward(Food);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:183:void ULFPWorldMapEditorWidget::OnShopIDChanged(const FText& Text, ETextCommit::Type CommitType)
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:186:	EditorComponent->SetBrushShopID(FName(*Text.ToString()));
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:291:			Node->StarRating, *Node->BattleMapName, Node->BaseGoldReward, Node->BaseFoodReward);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:299:		Info += FString::Printf(TEXT(" | 建筑: %s | 商店: %s"), *Node->TownBuildingList, *Node->ShopID.ToString());
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:308:		if (ShopIDInput) ShopIDInput->SetText(FText::FromName(Node->ShopID));
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:312:		Info += FString::Printf(TEXT(" | 商店: %s"), *Node->ShopID.ToString());
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:313:		if (ShopIDInput) ShopIDInput->SetText(FText::FromName(Node->ShopID));
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\UI\Fighting\LFPBattleResultWidget.cpp:1:#include "LFP2D/UI/Fighting/LFPBattleResultWidget.h"
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\UI\Fighting\LFPBattleResultWidget.cpp:11:void ULFPBattleResultWidget::NativeConstruct()
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\UI\Fighting\LFPBattleResultWidget.cpp:17:		Button_Confirm->OnClicked.AddDynamic(this, &ULFPBattleResultWidget::OnConfirmClicked);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\UI\Fighting\LFPBattleResultWidget.cpp:21:void ULFPBattleResultWidget::Setup(const FLFPBattleResult& Result, ULFPUnitRegistryDataAsset* Registry)
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\UI\Fighting\LFPBattleResultWidget.cpp:48:			Text_Gold->SetText(FText::FromString(FString::Printf(TEXT("金币: +%d"), Result.GoldReward)));
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\UI\Fighting\LFPBattleResultWidget.cpp:52:			Text_Food->SetText(FText::FromString(FString::Printf(TEXT("食物: +%d"), Result.FoodReward)));
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\UI\Fighting\LFPBattleResultWidget.cpp:126:void ULFPBattleResultWidget::OnConfirmClicked()
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\UI\WorldMap\LFPShopWidget.h:6:#include "LFPShopWidget.generated.h"
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\UI\WorldMap\LFPShopWidget.h:14:DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnShopWidgetClosed);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\UI\WorldMap\LFPShopWidget.h:17:class LFP2D_API ULFPShopWidget : public UUserWidget
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\UI\WorldMap\LFPShopWidget.h:23:	void Setup(ULFPGameInstance* GI, FName InShopID, const FLFPShopDefinition& InShopDefinition);
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\UI\WorldMap\LFPShopWidget.h:26:	FOnShopWidgetClosed OnClosed;
+d:\UE_Projects\LFP2D\.claude\worktrees\agent-a5983764\Source\LFP2D\UI\WorldMap\LFPShopWidget.h:75:	FName CachedShopID = NAME_None;
+
+[Showing results with pagination = limit: 160, offset: 0]

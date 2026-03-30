@@ -1,0 +1,170 @@
+d:\UE_Projects\LFP2D\Source\LFP2D\Town\LFPTownData.h:14:	TBT_QuestNPC        UMETA(DisplayName = "任务NPC"),
+d:\UE_Projects\LFP2D\Source\LFP2D\Town\LFPTownData.h:56:			{TEXT("QuestNPC"), ELFPTownBuildingType::TBT_QuestNPC},
+d:\UE_Projects\LFP2D\Source\LFP2D\Town\LFPTownData.h:74:			{ELFPTownBuildingType::TBT_QuestNPC, TEXT("QuestNPC")},
+d:\UE_Projects\LFP2D\Source\LFP2D\Player\LFPTacticsPlayerController.h:225:    UFUNCTION(BlueprintImplementableEvent, Category = "Turn Events")
+d:\UE_Projects\LFP2D\Source\LFP2D\Player\LFPTacticsPlayerController.h:228:    UFUNCTION(BlueprintImplementableEvent, Category = "Turn Events")
+d:\UE_Projects\LFP2D\Source\LFP2D\Player\LFPTacticsPlayerController.h:231:    UFUNCTION(BlueprintImplementableEvent, Category = "Turn Events")
+d:\UE_Projects\LFP2D\Source\LFP2D\Player\LFPTacticsPlayerController.h:234:    UFUNCTION(BlueprintImplementableEvent, Category = "Turn Events")
+d:\UE_Projects\LFP2D\Source\LFP2D\HexGrid\LFPHexGridManager.h:89:		FGameplayTag EventTag = FGameplayTag());
+d:\UE_Projects\LFP2D\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:115:        EnhancedInputComponent->BindAction(SelectAction, ETriggerEvent::Started, this, &ALFPTacticsPlayerController::OnSelectStarted);
+d:\UE_Projects\LFP2D\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:116:        EnhancedInputComponent->BindAction(SelectAction, ETriggerEvent::Completed, this, &ALFPTacticsPlayerController::OnSelectCompleted);
+d:\UE_Projects\LFP2D\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:119:        EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Started, this, &ALFPTacticsPlayerController::OnAttackStarted);
+d:\UE_Projects\LFP2D\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:122:        EnhancedInputComponent->BindAction(ConfirmAction, ETriggerEvent::Completed, this, &ALFPTacticsPlayerController::OnConfirmAction);
+d:\UE_Projects\LFP2D\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:123:        EnhancedInputComponent->BindAction(CancelAction, ETriggerEvent::Completed, this, &ALFPTacticsPlayerController::OnCancelAction);
+d:\UE_Projects\LFP2D\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:124:        //EnhancedInputComponent->BindAction(RotateCameraAction, ETriggerEvent::Triggered, this, &ALFPTacticsPlayerController::OnRotateCamera);
+d:\UE_Projects\LFP2D\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:125:        EnhancedInputComponent->BindAction(DebugToggleAction, ETriggerEvent::Started, this, &ALFPTacticsPlayerController::OnToggleDebug);
+d:\UE_Projects\LFP2D\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:126:        EnhancedInputComponent->BindAction(SkipTurnAction, ETriggerEvent::Completed, this, &ALFPTacticsPlayerController::OnSkipTurnAction);
+d:\UE_Projects\LFP2D\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:129:        EnhancedInputComponent->BindAction(CameraPanAction, ETriggerEvent::Triggered, this, &ALFPTacticsPlayerController::OnCameraPan);
+d:\UE_Projects\LFP2D\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:130:        EnhancedInputComponent->BindAction(CameraDragAction, ETriggerEvent::Started, this, &ALFPTacticsPlayerController::OnCameraDragStarted);
+d:\UE_Projects\LFP2D\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:131:        EnhancedInputComponent->BindAction(CameraDragAction, ETriggerEvent::Triggered, this, &ALFPTacticsPlayerController::OnCameraDragTriggered);
+d:\UE_Projects\LFP2D\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:132:        EnhancedInputComponent->BindAction(CameraDragAction, ETriggerEvent::Completed, this, &ALFPTacticsPlayerController::OnCameraDragCompleted);
+d:\UE_Projects\LFP2D\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:133:        EnhancedInputComponent->BindAction(CameraZoomAction, ETriggerEvent::Triggered, this, &ALFPTacticsPlayerController::OnCameraZoom);
+d:\UE_Projects\LFP2D\Source\LFP2D\Player\LFPTacticsPlayerController.cpp:136:        EnhancedInputComponent->BindAction(ToggleEditorAction, ETriggerEvent::Started, this, &ALFPTacticsPlayerController::OnToggleEditorAction);
+d:\UE_Projects\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:110:		NewNode->EventID = BrushEventID;
+d:\UE_Projects\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.cpp:149:	SelectedNode->EventID = BrushEventID;
+d:\UE_Projects\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapNode.cpp:36:	EventID = Row.EventID;
+d:\UE_Projects\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapNode.cpp:57:	Row.EventID = EventID;
+d:\UE_Projects\LFP2D\Source\LFP2D\HexGrid\LFPMapEditorComponent.h:21:	MET_Event       UMETA(DisplayName = "事件标签"),
+d:\UE_Projects\LFP2D\Source\LFP2D\HexGrid\LFPMapEditorComponent.h:69:	void SetBrushEventTag(FGameplayTag InTag) { BrushEventTag = InTag; }
+d:\UE_Projects\LFP2D\Source\LFP2D\HexGrid\LFPMapEditorComponent.h:133:	FGameplayTag BrushEventTag;
+d:\UE_Projects\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:347:	FString CSVContent = TEXT("---,NodeID,PosX,PosY,NodeType,BattleMapName,StarRating,bCanEscape,BaseGoldReward,BaseFoodReward,EventID,TownBuildingList,ShopID,PrerequisiteNodeIDs\n");
+d:\UE_Projects\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:372:			*Row.EventID,
+d:\UE_Projects\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapManager.cpp:715:		case ELFPWorldNodeType::WNT_Event:
+d:\UE_Projects\LFP2D\Source\LFP2D\HexGrid\LFPHexGridManager.cpp:110:	FName DecorationID, ELFPSpawnFaction SpawnFaction, int32 SpawnIndex, FGameplayTag EventTag)
+d:\UE_Projects\LFP2D\Source\LFP2D\HexGrid\LFPHexGridManager.cpp:152:	NewTile->EventTag = EventTag;
+d:\UE_Projects\LFP2D\Source\LFP2D\HexGrid\LFPHexGridManager.cpp:215:				Row->DecorationID, Row->SpawnFaction, Row->SpawnIndex, Row->EventTag);
+d:\UE_Projects\LFP2D\Source\LFP2D\HexGrid\LFPHexGridManager.cpp:254:	FString CSVContent = TEXT("---,Q,R,TerrainType,DecorationID,SpawnFaction,SpawnIndex,EventTag\n");
+d:\UE_Projects\LFP2D\Source\LFP2D\HexGrid\LFPHexGridManager.cpp:277:		FString EventStr = Tile->EventTag.IsValid() ? Tile->EventTag.ToString() : TEXT("");
+d:\UE_Projects\LFP2D\Source\LFP2D\HexGrid\LFPHexGridManager.cpp:281:			*SpawnStr, Tile->SpawnIndex, *EventStr);
+d:\UE_Projects\LFP2D\Source\LFP2D\HexGrid\LFPHexGridManager.cpp:321:		Row.EventTag = Tile->EventTag;
+d:\UE_Projects\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.h:71:	void SetBrushEventID(const FString& InID) { BrushEventID = InID; }
+d:\UE_Projects\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapEditorComponent.h:185:	FString BrushEventID;
+d:\UE_Projects\LFP2D\Source\LFP2D\HexGrid\LFPMapEditorComponent.cpp:85:	case ELFPMapEditorTool::MET_Event:
+d:\UE_Projects\LFP2D\Source\LFP2D\HexGrid\LFPMapEditorComponent.cpp:86:		Tile->EventTag = BrushEventTag;
+d:\UE_Projects\LFP2D\Source\LFP2D\Unit\LFPTacticsUnit.h:369:    UFUNCTION(BlueprintImplementableEvent, Category = "Mouse Input")
+d:\UE_Projects\LFP2D\Source\LFP2D\Unit\LFPTacticsUnit.h:372:    UFUNCTION(BlueprintImplementableEvent, Category = "Mouse Input")
+d:\UE_Projects\LFP2D\Source\LFP2D\Unit\LFPTacticsUnit.h:378:	UPROPERTY(BlueprintAssignable, Category = "Unit Events")
+d:\UE_Projects\LFP2D\Source\LFP2D\Unit\LFPTacticsUnit.h:382:	UPROPERTY(BlueprintAssignable, Category = "Unit Events")
+d:\UE_Projects\LFP2D\Source\LFP2D\Unit\LFPTacticsUnit.h:545:    UFUNCTION(BlueprintImplementableEvent, Category = "Unit Combat")
+d:\UE_Projects\LFP2D\Source\LFP2D\Unit\LFPTacticsUnit.h:549:    UFUNCTION(BlueprintImplementableEvent, Category = "Unit Combat")
+d:\UE_Projects\LFP2D\Source\LFP2D\Unit\LFPTacticsUnit.h:553:    UFUNCTION(BlueprintImplementableEvent, Category = "Unit Combat")
+d:\UE_Projects\LFP2D\Source\LFP2D\Unit\LFPTacticsUnit.h:557:    UFUNCTION(BlueprintImplementableEvent, Category = "Unit Combat")
+d:\UE_Projects\LFP2D\Source\LFP2D\Unit\LFPTacticsUnit.h:609:    //UPROPERTY(BlueprintAssignable, Category = "Events")
+d:\UE_Projects\LFP2D\Source\LFP2D\Unit\LFPTacticsUnit.h:613:    //UPROPERTY(BlueprintAssignable, Category = "Events")
+d:\UE_Projects\LFP2D\Source\LFP2D\Skill\LFPSkillButtonWidget.h:55:    virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+d:\UE_Projects\LFP2D\Source\LFP2D\Skill\LFPSkillButtonWidget.h:56:    virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
+d:\UE_Projects\LFP2D\Source\LFP2D\Skill\LFPSkillBase.h:56:    UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Skill")
+d:\UE_Projects\LFP2D\Source\LFP2D\Skill\LFPSkillBase.h:59:    UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Skill")
+d:\UE_Projects\LFP2D\Source\LFP2D\Skill\LFPSkillBase.h:67:    UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Skill")
+d:\UE_Projects\LFP2D\Source\LFP2D\Skill\LFPSkillBase.h:90:    UFUNCTION(BlueprintNativeEvent, BlueprintPure, Category = "Skill|Priority")
+d:\UE_Projects\LFP2D\Source\LFP2D\Skill\LFPSkillBase.h:97:    UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Skill")
+d:\UE_Projects\LFP2D\Source\LFP2D\Skill\LFPSkillBase.h:106:    UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Skill|AI")
+d:\UE_Projects\LFP2D\Source\LFP2D\Skill\LFPSkillButtonWidget.cpp:138:void ULFPSkillButtonWidget::NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+d:\UE_Projects\LFP2D\Source\LFP2D\Skill\LFPSkillButtonWidget.cpp:140:    Super::NativeOnMouseEnter(InGeometry, InMouseEvent);
+d:\UE_Projects\LFP2D\Source\LFP2D\Skill\LFPSkillButtonWidget.cpp:157:void ULFPSkillButtonWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
+d:\UE_Projects\LFP2D\Source\LFP2D\Skill\LFPSkillButtonWidget.cpp:159:    Super::NativeOnMouseLeave(InMouseEvent);
+d:\UE_Projects\LFP2D\Source\LFP2D\HexGrid\LFPMapData.h:54:	FGameplayTag EventTag;
+d:\UE_Projects\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.h:160:	void OnTownBuildingRequested(ELFPTownBuildingType BuildingType);
+d:\UE_Projects\LFP2D\Source\LFP2D\HexGrid\LFPHexTile.h:255:	FGameplayTag EventTag;
+d:\UE_Projects\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:110:		EnhancedInputComponent->BindAction(ConfirmAction, ETriggerEvent::Completed, this, &ALFPWorldMapPlayerController::OnConfirmAction);
+d:\UE_Projects\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:111:		EnhancedInputComponent->BindAction(CancelAction, ETriggerEvent::Completed, this, &ALFPWorldMapPlayerController::OnCancelAction);
+d:\UE_Projects\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:114:		EnhancedInputComponent->BindAction(CameraPanAction, ETriggerEvent::Triggered, this, &ALFPWorldMapPlayerController::OnCameraPan);
+d:\UE_Projects\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:115:		EnhancedInputComponent->BindAction(CameraDragAction, ETriggerEvent::Started, this, &ALFPWorldMapPlayerController::OnCameraDragStarted);
+d:\UE_Projects\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:116:		EnhancedInputComponent->BindAction(CameraDragAction, ETriggerEvent::Triggered, this, &ALFPWorldMapPlayerController::OnCameraDragTriggered);
+d:\UE_Projects\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:117:		EnhancedInputComponent->BindAction(CameraDragAction, ETriggerEvent::Completed, this, &ALFPWorldMapPlayerController::OnCameraDragCompleted);
+d:\UE_Projects\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:118:		EnhancedInputComponent->BindAction(CameraZoomAction, ETriggerEvent::Triggered, this, &ALFPWorldMapPlayerController::OnCameraZoom);
+d:\UE_Projects\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:121:		EnhancedInputComponent->BindAction(ToggleEditorAction, ETriggerEvent::Started, this, &ALFPWorldMapPlayerController::OnToggleEditorAction);
+d:\UE_Projects\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:435:	case ELFPWorldNodeType::WNT_Event:
+d:\UE_Projects\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:437:		UE_LOG(LogTemp, Log, TEXT("事件节点 %d: EventID=%s"), Node->NodeID, *Node->EventID);
+d:\UE_Projects\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:448:	case ELFPWorldNodeType::WNT_QuestNPC:
+d:\UE_Projects\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:500:	FLFPBattleRequest Request;
+d:\UE_Projects\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:501:	Request.SourceNodeID = BattleNode->NodeID;
+d:\UE_Projects\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:502:	Request.BattleMapName = BattleNode->BattleMapName;
+d:\UE_Projects\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:503:	Request.StarRating = BattleNode->StarRating;
+d:\UE_Projects\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:504:	Request.bCanEscape = BattleNode->bCanEscape;
+d:\UE_Projects\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:505:	Request.BaseGoldReward = BattleNode->BaseGoldReward;
+d:\UE_Projects\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:506:	Request.BaseFoodReward = BattleNode->BaseFoodReward;
+d:\UE_Projects\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:507:	GI->SetBattleRequest(Request);
+d:\UE_Projects\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:671:			TownWidget->OnBuildingRequested.AddDynamic(this, &ALFPWorldMapPlayerController::OnTownBuildingRequested);
+d:\UE_Projects\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:694:void ALFPWorldMapPlayerController::OnTownBuildingRequested(ELFPTownBuildingType BuildingType)
+d:\UE_Projects\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPlayerController.cpp:725:	case ELFPTownBuildingType::TBT_QuestNPC:
+d:\UE_Projects\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapData.h:12:	WNT_Event       UMETA(DisplayName = "事件"),
+d:\UE_Projects\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapData.h:16:	WNT_QuestNPC    UMETA(DisplayName = "任务NPC"),
+d:\UE_Projects\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapData.h:71:	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Node|Event")
+d:\UE_Projects\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapData.h:72:	FString EventID;
+d:\UE_Projects\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPawn.cpp:49:	FOnTimelineEvent FinishedCallback;
+d:\UE_Projects\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapPawn.cpp:76:	MoveTimeline.SetTimelineFinishedFunc(FOnTimelineEvent());
+d:\UE_Projects\LFP2D\Source\LFP2D\Unit\Betrayal\LFPBetrayalCondition.h:20:	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Betrayal")
+d:\UE_Projects\LFP2D\Source\LFP2D\Unit\Betrayal\LFPBetrayalCondition.h:24:	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Betrayal")
+d:\UE_Projects\LFP2D\Source\LFP2D\Unit\Betrayal\LFPBetrayalCondition.h:28:	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Betrayal")
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.cpp:8:void ULFPGameInstance::SetBattleRequest(const FLFPBattleRequest& Request)
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.cpp:10:	PendingBattleRequest = Request;
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.cpp:11:	PendingBattleRequest.bIsValid = true;
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.cpp:13:		Request.SourceNodeID, *Request.BattleMapName, Request.StarRating);
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.cpp:16:FLFPBattleRequest ULFPGameInstance::ConsumeBattleRequest()
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.cpp:18:	FLFPBattleRequest Result = PendingBattleRequest;
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.cpp:19:	PendingBattleRequest = FLFPBattleRequest();
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPTurnGameMode.h:32:	const FLFPBattleRequest& GetBattleRequest() const { return CachedBattleRequest; }
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPTurnGameMode.h:36:	bool IsWorldMapBattle() const { return CachedBattleRequest.bIsValid; }
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPTurnGameMode.h:64:	FLFPBattleRequest CachedBattleRequest;
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPTurnGameMode.cpp:18:        CachedBattleRequest = GI->ConsumeBattleRequest();
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPTurnGameMode.cpp:19:        if (CachedBattleRequest.bIsValid)
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPTurnGameMode.cpp:22:                CachedBattleRequest.SourceNodeID,
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPTurnGameMode.cpp:23:                *CachedBattleRequest.BattleMapName,
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPTurnGameMode.cpp:24:                CachedBattleRequest.StarRating);
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPTurnGameMode.cpp:44:    if (GridManager && !CachedBattleRequest.BattleMapName.IsEmpty())
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPTurnGameMode.cpp:46:        FString CSVPath = FPaths::ProjectSavedDir() / TEXT("Maps") / CachedBattleRequest.BattleMapName + TEXT(".csv");
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPTurnGameMode.cpp:49:            UE_LOG(LogTemp, Log, TEXT("战斗模式: 从 CSV 加载地图 %s"), *CachedBattleRequest.BattleMapName);
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPTurnGameMode.cpp:76:    Result.SourceNodeID = CachedBattleRequest.SourceNodeID;
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPTurnGameMode.cpp:84:        Result.GoldReward = CachedBattleRequest.BaseGoldReward + AccumulatedDropGold;
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPTurnGameMode.cpp:85:        Result.FoodReward = CachedBattleRequest.BaseFoodReward + AccumulatedDropFood;
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPTurnGameMode.cpp:144:    if (CachedBattleRequest.bIsValid)
+d:\UE_Projects\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapNode.h:51:	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Node|Event")
+d:\UE_Projects\LFP2D\Source\LFP2D\WorldMap\LFPWorldMapNode.h:52:	FString EventID;
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\MapEditor\LFPMapEditorWidget.h:35:	UFUNCTION() void OnEventToolClicked();
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\MapEditor\LFPMapEditorWidget.h:66:	TObjectPtr<UButton> EventToolButton;
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.h:32:struct FLFPBattleRequest
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.h:149:	void SetBattleRequest(const FLFPBattleRequest& Request);
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.h:153:	FLFPBattleRequest ConsumeBattleRequest();
+d:\UE_Projects\LFP2D\Source\LFP2D\Core\LFPGameInstance.h:338:	FLFPBattleRequest PendingBattleRequest;
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Town\LFPTownWidget.h:12:DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTownBuildingRequested, ELFPTownBuildingType, BuildingType);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Town\LFPTownWidget.h:35:	FOnTownBuildingRequested OnBuildingRequested;
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Town\LFPTownWidget.h:45:	UFUNCTION() void OnQuestNPCClicked();
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Town\LFPTownWidget.h:74:	TObjectPtr<UButton> Button_QuestNPC;
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:27:	if (EventIDInput) EventIDInput->OnTextCommitted.AddDynamic(this, &ULFPWorldMapEditorWidget::OnEventIDChanged);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:37:	if (TownCheck_QuestNPC) TownCheck_QuestNPC->OnCheckStateChanged.AddDynamic(this, &ULFPWorldMapEditorWidget::OnTownBuildingCheckChanged);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:50:		NodeTypeComboBox->AddOption(TEXT("WNT_Event"));
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:54:		NodeTypeComboBox->AddOption(TEXT("WNT_QuestNPC"));
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:125:		{TEXT("WNT_Event"), ELFPWorldNodeType::WNT_Event},
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:129:		{TEXT("WNT_QuestNPC"), ELFPWorldNodeType::WNT_QuestNPC},
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:157:void ULFPWorldMapEditorWidget::OnEventIDChanged(const FText& Text, ETextCommit::Type CommitType)
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:159:	if (EditorComponent) EditorComponent->SetBrushEventID(Text.ToString());
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:202:	if (TownCheck_QuestNPC && TownCheck_QuestNPC->IsChecked()) Parts.Add(TEXT("QuestNPC"));
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:293:	else if (Node->NodeType == ELFPWorldNodeType::WNT_Event)
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:295:		Info += FString::Printf(TEXT(" | 事件: %s"), *Node->EventID);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.cpp:306:		if (TownCheck_QuestNPC) TownCheck_QuestNPC->SetIsChecked(BL.Contains(TEXT("QuestNPC")));
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Town\LFPTownWidget.cpp:12:	if (Button_QuestNPC) Button_QuestNPC->OnClicked.AddDynamic(this, &ULFPTownWidget::OnQuestNPCClicked);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Town\LFPTownWidget.cpp:36:		case ELFPTownBuildingType::TBT_QuestNPC:
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Town\LFPTownWidget.cpp:37:			if (Button_QuestNPC) Button_QuestNPC->SetVisibility(ESlateVisibility::Visible);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Town\LFPTownWidget.cpp:53:	if (Button_QuestNPC) Button_QuestNPC->SetVisibility(ESlateVisibility::Collapsed);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Town\LFPTownWidget.cpp:59:	OnBuildingRequested.Broadcast(ELFPTownBuildingType::TBT_Shop);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Town\LFPTownWidget.cpp:64:	OnBuildingRequested.Broadcast(ELFPTownBuildingType::TBT_EvolutionTower);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Town\LFPTownWidget.cpp:69:	OnBuildingRequested.Broadcast(ELFPTownBuildingType::TBT_Teleport);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Town\LFPTownWidget.cpp:72:void ULFPTownWidget::OnQuestNPCClicked()
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Town\LFPTownWidget.cpp:74:	OnBuildingRequested.Broadcast(ELFPTownBuildingType::TBT_QuestNPC);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Town\LFPTownWidget.cpp:79:	OnBuildingRequested.Broadcast(ELFPTownBuildingType::TBT_SkillNode);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:46:	UFUNCTION() void OnEventIDChanged(const FText& Text, ETextCommit::Type CommitType);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:105:	TObjectPtr<UEditableTextBox> EventIDInput;
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\WorldMapEditor\LFPWorldMapEditorWidget.h:130:	TObjectPtr<UCheckBox> TownCheck_QuestNPC;
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\MapEditor\LFPMapEditorWidget.cpp:15:	if (EventToolButton) EventToolButton->OnClicked.AddDynamic(this, &ULFPMapEditorWidget::OnEventToolClicked);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\MapEditor\LFPMapEditorWidget.cpp:84:void ULFPMapEditorWidget::OnEventToolClicked()
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\MapEditor\LFPMapEditorWidget.cpp:86:	if (EditorComponent) EditorComponent->SetCurrentTool(ELFPMapEditorTool::MET_Event);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\MapEditor\LFPMapEditorWidget.cpp:200:		{ELFPMapEditorTool::MET_Event, TEXT("事件标签")},
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.cpp:318:FReply ULFPSkillSelectionWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.cpp:321:    if (InKeyEvent.GetKey() == EKeys::Escape)
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.cpp:326:    else if (InKeyEvent.GetKey() == EKeys::Enter || InKeyEvent.GetKey() == EKeys::SpaceBar)
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.cpp:332:    return Super::NativeOnKeyDown(InGeometry, InKeyEvent);
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPSkillSelectionWidget.h:78:    virtual FReply NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
+d:\UE_Projects\LFP2D\Source\LFP2D\UI\Fighting\LFPTurnSpeedIconWidget.h:28:    UFUNCTION(BlueprintImplementableEvent, Category = "Unit Icon")
+
+[Showing results with pagination = limit: 200, offset: 0]
