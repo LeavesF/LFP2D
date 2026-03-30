@@ -155,6 +155,7 @@ void ALFPTacticsUnit::AddCurrentMaxHealth(int32 Delta, bool bKeepHealthRatio)
         CurrentHealth = FMath::Clamp(CurrentHealth + Delta, 0, CurrentMaxHealth);
     }
     OnHealthChangedDelegate.Broadcast(CurrentHealth, CurrentMaxHealth);
+    OnHealthChangedWithUnitDelegate.Broadcast(this, CurrentHealth, CurrentMaxHealth);
 }
 
 void ALFPTacticsUnit::AddCurrentSpeed(int32 Delta)
@@ -569,6 +570,7 @@ void ALFPTacticsUnit::TakeDamage(int32 Damage)
 
 	// 广播血量变化事件
 	OnHealthChangedDelegate.Broadcast(CurrentHealth, GetCurrentMaxHealth());
+	OnHealthChangedWithUnitDelegate.Broadcast(this, CurrentHealth, GetCurrentMaxHealth());
 
 	// 蓝图事件
 	OnTakeDamage(ActualDamage);
@@ -588,6 +590,7 @@ void ALFPTacticsUnit::Heal(int32 Amount)
 
 	// 广播血量变化事件
 	OnHealthChangedDelegate.Broadcast(CurrentHealth, GetCurrentMaxHealth());
+	OnHealthChangedWithUnitDelegate.Broadcast(this, CurrentHealth, GetCurrentMaxHealth());
 
 	// 蓝图事件
 	OnHeal(Amount);
@@ -649,6 +652,7 @@ void ALFPTacticsUnit::HandleDeath()
 
 	// 广播死亡事件
     OnDeathDelegate.Broadcast();
+    OnDeathWithUnitDelegate.Broadcast(this);
 
     // 蓝图事件
     OnDeath();

@@ -10,6 +10,7 @@
 class ALFPTacticsUnit;
 class ALFPHexGridManager;
 class ALFPTurnManager;
+class ALFPBattleRelicRuntimeManager;
 class ULFPBattleResultWidget;
 
 /**
@@ -57,6 +58,10 @@ public:
 	// 获取回合管理器
 	UFUNCTION(BlueprintPure, Category = "Battle")
 	ALFPTurnManager* GetTurnManager() const { return TurnManager; }
+
+	// 获取战斗遗物运行时管理器
+	UFUNCTION(BlueprintPure, Category = "Battle")
+	ALFPBattleRelicRuntimeManager* GetBattleRelicRuntimeManager() const { return BattleRelicRuntimeManager; }
 
 protected:
 	// 缓存的战斗请求
@@ -108,4 +113,8 @@ protected:
 	// 回合管理器实例
 	UPROPERTY()
 	TObjectPtr<ALFPTurnManager> TurnManager;
+
+	// 战斗遗物运行时管理器实例
+	UPROPERTY()
+	TObjectPtr<ALFPBattleRelicRuntimeManager> BattleRelicRuntimeManager;
 };

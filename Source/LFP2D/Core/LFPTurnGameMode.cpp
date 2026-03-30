@@ -4,6 +4,7 @@
 #include "LFP2D/Core/LFPTurnGameMode.h"
 #include "LFP2D/Core/LFPGameInstance.h"
 #include "LFP2D/Turn/LFPTurnManager.h"
+#include "LFP2D/Turn/LFPBattleRelicRuntimeManager.h"
 #include "LFP2D/Unit/LFPTacticsUnit.h"
 #include "LFP2D/HexGrid/LFPHexGridManager.h"
 #include "LFP2D/UI/Fighting/LFPBattleResultWidget.h"
@@ -54,16 +55,25 @@ void ALFPTurnGameMode::StartPlay()
         }
     }
 
-    // 生成回合管理器
-    TurnManager = GetWorld()->SpawnActor<ALFPTurnManager>(
-        ALFPTurnManager::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
+	// 生成回合管理器
+	TurnManager = GetWorld()->SpawnActor<ALFPTurnManager>(
+		ALFPTurnManager::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
 
-    if (TurnManager)
-    {
-        TurnManager->StartGame();
-    }
+	// 生成战斗遗物运行时管理器
+	BattleRelicRuntimeManager = GetWorld()->SpawnActor<ALFPBattleRelicRuntimeManager>(
+		ALFPBattleRelicRuntimeManager::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
 
-    Super::StartPlay();
+	if (TurnManager)
+	{
+		TurnManager->StartGame();
+	}
+
+	if (BattleRelicRuntimeManager)
+	{
+		BattleRelicRuntimeManager->Initialize(Cast<ULFPGameInstance>(GetGameInstance()), TurnManager);
+	}
+
+	Super::StartPlay();
 }
 
 void ALFPTurnGameMode::EndBattle(bool bVictory, bool bEscaped)

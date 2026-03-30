@@ -12,10 +12,14 @@
 #include "PaperSpriteComponent.h"
 #include "LFPTacticsUnit.generated.h"
 
+class ALFPTacticsUnit;
+
 // 委托签名
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnHealthChangedSignature, int32, CurrentHealth, int32, MaxHealth);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnHealthChangedWithUnitSignature, ALFPTacticsUnit*, Unit, int32, CurrentHealth, int32, MaxHealth);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUnitDeathSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUnitDeathWithUnitSignature, ALFPTacticsUnit*, Unit);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMoveFinishedSignature);
 
@@ -362,9 +366,17 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Unit Events")
 	FOnHealthChangedSignature OnHealthChangedDelegate;
 
+	// 事件：带单位上下文的血量变化
+	UPROPERTY(BlueprintAssignable, Category = "Unit Events")
+	FOnHealthChangedWithUnitSignature OnHealthChangedWithUnitDelegate;
+
 	// 事件：单位死亡
 	UPROPERTY(BlueprintAssignable, Category = "Unit Events")
     FOnUnitDeathSignature OnDeathDelegate;
+
+	// 事件：带单位上下文的单位死亡
+	UPROPERTY(BlueprintAssignable, Category = "Unit Events")
+	FOnUnitDeathWithUnitSignature OnDeathWithUnitDelegate;
 
 	// 获取当前血量
 	UFUNCTION(BlueprintPure, Category = "Unit Combat")

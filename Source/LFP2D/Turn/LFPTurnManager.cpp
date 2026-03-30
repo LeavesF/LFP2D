@@ -8,6 +8,7 @@
 #include "LFP2D/Skill/LFPSkillBase.h"
 #include "LFP2D/Skill/LFPSkillComponent.h"
 #include "LFP2D/Core/LFPTurnGameMode.h"
+#include "LFP2D/Turn/LFPBattleRelicRuntimeManager.h"
 #include "Kismet/GameplayStatics.h"
 
 FEnemyActionPlan ALFPTurnManager::EmptyPlan;
@@ -75,8 +76,17 @@ void ALFPTurnManager::EndDeploymentPhase()
         }
     }
 
-    // 开始第一回合
-    BeginNewRound();
+	// 通知战斗遗物运行时管理器：部署已完成
+	if (ALFPTurnGameMode* GM = Cast<ALFPTurnGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		if (ALFPBattleRelicRuntimeManager* RelicManager = GM->GetBattleRelicRuntimeManager())
+		{
+			RelicManager->OnDeploymentFinished();
+		}
+	}
+
+	// 开始第一回合
+	BeginNewRound();
 }
 
 void ALFPTurnManager::BeginNewRound()
@@ -95,8 +105,17 @@ void ALFPTurnManager::BeginNewRound()
         }
     }
 
-    // 按速度排序单位
-    SortUnitsBySpeed();
+	// 回合开始前刷新玩家单位的战斗遗物属性（例如低血速度影响排序）
+	if (ALFPTurnGameMode* GM = Cast<ALFPTurnGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		if (ALFPBattleRelicRuntimeManager* RelicManager = GM->GetBattleRelicRuntimeManager())
+		{
+			RelicManager->OnRoundStarted();
+		}
+	}
+
+	// 按速度排序单位
+	SortUnitsBySpeed();
 
     // 清空上一轮的敌人计划
     EnemyActionPlans.Empty();
@@ -119,9 +138,18 @@ void ALFPTurnManager::EndCurrentRound()
 
     bIsInRound = false;
 
-    SetPhase(EBattlePhase::BP_RoundEnd);
+	SetPhase(EBattlePhase::BP_RoundEnd);
 
-    // 通知玩家本回合结束
+	// 触发回合结束即时遗物效果
+	if (ALFPTurnGameMode* GM = Cast<ALFPTurnGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		if (ALFPBattleRelicRuntimeManager* RelicManager = GM->GetBattleRelicRuntimeManager())
+		{
+			RelicManager->OnRoundEnded(CurrentRound);
+		}
+	}
+
+	// 通知玩家本回合结束
     for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
     {
         if (ALFPTacticsPlayerController* PC = Cast<ALFPTacticsPlayerController>(*It))
