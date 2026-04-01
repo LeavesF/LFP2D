@@ -142,7 +142,7 @@ void ULFPShopWidget::RefreshOwnedRelicList()
 			continue;
 		}
 
-		OwnedText->SetText(FText::FromString(FString::Printf(TEXT("%s\n%s"), *Definition.DisplayName.ToString(), *BuildEffectDescription(Definition))));
+		OwnedText->SetText(FText::FromString(FString::Printf(TEXT("%s"), *Definition.DisplayName.ToString())));
 		UVerticalBoxSlot* OwnedSlot = Box_OwnedRelicList->AddChildToVerticalBox(OwnedText);
 		if (OwnedSlot)
 		{

@@ -31,6 +31,9 @@ void ALFPBattleRelicRuntimeManager::OnDeploymentFinished()
 			RebuildUnitRelicStats(State.Unit.Get());
 		}
 	}
+
+	// 触发战斗开始的即时效果
+	FireInstantBattleRules(ELFPRelicTriggerType::RTT_BattleStart);
 }
 
 void ALFPBattleRelicRuntimeManager::OnRoundStarted()
@@ -42,6 +45,9 @@ void ALFPBattleRelicRuntimeManager::OnRoundStarted()
 			RebuildUnitRelicStats(State.Unit.Get());
 		}
 	}
+
+	// 触发回合开始的即时效果
+	FireInstantBattleRules(ELFPRelicTriggerType::RTT_RoundStart);
 }
 
 void ALFPBattleRelicRuntimeManager::OnRoundEnded(int32 CurrentRound)
@@ -53,6 +59,10 @@ void ALFPBattleRelicRuntimeManager::OnRoundEnded(int32 CurrentRound)
 
 	LastProcessedRoundEndRound = CurrentRound;
 
+	// 触发回合结束的即时 BattleRule 效果
+	FireInstantBattleRules(ELFPRelicTriggerType::RTT_RoundEnd);
+
+	// 触发回合结束的组合规则效果
 	for (const FLFPRelicSynergyRule& SynergyRule : CachedRelicDataAsset->SynergyRules)
 	{
 		if (SynergyRule.TriggerType != ELFPRelicTriggerType::RTT_RoundEnd)
@@ -213,13 +223,9 @@ void ALFPBattleRelicRuntimeManager::RebuildUnitRelicStats(ALFPTacticsUnit* Unit)
 			}
 		}
 
+		// 应用所有"条件成立时持续"的规则（不限触发时机，因为重建本身在多个时机发生）
 		for (const FLFPRelicBattleRule& BattleRule : Definition.BattleRules)
 		{
-			if (BattleRule.TriggerType != ELFPRelicTriggerType::RTT_HealthChanged)
-			{
-				continue;
-			}
-
 			if (BattleRule.DurationType != ELFPRelicDurationType::RDT_WhileConditionTrue)
 			{
 				continue;
@@ -238,6 +244,51 @@ void ALFPBattleRelicRuntimeManager::RebuildUnitRelicStats(ALFPTacticsUnit* Unit)
 		? static_cast<float>(Unit->GetCurrentHealth()) / Unit->GetCurrentMaxHealth()
 		: 0.f;
 	FoundState->bIsRebuilding = false;
+}
+
+void ALFPBattleRelicRuntimeManager::FireInstantBattleRules(ELFPRelicTriggerType TriggerType)
+{
+	if (!CachedGameInstance)
+	{
+		return;
+	}
+
+	for (const FName& RelicID : OwnedRelicIDs)
+	{
+		FLFPRelicDefinition Definition;
+		if (!CachedGameInstance->FindRelicDefinition(RelicID, Definition))
+		{
+			continue;
+		}
+
+		for (const FLFPRelicBattleRule& BattleRule : Definition.BattleRules)
+		{
+			if (BattleRule.TriggerType != TriggerType)
+			{
+				continue;
+			}
+
+			if (BattleRule.DurationType != ELFPRelicDurationType::RDT_Instant)
+			{
+				continue;
+			}
+
+			for (FLFPUnitRelicRuntimeState& State : BoundUnits)
+			{
+				if (!State.Unit.IsValid() || !State.Unit->IsAlive() || !State.Unit->IsAlly())
+				{
+					continue;
+				}
+
+				if (!EvaluateConditions(BattleRule.Conditions, State.Unit.Get()))
+				{
+					continue;
+				}
+
+				ApplyEffects(BattleRule.Effects, State.Unit.Get());
+			}
+		}
+	}
 }
 
 void ALFPBattleRelicRuntimeManager::OnUnitHealthChanged(ALFPTacticsUnit* Unit, int32 CurrentHealth, int32 MaxHealth)

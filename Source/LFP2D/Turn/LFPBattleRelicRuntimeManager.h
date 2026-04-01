@@ -2,14 +2,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "LFP2D/Shop/LFPRelicTypes.h"
 #include "LFPBattleRelicRuntimeManager.generated.h"
 
 class ULFPGameInstance;
 class ALFPTurnManager;
 class ALFPTacticsUnit;
 class ULFPRelicDataAsset;
-struct FLFPRelicBattleRule;
-struct FLFPRelicSynergyRule;
 
 // 单位运行时状态
 USTRUCT()
@@ -61,8 +60,11 @@ protected:
 	// 解绑单个单位事件
 	void UnbindUnitEvents(ALFPTacticsUnit* Unit);
 
-	// 重建单位遗物属性
+	// 重建单位遗物属性（WhileConditionTrue 规则 + 静态效果）
 	void RebuildUnitRelicStats(ALFPTacticsUnit* Unit);
+
+	// 执行指定触发时机的即时效果（Instant 规则）
+	void FireInstantBattleRules(ELFPRelicTriggerType TriggerType);
 
 	// 血量变化回调
 	UFUNCTION()
