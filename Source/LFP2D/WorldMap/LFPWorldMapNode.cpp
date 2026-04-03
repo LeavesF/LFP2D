@@ -36,6 +36,7 @@ void ALFPWorldMapNode::InitFromRowData(const FLFPWorldNodeRow& Row)
 	EventID = Row.EventID;
 	TownBuildingList = Row.TownBuildingList;
 	ShopID = Row.ShopID;
+	HireMarketID = Row.HireMarketID;
 	PrerequisiteNodeIDs = Row.PrerequisiteNodeIDs;
 
 	SetActorLocation(FVector(Row.PosX, Row.PosY, 0.f));
@@ -57,6 +58,7 @@ FLFPWorldNodeRow ALFPWorldMapNode::ExportToRowData() const
 	Row.EventID = EventID;
 	Row.TownBuildingList = TownBuildingList;
 	Row.ShopID = ShopID;
+	Row.HireMarketID = HireMarketID;
 	Row.PrerequisiteNodeIDs = PrerequisiteNodeIDs;
 	return Row;
 }

@@ -4,12 +4,14 @@
 #include "Engine/GameInstance.h"
 #include "LFP2D/Unit/LFPUnitTypes.h"
 #include "LFP2D/Shop/LFPRelicTypes.h"
+#include "LFP2D/Shop/LFPHireMarketTypes.h"
 #include "LFPGameInstance.generated.h"
 
 class ALFPTacticsUnit;
 class ULFPUnitRegistryDataAsset;
 class ULFPRelicDataAsset;
 class ULFPShopDataAsset;
+class ULFPHireMarketDataAsset;
 
 // 战斗请求：世界地图 → 战斗场景传递的数据
 USTRUCT(BlueprintType)
@@ -230,6 +232,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shop")
 	TObjectPtr<ULFPShopDataAsset> ShopDataAsset;
 
+	// 雇佣市场数据资产
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HireMarket")
+	TObjectPtr<ULFPHireMarketDataAsset> HireMarketDataAsset;
+
 	// 已拥有遗物 ID 集合
 	UPROPERTY(BlueprintReadOnly, Category = "Relic")
 	TSet<FName> OwnedRelicIDs;
@@ -261,6 +267,17 @@ public:
 	// 将已拥有遗物效果应用到单位当前属性
 	UFUNCTION(BlueprintCallable, Category = "Relic")
 	void ApplyOwnedRelicsToUnit(ALFPTacticsUnit* Unit) const;
+
+	// ============== 雇佣市场 ==============
+
+	// 查找雇佣市场定义
+	UFUNCTION(BlueprintPure, Category = "HireMarket")
+	bool FindHireMarketDefinition(FName HireMarketID, FLFPHireMarketDefinition& OutDefinition) const;
+
+	// 花金币购买单位（仅扣钱+生成 UnitEntry，不处理入队）
+	// 返回 true 表示扣款成功，OutUnit 为生成的单位数据
+	UFUNCTION(BlueprintCallable, Category = "HireMarket")
+	bool TrySpendForUnit(FName UnitTypeID, int32 Price, FLFPUnitEntry& OutUnit);
 
 	// ============== 编队系统 ==============
 

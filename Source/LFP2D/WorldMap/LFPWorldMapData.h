@@ -15,7 +15,8 @@ enum class ELFPWorldNodeType : uint8
 	WNT_Boss        UMETA(DisplayName = "Boss"),
 	WNT_QuestNPC    UMETA(DisplayName = "任务NPC"),
 	WNT_SkillNode   UMETA(DisplayName = "技能节点"),
-	WNT_EvolutionTower UMETA(DisplayName = "升华塔")
+	WNT_EvolutionTower UMETA(DisplayName = "升华塔"),
+	WNT_HireMarket     UMETA(DisplayName = "雇佣市场")
 };
 
 /**
@@ -80,6 +81,10 @@ struct FLFPWorldNodeRow : public FTableRowBase
 	// 商店配置 ID（对应商店数据资产中的键）
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Node|Shop")
 	FName ShopID = NAME_None;
+
+	// 雇佣市场配置 ID（对应雇佣市场数据资产中的键）
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Node|HireMarket")
+	FName HireMarketID = NAME_None;
 
 	// ==== 解锁条件 ====
 

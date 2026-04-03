@@ -85,6 +85,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "World Map Editor|Brush")
 	void SetBrushShopID(FName InShopID) { BrushShopID = InShopID; }
 
+	UFUNCTION(BlueprintCallable, Category = "World Map Editor|Brush")
+	void SetBrushHireMarketID(FName InHireMarketID) { BrushHireMarketID = InHireMarketID; }
+
 	// ==== 操作方法 ====
 
 	// 在世界坐标处放置新节点
@@ -202,6 +205,10 @@ protected:
 	// 商店配置 ID
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Brush")
 	FName BrushShopID = NAME_None;
+
+	// 雇佣市场配置 ID
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Brush")
+	FName BrushHireMarketID = NAME_None;
 
 	// 选中的节点（移动/连接/参数编辑用）
 	UPROPERTY()

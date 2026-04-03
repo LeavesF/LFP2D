@@ -12,6 +12,7 @@ class ULFPWorldMapEditorComponent;
 class ULFPWorldMapEditorWidget;
 class ULFPUnitMergeWidget;
 class ULFPShopWidget;
+class ULFPHireMarketWidget;
 class ULFPTownWidget;
 class UInputMappingContext;
 class UInputAction;
@@ -140,6 +141,19 @@ protected:
 	UFUNCTION()
 	void OnShopWidgetClosed();
 
+	// ============== 雇佣市场 ==============
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<ULFPHireMarketWidget> HireMarketWidgetClass;
+
+	UPROPERTY()
+	TObjectPtr<ULFPHireMarketWidget> HireMarketWidget;
+
+	void OpenHireMarket(ALFPWorldMapNode* HireMarketNode, bool bReturnToTownOnClose);
+
+	UFUNCTION()
+	void OnHireMarketWidgetClosed();
+
 	// ============== 城镇系统 ==============
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
@@ -209,6 +223,9 @@ protected:
 
 	// 当前商店关闭后是否返回城镇
 	bool bReturnToTownAfterShopClose = false;
+
+	// 当前雇佣市场关闭后是否返回城镇
+	bool bReturnToTownAfterHireMarketClose = false;
 
 	// 棋子移动完成回调
 	UFUNCTION()

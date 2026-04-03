@@ -7,6 +7,7 @@
 #include "LFP2D/UI/WorldMapEditor/LFPWorldMapEditorWidget.h"
 #include "LFP2D/UI/WorldMap/LFPUnitMergeWidget.h"
 #include "LFP2D/UI/WorldMap/LFPShopWidget.h"
+#include "LFP2D/UI/WorldMap/LFPHireMarketWidget.h"
 #include "LFP2D/UI/Town/LFPTownWidget.h"
 #include "LFP2D/Core/LFPGameInstance.h"
 #include "Kismet/GameplayStatics.h"
@@ -441,6 +442,10 @@ void ALFPWorldMapPlayerController::EnterNode(ALFPWorldMapNode* Node)
 		OpenShop(Node, false);
 		break;
 
+	case ELFPWorldNodeType::WNT_HireMarket:
+		OpenHireMarket(Node, false);
+		break;
+
 	case ELFPWorldNodeType::WNT_Town:
 		OpenTown(Node);
 		break;
@@ -646,6 +651,70 @@ void ALFPWorldMapPlayerController::OnShopWidgetClosed()
 	}
 
 	bReturnToTownAfterShopClose = false;
+}
+
+void ALFPWorldMapPlayerController::OpenHireMarket(ALFPWorldMapNode* HireMarketNode, bool bReturnToTownOnClose)
+{
+	if (!HireMarketNode || !HireMarketWidgetClass)
+	{
+		return;
+	}
+
+	ULFPGameInstance* GI = Cast<ULFPGameInstance>(GetGameInstance());
+	if (!GI || HireMarketNode->HireMarketID == NAME_None)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("雇佣市场节点 %d: HireMarketID 无效"), HireMarketNode->NodeID);
+		if (bReturnToTownOnClose && TownWidget && TownWidget->IsInViewport())
+		{
+			TownWidget->SetVisibility(ESlateVisibility::Visible);
+		}
+		return;
+	}
+
+	FLFPHireMarketDefinition HireMarketDefinition;
+	if (!GI->FindHireMarketDefinition(HireMarketNode->HireMarketID, HireMarketDefinition))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("雇佣市场配置不存在: %s"), *HireMarketNode->HireMarketID.ToString());
+		if (bReturnToTownOnClose && TownWidget && TownWidget->IsInViewport())
+		{
+			TownWidget->SetVisibility(ESlateVisibility::Visible);
+		}
+		return;
+	}
+
+	bReturnToTownAfterHireMarketClose = bReturnToTownOnClose;
+
+	if (!HireMarketWidget)
+	{
+		HireMarketWidget = CreateWidget<ULFPHireMarketWidget>(this, HireMarketWidgetClass);
+		if (HireMarketWidget)
+		{
+			HireMarketWidget->OnClosed.AddDynamic(this, &ALFPWorldMapPlayerController::OnHireMarketWidgetClosed);
+			HireMarketWidget->AddToViewport();
+		}
+	}
+	else
+	{
+		HireMarketWidget->SetVisibility(ESlateVisibility::Visible);
+		HireMarketWidget->AddToViewport();
+	}
+
+	if (HireMarketWidget)
+	{
+		HireMarketWidget->Setup(GI, HireMarketNode->HireMarketID, HireMarketDefinition);
+	}
+}
+
+void ALFPWorldMapPlayerController::OnHireMarketWidgetClosed()
+{
+	UE_LOG(LogTemp, Log, TEXT("雇佣市场: 面板已关闭"));
+
+	if (bReturnToTownAfterHireMarketClose && TownWidget && TownWidget->IsInViewport())
+	{
+		TownWidget->SetVisibility(ESlateVisibility::Visible);
+	}
+
+	bReturnToTownAfterHireMarketClose = false;
 }
 
 void ALFPWorldMapPlayerController::OpenTown(ALFPWorldMapNode* TownNode)

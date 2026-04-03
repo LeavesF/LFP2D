@@ -2,6 +2,7 @@
 #include "LFP2D/Core/LFPUnitRegistryDataAsset.h"
 #include "LFP2D/Shop/LFPRelicDataAsset.h"
 #include "LFP2D/Shop/LFPShopDataAsset.h"
+#include "LFP2D/Shop/LFPHireMarketDataAsset.h"
 #include "Kismet/GameplayStatics.h"
 #include "Camera/PlayerCameraManager.h"
 
@@ -250,6 +251,45 @@ void ULFPGameInstance::ApplyOwnedRelicsToUnit(ALFPTacticsUnit* Unit) const
 			}
 		}
 	}
+}
+
+// ============== 雇佣市场 ==============
+
+bool ULFPGameInstance::FindHireMarketDefinition(FName HireMarketID, FLFPHireMarketDefinition& OutDefinition) const
+{
+	return HireMarketDataAsset ? HireMarketDataAsset->FindHireMarketDefinition(HireMarketID, OutDefinition) : false;
+}
+
+bool ULFPGameInstance::TrySpendForUnit(FName UnitTypeID, int32 Price, FLFPUnitEntry& OutUnit)
+{
+	if (UnitTypeID == NAME_None)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("TrySpendForUnit: UnitTypeID 无效"));
+		return false;
+	}
+
+	if (!UnitRegistry)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("TrySpendForUnit: 注册表未配置"));
+		return false;
+	}
+
+	FLFPUnitRegistryEntry RegistryEntry;
+	if (!UnitRegistry->FindEntry(UnitTypeID, RegistryEntry))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("TrySpendForUnit: 注册表中未找到单位 %s"), *UnitTypeID.ToString());
+		return false;
+	}
+
+	if (!SpendGold(Price))
+	{
+		return false;
+	}
+
+	OutUnit.TypeID = UnitTypeID;
+	OutUnit.Tier = RegistryEntry.Tier;
+	UE_LOG(LogTemp, Log, TEXT("雇佣单位扣款成功: %s (T%d), 花费 %d 金币"), *UnitTypeID.ToString(), OutUnit.Tier, Price);
+	return true;
 }
 
 // ============== 编队系统 ==============

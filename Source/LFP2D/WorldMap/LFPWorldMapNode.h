@@ -61,6 +61,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Node|Shop")
 	FName ShopID = NAME_None;
 
+	// 雇佣市场配置 ID
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Node|HireMarket")
+	FName HireMarketID = NAME_None;
+
 	// ==== 解锁条件 ====
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Node")

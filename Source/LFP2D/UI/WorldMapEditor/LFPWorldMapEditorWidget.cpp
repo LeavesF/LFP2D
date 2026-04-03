@@ -29,6 +29,7 @@ void ULFPWorldMapEditorWidget::NativeConstruct()
 	if (BaseGoldRewardInput) BaseGoldRewardInput->OnTextCommitted.AddDynamic(this, &ULFPWorldMapEditorWidget::OnBaseGoldRewardChanged);
 	if (BaseFoodRewardInput) BaseFoodRewardInput->OnTextCommitted.AddDynamic(this, &ULFPWorldMapEditorWidget::OnBaseFoodRewardChanged);
 	if (ShopIDInput) ShopIDInput->OnTextCommitted.AddDynamic(this, &ULFPWorldMapEditorWidget::OnShopIDChanged);
+	if (HireMarketIDInput) HireMarketIDInput->OnTextCommitted.AddDynamic(this, &ULFPWorldMapEditorWidget::OnHireMarketIDChanged);
 
 	// 城镇建筑勾选框
 	if (TownCheck_Shop) TownCheck_Shop->OnCheckStateChanged.AddDynamic(this, &ULFPWorldMapEditorWidget::OnTownBuildingCheckChanged);
@@ -54,6 +55,7 @@ void ULFPWorldMapEditorWidget::NativeConstruct()
 		NodeTypeComboBox->AddOption(TEXT("WNT_QuestNPC"));
 		NodeTypeComboBox->AddOption(TEXT("WNT_SkillNode"));
 		NodeTypeComboBox->AddOption(TEXT("WNT_EvolutionTower"));
+		NodeTypeComboBox->AddOption(TEXT("WNT_HireMarket"));
 		NodeTypeComboBox->SetSelectedOption(TEXT("WNT_Battle"));
 	}
 
@@ -64,6 +66,7 @@ void ULFPWorldMapEditorWidget::NativeConstruct()
 	if (BaseGoldRewardInput) BaseGoldRewardInput->SetText(FText::FromString(TEXT("0")));
 	if (BaseFoodRewardInput) BaseFoodRewardInput->SetText(FText::FromString(TEXT("0")));
 	if (ShopIDInput) ShopIDInput->SetText(FText::GetEmpty());
+	if (HireMarketIDInput) HireMarketIDInput->SetText(FText::GetEmpty());
 }
 
 void ULFPWorldMapEditorWidget::InitializeEditor(ULFPWorldMapEditorComponent* EditorComp)
@@ -129,6 +132,7 @@ void ULFPWorldMapEditorWidget::OnNodeTypeChanged(FString SelectedItem, ESelectIn
 		{TEXT("WNT_QuestNPC"), ELFPWorldNodeType::WNT_QuestNPC},
 		{TEXT("WNT_SkillNode"), ELFPWorldNodeType::WNT_SkillNode},
 		{TEXT("WNT_EvolutionTower"), ELFPWorldNodeType::WNT_EvolutionTower},
+		{TEXT("WNT_HireMarket"), ELFPWorldNodeType::WNT_HireMarket},
 	};
 
 	if (const ELFPWorldNodeType* Found = NodeTypeMap.Find(SelectedItem))
@@ -184,6 +188,12 @@ void ULFPWorldMapEditorWidget::OnShopIDChanged(const FText& Text, ETextCommit::T
 {
 	if (!EditorComponent) return;
 	EditorComponent->SetBrushShopID(FName(*Text.ToString()));
+}
+
+void ULFPWorldMapEditorWidget::OnHireMarketIDChanged(const FText& Text, ETextCommit::Type CommitType)
+{
+	if (!EditorComponent) return;
+	EditorComponent->SetBrushHireMarketID(FName(*Text.ToString()));
 }
 
 void ULFPWorldMapEditorWidget::OnTownBuildingCheckChanged(bool bIsChecked)
@@ -311,6 +321,11 @@ void ULFPWorldMapEditorWidget::UpdateNodeInfo(ALFPWorldMapNode* Node)
 	{
 		Info += FString::Printf(TEXT(" | 商店: %s"), *Node->ShopID.ToString());
 		if (ShopIDInput) ShopIDInput->SetText(FText::FromName(Node->ShopID));
+	}
+	else if (Node->NodeType == ELFPWorldNodeType::WNT_HireMarket)
+	{
+		Info += FString::Printf(TEXT(" | 雇佣市场: %s"), *Node->HireMarketID.ToString());
+		if (HireMarketIDInput) HireMarketIDInput->SetText(FText::FromName(Node->HireMarketID));
 	}
 
 	SelectedNodeInfoText->SetText(FText::FromString(Info));
