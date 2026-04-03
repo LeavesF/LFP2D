@@ -42,6 +42,14 @@ See [architecture.md](architecture.md) for detailed system design records.
 - Deployment widget: `Source/LFP2D/UI/Fighting/LFPDeploymentWidget.h/.cpp`
 - Unit merge widget: `Source/LFP2D/UI/WorldMap/LFPUnitMergeWidget.h/.cpp`
 - Battle result widget: `Source/LFP2D/UI/Fighting/LFPBattleResultWidget.h/.cpp`
+- Shop widget: `Source/LFP2D/UI/WorldMap/LFPShopWidget.h/.cpp`
+- Relic data types: `Source/LFP2D/Shop/LFPRelicTypes.h`
+- Relic data asset: `Source/LFP2D/Shop/LFPRelicDataAsset.h/.cpp`
+- Shop data asset: `Source/LFP2D/Shop/LFPShopDataAsset.h/.cpp`
 
 ## Current Development Status
 See [progress.md](progress.md) for implementation progress.
+
+## Important Design Decisions
+- "商店" = 遗物商店；卖单位的版本命名为"雇佣市场"，后续再做
+- 商店配置采用 ShopID + DataAsset 模式，节点只挂 ShopID
