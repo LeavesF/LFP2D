@@ -66,6 +66,9 @@ protected:
 	TObjectPtr<UTextBlock> Text_Status;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+	TObjectPtr<UTextBlock> Text_PurchaseButton;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
 	TObjectPtr<UButton> Button_Purchase;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))

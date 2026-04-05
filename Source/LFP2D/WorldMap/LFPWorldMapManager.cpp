@@ -344,7 +344,7 @@ TArray<FString> ALFPWorldMapManager::GetSavedWorldMapList()
 bool ALFPWorldMapManager::SaveNodesToCSV(const FString& FilePath)
 {
 	// CSV 头部（UE DataTable 格式）
-	FString CSVContent = TEXT("---,NodeID,PosX,PosY,NodeType,BattleMapName,StarRating,bCanEscape,BaseGoldReward,BaseFoodReward,EventID,TownBuildingList,ShopID,PrerequisiteNodeIDs\n");
+	FString CSVContent = TEXT("---,NodeID,PosX,PosY,NodeType,BattleMapName,StarRating,bCanEscape,BaseGoldReward,BaseFoodReward,EventID,TownBuildingList,ShopID,HireMarketID,PrerequisiteNodeIDs\n");
 
 	for (const auto& Pair : NodeMap)
 	{
@@ -358,7 +358,7 @@ bool ALFPWorldMapManager::SaveNodesToCSV(const FString& FilePath)
 		FString NodeTypeStr = UEnum::GetValueAsString(Row.NodeType);
 		NodeTypeStr = NodeTypeStr.RightChop(NodeTypeStr.Find(TEXT("::")) + 2);
 
-		CSVContent += FString::Printf(TEXT("%s,%d,%f,%f,%s,%s,%d,%s,%d,%d,%s,%s,%s,%s\n"),
+		CSVContent += FString::Printf(TEXT("%s,%d,%f,%f,%s,%s,%d,%s,%d,%d,%s,%s,%s,%s,%s\n"),
 			*RowName,
 			Row.NodeID,
 			Row.PosX,
@@ -372,6 +372,7 @@ bool ALFPWorldMapManager::SaveNodesToCSV(const FString& FilePath)
 			*Row.EventID,
 			*Row.TownBuildingList,
 			*Row.ShopID.ToString(),
+			*Row.HireMarketID.ToString(),
 			*Row.PrerequisiteNodeIDs);
 	}
 

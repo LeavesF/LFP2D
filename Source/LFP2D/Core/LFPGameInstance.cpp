@@ -260,6 +260,41 @@ bool ULFPGameInstance::FindHireMarketDefinition(FName HireMarketID, FLFPHireMark
 	return HireMarketDataAsset ? HireMarketDataAsset->FindHireMarketDefinition(HireMarketID, OutDefinition) : false;
 }
 
+bool ULFPGameInstance::HasPurchasedHireMarketUnit(FName HireMarketID, FName UnitTypeID) const
+{
+	if (HireMarketID == NAME_None || UnitTypeID == NAME_None)
+	{
+		return false;
+	}
+
+	const TSet<FName>* PurchasedUnits = PurchasedHireMarketUnitMap.Find(HireMarketID);
+	return PurchasedUnits && PurchasedUnits->Contains(UnitTypeID);
+}
+
+bool ULFPGameInstance::TryPurchaseHireMarketUnit(FName HireMarketID, FName UnitTypeID, int32 Price, FLFPUnitEntry& OutUnit)
+{
+	if (HireMarketID == NAME_None)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("TryPurchaseHireMarketUnit: HireMarketID 无效"));
+		return false;
+	}
+
+	if (HasPurchasedHireMarketUnit(HireMarketID, UnitTypeID))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("TryPurchaseHireMarketUnit: 单位 %s 已在市场 %s 购买过"), *UnitTypeID.ToString(), *HireMarketID.ToString());
+		return false;
+	}
+
+	if (!TrySpendForUnit(UnitTypeID, Price, OutUnit))
+	{
+		return false;
+	}
+
+	PurchasedHireMarketUnitMap.FindOrAdd(HireMarketID).Add(UnitTypeID);
+	UE_LOG(LogTemp, Log, TEXT("雇佣市场购买成功: 市场 %s, 单位 %s"), *HireMarketID.ToString(), *UnitTypeID.ToString());
+	return true;
+}
+
 bool ULFPGameInstance::TrySpendForUnit(FName UnitTypeID, int32 Price, FLFPUnitEntry& OutUnit)
 {
 	if (UnitTypeID == NAME_None)

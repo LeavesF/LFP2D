@@ -270,9 +270,20 @@ public:
 
 	// ============== 雇佣市场 ==============
 
+	// 已购买的雇佣市场单位（HireMarketID -> UnitTypeID 集合）
+	TMap<FName, TSet<FName>> PurchasedHireMarketUnitMap;
+
 	// 查找雇佣市场定义
 	UFUNCTION(BlueprintPure, Category = "HireMarket")
 	bool FindHireMarketDefinition(FName HireMarketID, FLFPHireMarketDefinition& OutDefinition) const;
+
+	// 是否已在指定雇佣市场购买过该单位
+	UFUNCTION(BlueprintPure, Category = "HireMarket")
+	bool HasPurchasedHireMarketUnit(FName HireMarketID, FName UnitTypeID) const;
+
+	// 购买雇佣市场单位（同一市场内同种单位不可重复购买）
+	UFUNCTION(BlueprintCallable, Category = "HireMarket")
+	bool TryPurchaseHireMarketUnit(FName HireMarketID, FName UnitTypeID, int32 Price, FLFPUnitEntry& OutUnit);
 
 	// 花金币购买单位（仅扣钱+生成 UnitEntry，不处理入队）
 	// 返回 true 表示扣款成功，OutUnit 为生成的单位数据

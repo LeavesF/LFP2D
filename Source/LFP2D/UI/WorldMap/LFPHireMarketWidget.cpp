@@ -66,6 +66,8 @@ void ULFPHireMarketWidget::RefreshUnitList()
 			continue;
 		}
 
+		const bool bPurchased = CachedGameInstance->HasPurchasedHireMarketUnit(CachedHireMarketID, Entry.UnitTypeID);
+
 		UButton* UnitButton = NewObject<UButton>(this);
 		if (!UnitButton)
 		{
@@ -76,7 +78,11 @@ void ULFPHireMarketWidget::RefreshUnitList()
 		if (Label)
 		{
 			FString Suffix;
-			if (!CachedGameInstance->CanAffordGold(Entry.Price))
+			if (bPurchased)
+			{
+				Suffix = TEXT(" [已购买]");
+			}
+			else if (!CachedGameInstance->CanAffordGold(Entry.Price))
 			{
 				Suffix = TEXT(" [金币不足]");
 			}
@@ -84,6 +90,8 @@ void ULFPHireMarketWidget::RefreshUnitList()
 			Label->SetText(FText::FromString(FString::Printf(TEXT("%s - %d%s"), *UnitDefinition.DisplayName.ToString(), Entry.Price, *Suffix)));
 			UnitButton->AddChild(Label);
 		}
+
+		UnitButton->SetIsEnabled(!bPurchased);
 
 		UVerticalBoxSlot* ItemSlot = Box_UnitList->AddChildToVerticalBox(UnitButton);
 		if (ItemSlot)
@@ -124,6 +132,8 @@ void ULFPHireMarketWidget::RefreshDetailPanel()
 		return;
 	}
 
+	const bool bPurchased = CachedGameInstance->HasPurchasedHireMarketUnit(CachedHireMarketID, Entry.UnitTypeID);
+
 	if (Image_SelectedUnit)
 	{
 		Image_SelectedUnit->SetBrushFromTexture(UnitDefinition.Icon);
@@ -142,15 +152,43 @@ void ULFPHireMarketWidget::RefreshDetailPanel()
 	}
 
 	const bool bCanAfford = CachedGameInstance->CanAffordGold(Entry.Price);
+	const bool bCanPurchase = !bPurchased && bCanAfford;
 	if (Button_Purchase)
 	{
-		Button_Purchase->SetIsEnabled(bCanAfford);
+		Button_Purchase->SetIsEnabled(bCanPurchase);
+	}
+	if (Text_PurchaseButton)
+	{
+		if (bPurchased)
+		{
+			Text_PurchaseButton->SetText(FText::FromString(TEXT("已购买")));
+		}
+		else if (!bCanAfford)
+		{
+			Text_PurchaseButton->SetText(FText::FromString(TEXT("金币不足")));
+		}
+		else
+		{
+			Text_PurchaseButton->SetText(FText::FromString(TEXT("雇佣")));
+		}
 	}
 	if (Text_Status)
 	{
-		if (!bCanAfford)
+		if (bPurchased)
+		{
+			Text_Status->SetText(FText::FromString(TEXT("该单位已购买，当前市场不能重复雇佣")));
+		}
+		else if (!bCanAfford)
 		{
 			Text_Status->SetText(FText::FromString(TEXT("金币不足")));
+		}
+		else if (CachedGameInstance->IsPartyFull() && CachedGameInstance->IsReserveFull())
+		{
+			Text_Status->SetText(FText::FromString(TEXT("队伍与备战营已满，购买后需要替换现有单位")));
+		}
+		else if (CachedGameInstance->IsPartyFull())
+		{
+			Text_Status->SetText(FText::FromString(TEXT("出战队伍已满，购买后会进入备战营")));
 		}
 		else
 		{
@@ -179,12 +217,12 @@ FString ULFPHireMarketWidget::BuildUnitDescription(FName UnitTypeID) const
 		*RaceName,
 		UnitDefinition.BaseStats.Attack,
 		UnitDefinition.BaseStats.MaxHealth,
-		UnitDefinition.BaseStats.MaxMovement,
+		UnitDefinition.BaseStats.MaxMovePoints,
 		UnitDefinition.BaseStats.Speed,
 		UnitDefinition.AdvancedStats.ActionCount,
 		UnitDefinition.AdvancedStats.AttackCount,
 		UnitDefinition.AdvancedStats.PhysicalBlock,
-		UnitDefinition.AdvancedStats.MagicalDefense,
+		UnitDefinition.AdvancedStats.SpellDefense,
 		UnitDefinition.AdvancedStats.Weight
 	);
 }
@@ -211,7 +249,7 @@ void ULFPHireMarketWidget::OnPurchaseClicked()
 
 	const FLFPHireMarketUnitEntry& Entry = CachedHireMarketDefinition.UnitList[SelectedUnitIndex];
 	FLFPUnitEntry NewUnit;
-	if (!CachedGameInstance->TrySpendForUnit(Entry.UnitTypeID, Entry.Price, NewUnit))
+	if (!CachedGameInstance->TryPurchaseHireMarketUnit(CachedHireMarketID, Entry.UnitTypeID, Entry.Price, NewUnit))
 	{
 		RefreshHireMarketUI();
 		return;
