@@ -54,6 +54,19 @@ bool ULFPWorldMapPlayerState::MoveToNode(int32 TargetNodeID, ALFPWorldMapManager
 	return true;
 }
 
+void ULFPWorldMapPlayerState::SetCurrentNodeDirectly(int32 TargetNodeID, ALFPWorldMapNode* TargetNode)
+{
+	CurrentNodeID = TargetNodeID;
+	VisitedNodeIDs.Add(TargetNodeID);
+
+	UE_LOG(LogTemp, Log, TEXT("传送: 直接移动到节点 %d"), TargetNodeID);
+
+	if (TargetNode)
+	{
+		OnPlayerNodeChanged.Broadcast(TargetNode);
+	}
+}
+
 TArray<int32> ULFPWorldMapPlayerState::GetReachableNodeIDs(ALFPWorldMapManager* Manager) const
 {
 	TArray<int32> Result;

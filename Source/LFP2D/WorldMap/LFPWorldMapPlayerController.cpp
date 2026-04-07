@@ -8,6 +8,8 @@
 #include "LFP2D/UI/WorldMap/LFPUnitMergeWidget.h"
 #include "LFP2D/UI/WorldMap/LFPShopWidget.h"
 #include "LFP2D/UI/WorldMap/LFPHireMarketWidget.h"
+#include "LFP2D/UI/WorldMap/LFPTeleportWidget.h"
+#include "LFP2D/UI/WorldMap/LFPWorldMapHUDWidget.h"
 #include "LFP2D/UI/Town/LFPTownWidget.h"
 #include "LFP2D/Core/LFPGameInstance.h"
 #include "Kismet/GameplayStatics.h"
@@ -53,11 +55,20 @@ void ALFPWorldMapPlayerController::BeginPlay()
 
 	// 首帧跳过相机平滑插值
 	bSnapCameraNextFrame = true;
+
+	// 尝试初始化 HUD（PlayerState 可能稍后才就绪）
+	TryInitializeHUD();
 }
 
 void ALFPWorldMapPlayerController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	// 延迟初始化 HUD（等待 PlayerState 就绪）
+	if (!bHUDInitialized)
+	{
+		TryInitializeHUD();
+	}
 
 	if (bIsDragging)
 	{
@@ -120,6 +131,9 @@ void ALFPWorldMapPlayerController::SetupInputComponent()
 
 		// 编辑器切换
 		EnhancedInputComponent->BindAction(ToggleEditorAction, ETriggerEvent::Started, this, &ALFPWorldMapPlayerController::OnToggleEditorAction);
+
+		// HUD 切换
+		EnhancedInputComponent->BindAction(ToggleHUDAction, ETriggerEvent::Started, this, &ALFPWorldMapPlayerController::OnToggleHUDAction);
 	}
 }
 
@@ -296,6 +310,45 @@ void ALFPWorldMapPlayerController::OnToggleEditorAction(const FInputActionValue&
 			WorldMapEditorWidget->SetVisibility(ESlateVisibility::Collapsed);
 		}
 	}
+}
+
+void ALFPWorldMapPlayerController::OnToggleHUDAction(const FInputActionValue& Value)
+{
+	if (!WorldMapHUDWidget) return;
+
+	if (WorldMapHUDWidget->GetVisibility() == ESlateVisibility::Visible)
+	{
+		WorldMapHUDWidget->SetVisibility(ESlateVisibility::Collapsed);
+	}
+	else
+	{
+		WorldMapHUDWidget->SetVisibility(ESlateVisibility::Visible);
+	}
+}
+
+void ALFPWorldMapPlayerController::TryInitializeHUD()
+{
+	if (bHUDInitialized) return;
+	if (!WorldMapHUDWidgetClass) return;
+
+	ULFPGameInstance* GI = Cast<ULFPGameInstance>(GetGameInstance());
+	if (!GI) return;
+
+	ALFPWorldMapManager* Manager = GetWorldMapManager();
+	if (!Manager) return;
+
+	ULFPWorldMapPlayerState* PS = Manager->GetPlayerState();
+	if (!PS) return;
+
+	// 创建 HUD Widget
+	WorldMapHUDWidget = CreateWidget<ULFPWorldMapHUDWidget>(this, WorldMapHUDWidgetClass);
+	if (WorldMapHUDWidget)
+	{
+		WorldMapHUDWidget->AddToViewport(0);
+		WorldMapHUDWidget->Setup(GI, PS);
+	}
+
+	bHUDInitialized = true;
 }
 
 // ============== 相机操作 ==============
@@ -787,8 +840,11 @@ void ALFPWorldMapPlayerController::OnTownBuildingRequested(ELFPTownBuildingType 
 		break;
 
 	case ELFPTownBuildingType::TBT_Teleport:
-		// TODO: 打开传送阵 UI
-		UE_LOG(LogTemp, Log, TEXT("城镇: 传送阵功能尚未实现"));
+		if (TownWidget)
+		{
+			TownWidget->SetVisibility(ESlateVisibility::Hidden);
+		}
+		OpenTeleport();
 		break;
 
 	case ELFPTownBuildingType::TBT_QuestNPC:
@@ -803,5 +859,92 @@ void ALFPWorldMapPlayerController::OnTownBuildingRequested(ELFPTownBuildingType 
 
 	default:
 		break;
+	}
+}
+
+// ============== 传送阵 ==============
+
+void ALFPWorldMapPlayerController::OpenTeleport()
+{
+	ALFPWorldMapManager* Manager = GetWorldMapManager();
+	if (!Manager || !TeleportWidgetClass) return;
+
+	ULFPWorldMapPlayerState* PS = Manager->GetPlayerState();
+	if (!PS) return;
+
+	// 获取可传送目的地
+	TArray<ALFPWorldMapNode*> Destinations = Manager->GetTeleportDestinations(PS->CurrentNodeID);
+
+	// 创建或显示 TeleportWidget
+	if (!TeleportWidget)
+	{
+		TeleportWidget = CreateWidget<ULFPTeleportWidget>(this, TeleportWidgetClass);
+		if (TeleportWidget)
+		{
+			TeleportWidget->OnTeleportTargetSelected.AddDynamic(this, &ALFPWorldMapPlayerController::OnTeleportTargetSelected);
+			TeleportWidget->OnClosed.AddDynamic(this, &ALFPWorldMapPlayerController::OnTeleportWidgetClosed);
+			TeleportWidget->AddToViewport();
+		}
+	}
+	else
+	{
+		TeleportWidget->SetVisibility(ESlateVisibility::Visible);
+		TeleportWidget->AddToViewport();
+	}
+
+	if (TeleportWidget)
+	{
+		TeleportWidget->Setup(Destinations);
+	}
+
+	UE_LOG(LogTemp, Log, TEXT("传送阵: 打开面板，可选目的地 %d 个"), Destinations.Num());
+}
+
+void ALFPWorldMapPlayerController::OnTeleportTargetSelected(int32 TargetNodeID)
+{
+	ALFPWorldMapManager* Manager = GetWorldMapManager();
+	if (!Manager) return;
+
+	// 关闭传送 UI
+	if (TeleportWidget)
+	{
+		TeleportWidget->SetVisibility(ESlateVisibility::Collapsed);
+		TeleportWidget->RemoveFromParent();
+	}
+
+	// 关闭城镇面板
+	if (TownWidget)
+	{
+		TownWidget->SetVisibility(ESlateVisibility::Collapsed);
+		TownWidget->RemoveFromParent();
+	}
+
+	// 执行传送
+	bool bSuccess = Manager->TeleportPlayerToNode(TargetNodeID);
+	if (!bSuccess)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("传送阵: 传送到节点 %d 失败"), TargetNodeID);
+		return;
+	}
+
+	// 传送后自动进入目标城镇
+	ALFPWorldMapNode* TargetNode = Manager->GetNode(TargetNodeID);
+	if (TargetNode)
+	{
+		SelectedNode = TargetNode;
+		OpenTown(TargetNode);
+	}
+
+	UE_LOG(LogTemp, Log, TEXT("传送阵: 已传送到节点 %d 并进入城镇"), TargetNodeID);
+}
+
+void ALFPWorldMapPlayerController::OnTeleportWidgetClosed()
+{
+	UE_LOG(LogTemp, Log, TEXT("传送阵: 面板已关闭"));
+
+	// 返回城镇面板
+	if (TownWidget && TownWidget->IsInViewport())
+	{
+		TownWidget->SetVisibility(ESlateVisibility::Visible);
 	}
 }

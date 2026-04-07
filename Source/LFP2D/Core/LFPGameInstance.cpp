@@ -120,12 +120,14 @@ void ULFPGameInstance::AddGold(int32 Amount)
 {
 	Gold += Amount;
 	UE_LOG(LogTemp, Log, TEXT("金币变动: %+d, 当前: %d"), Amount, Gold);
+	OnResourceChanged.Broadcast(Gold, Food);
 }
 
 void ULFPGameInstance::AddFood(int32 Amount)
 {
 	Food += Amount;
 	UE_LOG(LogTemp, Log, TEXT("食物变动: %+d, 当前: %d"), Amount, Food);
+	OnResourceChanged.Broadcast(Gold, Food);
 }
 
 bool ULFPGameInstance::SpendGold(int32 Amount)
@@ -143,6 +145,7 @@ bool ULFPGameInstance::SpendGold(int32 Amount)
 
 	Gold -= Amount;
 	UE_LOG(LogTemp, Log, TEXT("金币变动: -%d, 当前: %d"), Amount, Gold);
+	OnResourceChanged.Broadcast(Gold, Food);
 	return true;
 }
 
@@ -174,6 +177,7 @@ bool ULFPGameInstance::TryAddOwnedRelic(FName RelicID)
 
 	OwnedRelicIDs.Add(RelicID);
 	UE_LOG(LogTemp, Log, TEXT("获得遗物成功: %s"), *RelicID.ToString());
+	OnOwnedRelicsChanged.Broadcast();
 	return true;
 }
 

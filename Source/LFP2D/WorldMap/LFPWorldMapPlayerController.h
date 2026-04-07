@@ -14,6 +14,8 @@ class ULFPUnitMergeWidget;
 class ULFPShopWidget;
 class ULFPHireMarketWidget;
 class ULFPTownWidget;
+class ULFPTeleportWidget;
+class ULFPWorldMapHUDWidget;
 class UInputMappingContext;
 class UInputAction;
 
@@ -40,6 +42,7 @@ public:
 	void OnConfirmAction(const FInputActionValue& Value);
 	void OnCancelAction(const FInputActionValue& Value);
 	void OnToggleEditorAction(const FInputActionValue& Value);
+	void OnToggleHUDAction(const FInputActionValue& Value);
 
 	// 相机操作
 	void OnCameraPan(const FInputActionValue& Value);
@@ -101,6 +104,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* CameraZoomAction;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* ToggleHUDAction;
 
 	// ============== 世界地图编辑器 ==============
 
@@ -172,6 +178,34 @@ protected:
 	// 城镇建筑功能请求回调
 	UFUNCTION()
 	void OnTownBuildingRequested(ELFPTownBuildingType BuildingType);
+
+	// ============== 传送阵 ==============
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<ULFPTeleportWidget> TeleportWidgetClass;
+
+	UPROPERTY()
+	TObjectPtr<ULFPTeleportWidget> TeleportWidget;
+
+	void OpenTeleport();
+
+	UFUNCTION()
+	void OnTeleportTargetSelected(int32 TargetNodeID);
+
+	UFUNCTION()
+	void OnTeleportWidgetClosed();
+
+	// ============== 世界地图 HUD ==============
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<ULFPWorldMapHUDWidget> WorldMapHUDWidgetClass;
+
+	UPROPERTY()
+	TObjectPtr<ULFPWorldMapHUDWidget> WorldMapHUDWidget;
+
+	// HUD 初始化（可能需要延迟到 PlayerState 就绪）
+	void TryInitializeHUD();
+	bool bHUDInitialized = false;
 
 	// ============== 相机 ==============
 

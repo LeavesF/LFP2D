@@ -54,6 +54,10 @@ public:
 	UFUNCTION(BlueprintPure, Category = "World Map")
 	bool IsPastPressureThreshold() const { return CurrentTurn >= TurnPressureThreshold; }
 
+	// 直接设置当前节点（传送用，不校验相邻、不消耗回合）
+	UFUNCTION(BlueprintCallable, Category = "World Map")
+	void SetCurrentNodeDirectly(int32 TargetNodeID, ALFPWorldMapNode* TargetNode);
+
 	// 初始化（设置起始节点）
 	UFUNCTION(BlueprintCallable, Category = "World Map")
 	void Initialize(int32 StartNodeID);

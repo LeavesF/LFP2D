@@ -736,6 +736,49 @@ bool ALFPWorldMapManager::IsPawnMoving() const
 	return PlayerPawn && PlayerPawn->IsMoving();
 }
 
+bool ALFPWorldMapManager::TeleportPlayerToNode(int32 TargetNodeID)
+{
+	if (!PlayerState) return false;
+
+	ALFPWorldMapNode* TargetNode = GetNode(TargetNodeID);
+	if (!TargetNode) return false;
+
+	// 直接更新玩家状态（不校验相邻、不消耗回合）
+	PlayerState->SetCurrentNodeDirectly(TargetNodeID, TargetNode);
+
+	// 立即移动棋子（不走动画）
+	if (PlayerPawn)
+	{
+		FVector TargetLocation = TargetNode->GetActorLocation() + FVector(0, 0, 1);
+		PlayerPawn->SetLocationImmediate(TargetLocation);
+	}
+
+	// 更新迷雾
+	UpdateFog();
+
+	UE_LOG(LogTemp, Log, TEXT("传送: 玩家传送到节点 %d"), TargetNodeID);
+	return true;
+}
+
+TArray<ALFPWorldMapNode*> ALFPWorldMapManager::GetTeleportDestinations(int32 ExcludeNodeID) const
+{
+	TArray<ALFPWorldMapNode*> Result;
+
+	for (const auto& Pair : NodeMap)
+	{
+		ALFPWorldMapNode* Node = Pair.Value;
+		if (!Node || Node->NodeID == ExcludeNodeID) continue;
+
+		// 只选城镇节点且建筑列表包含 Teleport
+		if (Node->NodeType == ELFPWorldNodeType::WNT_Town && Node->TownBuildingList.Contains(TEXT("Teleport")))
+		{
+			Result.Add(Node);
+		}
+	}
+
+	return Result;
+}
+
 void ALFPWorldMapManager::RestoreTriggeredNodes(const TSet<int32>& TriggeredNodeIDs)
 {
 	for (int32 NodeID : TriggeredNodeIDs)

@@ -13,6 +13,11 @@ class ULFPRelicDataAsset;
 class ULFPShopDataAsset;
 class ULFPHireMarketDataAsset;
 
+// 资源（金币/食物）变动委托
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnResourceChanged, int32, NewGold, int32, NewFood);
+// 遗物拥有列表变动委托
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnOwnedRelicsChanged);
+
 // 战斗请求：世界地图 → 战斗场景传递的数据
 USTRUCT(BlueprintType)
 struct FLFPBattleRequest
@@ -221,6 +226,14 @@ public:
 	// 扣除金币
 	UFUNCTION(BlueprintCallable, Category = "Resources")
 	bool SpendGold(int32 Amount);
+
+	// 资源变动委托
+	UPROPERTY(BlueprintAssignable, Category = "Resources")
+	FOnResourceChanged OnResourceChanged;
+
+	// 遗物变动委托
+	UPROPERTY(BlueprintAssignable, Category = "Relic")
+	FOnOwnedRelicsChanged OnOwnedRelicsChanged;
 
 	// ============== 遗物 / 商店系统 ==============
 

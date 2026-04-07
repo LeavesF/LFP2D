@@ -161,7 +161,7 @@ void ULFPHireMarketWidget::RefreshDetailPanel()
 	{
 		if (bPurchased)
 		{
-			Text_PurchaseButton->SetText(FText::FromString(TEXT("已购买")));
+			Text_PurchaseButton->SetText(FText::FromString(TEXT("已雇佣")));
 		}
 		else if (!bCanAfford)
 		{
@@ -176,7 +176,7 @@ void ULFPHireMarketWidget::RefreshDetailPanel()
 	{
 		if (bPurchased)
 		{
-			Text_Status->SetText(FText::FromString(TEXT("该单位已购买，当前市场不能重复雇佣")));
+			Text_Status->SetText(FText::FromString(TEXT("该单位已雇佣，当前市场不能重复雇佣")));
 		}
 		else if (!bCanAfford)
 		{

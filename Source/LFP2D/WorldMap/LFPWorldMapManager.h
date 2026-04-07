@@ -132,6 +132,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "World Map")
 	void RestoreTriggeredNodes(const TSet<int32>& TriggeredNodeIDs);
 
+	// 传送玩家到指定节点（不校验相邻、不消耗回合）
+	UFUNCTION(BlueprintCallable, Category = "World Map")
+	bool TeleportPlayerToNode(int32 TargetNodeID);
+
+	// 获取所有含传送阵的城镇节点（排除指定节点）
+	UFUNCTION(BlueprintCallable, Category = "World Map")
+	TArray<ALFPWorldMapNode*> GetTeleportDestinations(int32 ExcludeNodeID) const;
+
 	// 棋子是否正在移动中
 	UFUNCTION(BlueprintPure, Category = "World Map")
 	bool IsPawnMoving() const;
