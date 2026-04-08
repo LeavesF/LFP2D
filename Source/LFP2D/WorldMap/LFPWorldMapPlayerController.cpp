@@ -58,6 +58,15 @@ void ALFPWorldMapPlayerController::BeginPlay()
 
 	// 尝试初始化 HUD（PlayerState 可能稍后才就绪）
 	TryInitializeHUD();
+
+	// 初始化当前所在节点
+	if (ALFPWorldMapManager* Manager = GetWorldMapManager())
+	{
+		if (ULFPWorldMapPlayerState* PS = Manager->GetPlayerState())
+		{
+			CurrentNode = Manager->GetNode(PS->CurrentNodeID);
+		}
+	}
 }
 
 void ALFPWorldMapPlayerController::Tick(float DeltaTime)
@@ -596,6 +605,15 @@ void ALFPWorldMapPlayerController::OnPawnMoveCompleted()
 	// 显示新的可达节点
 	ShowReachableNodes();
 
+	// 更新当前所在节点
+	if (ALFPWorldMapManager* Manager = GetWorldMapManager())
+	{
+		if (ULFPWorldMapPlayerState* PS = Manager->GetPlayerState())
+		{
+			CurrentNode = Manager->GetNode(PS->CurrentNodeID);
+		}
+	}
+
 	// 自动进入目标节点
 	if (PendingEnterNode)
 	{
@@ -833,9 +851,20 @@ void ALFPWorldMapPlayerController::OnTownBuildingRequested(ELFPTownBuildingType 
 		{
 			TownWidget->SetVisibility(ESlateVisibility::Hidden);
 		}
-		if (SelectedNode && SelectedNode->NodeType == ELFPWorldNodeType::WNT_Town)
+		if (CurrentNode)
 		{
-			OpenShop(SelectedNode, true);
+			OpenShop(CurrentNode, true);
+		}
+		break;
+
+	case ELFPTownBuildingType::TBT_HireMarket:
+		if (TownWidget)
+		{
+			TownWidget->SetVisibility(ESlateVisibility::Hidden);
+		}
+		if (CurrentNode)
+		{
+			OpenHireMarket(CurrentNode, true);
 		}
 		break;
 
@@ -931,6 +960,7 @@ void ALFPWorldMapPlayerController::OnTeleportTargetSelected(int32 TargetNodeID)
 	ALFPWorldMapNode* TargetNode = Manager->GetNode(TargetNodeID);
 	if (TargetNode)
 	{
+		CurrentNode = TargetNode;
 		SelectedNode = TargetNode;
 		OpenTown(TargetNode);
 	}

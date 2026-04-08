@@ -2,6 +2,7 @@
 0,0,601.846191,-524.273987,WNT_Battle,,1,True,0,0,,,None,None,
 1,1,71.214951,7.245561,WNT_HireMarket,,1,True,0,0,,,None,Test_HireMarket_01,
 2,2,168.154022,1032.969238,WNT_Battle,test,4,True,0,0,,,None,None,
-4,4,417.081390,112.303909,WNT_Town,,1,True,0,0,,EvolutionTower,None,None,
+4,4,417.081390,112.303909,WNT_Town,,1,True,0,0,,Shop;HireMarket;EvolutionTower;Teleport,Test_Shop_02,Test_HireMarket_01,
 5,5,548.347900,996.212891,WNT_Shop,,1,True,0,0,,,Test_Shop_01,None,
 6,6,-218.166504,478.988373,WNT_EvolutionTower,,1,True,0,0,,,None,None,
+7,7,-251.336792,1231.172974,WNT_Town,,1,True,0,0,,Teleport,None,None,

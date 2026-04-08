@@ -40,6 +40,7 @@ protected:
 private:
 	// 各建筑按钮点击回调
 	UFUNCTION() void OnShopClicked();
+	UFUNCTION() void OnHireMarketClicked();
 	UFUNCTION() void OnEvolutionTowerClicked();
 	UFUNCTION() void OnTeleportClicked();
 	UFUNCTION() void OnQuestNPCClicked();
@@ -60,6 +61,10 @@ protected:
 	// 商店
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
 	TObjectPtr<UButton> Button_Shop;
+
+	// 雇佣商店
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+	TObjectPtr<UButton> Button_HireMarket;
 
 	// 升华塔
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))

@@ -13,6 +13,7 @@ enum class ELFPTownBuildingType : uint8
 	TBT_Teleport        UMETA(DisplayName = "传送阵"),
 	TBT_QuestNPC        UMETA(DisplayName = "任务NPC"),
 	TBT_SkillNode       UMETA(DisplayName = "技能节点"),
+	TBT_HireMarket      UMETA(DisplayName = "雇佣市场"),
 };
 
 // 单个建筑配置
@@ -55,6 +56,7 @@ namespace LFPTownUtils
 			{TEXT("Teleport"), ELFPTownBuildingType::TBT_Teleport},
 			{TEXT("QuestNPC"), ELFPTownBuildingType::TBT_QuestNPC},
 			{TEXT("SkillNode"), ELFPTownBuildingType::TBT_SkillNode},
+			{TEXT("HireMarket"), ELFPTownBuildingType::TBT_HireMarket},
 		};
 		if (const ELFPTownBuildingType* Found = Map.Find(InStr))
 		{
@@ -73,6 +75,7 @@ namespace LFPTownUtils
 			{ELFPTownBuildingType::TBT_Teleport, TEXT("Teleport")},
 			{ELFPTownBuildingType::TBT_QuestNPC, TEXT("QuestNPC")},
 			{ELFPTownBuildingType::TBT_SkillNode, TEXT("SkillNode")},
+			{ELFPTownBuildingType::TBT_HireMarket, TEXT("HireMarket")},
 		};
 		if (const FString* Found = Map.Find(InType))
 		{

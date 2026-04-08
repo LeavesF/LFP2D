@@ -63,6 +63,9 @@ protected:
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
 	TObjectPtr<UWrapBox> Box_RelicList;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Relic")
+	float RelicIconSize = 60.f;
+
 private:
 	// 缓存数据源
 	UPROPERTY()

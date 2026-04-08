@@ -244,6 +244,10 @@ protected:
 
 	// ============== 状态 ==============
 
+	// 玩家当前所在的节点
+	UPROPERTY()
+	TObjectPtr<ALFPWorldMapNode> CurrentNode;
+
 	// 当前选中的节点
 	UPROPERTY()
 	TObjectPtr<ALFPWorldMapNode> SelectedNode;

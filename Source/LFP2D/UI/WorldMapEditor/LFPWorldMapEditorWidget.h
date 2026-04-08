@@ -125,6 +125,9 @@ protected:
 	TObjectPtr<UCheckBox> TownCheck_Shop;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+	TObjectPtr<UCheckBox> TownCheck_HireMarket;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
 	TObjectPtr<UCheckBox> TownCheck_EvolutionTower;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))

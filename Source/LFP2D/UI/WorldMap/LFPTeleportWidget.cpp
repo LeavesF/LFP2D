@@ -44,7 +44,7 @@ void ULFPTeleportWidget::Setup(const TArray<ALFPWorldMapNode*>& TargetNodes)
 		}
 
 		Btn->AddChild(Label);
-		Btn->OnClicked.AddDynamic(this, &ULFPTeleportWidget::OnDestinationClicked);
+		Btn->OnPressed.AddDynamic(this, &ULFPTeleportWidget::OnDestinationClicked);
 
 		Box_DestinationList->AddChild(Btn);
 		DestinationButtons.Add(Btn);

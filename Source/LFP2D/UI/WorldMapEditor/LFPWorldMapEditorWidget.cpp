@@ -33,6 +33,7 @@ void ULFPWorldMapEditorWidget::NativeConstruct()
 
 	// 城镇建筑勾选框
 	if (TownCheck_Shop) TownCheck_Shop->OnCheckStateChanged.AddDynamic(this, &ULFPWorldMapEditorWidget::OnTownBuildingCheckChanged);
+	if (TownCheck_HireMarket) TownCheck_HireMarket->OnCheckStateChanged.AddDynamic(this, &ULFPWorldMapEditorWidget::OnTownBuildingCheckChanged);
 	if (TownCheck_EvolutionTower) TownCheck_EvolutionTower->OnCheckStateChanged.AddDynamic(this, &ULFPWorldMapEditorWidget::OnTownBuildingCheckChanged);
 	if (TownCheck_Teleport) TownCheck_Teleport->OnCheckStateChanged.AddDynamic(this, &ULFPWorldMapEditorWidget::OnTownBuildingCheckChanged);
 	if (TownCheck_QuestNPC) TownCheck_QuestNPC->OnCheckStateChanged.AddDynamic(this, &ULFPWorldMapEditorWidget::OnTownBuildingCheckChanged);
@@ -207,6 +208,7 @@ void ULFPWorldMapEditorWidget::SyncTownBuildingChecksToBrush()
 
 	TArray<FString> Parts;
 	if (TownCheck_Shop && TownCheck_Shop->IsChecked()) Parts.Add(TEXT("Shop"));
+	if (TownCheck_HireMarket && TownCheck_HireMarket->IsChecked()) Parts.Add(TEXT("HireMarket"));
 	if (TownCheck_EvolutionTower && TownCheck_EvolutionTower->IsChecked()) Parts.Add(TEXT("EvolutionTower"));
 	if (TownCheck_Teleport && TownCheck_Teleport->IsChecked()) Parts.Add(TEXT("Teleport"));
 	if (TownCheck_QuestNPC && TownCheck_QuestNPC->IsChecked()) Parts.Add(TEXT("QuestNPC"));
@@ -306,16 +308,18 @@ void ULFPWorldMapEditorWidget::UpdateNodeInfo(ALFPWorldMapNode* Node)
 	}
 	else if (Node->NodeType == ELFPWorldNodeType::WNT_Town)
 	{
-		Info += FString::Printf(TEXT(" | 建筑: %s | 商店: %s"), *Node->TownBuildingList, *Node->ShopID.ToString());
+		Info += FString::Printf(TEXT(" | 建筑: %s | 商店: %s | 雇佣市场: %s"), *Node->TownBuildingList, *Node->ShopID.ToString(), *Node->HireMarketID.ToString());
 
 		// 同步勾选框状态
 		FString BL = Node->TownBuildingList;
 		if (TownCheck_Shop) TownCheck_Shop->SetIsChecked(BL.Contains(TEXT("Shop")));
+		if (TownCheck_HireMarket) TownCheck_HireMarket->SetIsChecked(BL.Contains(TEXT("HireMarket")));
 		if (TownCheck_EvolutionTower) TownCheck_EvolutionTower->SetIsChecked(BL.Contains(TEXT("EvolutionTower")));
 		if (TownCheck_Teleport) TownCheck_Teleport->SetIsChecked(BL.Contains(TEXT("Teleport")));
 		if (TownCheck_QuestNPC) TownCheck_QuestNPC->SetIsChecked(BL.Contains(TEXT("QuestNPC")));
 		if (TownCheck_SkillNode) TownCheck_SkillNode->SetIsChecked(BL.Contains(TEXT("SkillNode")));
 		if (ShopIDInput) ShopIDInput->SetText(FText::FromName(Node->ShopID));
+		if (HireMarketIDInput) HireMarketIDInput->SetText(FText::FromName(Node->HireMarketID));
 	}
 	else if (Node->NodeType == ELFPWorldNodeType::WNT_Shop)
 	{

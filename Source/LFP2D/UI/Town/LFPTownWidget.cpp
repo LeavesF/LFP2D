@@ -7,6 +7,7 @@ void ULFPTownWidget::NativeOnInitialized()
 	Super::NativeOnInitialized();
 
 	if (Button_Shop) Button_Shop->OnClicked.AddDynamic(this, &ULFPTownWidget::OnShopClicked);
+	if (Button_HireMarket) Button_HireMarket->OnClicked.AddDynamic(this, &ULFPTownWidget::OnHireMarketClicked);
 	if (Button_EvolutionTower) Button_EvolutionTower->OnClicked.AddDynamic(this, &ULFPTownWidget::OnEvolutionTowerClicked);
 	if (Button_Teleport) Button_Teleport->OnClicked.AddDynamic(this, &ULFPTownWidget::OnTeleportClicked);
 	if (Button_QuestNPC) Button_QuestNPC->OnClicked.AddDynamic(this, &ULFPTownWidget::OnQuestNPCClicked);
@@ -26,6 +27,9 @@ void ULFPTownWidget::Setup(const TArray<ELFPTownBuildingType>& AvailableBuilding
 		{
 		case ELFPTownBuildingType::TBT_Shop:
 			if (Button_Shop) Button_Shop->SetVisibility(ESlateVisibility::Visible);
+			break;
+		case ELFPTownBuildingType::TBT_HireMarket:
+			if (Button_HireMarket) Button_HireMarket->SetVisibility(ESlateVisibility::Visible);
 			break;
 		case ELFPTownBuildingType::TBT_EvolutionTower:
 			if (Button_EvolutionTower) Button_EvolutionTower->SetVisibility(ESlateVisibility::Visible);
@@ -48,6 +52,7 @@ void ULFPTownWidget::Setup(const TArray<ELFPTownBuildingType>& AvailableBuilding
 void ULFPTownWidget::HideAllBuildings()
 {
 	if (Button_Shop) Button_Shop->SetVisibility(ESlateVisibility::Collapsed);
+	if (Button_HireMarket) Button_HireMarket->SetVisibility(ESlateVisibility::Collapsed);
 	if (Button_EvolutionTower) Button_EvolutionTower->SetVisibility(ESlateVisibility::Collapsed);
 	if (Button_Teleport) Button_Teleport->SetVisibility(ESlateVisibility::Collapsed);
 	if (Button_QuestNPC) Button_QuestNPC->SetVisibility(ESlateVisibility::Collapsed);
@@ -57,6 +62,11 @@ void ULFPTownWidget::HideAllBuildings()
 void ULFPTownWidget::OnShopClicked()
 {
 	OnBuildingRequested.Broadcast(ELFPTownBuildingType::TBT_Shop);
+}
+
+void ULFPTownWidget::OnHireMarketClicked()
+{
+	OnBuildingRequested.Broadcast(ELFPTownBuildingType::TBT_HireMarket);
 }
 
 void ULFPTownWidget::OnEvolutionTowerClicked()

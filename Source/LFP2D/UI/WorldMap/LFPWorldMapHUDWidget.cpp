@@ -113,7 +113,7 @@ void ULFPWorldMapHUDWidget::RefreshRelicList()
 			RelicIcon->SetBrushFromTexture(Definition.Icon);
 		}
 
-		RelicIcon->SetDesiredSizeOverride(FVector2D(48.0f, 48.0f));
+		RelicIcon->SetDesiredSizeOverride(FVector2D(48.f, 48.f));
 
 		// 设置 Tooltip：遗物名称 + 描述
 		FString TooltipStr = Definition.DisplayName.ToString();
@@ -124,6 +124,8 @@ void ULFPWorldMapHUDWidget::RefreshRelicList()
 		RelicIcon->SetToolTipText(FText::FromString(TooltipStr));
 
 		Box_RelicList->AddChild(RelicIcon);
+
+		RelicIcon->SetDesiredSizeOverride(FVector2D(RelicIconSize, RelicIconSize));
 	}
 }
 
