@@ -5,6 +5,247 @@
 #include "LFP2D/Shop/LFPHireMarketDataAsset.h"
 #include "Kismet/GameplayStatics.h"
 #include "Camera/PlayerCameraManager.h"
+#include "Misc/FileHelper.h"
+#include "Misc/Paths.h"
+#include "HAL/FileManager.h"
+#include "JsonObjectConverter.h"
+
+// ============== 保存/加载系统 ==============
+
+FString ULFPGameInstance::GetSaveSlotName(int32 SlotIndex) const
+{
+	return FString::Printf(TEXT("SaveSlot_%d.sav"), SlotIndex);
+}
+
+bool ULFPGameInstance::SaveGame(int32 SlotIndex, const FString& SaveName)
+{
+	if (SlotIndex < 1)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("SaveGame: SlotIndex must be >= 1"));
+		return false;
+	}
+
+	FLFPSaveData SaveData = PackSaveData(SaveName);
+
+	// Serialize to JSON
+	FString JsonString;
+	FJsonObjectConverter::UStructToJsonObjectString(SaveData, JsonString);
+
+	FString SaveDir = FPaths::ProjectSavedDir() / TEXT("SaveGames");
+	if (!FPaths::DirectoryExists(SaveDir))
+	{
+		IFileManager::Get().MakeDirectory(*SaveDir, true);
+	}
+
+	FString FilePath = SaveDir / GetSaveSlotName(SlotIndex);
+	bool bSuccess = FFileHelper::SaveStringToFile(JsonString, *FilePath,
+		FFileHelper::EEncodingOptions::ForceUTF8WithoutBOM);
+
+	if (bSuccess)
+	{
+		UE_LOG(LogTemp, Log, TEXT("Game saved to slot %d: %s"), SlotIndex, *SaveName);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Save failed for slot %d"), SlotIndex);
+	}
+	return bSuccess;
+}
+
+bool ULFPGameInstance::LoadGame(int32 SlotIndex)
+{
+	if (SlotIndex < 1)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("LoadGame: SlotIndex must be >= 1"));
+		return false;
+	}
+
+	FString SaveDir = FPaths::ProjectSavedDir() / TEXT("SaveGames");
+	FString FilePath = SaveDir / GetSaveSlotName(SlotIndex);
+
+	if (!FPaths::FileExists(FilePath))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("LoadGame: No save in slot %d"), SlotIndex);
+		return false;
+	}
+
+	FString JsonString;
+	if (!FFileHelper::LoadFileToString(JsonString, *FilePath))
+	{
+		UE_LOG(LogTemp, Error, TEXT("LoadGame: Failed to read save file %s"), *FilePath);
+		return false;
+	}
+
+	FLFPSaveData SaveData;
+	FJsonObjectConverter::JsonObjectStringToUStruct(JsonString, &SaveData);
+
+	UnpackSaveData(SaveData);
+
+	UE_LOG(LogTemp, Log, TEXT("Loaded game from slot %d: %s, Turn %d"),
+		SlotIndex, *SaveData.SaveName, SaveData.WorldMapSnapshot.CurrentTurn);
+	return true;
+}
+
+FLFPSaveSlotInfo ULFPGameInstance::GetSaveSlotInfo(int32 SlotIndex) const
+{
+	FLFPSaveSlotInfo Info;
+	Info.SlotIndex = SlotIndex;
+
+	FString SaveDir = FPaths::ProjectSavedDir() / TEXT("SaveGames");
+	FString FilePath = SaveDir / GetSaveSlotName(SlotIndex);
+
+	if (!FPaths::FileExists(FilePath))
+	{
+		return Info;
+	}
+
+	FString JsonString;
+	if (FFileHelper::LoadFileToString(JsonString, *FilePath))
+	{
+		FLFPSaveData SaveData;
+		FJsonObjectConverter::JsonObjectStringToUStruct(JsonString, &SaveData);
+
+		Info.SaveName = SaveData.SaveName;
+		Info.Timestamp = SaveData.Timestamp;
+		Info.WorldMapName = SaveData.WorldMapSnapshot.WorldMapName;
+		Info.CurrentTurn = SaveData.WorldMapSnapshot.CurrentTurn;
+		Info.bIsValid = true;
+	}
+
+	return Info;
+}
+
+TArray<FLFPSaveSlotInfo> ULFPGameInstance::GetValidSaveSlots() const
+{
+	TArray<FLFPSaveSlotInfo> Slots;
+	for (int32 i = 1; i <= 10; i++)
+	{
+		FLFPSaveSlotInfo Info = GetSaveSlotInfo(i);
+		if (Info.bIsValid)
+		{
+			Slots.Add(Info);
+		}
+	}
+	return Slots;
+}
+
+FLFPSaveSlotInfo ULFPGameInstance::GetLatestSaveSlotInfo() const
+{
+	FLFPSaveSlotInfo Latest;
+	TArray<FLFPSaveSlotInfo> Slots = GetValidSaveSlots();
+	for (const FLFPSaveSlotInfo& Info : Slots)
+	{
+		if (!Latest.bIsValid || Info.Timestamp > Latest.Timestamp)
+		{
+			Latest = Info;
+		}
+	}
+	return Latest;
+}
+
+bool ULFPGameInstance::DoesSaveExist(int32 SlotIndex) const
+{
+	if (SlotIndex < 1) return false;
+	FString SaveDir = FPaths::ProjectSavedDir() / TEXT("SaveGames");
+	FString FilePath = SaveDir / GetSaveSlotName(SlotIndex);
+	return FPaths::FileExists(FilePath);
+}
+
+bool ULFPGameInstance::DeleteSave(int32 SlotIndex)
+{
+	if (SlotIndex < 1) return false;
+
+	FString SaveDir = FPaths::ProjectSavedDir() / TEXT("SaveGames");
+	FString FilePath = SaveDir / GetSaveSlotName(SlotIndex);
+	if (FPaths::FileExists(FilePath))
+	{
+		IFileManager::Get().Delete(*FilePath);
+		UE_LOG(LogTemp, Log, TEXT("Deleted save slot %d"), SlotIndex);
+		return true;
+	}
+	return false;
+}
+
+FLFPSaveData ULFPGameInstance::PackSaveData(const FString& SaveName) const
+{
+	FLFPSaveData Data;
+	Data.SaveName = SaveName;
+	Data.Timestamp = FDateTime::Now();
+	Data.WorldMapSnapshot = WorldMapSnapshot;
+	Data.Gold = Gold;
+	Data.Food = Food;
+	Data.PartyUnits = PartyUnits;
+	Data.ReserveUnits = ReserveUnits;
+	Data.OwnedRelicIDs = OwnedRelicIDs.Array();
+
+	Data.PurchasedHireMarketEntries = PurchasedHireMarketEntries;
+
+	return Data;
+}
+
+void ULFPGameInstance::UnpackSaveData(const FLFPSaveData& Data)
+{
+	WorldMapSnapshot = Data.WorldMapSnapshot;
+	WorldMapSnapshot.bIsValid = true;
+
+	Gold = Data.Gold;
+	Food = Data.Food;
+	OnResourceChanged.Broadcast(Gold, Food);
+
+	PartyUnits = Data.PartyUnits;
+	ReserveUnits = Data.ReserveUnits;
+
+	OwnedRelicIDs.Empty();
+	for (const FName& RelicID : Data.OwnedRelicIDs)
+	{
+		OwnedRelicIDs.Add(RelicID);
+	}
+	OnOwnedRelicsChanged.Broadcast();
+
+	PurchasedHireMarketEntries = Data.PurchasedHireMarketEntries;
+
+	PendingBattleRequest = FLFPBattleRequest();
+	PendingBattleResult = FLFPBattleResult();
+
+	UE_LOG(LogTemp, Log, TEXT("Save data loaded: %s, Gold=%d, Food=%d, Party=%d, Reserve=%d"),
+		*Data.SaveName, Gold, Food, PartyUnits.Num(), ReserveUnits.Num());
+}
+
+void ULFPGameInstance::ResetForNewGame()
+{
+	WorldMapSnapshot = FLFPWorldMapSnapshot();
+	Gold = 0;
+	Food = 0;
+	OnResourceChanged.Broadcast(Gold, Food);
+
+	PartyUnits.Empty();
+	ReserveUnits.Empty();
+	OwnedRelicIDs.Empty();
+	OnOwnedRelicsChanged.Broadcast();
+	PurchasedHireMarketEntries.Empty();
+	PendingBattleRequest = FLFPBattleRequest();
+	PendingBattleResult = FLFPBattleResult();
+
+	UE_LOG(LogTemp, Log, TEXT("Game state reset for new game"));
+}
+
+void ULFPGameInstance::StartNewWorldMapGame(const FString& WorldMapName, int32 StartNodeID)
+{
+	ResetForNewGame();
+
+	// Set initial world map snapshot for the world map level to load
+	FLFPWorldMapSnapshot InitialSnapshot;
+	InitialSnapshot.WorldMapName = WorldMapName;
+	InitialSnapshot.CurrentNodeID = StartNodeID;
+	InitialSnapshot.CurrentTurn = 0;
+	InitialSnapshot.bIsValid = true;
+	WorldMapSnapshot = InitialSnapshot;
+
+	UE_LOG(LogTemp, Log, TEXT("Started new world map game: %s, StartNode=%d"),
+		*WorldMapName, StartNodeID);
+}
+
+// ============== 战斗请求/结果 ==============
 
 void ULFPGameInstance::SetBattleRequest(const FLFPBattleRequest& Request)
 {
@@ -271,8 +512,14 @@ bool ULFPGameInstance::HasPurchasedHireMarketUnit(FName HireMarketID, FName Unit
 		return false;
 	}
 
-	const TSet<FName>* PurchasedUnits = PurchasedHireMarketUnitMap.Find(HireMarketID);
-	return PurchasedUnits && PurchasedUnits->Contains(UnitTypeID);
+	for (const FString& Entry : PurchasedHireMarketEntries)
+	{
+		if (Entry == FString::Printf(TEXT("%s=%s"), *HireMarketID.ToString(), *UnitTypeID.ToString()))
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 bool ULFPGameInstance::TryPurchaseHireMarketUnit(FName HireMarketID, FName UnitTypeID, int32 Price, FLFPUnitEntry& OutUnit)
@@ -294,7 +541,11 @@ bool ULFPGameInstance::TryPurchaseHireMarketUnit(FName HireMarketID, FName UnitT
 		return false;
 	}
 
-	PurchasedHireMarketUnitMap.FindOrAdd(HireMarketID).Add(UnitTypeID);
+	FString NewEntry = FString::Printf(TEXT("%s=%s"), *HireMarketID.ToString(), *UnitTypeID.ToString());
+	if (!PurchasedHireMarketEntries.Contains(NewEntry))
+	{
+		PurchasedHireMarketEntries.Add(NewEntry);
+	}
 	UE_LOG(LogTemp, Log, TEXT("雇佣市场购买成功: 市场 %s, 单位 %s"), *HireMarketID.ToString(), *UnitTypeID.ToString());
 	return true;
 }

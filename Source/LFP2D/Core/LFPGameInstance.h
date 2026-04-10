@@ -123,6 +123,66 @@ struct FLFPWorldMapSnapshot
 	bool bIsValid = false;
 };
 
+// 保存槽信息
+USTRUCT(BlueprintType)
+struct FLFPSaveSlotInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Save")
+	int32 SlotIndex = 0;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Save")
+	FString SaveName;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Save")
+	FDateTime Timestamp;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Save")
+	FString WorldMapName;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Save")
+	int32 CurrentTurn = 0;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Save")
+	bool bIsValid = false;
+};
+
+// 存档数据
+USTRUCT(BlueprintType)
+struct FLFPSaveData
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, Category = "Save")
+	FString SaveName;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Save")
+	FDateTime Timestamp;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Save")
+	FLFPWorldMapSnapshot WorldMapSnapshot;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Save")
+	int32 Gold = 0;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Save")
+	int32 Food = 0;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Save")
+	TArray<FLFPUnitEntry> PartyUnits;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Save")
+	TArray<FLFPUnitEntry> ReserveUnits;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Save")
+	TArray<FName> OwnedRelicIDs;
+
+	// 雇佣市场已购买（扁平化存储，Key=Value 对）
+	UPROPERTY(BlueprintReadWrite, Category = "Save")
+	TArray<FString> PurchasedHireMarketEntries;
+};
+
 /**
  * 游戏实例：跨关卡生命周期
  * 负责世界地图 ↔ 战斗场景之间的状态传递
@@ -133,6 +193,50 @@ class LFP2D_API ULFPGameInstance : public UGameInstance
 	GENERATED_BODY()
 
 public:
+	// ============== 保存/加载 ==============
+
+	// 保存游戏到指定槽位（1-based）
+	UFUNCTION(BlueprintCallable, Category = "Save System")
+	bool SaveGame(int32 SlotIndex, const FString& SaveName);
+
+	// 从指定槽位加载游戏
+	UFUNCTION(BlueprintCallable, Category = "Save System")
+	bool LoadGame(int32 SlotIndex);
+
+	// 获取槽位信息
+	UFUNCTION(BlueprintCallable, Category = "Save System")
+	FLFPSaveSlotInfo GetSaveSlotInfo(int32 SlotIndex) const;
+
+	// 获取所有有效槽位列表
+	UFUNCTION(BlueprintCallable, Category = "Save System")
+	TArray<FLFPSaveSlotInfo> GetValidSaveSlots() const;
+
+	// 获取最近一次存档
+	UFUNCTION(BlueprintCallable, Category = "Save System")
+	FLFPSaveSlotInfo GetLatestSaveSlotInfo() const;
+
+	// 检查槽位是否有存档
+	UFUNCTION(BlueprintPure, Category = "Save System")
+	bool DoesSaveExist(int32 SlotIndex) const;
+
+	// 删除指定槽位存档
+	UFUNCTION(BlueprintCallable, Category = "Save System")
+	bool DeleteSave(int32 SlotIndex);
+
+	// 将当前游戏状态打包为保存数据
+	FLFPSaveData PackSaveData(const FString& SaveName) const;
+
+	// 从保存数据解包到当前游戏状态
+	void UnpackSaveData(const FLFPSaveData& Data);
+
+	// 重置所有游戏状态为新游戏
+	UFUNCTION(BlueprintCallable, Category = "Save System")
+	void ResetForNewGame();
+
+	// 开始指定世界地图的新游戏
+	UFUNCTION(BlueprintCallable, Category = "Save System")
+	void StartNewWorldMapGame(const FString& WorldMapName, int32 StartNodeID = 0);
+
 	// ============== 战斗请求/结果 ==============
 
 	// 设置战斗请求（世界地图调用，进入战斗前）
@@ -190,8 +294,6 @@ public:
 	// 战斗关卡名（蓝图中配置，默认值）
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Scene Transition")
 	FString DefaultBattleLevelName = TEXT("Test_Fight");
-
-	// ============== 编队系统 ==============
 
 	// ============== 资源系统 ==============
 
@@ -283,8 +385,9 @@ public:
 
 	// ============== 雇佣市场 ==============
 
-	// 已购买的雇佣市场单位（HireMarketID -> UnitTypeID 集合）
-	TMap<FName, TSet<FName>> PurchasedHireMarketUnitMap;
+	// 已购买的雇佣市场单位（扁平化存储："HireMarketID=UnitTypeID" 格式）
+	UPROPERTY()
+	TArray<FString> PurchasedHireMarketEntries;
 
 	// 查找雇佣市场定义
 	UFUNCTION(BlueprintPure, Category = "HireMarket")
@@ -366,6 +469,8 @@ public:
 		bool bSourceBIsParty, int32 SourceBIndex, FName TargetTypeID);
 
 protected:
+	FString GetSaveSlotName(int32 SlotIndex) const;
+
 	// 待处理的战斗请求
 	UPROPERTY()
 	FLFPBattleRequest PendingBattleRequest;
