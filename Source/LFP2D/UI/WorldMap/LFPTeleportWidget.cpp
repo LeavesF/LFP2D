@@ -4,6 +4,18 @@
 #include "Components/TextBlock.h"
 #include "Components/VerticalBox.h"
 
+// ============== 路由对象 ==============
+
+void ULFPButtonClickRouter::OnButtonClicked()
+{
+	if (OwnerWidget)
+	{
+		OwnerWidget->HandleDestinationSelected(NodeID);
+	}
+}
+
+// ============== TeleportWidget ==============
+
 void ULFPTeleportWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
@@ -22,7 +34,7 @@ void ULFPTeleportWidget::Setup(const TArray<ALFPWorldMapNode*>& TargetNodes)
 		}
 	}
 	DestinationButtons.Empty();
-	ButtonToNodeIDMap.Empty();
+	ClickRouters.Empty();
 
 	if (!Box_DestinationList) return;
 
@@ -43,12 +55,16 @@ void ULFPTeleportWidget::Setup(const TArray<ALFPWorldMapNode*>& TargetNodes)
 			Label->SetText(FText::FromString(FString::Printf(TEXT("城镇 %d"), Node->NodeID)));
 		}
 
-		Btn->AddChild(Label);
-		Btn->OnPressed.AddDynamic(this, &ULFPTeleportWidget::OnDestinationClicked);
+		// 创建路由对象，携带 NodeID，绑定到按钮的 OnClicked
+		ULFPButtonClickRouter* Router = NewObject<ULFPButtonClickRouter>(this);
+		Router->NodeID = Node->NodeID;
+		Router->OwnerWidget = this;
+		Btn->OnClicked.AddDynamic(Router, &ULFPButtonClickRouter::OnButtonClicked);
 
+		Btn->AddChild(Label);
 		Box_DestinationList->AddChild(Btn);
 		DestinationButtons.Add(Btn);
-		ButtonToNodeIDMap.Add(Btn, Node->NodeID);
+		ClickRouters.Add(Router);
 	}
 
 	if (TargetNodes.Num() == 0 && Text_Title)
@@ -61,17 +77,9 @@ void ULFPTeleportWidget::Setup(const TArray<ALFPWorldMapNode*>& TargetNodes)
 	}
 }
 
-void ULFPTeleportWidget::OnDestinationClicked()
+void ULFPTeleportWidget::HandleDestinationSelected(int32 NodeID)
 {
-	// 查找被点击的按钮
-	for (const auto& Pair : ButtonToNodeIDMap)
-	{
-		if (Pair.Key && Pair.Key->IsPressed())
-		{
-			OnTeleportTargetSelected.Broadcast(Pair.Value);
-			return;
-		}
-	}
+	OnTeleportTargetSelected.Broadcast(NodeID);
 }
 
 void ULFPTeleportWidget::OnCloseClicked()
