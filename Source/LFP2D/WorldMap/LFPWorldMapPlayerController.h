@@ -16,6 +16,7 @@ class ULFPHireMarketWidget;
 class ULFPTownWidget;
 class ULFPTeleportWidget;
 class ULFPWorldMapHUDWidget;
+class ULFPWorldMapSystemMenuWidget;
 class UInputMappingContext;
 class UInputAction;
 
@@ -43,6 +44,7 @@ public:
 	void OnCancelAction(const FInputActionValue& Value);
 	void OnToggleEditorAction(const FInputActionValue& Value);
 	void OnToggleHUDAction(const FInputActionValue& Value);
+	void OnToggleSystemMenuAction(const FInputActionValue& Value);
 
 	// 相机操作
 	void OnCameraPan(const FInputActionValue& Value);
@@ -107,6 +109,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* ToggleHUDAction;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* ToggleSystemMenuAction;
 
 	// ============== 世界地图编辑器 ==============
 
@@ -195,6 +200,39 @@ protected:
 	UFUNCTION()
 	void OnTeleportWidgetClosed();
 
+	// ============== 世界地图系统菜单 ==============
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<ULFPWorldMapSystemMenuWidget> WorldMapSystemMenuWidgetClass;
+
+	UPROPERTY()
+	TObjectPtr<ULFPWorldMapSystemMenuWidget> WorldMapSystemMenuWidget;
+
+	void ToggleSystemMenu();
+	void OpenSystemMenu();
+	void CloseSystemMenu();
+	bool CanOpenSystemMenu() const;
+	void RefreshWorldMapSnapshotBeforeSave();
+	FString BuildAutoSaveName() const;
+
+	UFUNCTION()
+	void OnSystemMenuClosed();
+
+	UFUNCTION()
+	void OnSystemMenuResumeRequested();
+
+	UFUNCTION()
+	void OnSystemMenuSaveSlotSelected(int32 SlotIndex);
+
+	UFUNCTION()
+	void OnSystemMenuLoadSlotSelected(int32 SlotIndex);
+
+	UFUNCTION()
+	void OnSystemMenuReturnToMainMenuRequested();
+
+	UFUNCTION()
+	void OnSystemMenuQuitRequested();
+
 	// ============== 世界地图 HUD ==============
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
@@ -264,6 +302,9 @@ protected:
 
 	// 当前雇佣市场关闭后是否返回城镇
 	bool bReturnToTownAfterHireMarketClose = false;
+
+	// 世界地图系统菜单是否打开
+	bool bIsSystemMenuOpen = false;
 
 	// 棋子移动完成回调
 	UFUNCTION()

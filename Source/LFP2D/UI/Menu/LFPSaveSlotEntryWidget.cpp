@@ -1,27 +1,35 @@
 #include "LFP2D/UI/Menu/LFPSaveSlotEntryWidget.h"
-#include "Components/Button.h"
+#include "LFP2D/UI/Menu/LFPSaveSlotListItem.h"
 #include "Components/TextBlock.h"
 
-void ULFPSaveSlotEntryWidget::NativeConstruct()
+void ULFPSaveSlotEntryWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 {
-	Super::NativeConstruct();
+	IUserObjectListEntry::NativeOnListItemObjectSet(ListItemObject);
 
-	if (SlotButton)
+	if (!Text_SlotInfo) return;
+
+	ULFPSaveSlotListItem* Item = Cast<ULFPSaveSlotListItem>(ListItemObject);
+	if (!Item)
 	{
-		SlotButton->OnClicked.AddDynamic(this, &ULFPSaveSlotEntryWidget::OnSlotClicked);
+		Text_SlotInfo->SetText(FText::GetEmpty());
+		return;
 	}
-}
 
-void ULFPSaveSlotEntryWidget::SetSlotInfo(int32 InSlotIndex, const FText& InDisplayText)
-{
-	SlotIndex = InSlotIndex;
-	if (SlotText)
+	const FLFPSaveSlotInfo& Info = Item->SlotInfo;
+	FString DisplayText;
+	if (Info.bIsValid)
 	{
-		SlotText->SetText(InDisplayText);
+		DisplayText = FString::Printf(TEXT("Slot %d: %s\n%s | Turn %d\n%s"),
+			Info.SlotIndex,
+			*Info.SaveName,
+			*Info.WorldMapName,
+			Info.CurrentTurn,
+			*Info.Timestamp.ToString());
 	}
-}
+	else
+	{
+		DisplayText = FString::Printf(TEXT("Slot %d: 空"), Info.SlotIndex);
+	}
 
-void ULFPSaveSlotEntryWidget::OnSlotClicked()
-{
-	OnSlotSelected.Broadcast(SlotIndex);
+	Text_SlotInfo->SetText(FText::FromString(DisplayText));
 }

@@ -245,6 +245,24 @@ void ULFPGameInstance::StartNewWorldMapGame(const FString& WorldMapName, int32 S
 		*WorldMapName, StartNodeID);
 }
 
+TArray<FString> ULFPGameInstance::GetAvailableWorldMapNames()
+{
+	TArray<FString> MapNames;
+	FString Dir = FPaths::ProjectSavedDir() / TEXT("WorldMaps");
+
+	TArray<FString> FoundFiles;
+	IFileManager::Get().FindFiles(FoundFiles, *(Dir / TEXT("*_nodes.csv")), true, false);
+
+	for (const FString& File : FoundFiles)
+	{
+		FString Name = File;
+		Name.RemoveFromEnd(TEXT("_nodes.csv"));
+		MapNames.Add(Name);
+	}
+
+	return MapNames;
+}
+
 // ============== 战斗请求/结果 ==============
 
 void ULFPGameInstance::SetBattleRequest(const FLFPBattleRequest& Request)
@@ -340,6 +358,38 @@ void ULFPGameInstance::TransitionToWorldMap(const FString& WorldMapLevelName)
 		}
 
 		// 延迟后加载关卡
+		FTimerHandle TimerHandle;
+		FString CapturedLevelName = LevelName;
+		World->GetTimerManager().SetTimer(TimerHandle, [this, CapturedLevelName]()
+		{
+			bIsTransitioning = false;
+			UGameplayStatics::OpenLevel(this, FName(*CapturedLevelName));
+		}, TransitionFadeDuration, false);
+	}
+	else
+	{
+		bIsTransitioning = false;
+		UGameplayStatics::OpenLevel(this, FName(*LevelName));
+	}
+}
+
+void ULFPGameInstance::TransitionToMainMenu(const FString& MainMenuLevelName)
+{
+	if (bIsTransitioning) return;
+	bIsTransitioning = true;
+
+	FString LevelName = MainMenuLevelName.IsEmpty() ? DefaultMainMenuLevelName : MainMenuLevelName;
+	UE_LOG(LogTemp, Log, TEXT("切换到主菜单关卡: %s"), *LevelName);
+
+	UWorld* World = GetWorld();
+	if (World)
+	{
+		APlayerController* PC = World->GetFirstPlayerController();
+		if (PC && PC->PlayerCameraManager)
+		{
+			PC->PlayerCameraManager->StartCameraFade(0.f, 1.f, TransitionFadeDuration, FLinearColor::Black, false, true);
+		}
+
 		FTimerHandle TimerHandle;
 		FString CapturedLevelName = LevelName;
 		World->GetTimerManager().SetTimer(TimerHandle, [this, CapturedLevelName]()

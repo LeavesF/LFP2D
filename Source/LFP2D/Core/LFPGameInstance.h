@@ -237,6 +237,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Save System")
 	void StartNewWorldMapGame(const FString& WorldMapName, int32 StartNodeID = 0);
 
+	// 扫描 Saved/WorldMaps/ 返回可用世界地图名列表（无需 Actor 依赖）
+	UFUNCTION(BlueprintCallable, Category = "World Map")
+	static TArray<FString> GetAvailableWorldMapNames();
+
 	// ============== 战斗请求/结果 ==============
 
 	// 设置战斗请求（世界地图调用，进入战斗前）
@@ -279,6 +283,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Scene Transition")
 	void TransitionToWorldMap(const FString& WorldMapLevelName);
 
+	// 切换到主菜单（带淡出过场）
+	UFUNCTION(BlueprintCallable, Category = "Scene Transition")
+	void TransitionToMainMenu(const FString& MainMenuLevelName = TEXT(""));
+
 	// 过场动画时长（秒）
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Scene Transition")
 	float TransitionFadeDuration = 0.5f;
@@ -294,6 +302,10 @@ public:
 	// 战斗关卡名（蓝图中配置，默认值）
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Scene Transition")
 	FString DefaultBattleLevelName = TEXT("Test_Fight");
+
+	// 主菜单关卡名（蓝图中配置，默认值）
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Scene Transition")
+	FString DefaultMainMenuLevelName = TEXT("MainMenu");
 
 	// ============== 资源系统 ==============
 

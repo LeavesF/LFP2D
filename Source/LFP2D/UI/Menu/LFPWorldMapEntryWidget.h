@@ -3,16 +3,15 @@
 #include "CoreMinimal.h"
 #include "Blueprint/IUserObjectListEntry.h"
 #include "Blueprint/UserWidget.h"
-#include "LFPSaveSlotEntryWidget.generated.h"
+#include "LFPWorldMapEntryWidget.generated.h"
 
 class UTextBlock;
 
 /**
- * 存档槽列表项 Widget 基类
- * 实现 IUserObjectListEntry，绑定 ULFPSaveSlotListItem 数据
+ * 世界地图列表项 Widget 基类
  */
 UCLASS()
-class LFP2D_API ULFPSaveSlotEntryWidget : public UUserWidget, public IUserObjectListEntry
+class LFP2D_API ULFPWorldMapEntryWidget : public UUserWidget, public IUserObjectListEntry
 {
 	GENERATED_BODY()
 
@@ -20,5 +19,5 @@ protected:
 	virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
-	TObjectPtr<UTextBlock> Text_SlotInfo;
+	TObjectPtr<UTextBlock> Text_MapName;
 };

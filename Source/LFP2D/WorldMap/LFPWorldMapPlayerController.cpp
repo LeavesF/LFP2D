@@ -10,9 +10,11 @@
 #include "LFP2D/UI/WorldMap/LFPHireMarketWidget.h"
 #include "LFP2D/UI/WorldMap/LFPTeleportWidget.h"
 #include "LFP2D/UI/WorldMap/LFPWorldMapHUDWidget.h"
+#include "LFP2D/UI/WorldMap/LFPWorldMapSystemMenuWidget.h"
 #include "LFP2D/UI/Town/LFPTownWidget.h"
 #include "LFP2D/Core/LFPGameInstance.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Camera/PlayerCameraManager.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -141,8 +143,9 @@ void ALFPWorldMapPlayerController::SetupInputComponent()
 		// 编辑器切换
 		EnhancedInputComponent->BindAction(ToggleEditorAction, ETriggerEvent::Started, this, &ALFPWorldMapPlayerController::OnToggleEditorAction);
 
-		// HUD 切换
-		EnhancedInputComponent->BindAction(ToggleHUDAction, ETriggerEvent::Started, this, &ALFPWorldMapPlayerController::OnToggleHUDAction);
+			// HUD 切换
+			EnhancedInputComponent->BindAction(ToggleHUDAction, ETriggerEvent::Started, this, &ALFPWorldMapPlayerController::OnToggleHUDAction);
+			EnhancedInputComponent->BindAction(ToggleSystemMenuAction, ETriggerEvent::Started, this, &ALFPWorldMapPlayerController::OnToggleSystemMenuAction);
 	}
 }
 
@@ -150,6 +153,11 @@ void ALFPWorldMapPlayerController::SetupInputComponent()
 
 void ALFPWorldMapPlayerController::OnConfirmAction(const FInputActionValue& Value)
 {
+	if (bIsSystemMenuOpen)
+	{
+		return;
+	}
+
 	bIsDragging = false;
 	if (DragTime > DragThresholdTime)
 	{
@@ -277,6 +285,12 @@ void ALFPWorldMapPlayerController::OnConfirmAction(const FInputActionValue& Valu
 
 void ALFPWorldMapPlayerController::OnCancelAction(const FInputActionValue& Value)
 {
+	if (bIsSystemMenuOpen)
+	{
+		CloseSystemMenu();
+		return;
+	}
+
 	// 取消选中和可达高亮
 	ClearReachableHighlight();
 	if (SelectedNode)
@@ -288,6 +302,7 @@ void ALFPWorldMapPlayerController::OnCancelAction(const FInputActionValue& Value
 
 void ALFPWorldMapPlayerController::OnToggleEditorAction(const FInputActionValue& Value)
 {
+	if (bIsSystemMenuOpen) return;
 	if (!WorldMapEditorComponent) return;
 
 	WorldMapEditorComponent->ToggleEditorMode();
@@ -323,6 +338,7 @@ void ALFPWorldMapPlayerController::OnToggleEditorAction(const FInputActionValue&
 
 void ALFPWorldMapPlayerController::OnToggleHUDAction(const FInputActionValue& Value)
 {
+	if (bIsSystemMenuOpen) return;
 	if (!WorldMapHUDWidget) return;
 
 	if (WorldMapHUDWidget->GetVisibility() == ESlateVisibility::Visible)
@@ -333,6 +349,11 @@ void ALFPWorldMapPlayerController::OnToggleHUDAction(const FInputActionValue& Va
 	{
 		WorldMapHUDWidget->SetVisibility(ESlateVisibility::Visible);
 	}
+}
+
+void ALFPWorldMapPlayerController::OnToggleSystemMenuAction(const FInputActionValue& Value)
+{
+	ToggleSystemMenu();
 }
 
 void ALFPWorldMapPlayerController::TryInitializeHUD()
@@ -364,12 +385,14 @@ void ALFPWorldMapPlayerController::TryInitializeHUD()
 
 void ALFPWorldMapPlayerController::OnCameraPan(const FInputActionValue& Value)
 {
+	if (bIsSystemMenuOpen) return;
 	FVector2D PanInput = Value.Get<FVector2D>();
 	CameraOffset += FVector(PanInput.X, PanInput.Y, 0) * CameraPanSpeed * GetWorld()->GetDeltaSeconds();
 }
 
 void ALFPWorldMapPlayerController::OnCameraDragStarted(const FInputActionValue& Value)
 {
+	if (bIsSystemMenuOpen) return;
 	bIsDragging = true;
 	DragTime = 0.f;
 	GetMousePosition(DragStartPosition.X, DragStartPosition.Y);
@@ -377,6 +400,7 @@ void ALFPWorldMapPlayerController::OnCameraDragStarted(const FInputActionValue& 
 
 void ALFPWorldMapPlayerController::OnCameraDragTriggered(const FInputActionValue& Value)
 {
+	if (bIsSystemMenuOpen) return;
 	if (!bIsDragging) return;
 
 	FVector2D CurrentMousePos;
@@ -392,8 +416,224 @@ void ALFPWorldMapPlayerController::OnCameraDragCompleted(const FInputActionValue
 	bIsDragging = false;
 }
 
+void ALFPWorldMapPlayerController::ToggleSystemMenu()
+{
+	if (bIsSystemMenuOpen)
+	{
+		CloseSystemMenu();
+		return;
+	}
+
+	if (!CanOpenSystemMenu())
+	{
+		return;
+	}
+
+	OpenSystemMenu();
+}
+
+void ALFPWorldMapPlayerController::OpenSystemMenu()
+{
+	if (bIsSystemMenuOpen || !WorldMapSystemMenuWidgetClass)
+	{
+		return;
+	}
+
+	ULFPGameInstance* GI = Cast<ULFPGameInstance>(GetGameInstance());
+	if (!GI)
+	{
+		return;
+	}
+
+	if (!WorldMapSystemMenuWidget)
+	{
+		WorldMapSystemMenuWidget = CreateWidget<ULFPWorldMapSystemMenuWidget>(this, WorldMapSystemMenuWidgetClass);
+		if (WorldMapSystemMenuWidget)
+		{
+			WorldMapSystemMenuWidget->OnClosed.AddDynamic(this, &ALFPWorldMapPlayerController::OnSystemMenuClosed);
+			WorldMapSystemMenuWidget->OnResumeRequested.AddDynamic(this, &ALFPWorldMapPlayerController::OnSystemMenuResumeRequested);
+			WorldMapSystemMenuWidget->OnSaveSlotSelected.AddDynamic(this, &ALFPWorldMapPlayerController::OnSystemMenuSaveSlotSelected);
+			WorldMapSystemMenuWidget->OnLoadSlotSelected.AddDynamic(this, &ALFPWorldMapPlayerController::OnSystemMenuLoadSlotSelected);
+			WorldMapSystemMenuWidget->OnReturnToMainMenuRequested.AddDynamic(this, &ALFPWorldMapPlayerController::OnSystemMenuReturnToMainMenuRequested);
+			WorldMapSystemMenuWidget->OnQuitRequested.AddDynamic(this, &ALFPWorldMapPlayerController::OnSystemMenuQuitRequested);
+		}
+	}
+
+	if (!WorldMapSystemMenuWidget)
+	{
+		return;
+	}
+
+	WorldMapSystemMenuWidget->AddToViewport(50);
+	WorldMapSystemMenuWidget->SetVisibility(ESlateVisibility::Visible);
+	WorldMapSystemMenuWidget->Setup(GI);
+	bIsSystemMenuOpen = true;
+}
+
+void ALFPWorldMapPlayerController::CloseSystemMenu()
+{
+	if (!WorldMapSystemMenuWidget)
+	{
+		bIsSystemMenuOpen = false;
+		return;
+	}
+
+	WorldMapSystemMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
+	WorldMapSystemMenuWidget->RemoveFromParent();
+	bIsSystemMenuOpen = false;
+}
+
+bool ALFPWorldMapPlayerController::CanOpenSystemMenu() const
+{
+	ALFPWorldMapManager* Manager = GetWorldMapManager();
+	if (!Manager || Manager->IsPawnMoving())
+	{
+		return false;
+	}
+
+	if (WorldMapEditorComponent && WorldMapEditorComponent->IsEditorActive())
+	{
+		return false;
+	}
+
+	if (TownWidget && TownWidget->IsInViewport() && TownWidget->GetVisibility() == ESlateVisibility::Visible)
+	{
+		return false;
+	}
+
+	if (ShopWidget && ShopWidget->IsInViewport() && ShopWidget->GetVisibility() == ESlateVisibility::Visible)
+	{
+		return false;
+	}
+
+	if (HireMarketWidget && HireMarketWidget->IsInViewport() && HireMarketWidget->GetVisibility() == ESlateVisibility::Visible)
+	{
+		return false;
+	}
+
+	if (TeleportWidget && TeleportWidget->IsInViewport() && TeleportWidget->GetVisibility() == ESlateVisibility::Visible)
+	{
+		return false;
+	}
+
+	if (UnitMergeWidget && UnitMergeWidget->IsInViewport() && UnitMergeWidget->GetVisibility() == ESlateVisibility::Visible)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+void ALFPWorldMapPlayerController::RefreshWorldMapSnapshotBeforeSave()
+{
+	ULFPGameInstance* GI = Cast<ULFPGameInstance>(GetGameInstance());
+	ALFPWorldMapManager* Manager = GetWorldMapManager();
+	if (!GI || !Manager)
+	{
+		return;
+	}
+
+	FLFPWorldMapSnapshot Snapshot;
+	Snapshot.WorldMapName = Manager->GetCurrentWorldMapName();
+	Snapshot.bIsValid = true;
+
+	if (ULFPWorldMapPlayerState* PS = Manager->GetPlayerState())
+	{
+		Snapshot.CurrentNodeID = PS->CurrentNodeID;
+		Snapshot.CurrentTurn = PS->CurrentTurn;
+		Snapshot.VisitedNodeIDs = PS->VisitedNodeIDs;
+		Snapshot.RevealedNodeIDs = PS->RevealedNodeIDs;
+	}
+
+	for (const auto& Pair : Manager->GetNodeMap())
+	{
+		if (Pair.Value && Pair.Value->bHasBeenTriggered)
+		{
+			Snapshot.TriggeredNodeIDs.Add(Pair.Key);
+		}
+	}
+
+	GI->SaveWorldMapSnapshot(Snapshot);
+}
+
+FString ALFPWorldMapPlayerController::BuildAutoSaveName() const
+{
+	ALFPWorldMapManager* Manager = GetWorldMapManager();
+	if (!Manager)
+	{
+		return TEXT("手动存档");
+	}
+
+	if (ULFPWorldMapPlayerState* PS = Manager->GetPlayerState())
+	{
+		return FString::Printf(TEXT("%s_Turn%d"), *Manager->GetCurrentWorldMapName(), PS->CurrentTurn);
+	}
+
+	return Manager->GetCurrentWorldMapName().IsEmpty() ? TEXT("手动存档") : Manager->GetCurrentWorldMapName();
+}
+
+void ALFPWorldMapPlayerController::OnSystemMenuClosed()
+{
+	bIsSystemMenuOpen = false;
+}
+
+void ALFPWorldMapPlayerController::OnSystemMenuResumeRequested()
+{
+	CloseSystemMenu();
+}
+
+void ALFPWorldMapPlayerController::OnSystemMenuSaveSlotSelected(int32 SlotIndex)
+{
+	ULFPGameInstance* GI = Cast<ULFPGameInstance>(GetGameInstance());
+	if (!GI)
+	{
+		return;
+	}
+
+	RefreshWorldMapSnapshotBeforeSave();
+	GI->SaveGame(SlotIndex, BuildAutoSaveName());
+
+	if (WorldMapSystemMenuWidget)
+	{
+		WorldMapSystemMenuWidget->ShowSavePanel();
+	}
+}
+
+void ALFPWorldMapPlayerController::OnSystemMenuLoadSlotSelected(int32 SlotIndex)
+{
+	ULFPGameInstance* GI = Cast<ULFPGameInstance>(GetGameInstance());
+	if (!GI)
+	{
+		return;
+	}
+
+	if (GI->LoadGame(SlotIndex))
+	{
+		bIsSystemMenuOpen = false;
+		GI->TransitionToWorldMap(GI->DefaultWorldMapLevelName);
+	}
+}
+
+void ALFPWorldMapPlayerController::OnSystemMenuReturnToMainMenuRequested()
+{
+	ULFPGameInstance* GI = Cast<ULFPGameInstance>(GetGameInstance());
+	if (!GI)
+	{
+		return;
+	}
+
+	bIsSystemMenuOpen = false;
+	GI->TransitionToMainMenu();
+}
+
+void ALFPWorldMapPlayerController::OnSystemMenuQuitRequested()
+{
+	UKismetSystemLibrary::QuitGame(this, this, EQuitPreference::Quit, false);
+}
+
 void ALFPWorldMapPlayerController::OnCameraZoom(const FInputActionValue& Value)
 {
+	if (bIsSystemMenuOpen) return;
 	float ZoomDelta = Value.Get<float>();
 	CurrentZoom = FMath::Clamp(CurrentZoom - ZoomDelta * CameraZoomSpeed, MinZoomDistance, MaxZoomDistance);
 

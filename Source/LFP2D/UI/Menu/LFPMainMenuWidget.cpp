@@ -1,9 +1,9 @@
 #include "LFP2D/UI/Menu/LFPMainMenuWidget.h"
 #include "LFP2D/Core/LFPGameInstance.h"
+#include "LFP2D/UI/Menu/LFPWorldMapListItem.h"
+#include "LFP2D/UI/Menu/LFPSaveSlotListItem.h"
 #include "Components/Button.h"
-#include "Components/TextBlock.h"
-#include "Components/ComboBoxString.h"
-#include "Components/VerticalBox.h"
+#include "Components/ListView.h"
 #include "Components/CanvasPanel.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -26,17 +26,10 @@ void ULFPMainMenuWidget::NativeConstruct()
 	// Bind load game back
 	if (Btn_BackFromLoad) Btn_BackFromLoad->OnClicked.AddDynamic(this, &ULFPMainMenuWidget::OnBackFromLoadGame);
 
-	// Bind save slot buttons
-	if (Btn_Slot_1) Btn_Slot_1->OnClicked.AddDynamic(this, &ULFPMainMenuWidget::OnSlot1Clicked);
-	if (Btn_Slot_2) Btn_Slot_2->OnClicked.AddDynamic(this, &ULFPMainMenuWidget::OnSlot2Clicked);
-	if (Btn_Slot_3) Btn_Slot_3->OnClicked.AddDynamic(this, &ULFPMainMenuWidget::OnSlot3Clicked);
-	if (Btn_Slot_4) Btn_Slot_4->OnClicked.AddDynamic(this, &ULFPMainMenuWidget::OnSlot4Clicked);
-	if (Btn_Slot_5) Btn_Slot_5->OnClicked.AddDynamic(this, &ULFPMainMenuWidget::OnSlot5Clicked);
-	if (Btn_Slot_6) Btn_Slot_6->OnClicked.AddDynamic(this, &ULFPMainMenuWidget::OnSlot6Clicked);
-	if (Btn_Slot_7) Btn_Slot_7->OnClicked.AddDynamic(this, &ULFPMainMenuWidget::OnSlot7Clicked);
-	if (Btn_Slot_8) Btn_Slot_8->OnClicked.AddDynamic(this, &ULFPMainMenuWidget::OnSlot8Clicked);
-	if (Btn_Slot_9) Btn_Slot_9->OnClicked.AddDynamic(this, &ULFPMainMenuWidget::OnSlot9Clicked);
-	if (Btn_Slot_10) Btn_Slot_10->OnClicked.AddDynamic(this, &ULFPMainMenuWidget::OnSlot10Clicked);
+	if (SaveSlotListView)
+	{
+		SaveSlotListView->OnItemClicked().AddUObject(this, &ULFPMainMenuWidget::OnSaveSlotItemClicked);
+	}
 
 	// Show main menu initially
 	ShowMainMenu();
@@ -101,49 +94,50 @@ void ULFPMainMenuWidget::ShowWorldMapSelection()
 	if (Panel_WorldMapSelection) Panel_WorldMapSelection->SetVisibility(ESlateVisibility::Visible);
 	if (Panel_LoadGame) Panel_LoadGame->SetVisibility(ESlateVisibility::Hidden);
 
-	// Populate world map combo box
-	if (WorldMapComboBox)
+	if (WorldMapListView)
 	{
-		WorldMapComboBox->ClearOptions();
-		for (const FString& DisplayName : WorldMapDisplayNames)
+		WorldMapListView->ClearListItems();
+
+		TArray<FString> MapNames = ULFPGameInstance::GetAvailableWorldMapNames();
+		for (const FString& MapName : MapNames)
 		{
-			WorldMapComboBox->AddOption(DisplayName);
+			ULFPWorldMapListItem* Item = NewObject<ULFPWorldMapListItem>(this);
+			Item->MapName = MapName;
+			WorldMapListView->AddItem(Item);
 		}
-		if (WorldMapDisplayNames.Num() > 0)
+
+		const bool bHasMaps = MapNames.Num() > 0;
+		if (Btn_ConfirmWorldMap)
 		{
-			WorldMapComboBox->SetSelectedIndex(0);
+			Btn_ConfirmWorldMap->SetIsEnabled(bHasMaps);
+		}
+
+		if (bHasMaps && WorldMapListView->GetNumItems() > 0)
+		{
+			WorldMapListView->SetSelectedItem(WorldMapListView->GetItemAt(0));
 		}
 	}
 }
 
 void ULFPMainMenuWidget::OnWorldMapSelected()
 {
-	if (!WorldMapComboBox) return;
+	if (!WorldMapListView) return;
 
-	int32 SelectedIndex = WorldMapComboBox->GetSelectedIndex();
-	if (SelectedIndex < 0 || SelectedIndex >= WorldMapSaveNames.Num())
+	ULFPWorldMapListItem* SelectedItem = Cast<ULFPWorldMapListItem>(WorldMapListView->GetSelectedItem());
+	if (!SelectedItem || SelectedItem->MapName.IsEmpty())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("OnWorldMapSelected: Invalid selection index %d"), SelectedIndex);
+		UE_LOG(LogTemp, Warning, TEXT("OnWorldMapSelected: No world map selected"));
 		return;
-	}
-
-	FString WorldMapName = WorldMapSaveNames[SelectedIndex];
-	FString LevelName;
-	if (SelectedIndex < WorldMapLevelNames.Num())
-	{
-		LevelName = WorldMapLevelNames[SelectedIndex];
-	}
-	else
-	{
-		LevelName = WorldMapName;
 	}
 
 	ULFPGameInstance* GI = Cast<ULFPGameInstance>(GetGameInstance());
 	if (!GI) return;
 
-	GI->StartNewWorldMapGame(WorldMapName, DefaultStartNodeID);
+	GI->StartNewWorldMapGame(SelectedItem->MapName, DefaultStartNodeID);
 
-	UE_LOG(LogTemp, Log, TEXT("Starting new game on world map: %s, Level: %s"), *WorldMapName, *LevelName);
+	const FString LevelName = WorldMapLevelName.IsEmpty() ? GI->DefaultWorldMapLevelName : WorldMapLevelName;
+
+	UE_LOG(LogTemp, Log, TEXT("Starting new game on world map: %s, Level: %s"), *SelectedItem->MapName, *LevelName);
 	GI->TransitionToWorldMap(LevelName);
 }
 
@@ -166,43 +160,19 @@ void ULFPMainMenuWidget::ShowLoadGame()
 void ULFPMainMenuWidget::UpdateSaveSlotList()
 {
 	ULFPGameInstance* GI = Cast<ULFPGameInstance>(GetGameInstance());
-	if (!GI) return;
+	if (!GI || !SaveSlotListView) return;
 
-	// Array of text blocks for slots 1-10
-	TArray<UTextBlock*> TextBlocks = {
-		Text_Slot_1, Text_Slot_2, Text_Slot_3, Text_Slot_4, Text_Slot_5,
-		Text_Slot_6, Text_Slot_7, Text_Slot_8, Text_Slot_9, Text_Slot_10
-	};
+	SaveSlotListView->ClearListItems();
 
-	TArray<UButton*> SlotButtons = {
-		Btn_Slot_1, Btn_Slot_2, Btn_Slot_3, Btn_Slot_4, Btn_Slot_5,
-		Btn_Slot_6, Btn_Slot_7, Btn_Slot_8, Btn_Slot_9, Btn_Slot_10
-	};
-
-	for (int32 i = 0; i < 10; i++)
+	for (int32 i = 1; i <= 10; i++)
 	{
-		FLFPSaveSlotInfo Info = GI->GetSaveSlotInfo(i + 1);
-
-		// Update text
-		if (TextBlocks.IsValidIndex(i) && TextBlocks[i])
+		ULFPSaveSlotListItem* Item = NewObject<ULFPSaveSlotListItem>(this);
+		Item->SlotInfo = GI->GetSaveSlotInfo(i);
+		if (!Item->SlotInfo.bIsValid)
 		{
-			if (Info.bIsValid)
-			{
-				FString TimeStr = Info.Timestamp.ToString();
-				TextBlocks[i]->SetText(FText::FromString(FString::Printf(TEXT("Slot %d: %s\n%s | Turn %d\n%s"),
-					Info.SlotIndex, *Info.SaveName, *Info.WorldMapName, Info.CurrentTurn, *TimeStr)));
-			}
-			else
-			{
-				TextBlocks[i]->SetText(FText::FromString(FString::Printf(TEXT("Slot %d: Empty"), i + 1)));
-			}
+			Item->SlotInfo.SlotIndex = i;
 		}
-
-		// Update button enabled state (enable even if empty to allow overwriting)
-		if (SlotButtons.IsValidIndex(i) && SlotButtons[i])
-		{
-			SlotButtons[i]->SetIsEnabled(true);
-		}
+		SaveSlotListView->AddItem(Item);
 	}
 }
 
@@ -229,13 +199,13 @@ void ULFPMainMenuWidget::OnSlotClicked(int32 SlotIndex)
 	}
 }
 
-void ULFPMainMenuWidget::OnSlot1Clicked() { OnSlotClicked(1); }
-void ULFPMainMenuWidget::OnSlot2Clicked() { OnSlotClicked(2); }
-void ULFPMainMenuWidget::OnSlot3Clicked() { OnSlotClicked(3); }
-void ULFPMainMenuWidget::OnSlot4Clicked() { OnSlotClicked(4); }
-void ULFPMainMenuWidget::OnSlot5Clicked() { OnSlotClicked(5); }
-void ULFPMainMenuWidget::OnSlot6Clicked() { OnSlotClicked(6); }
-void ULFPMainMenuWidget::OnSlot7Clicked() { OnSlotClicked(7); }
-void ULFPMainMenuWidget::OnSlot8Clicked() { OnSlotClicked(8); }
-void ULFPMainMenuWidget::OnSlot9Clicked() { OnSlotClicked(9); }
-void ULFPMainMenuWidget::OnSlot10Clicked() { OnSlotClicked(10); }
+void ULFPMainMenuWidget::OnSaveSlotItemClicked(UObject* Item)
+{
+	ULFPSaveSlotListItem* SlotItem = Cast<ULFPSaveSlotListItem>(Item);
+	if (!SlotItem || !SlotItem->SlotInfo.bIsValid)
+	{
+		return;
+	}
+
+	OnSlotClicked(SlotItem->SlotInfo.SlotIndex);
+}
