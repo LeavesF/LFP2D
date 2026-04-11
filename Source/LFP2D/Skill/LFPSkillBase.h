@@ -53,8 +53,18 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Skill")
     void InitSkill(ALFPTacticsUnit* InOwner);
 
-    UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Skill")
+    UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Skill")
     void Execute(ALFPHexTile* TargetTile = nullptr);
+    virtual void Execute_Implementation(ALFPHexTile* TargetTile = nullptr);
+
+    UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Skill")
+    ALFPTacticsUnit* GetUnitOnTile(ALFPHexTile* Tile) const;
+
+    UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Skill")
+    bool IsHostileTarget(ALFPTacticsUnit* Target) const;
+
+    UFUNCTION(BlueprintCallable, Category = "Skill")
+    int32 DealOwnerRepeatedDamage(ALFPTacticsUnit* Target, int32 HitCount, float DamageScalePerHit) const;
 
     UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Skill")
     bool CanExecute(ALFPHexTile* TargetTile = nullptr);
@@ -99,6 +109,9 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Skill")
     TArray<FLFPHexCoordinates> GetReleaseRange() { return ReleaseRangeCoords; }
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Skill")
+	TArray<FLFPHexCoordinates> GetReleaseRangeInGrid();
 
     // AI 目标选择：计算对目标的仇恨值（值越高，越优先攻击）
     // Caster：使用技能的敌方单位（自身属性/位置）
@@ -147,6 +160,9 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
     TArray<FLFPHexCoordinates> ReleaseRangeCoords;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Skill")
+    TArray<FLFPHexCoordinates> ReleaseRangeInGridCoords;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
     TArray<FLFPHexCoordinates> EffectRangeCoords;

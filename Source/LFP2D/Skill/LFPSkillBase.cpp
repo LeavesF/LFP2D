@@ -27,6 +27,41 @@ void ULFPSkillBase::InitSkill(ALFPTacticsUnit* InOwner)
     }
 }
 
+void ULFPSkillBase::Execute_Implementation(ALFPHexTile* TargetTile)
+{
+}
+
+ALFPTacticsUnit* ULFPSkillBase::GetUnitOnTile(ALFPHexTile* Tile) const
+{
+    if (!Tile)
+    {
+        return nullptr;
+    }
+
+    return Tile->GetUnitOnTile();
+}
+
+bool ULFPSkillBase::IsHostileTarget(ALFPTacticsUnit* Target) const
+{
+    if (!Owner || !Target)
+    {
+        return false;
+    }
+
+    return Owner->GetAffiliation() != Target->GetAffiliation();
+}
+
+int32 ULFPSkillBase::DealOwnerRepeatedDamage(ALFPTacticsUnit* Target, int32 HitCount, float DamageScalePerHit) const
+{
+    if (!Owner || !Target || HitCount <= 0)
+    {
+        return 0;
+    }
+
+    const int32 RawDamagePerHit = FMath::Max(0, FMath::RoundToInt(Owner->GetCurrentAttack() * DamageScalePerHit));
+    return Owner->ApplyRepeatedHitDamage(Target, HitCount, RawDamagePerHit, Owner->GetAttackType());
+}
+
 bool ULFPSkillBase::CanExecute_Implementation(ALFPHexTile* TargetTile)
 {
     if (!Owner) return false;
@@ -130,6 +165,21 @@ float ULFPSkillBase::EvaluateConditionBonus_Implementation() const
 float ULFPSkillBase::GetEffectivePriority() const
 {
     return SkillPriority + EvaluateConditionBonus();
+}
+
+TArray<FLFPHexCoordinates> ULFPSkillBase::GetReleaseRangeInGrid_Implementation()
+{
+    ReleaseRangeInGridCoords.Empty();
+    for (FLFPHexCoordinates Coord : ReleaseRangeCoords)
+    {
+		FLFPHexCoordinates CoordInGrid = FLFPHexCoordinates();
+        FLFPHexCoordinates OwnerCoord = Owner->GetCurrentCoordinates();
+        CoordInGrid.Q = OwnerCoord.Q + Coord.Q;
+        CoordInGrid.R = OwnerCoord.R + Coord.R;
+        CoordInGrid.S = OwnerCoord.S + Coord.S;
+        ReleaseRangeInGridCoords.Add(CoordInGrid);
+    }
+    return ReleaseRangeInGridCoords;
 }
 
 float ULFPSkillBase::CalculateHatredValue_Implementation(ALFPTacticsUnit* Caster, ALFPTacticsUnit* Target) const

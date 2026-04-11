@@ -560,26 +560,51 @@ void ALFPTacticsUnit::InitializeHealthBar()
 	}
 }
 
-void ALFPTacticsUnit::TakeDamage(int32 Damage)
+void ALFPTacticsUnit::ReceiveTypedDamage(int32 Damage)
 {
-    if (bIsDead) return;
+    TakeTypedDamage(Damage, ELFPAttackType::AT_Physical);
+}
 
-	// 计算实际伤害（考虑防御）
-	int32 ActualDamage = FMath::Max(Damage - GetPhysicalBlock(), 1);
-	CurrentHealth = FMath::Max(CurrentHealth - ActualDamage, 0);
+int32 ALFPTacticsUnit::TakeTypedDamage(int32 Damage, ELFPAttackType DamageType)
+{
+    if (bIsDead) return 0;
 
-	// 广播血量变化事件
-	OnHealthChangedDelegate.Broadcast(CurrentHealth, GetCurrentMaxHealth());
-	OnHealthChangedWithUnitDelegate.Broadcast(this, CurrentHealth, GetCurrentMaxHealth());
+    const int32 DefenseValue = (DamageType == ELFPAttackType::AT_Magical) ? GetSpellDefense() : GetPhysicalBlock();
+    const int32 ActualDamage = FMath::Max(Damage - DefenseValue, 1);
+    CurrentHealth = FMath::Max(CurrentHealth - ActualDamage, 0);
 
-	// 蓝图事件
-	OnTakeDamage(ActualDamage);
+    OnHealthChangedDelegate.Broadcast(CurrentHealth, GetCurrentMaxHealth());
+    OnHealthChangedWithUnitDelegate.Broadcast(this, CurrentHealth, GetCurrentMaxHealth());
 
-	// 检查死亡
-	if (CurrentHealth <= 0)
-	{
-		HandleDeath();
-	}
+    OnTakeDamage(ActualDamage);
+
+    if (CurrentHealth <= 0)
+    {
+        HandleDeath();
+    }
+
+    return ActualDamage;
+}
+
+int32 ALFPTacticsUnit::ApplyRepeatedHitDamage(ALFPTacticsUnit* Target, int32 HitCount, int32 RawDamagePerHit, ELFPAttackType DamageType)
+{
+    if (!Target || HitCount <= 0 || RawDamagePerHit < 0)
+    {
+        return 0;
+    }
+
+    int32 TotalDamage = 0;
+    for (int32 HitIndex = 0; HitIndex < HitCount; ++HitIndex)
+    {
+        if (!Target->IsAlive())
+        {
+            break;
+        }
+
+        TotalDamage += Target->TakeTypedDamage(RawDamagePerHit, DamageType);
+    }
+
+    return TotalDamage;
 }
 
 void ALFPTacticsUnit::Heal(int32 Amount)
@@ -632,17 +657,13 @@ void ALFPTacticsUnit::ApplyDamageToTarget(ALFPTacticsUnit* Target)
 {
     if (!Target || Target->bIsDead) return;
 
-    // 基础伤害计算
     int32 Damage = GetCurrentAttack();
 
-    // 伤害随机浮动（10% 范围）
     float RandomFactor = FMath::RandRange(0.9f, 1.1f);
     Damage = FMath::RoundToInt(Damage * RandomFactor);
 
-    // 应用伤害
-    Target->TakeDamage(Damage);
+    Target->TakeTypedDamage(Damage, GetAttackType());
 
-    // 消耗行动力
     ConsumeMovePoints(1);
 }
 

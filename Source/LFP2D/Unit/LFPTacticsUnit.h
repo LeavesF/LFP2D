@@ -509,7 +509,13 @@ public:
 
     // 应用伤害
     UFUNCTION(BlueprintCallable, Category = "Unit Combat")
-    void TakeDamage(int32 Damage);
+    void ReceiveTypedDamage(int32 Damage);
+
+    UFUNCTION(BlueprintCallable, Category = "Unit Combat")
+    int32 TakeTypedDamage(int32 Damage, ELFPAttackType DamageType);
+
+    UFUNCTION(BlueprintCallable, Category = "Unit Combat")
+    int32 ApplyRepeatedHitDamage(ALFPTacticsUnit* Target, int32 HitCount, int32 RawDamagePerHit, ELFPAttackType DamageType);
 
     // 治疗单位
     UFUNCTION(BlueprintCallable, Category = "Unit Combat")
