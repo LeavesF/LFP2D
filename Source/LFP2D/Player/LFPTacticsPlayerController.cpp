@@ -874,7 +874,6 @@ void ALFPTacticsPlayerController::HandleSkillTargetSelecting(ULFPSkillBase* Skil
     if (!SelectedUnit || !Skill) return;
 
     // 获取技能范围内的目标格子
-    Skill->UpdateSkillRange();
     TArray<FLFPHexCoordinates> TargetTilesCoord = Skill->GetReleaseRangeInGrid();
     if (GridManager)
     {
