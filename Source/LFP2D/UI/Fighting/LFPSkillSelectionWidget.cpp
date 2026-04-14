@@ -162,10 +162,10 @@ void ULFPSkillSelectionWidget::UpdateSkillDetails(ULFPSkillBase* Skill)
     //}
 
     // 更新技能范围信息
-    FString RangeText = FString::Printf(TEXT("范围: %d-%d"),
-        Skill->Range.MinRange, Skill->Range.MaxRange);
+    FString RangeText = FString::Printf(TEXT("范围: %s"),
+        *Skill->GetReleaseRangeDescription());
 
-    if (Skill->Range.bRequireLineOfSight)
+    if (Skill->bRequireLineOfSight)
     {
         RangeText += TEXT(" (需要视线)");
     }

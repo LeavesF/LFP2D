@@ -8,8 +8,8 @@ ULFPSkill_MultipleAttacks::ULFPSkill_MultipleAttacks()
     SkillDescription = FText::FromString(TEXT("对相邻敌方单位造成多段伤害，每段独立结算减伤。"));
     ActionPointCost = 1;
     TargetType = ESkillTargetType::SingleEnemy;
-    Range.MinRange = 1;
-    Range.MaxRange = 1;
+    ReleaseRangeType = ESkillReleaseRangeType::Coverage;
+    MaxRange = 1;
 }
 
 bool ULFPSkill_MultipleAttacks::CanExecute_Implementation(ALFPHexTile* TargetTile)
