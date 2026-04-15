@@ -27,7 +27,6 @@ ALFPTacticsPlayerController::ALFPTacticsPlayerController()
     SelectedUnit = nullptr;
     SelectedTile = nullptr;
     bIsSelecting = false;
-    bIsAttacking = false;
     CameraRotationPitchAngle = 60.0f;
     CameraRotationYawAngle = 0.0f;
     bDebugEnabled = false;
@@ -114,9 +113,6 @@ void ALFPTacticsPlayerController::SetupInputComponent()
         // 选择操作
         EnhancedInputComponent->BindAction(SelectAction, ETriggerEvent::Started, this, &ALFPTacticsPlayerController::OnSelectStarted);
         EnhancedInputComponent->BindAction(SelectAction, ETriggerEvent::Completed, this, &ALFPTacticsPlayerController::OnSelectCompleted);
-
-        // 攻击操作
-        EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Started, this, &ALFPTacticsPlayerController::OnAttackStarted);
 
         // 其他操作
         EnhancedInputComponent->BindAction(ConfirmAction, ETriggerEvent::Completed, this, &ALFPTacticsPlayerController::OnConfirmAction);
@@ -229,9 +225,8 @@ void ALFPTacticsPlayerController::Tick(float DeltaTime)
                     }
                 }
 
-                if (HoveredEnemy && HoveredEnemy != PreviewedEnemy)
+                if (HoveredEnemy && HoveredEnemy != PreviewedEnemy && CurrentControlState == EPlayControlState::MoveState)
                 {
-                    HideEnemyPlanPreview();
                     ShowEnemyPlanPreview(HoveredEnemy);
                 }
                 else if (!HoveredEnemy && PreviewedEnemy)
@@ -311,17 +306,6 @@ void ALFPTacticsPlayerController::OnSelectCompleted(const FInputActionValue& Val
     }
 }
 
-void ALFPTacticsPlayerController::OnAttackStarted(const FInputActionValue& Value)
-{
-    if (bWaitingForMove) return;
-    if (SelectedUnit)
-    {
-        bIsAttacking = true;
-        CurrentControlState = EPlayControlState::SkillReleaseState;
-        ShowUnitRange(EUnitRange::UR_Attack);
-    }
-}
-
 void ALFPTacticsPlayerController::OnConfirmAction(const FInputActionValue& Value)
 {
     if (bWaitingForMove) return;
@@ -389,28 +373,7 @@ void ALFPTacticsPlayerController::OnConfirmAction(const FInputActionValue& Value
 
     if (SelectedUnit && SelectedTile)
     {
-        if (bIsAttacking)
-        {
-            // 获取鼠标位置
-            float MouseX, MouseY;
-            GetMousePosition(MouseX, MouseY);
-            FVector2D SelectionEnd = FVector2D(MouseX, MouseY);
-
-            FHitResult HitResult;
-            GetHitResultAtScreenPosition(SelectionEnd, ECC_Visibility, false, HitResult);
-
-            if (HitResult.bBlockingHit)
-            {
-                // 尝试选中单位
-                ALFPTacticsUnit* Unit = Cast<ALFPTacticsUnit>(HitResult.GetActor());
-                if (Unit)
-                {
-                    AttackTarget(SelectedUnit, Unit);
-                    return;
-                }
-            }
-        }
-        else if (bIsReleaseSkill && CurrentSelectedSkill)
+        if (bIsReleaseSkill && CurrentSelectedSkill)
         {
             ExecuteSkill(CurrentSelectedSkill);
         }
@@ -444,7 +407,6 @@ void ALFPTacticsPlayerController::OnCancelAction(const FInputActionValue& Value)
         return;
     }
 
-    bIsAttacking = false;
     bIsReleaseSkill = false;
     CurrentControlState = EPlayControlState::MoveState;
     ShowUnitRange(EUnitRange::UR_Move);
@@ -672,12 +634,6 @@ void ALFPTacticsPlayerController::ShowUnitRange(EUnitRange UnitRange)
 		}
         break;
 	}
-    case EUnitRange::UR_Attack:
-		// 获取可攻击范围
-        CacheRangeTiles = SelectedUnit->GetAttackRangeTiles();
-		// 显示范围高亮（描边 + 填充）
-		GridManager->ShowRangeHighlight(CacheRangeTiles, EUnitRange::UR_Attack);
-        break;
     default:
         break;
     }
@@ -761,50 +717,6 @@ void ALFPTacticsPlayerController::OnUnitMoveComplete()
     MovingUnit = nullptr;
 }
 
-bool ALFPTacticsPlayerController::AttackTarget(ALFPTacticsUnit* Attacker, ALFPTacticsUnit* Target)
-{
-    if (!Attacker || !Target || !Attacker->CanAct())
-    {
-        return false;
-    }
-
-    // 计算攻击代价
-    const int32 AttackCost = 1;
-
-    bIsAttacking = false;
-    CurrentControlState = EPlayControlState::MoveState;
-
-    if (!Attacker->HasEnoughActionPoints(AttackCost))
-    {
-        return false;
-    }
-
-    // 执行攻击逻辑
-    bool bAttackSucceed = Attacker->AttackTarget(Target);
-
-    if (bAttackSucceed)
-    {
-		// 消耗行动力
-		Attacker->ConsumeActionPoints(AttackCost);
-        ShowUnitRange(EUnitRange::UR_Default);
-    }
-    else
-    {
-        ShowUnitRange(EUnitRange::UR_Move);
-    }
-
-    // 通知回合管理器单位完成行动
-    if (!Attacker->HasEnoughActionPoints(1))
-    {
-		if (bAttackSucceed)
-		{
-            SkipTurn(Attacker);
-		}
-    }
-
-    return bAttackSucceed;
-}
-
 void ALFPTacticsPlayerController::SkipTurn(ALFPTacticsUnit* Unit)
 {
     if (!Unit || !Unit->CanAct()) return;
@@ -814,7 +726,6 @@ void ALFPTacticsPlayerController::SkipTurn(ALFPTacticsUnit* Unit)
 
     // 可选：消耗1个行动力作为跳过代价
     // Unit->ConsumeMovePoints(1);
-    bIsAttacking = false;
     CurrentControlState = EPlayControlState::MoveState;
     // 通知回合管理器单位完成行动
     if (ALFPTurnManager* TurnManager = GetTurnManager())
@@ -905,6 +816,7 @@ void ALFPTacticsPlayerController::HandleSkillTargetSelecting(ULFPSkillBase* Skil
     {
         bIsReleaseSkill = true;
         CurrentControlState = EPlayControlState::SkillReleaseState;
+        GridManager->ClearRangeHighlight(EUnitRange::UR_Move);
         GridManager->ShowRangeHighlightByCoords(TargetTilesCoord, EUnitRange::UR_SkillRelease);
     }
 
@@ -941,6 +853,7 @@ void ALFPTacticsPlayerController::ShowEnemyPlanPreview(ALFPTacticsUnit* EnemyUni
 
     // 高亮技能效果范围格子
     PreviewEffectTiles = Plan.EffectAreaTiles;
+    GridManager->ClearRangeHighlight(EUnitRange::UR_Move);
     GridManager->ShowRangeHighlight(PreviewEffectTiles, EUnitRange::UR_SkillEffect);
 }
 
@@ -949,10 +862,11 @@ void ALFPTacticsPlayerController::HideEnemyPlanPreview()
     // 清除预览格子高亮
     if (GridManager)
     {
+        PreviewEffectTiles.Empty();
+        PreviewedEnemy = nullptr;
         GridManager->ClearRangeHighlight(EUnitRange::UR_SkillEffect);
+        ShowUnitRange(EUnitRange::UR_Move);
     }
-    PreviewEffectTiles.Empty();
-    PreviewedEnemy = nullptr;
 }
 
 void ALFPTacticsPlayerController::OnPhaseChanged(EBattlePhase NewPhase)

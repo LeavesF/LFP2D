@@ -162,9 +162,11 @@ enum class EUnitRange : uint8
 {
 	UR_Default     UMETA(DisplayName = "Default"),
 	UR_Move     UMETA(DisplayName = "Move"),
-	UR_Attack    UMETA(DisplayName = "Attack"),
 	UR_SkillRelease    UMETA(DisplayName = "SkillRelease"),
-	UR_SkillEffect    UMETA(DisplayName = "SkillEffect")
+	UR_SkillEffect    UMETA(DisplayName = "SkillEffect"),
+	UR_Enemy_Move     UMETA(DisplayName = "Enemy_Move"),
+	UR_Enemy_SkillRelease    UMETA(DisplayName = "Enemy_SkillRelease"),
+	UR_Enemy_SkillEffect    UMETA(DisplayName = "Enemy_SkillEffect")
 };
 
 // 玩家操作状态

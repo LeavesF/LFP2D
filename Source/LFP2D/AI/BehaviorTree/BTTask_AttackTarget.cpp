@@ -25,19 +25,16 @@ EBTNodeResult::Type UBTTask_AttackTarget::ExecuteTask(UBehaviorTreeComponent& Ow
 
     if (!TargetUnit) return EBTNodeResult::Failed;
 
-    // 绑定攻击完成事件
+    // 缁戝畾鏀诲嚮瀹屾垚浜嬩欢
     //ControlledUnit->OnAttackComplete.AddDynamic(this, &UBTTask_AttackTarget::OnAttackComplete);
     BTComponent = &OwnerComp;
-
-    // 开始攻击
-    ControlledUnit->AttackTarget(TargetUnit);
 
     return EBTNodeResult::InProgress;
 }
 
 void UBTTask_AttackTarget::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTNodeResult::Type TaskResult)
 {
-    // 清理
+    // 娓呯悊
     /*if (ALFPTacticsUnit* ControlledUnit = Cast<ALFPTacticsUnit>(OwnerComp.GetAIOwner()->GetPawn()))
     {
         ControlledUnit->OnAttackComplete.RemoveDynamic(this, &UBTTask_AttackTarget::OnAttackComplete);

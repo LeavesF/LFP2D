@@ -621,38 +621,6 @@ void ALFPTacticsUnit::Heal(int32 Amount)
 	OnHeal(Amount);
 }
 
-bool ALFPTacticsUnit::AttackTarget(ALFPTacticsUnit* Target)
-{
-    if (!Target || bIsDead || Target->bIsDead)
-    {
-        return false;
-    }
-
-    // 检查攻击范围
-    if (!IsTargetInAttackRange(Target))
-    {
-        UE_LOG(LogTemp, Warning, TEXT("Target is out of attack range!"));
-        return false;
-    }
-    if (Affiliation == Target->Affiliation)
-    {
-        UE_LOG(LogTemp, Warning, TEXT("Target is Ally!"));
-        return false;
-    }
-
-    ApplyDamageToTarget(Target);
-
-    //// 播放攻击动画
-    //PlayAttackAnimation(Target);
-
-    //// 实际伤害计算（延迟到攻击动画后）
-    //FTimerDelegate TimerDelegate;
-    //TimerDelegate.BindUFunction(this, FName("ApplyDamageToTarget"), Target);
-    //GetWorld()->GetTimerManager().SetTimer(AttackTimerHandle, TimerDelegate, 0.5f, false);
-    //NotifyAttackComplete();
-    return true;
-}
-
 void ALFPTacticsUnit::ApplyDamageToTarget(ALFPTacticsUnit* Target)
 {
     if (!Target || Target->bIsDead) return;

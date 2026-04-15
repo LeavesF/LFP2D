@@ -45,7 +45,6 @@ public:
     // Enhanced Input绑定函数
     void OnSelectStarted(const FInputActionValue& Value);
     void OnSelectCompleted(const FInputActionValue& Value);
-    void OnAttackStarted(const FInputActionValue& Value);
     void OnConfirmAction(const FInputActionValue& Value);
     void OnCancelAction(const FInputActionValue& Value);
     //void OnRotateCamera(const FInputActionValue& Value);
@@ -145,9 +144,6 @@ protected:
     bool bIsSelecting;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "State")
-    bool bIsAttacking = false;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "State")
     bool bIsReleaseSkill = false;
 
     FVector2D SelectionStart;
@@ -237,9 +233,6 @@ public:
     // 单位行动
     UFUNCTION(BlueprintCallable, Category = "Unit Actions")
     void MoveUnit(ALFPTacticsUnit* Unit, ALFPHexTile* TargetTile);
-
-    UFUNCTION(BlueprintCallable, Category = "Unit Actions")
-    bool AttackTarget(ALFPTacticsUnit* Attacker, ALFPTacticsUnit* Target);
 
     UFUNCTION(BlueprintCallable, Category = "Unit Actions")
     void SkipTurn(ALFPTacticsUnit* Unit);

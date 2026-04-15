@@ -537,10 +537,6 @@ public:
     UFUNCTION(BlueprintPure, Category = "Unit Combat")
     bool IsNeutral() const { return Affiliation == EUnitAffiliation::UA_Neutral; }
 
-    // 攻击目标单位
-    UFUNCTION(BlueprintCallable, Category = "Unit Combat")
-    bool AttackTarget(ALFPTacticsUnit* Target);
-
     void ApplyDamageToTarget(ALFPTacticsUnit* Target);
 
     // 死亡处理

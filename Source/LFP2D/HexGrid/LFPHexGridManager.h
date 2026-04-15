@@ -313,6 +313,7 @@ private:
 	// 当前高亮的格子缓存
 	void RebuildRangeHighlights();
 	void ClearRangeHighlightVisuals();
+    //void ClearRangeHighlightVisuals(EUnitRange HexRangeType);
 	void DrawRangeHighlightGroup(const TArray<ALFPHexTile*>& RangeTiles, EUnitRange HexRangeType);
 
 	TMap<EUnitRange, TArray<ALFPHexTile*>> HighlightedTilesByRange;

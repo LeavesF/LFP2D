@@ -28,7 +28,6 @@ const TArray<EUnitRange>& GetRangeHighlightPriorityOrder()
 {
 	static const TArray<EUnitRange> PriorityOrder = {
 		EUnitRange::UR_Move,
-		EUnitRange::UR_Attack,
 		EUnitRange::UR_SkillRelease,
 		EUnitRange::UR_SkillEffect
 	};
@@ -814,6 +813,8 @@ void ALFPHexGridManager::ShowRangeHighlight(const TArray<ALFPHexTile*>& RangeTil
 		return;
 	}
 
+    ClearRangeHighlightVisuals();
+
 	TArray<ALFPHexTile*>& CachedTiles = HighlightedTilesByRange.FindOrAdd(HexRangeType);
 	CachedTiles.Empty();
 
@@ -827,7 +828,7 @@ void ALFPHexGridManager::ShowRangeHighlight(const TArray<ALFPHexTile*>& RangeTil
 
 	if (CachedTiles.IsEmpty())
 	{
-		HighlightedTilesByRange.Remove(HexRangeType);
+        HighlightedTilesByRange.Remove(HexRangeType);
 	}
 
 	RebuildRangeHighlights();
@@ -900,12 +901,15 @@ void ALFPHexGridManager::ClearRangeHighlight(EUnitRange HexRangeType)
 		return;
 	}
 
-	HighlightedTilesByRange.Remove(HexRangeType);
+    ClearRangeHighlightVisuals();
+    HighlightedTilesByRange.Remove(HexRangeType);
 	RebuildRangeHighlights();
 }
 
 void ALFPHexGridManager::ShowPathHighlight(const TArray<ALFPHexTile*>& PathTiles)
 {
+    ClearRangeHighlightVisuals();
+
 	CurrentPathTiles.Empty();
 
 	for (ALFPHexTile* Tile : PathTiles)
@@ -934,6 +938,7 @@ void ALFPHexGridManager::ShowPathHighlight(const TArray<ALFPHexTile*>& PathTiles
 
 void ALFPHexGridManager::ClearPathHighlight()
 {
+    ClearRangeHighlightVisuals();
 	CurrentPathTiles.Empty();
 	RebuildRangeHighlights();
 	return;
@@ -983,8 +988,6 @@ void ALFPHexGridManager::ClearAllHighlights()
 
 void ALFPHexGridManager::RebuildRangeHighlights()
 {
-	ClearRangeHighlightVisuals();
-
 	TMap<ALFPHexTile*, EUnitRange> VisibleRangeByTile;
 	for (const EUnitRange RangeType : GetRangeHighlightPriorityOrder())
 	{
@@ -1058,6 +1061,31 @@ void ALFPHexGridManager::ClearRangeHighlightVisuals()
 	}
 }
 
+//void ALFPHexGridManager::ClearRangeHighlightVisuals(EUnitRange HexRangeType)
+//{
+//    TArray<ALFPHexTile*>* TilesToClear = HighlightedTilesByRange.Find(HexRangeType);
+//
+//    if (TilesToClear == nullptr)
+//    {
+//        return;
+//    }
+//    if (TilesToClear->IsEmpty())
+//    {
+//        HighlightedTilesByRange.Remove(HexRangeType);
+//        return;
+//    }
+//
+//    for (ALFPHexTile* Tile : *TilesToClear)
+//    {
+//        if (Tile)
+//        {
+//            Tile->ClearAllHighlights();
+//        }
+//    }
+//
+//    HighlightedTilesByRange.Remove(HexRangeType);
+//}
+
 void ALFPHexGridManager::DrawRangeHighlightGroup(const TArray<ALFPHexTile*>& RangeTiles, EUnitRange HexRangeType)
 {
 	if (HexRangeType == EUnitRange::UR_Default || RangeTiles.IsEmpty())
@@ -1108,7 +1136,6 @@ FLinearColor ALFPHexGridManager::GetEdgeColorForRange(EUnitRange HexRangeType) c
 	switch (HexRangeType)
 	{
 	case EUnitRange::UR_Move:        return MoveEdgeColor;
-	case EUnitRange::UR_Attack:      return AttackEdgeColor;
     case EUnitRange::UR_SkillRelease: return SkillReleaseEdgeColor;
 	case EUnitRange::UR_SkillEffect: return SkillEffectEdgeColor;
 	default:                         return FLinearColor::Transparent;
@@ -1120,7 +1147,6 @@ FLinearColor ALFPHexGridManager::GetOverlayColorForRange(EUnitRange HexRangeType
 	switch (HexRangeType)
 	{
 	case EUnitRange::UR_Move:        return MoveOverlayColor;
-	case EUnitRange::UR_Attack:      return AttackOverlayColor;
     case EUnitRange::UR_SkillRelease: return SkillReleaseOverlayColor;
 	case EUnitRange::UR_SkillEffect: return SkillEffectOverlayColor;
 	default:                         return FLinearColor::Transparent;
