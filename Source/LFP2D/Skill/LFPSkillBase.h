@@ -9,7 +9,7 @@
 
 class ALFPTacticsUnit;
 class ALFPHexTile;
-class ULFPSkillReleaseRangeDataAsset;
+class ULFPSkillRangeDataAsset;
 struct FPropertyChangedEvent;
 
 struct FLFPHexCoordinates;
@@ -27,8 +27,9 @@ enum class ESkillTargetType : uint8
 };
 
 UENUM(BlueprintType)
-enum class ESkillReleaseRangeType : uint8
+enum class ESkillRangeType : uint8
 {
+	Origin,
 	Coverage,
 	Ring,
 	Ray,
@@ -100,27 +101,45 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Skill|Priority")
 	float GetEffectivePriority() const;
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Skill")
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Skill|Range")
 	void UpdateSkillRange();
 	virtual void UpdateSkillRange_Implementation();
 
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Skill")
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Skill|Range")
 	TArray<FLFPHexCoordinates> GetReleaseRange() const { return ReleaseRangeCoords; }
 
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Skill")
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Skill|Range")
 	FString GetReleaseRangeDescription() const;
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Skill|Range")
+	TArray<FLFPHexCoordinates> GetEffectRange() const { return EffectRangeCoords; }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Skill|Range")
+	FString GetEffectRangeDescription() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Skill|Custom Range")
 	bool ApplyCustomReleaseRangePreset();
+
+	UFUNCTION(BlueprintCallable, Category = "Skill|Custom Range")
+	bool ApplyCustomEffectRangePreset();
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Skill|Custom Range")
 	TArray<FName> GetAvailableCustomReleaseRangePresetNames() const;
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Skill|Custom Range")
+	TArray<FName> GetAvailableCustomEffectRangePresetNames() const;
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Skill|Custom Range")
 	TArray<FString> GetAvailableCustomReleaseRangePresetOptions() const;
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Skill")
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Skill|Custom Range")
+	TArray<FString> GetAvailableCustomEffectRangePresetOptions() const;
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Skill|Range")
 	TArray<FLFPHexCoordinates> GetReleaseRangeInGrid();
+
+    UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Skill|Range")
+    TArray<FLFPHexCoordinates> GetEffectRangeInGrid();
 
 	// AI 目标选择：计算对目标的仇恨值（值越高，越优先攻击）
 	// Caster：使用技能的敌方单位（自身属性/位置）
@@ -158,25 +177,25 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
 	FGameplayTagContainer SkillTags;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
-	ESkillReleaseRangeType ReleaseRangeType = ESkillReleaseRangeType::Coverage;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill|Range")
+	ESkillRangeType ReleaseRangeType = ESkillRangeType::Coverage;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill", meta = (ClampMin = "0"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill|Range", meta = (ClampMin = "0"))
 	int32 MinRange = 0;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill", meta = (ClampMin = "0"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill|Range", meta = (ClampMin = "0"))
 	int32 MaxRange = 1;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill", meta = (ClampMin = "0"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill|Range", meta = (ClampMin = "0"))
 	int32 RayRange = 1;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill|Range")
 	bool bRequireLineOfSight = true;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill|Custom Range", meta = (EditCondition = "ReleaseRangeType == ESkillReleaseRangeType::Custom"))
-	TObjectPtr<ULFPSkillReleaseRangeDataAsset> CustomReleaseRangeData = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill|Custom Range", meta = (EditCondition = "ReleaseRangeType == ESkillRangeType::Custom"))
+	TObjectPtr<ULFPSkillRangeDataAsset> CustomReleaseRangeData = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill|Custom Range", meta = (EditCondition = "ReleaseRangeType == ESkillReleaseRangeType::Custom", GetOptions = "GetAvailableCustomReleaseRangePresetOptions"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill|Custom Range", meta = (EditCondition = "ReleaseRangeType == ESkillRangeType::Custom", GetOptions = "GetAvailableCustomReleaseRangePresetOptions"))
 	FName CustomReleaseRangePresetName = NAME_None;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
@@ -185,14 +204,35 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
 	bool bIsDefaultAttack;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill|Range")
 	TArray<FLFPHexCoordinates> ReleaseRangeCoords;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Skill")
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Skill|Range")
 	TArray<FLFPHexCoordinates> ReleaseRangeInGridCoords;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill|Range")
 	TArray<FLFPHexCoordinates> EffectRangeCoords;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill|Range")
+	ESkillRangeType EffectRangeType = ESkillRangeType::Custom;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill|Range", meta = (ClampMin = "0"))
+	int32 EffectMinRange = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill|Range", meta = (ClampMin = "0"))
+	int32 EffectMaxRange = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill|Range", meta = (ClampMin = "0"))
+	int32 EffectRayRange = 1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill|Custom Range", meta = (EditCondition = "EffectRangeType == ESkillRangeType::Custom"))
+	TObjectPtr<ULFPSkillRangeDataAsset> CustomEffectRangeData = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill|Custom Range", meta = (EditCondition = "EffectRangeType == ESkillRangeType::Custom", GetOptions = "GetAvailableCustomEffectRangePresetOptions"))
+	FName CustomEffectRangePresetName = NAME_None;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill|Range")
+	TArray<FLFPHexCoordinates> EffectRangeInGridCoords;
 
 	// ==== 技能优先级属性 ====
 
@@ -214,8 +254,32 @@ public:
 
 private:
 	void RebuildReleaseRangeCoords();
+	void RebuildEffectRangeCoords();
 	bool HasReleaseCoord(const FLFPHexCoordinates& RelativeCoord) const;
 	bool TryApplyCustomReleaseRangePreset();
+	bool TryApplyCustomEffectRangePreset();
+	void RebuildRangeCoords(
+		TArray<FLFPHexCoordinates>& RangeCoords,
+		ESkillRangeType RangeType,
+		int32 RangeMin,
+		int32 RangeMax,
+		int32 RangeRay,
+		ULFPSkillRangeDataAsset* CustomRangeData,
+		FName CustomRangePresetName);
+	bool TryApplyCustomRangePreset(
+		TArray<FLFPHexCoordinates>& RangeCoords,
+		ESkillRangeType RangeType,
+		ULFPSkillRangeDataAsset* CustomRangeData,
+		FName CustomRangePresetName);
+	FString GetRangeDescription(
+		ESkillRangeType RangeType,
+		int32 RangeMin,
+		int32 RangeMax,
+		int32 RangeRay,
+		ULFPSkillRangeDataAsset* CustomRangeData,
+		FName CustomRangePresetName) const;
+	TArray<FName> GetAvailableCustomRangePresetNames(ULFPSkillRangeDataAsset* CustomRangeData) const;
+	TArray<FString> GetAvailableCustomRangePresetOptions(ULFPSkillRangeDataAsset* CustomRangeData) const;
 
 #if WITH_EDITOR
 public:

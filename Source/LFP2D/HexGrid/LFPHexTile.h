@@ -37,6 +37,21 @@ public:
 	FLFPHexCoordinates(int32 q, int32 r) : Q(q), R(r), S(-q - r) {}
 
 	// 坐标转换函数
+	bool operator==(const FLFPHexCoordinates& Other) const
+	{
+		return Q == Other.Q && R == Other.R;
+	}
+
+	bool operator!=(const FLFPHexCoordinates& Other) const
+	{
+		return !(*this == Other);
+	}
+
+	friend uint32 GetTypeHash(const FLFPHexCoordinates& Coord)
+	{
+		return HashCombine(::GetTypeHash(Coord.Q), ::GetTypeHash(Coord.R));
+	}
+
 	FVector ToWorldLocation(float Size, float VerticalScale = 1.0f) const
 	{
 		// 平顶六边形布局
@@ -148,6 +163,7 @@ enum class EUnitRange : uint8
 	UR_Default     UMETA(DisplayName = "Default"),
 	UR_Move     UMETA(DisplayName = "Move"),
 	UR_Attack    UMETA(DisplayName = "Attack"),
+	UR_SkillRelease    UMETA(DisplayName = "SkillRelease"),
 	UR_SkillEffect    UMETA(DisplayName = "SkillEffect")
 };
 

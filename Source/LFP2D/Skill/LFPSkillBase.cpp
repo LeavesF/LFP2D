@@ -4,7 +4,7 @@
 #include "LFP2D/Skill/LFPSkillBase.h"
 #include "LFP2D/HexGrid/LFPHexGridManager.h"
 #include "LFP2D/HexGrid/LFPHexTile.h"
-#include "LFP2D/Skill/LFPSkillReleaseRangeDataAsset.h"
+#include "LFP2D/Skill/LFPSkillRangeDataAsset.h"
 #include "LFP2D/Unit/LFPTacticsUnit.h"
 #include "UObject/UnrealType.h"
 
@@ -222,71 +222,59 @@ float ULFPSkillBase::GetEffectivePriority() const
 void ULFPSkillBase::UpdateSkillRange_Implementation()
 {
 	RebuildReleaseRangeCoords();
+	RebuildEffectRangeCoords();
 }
 
 FString ULFPSkillBase::GetReleaseRangeDescription() const
 {
-	switch (ReleaseRangeType)
-	{
-	case ESkillReleaseRangeType::Coverage:
-		return FString::Printf(TEXT("Coverage: 1-%d"), MaxRange);
+	return GetRangeDescription(
+		ReleaseRangeType,
+		MinRange,
+		MaxRange,
+		RayRange,
+		CustomReleaseRangeData,
+		CustomReleaseRangePresetName);
+}
 
-	case ESkillReleaseRangeType::Ring:
-		return FString::Printf(TEXT("Ring: %d-%d"), MinRange + 1, MaxRange);
-
-	case ESkillReleaseRangeType::Ray:
-		return FString::Printf(TEXT("Ray: 1-%d"), RayRange);
-
-	case ESkillReleaseRangeType::Custom:
-	default:
-		if (!CustomReleaseRangePresetName.IsNone())
-		{
-			if (CustomReleaseRangeData)
-			{
-				FLFPSkillReleaseRangePreset Preset;
-				if (CustomReleaseRangeData->FindPreset(CustomReleaseRangePresetName, Preset) &&
-					!Preset.DisplayName.IsEmpty())
-				{
-					return FString::Printf(TEXT("Custom: %s"), *Preset.DisplayName.ToString());
-				}
-			}
-
-			return FString::Printf(TEXT("Custom: %s"), *CustomReleaseRangePresetName.ToString());
-		}
-
-		return TEXT("Custom");
-	}
+FString ULFPSkillBase::GetEffectRangeDescription() const
+{
+	return GetRangeDescription(
+		EffectRangeType,
+		EffectMinRange,
+		EffectMaxRange,
+		EffectRayRange,
+		CustomEffectRangeData,
+		CustomEffectRangePresetName);
 }
 
 bool ULFPSkillBase::ApplyCustomReleaseRangePreset()
 {
-	if (ReleaseRangeType != ESkillReleaseRangeType::Custom)
-	{
-		return false;
-	}
-
 	return TryApplyCustomReleaseRangePreset();
+}
+
+bool ULFPSkillBase::ApplyCustomEffectRangePreset()
+{
+	return TryApplyCustomEffectRangePreset();
 }
 
 TArray<FName> ULFPSkillBase::GetAvailableCustomReleaseRangePresetNames() const
 {
-	if (!CustomReleaseRangeData)
-	{
-		return TArray<FName>();
-	}
+	return GetAvailableCustomRangePresetNames(CustomReleaseRangeData);
+}
 
-	return CustomReleaseRangeData->GetPresetNames();
+TArray<FName> ULFPSkillBase::GetAvailableCustomEffectRangePresetNames() const
+{
+	return GetAvailableCustomRangePresetNames(CustomEffectRangeData);
 }
 
 TArray<FString> ULFPSkillBase::GetAvailableCustomReleaseRangePresetOptions() const
 {
-	TArray<FString> Options;
-	for (const FName PresetName : GetAvailableCustomReleaseRangePresetNames())
-	{
-		Options.Add(PresetName.ToString());
-	}
+	return GetAvailableCustomRangePresetOptions(CustomReleaseRangeData);
+}
 
-	return Options;
+TArray<FString> ULFPSkillBase::GetAvailableCustomEffectRangePresetOptions() const
+{
+	return GetAvailableCustomRangePresetOptions(CustomEffectRangeData);
 }
 
 TArray<FLFPHexCoordinates> ULFPSkillBase::GetReleaseRangeInGrid_Implementation()
@@ -311,6 +299,28 @@ TArray<FLFPHexCoordinates> ULFPSkillBase::GetReleaseRangeInGrid_Implementation()
 	return ReleaseRangeInGridCoords;
 }
 
+TArray<FLFPHexCoordinates> ULFPSkillBase::GetEffectRangeInGrid_Implementation()
+{
+    EffectRangeInGridCoords.Empty();
+    if (!Owner)
+    {
+        return EffectRangeInGridCoords;
+    }
+
+    RebuildEffectRangeCoords();
+
+    for (FLFPHexCoordinates Coord : EffectRangeCoords)
+    {
+        FLFPHexCoordinates CoordInGrid = FLFPHexCoordinates();
+        FLFPHexCoordinates OwnerCoord = Owner->GetCurrentCoordinates();
+        CoordInGrid.Q = OwnerCoord.Q + Coord.Q;
+        CoordInGrid.R = OwnerCoord.R + Coord.R;
+        CoordInGrid.S = OwnerCoord.S + Coord.S;
+        EffectRangeInGridCoords.Add(CoordInGrid);
+    }
+    return EffectRangeInGridCoords;
+}
+
 float ULFPSkillBase::CalculateHatredValue_Implementation(ALFPTacticsUnit* Caster, ALFPTacticsUnit* Target) const
 {
 	if (!Caster || !Target) return 0.0f;
@@ -330,50 +340,33 @@ float ULFPSkillBase::CalculateHatredValue_Implementation(ALFPTacticsUnit* Caster
 
 void ULFPSkillBase::RebuildReleaseRangeCoords()
 {
-	if (ReleaseRangeType == ESkillReleaseRangeType::Custom)
-	{
-		TryApplyCustomReleaseRangePreset();
-		return;
-	}
+	RebuildRangeCoords(
+		ReleaseRangeCoords,
+		ReleaseRangeType,
+		MinRange,
+		MaxRange,
+		RayRange,
+		CustomReleaseRangeData,
+		CustomReleaseRangePresetName);
+}
 
-	ReleaseRangeCoords.Empty();
-
-	switch (ReleaseRangeType)
-	{
-	case ESkillReleaseRangeType::Coverage:
-		AppendCoordsInDistanceRange(ReleaseRangeCoords, MaxRange, 0);
-		break;
-
-	case ESkillReleaseRangeType::Ring:
-		AppendCoordsInDistanceRange(ReleaseRangeCoords, MaxRange, FMath::Max(0, MinRange));
-		break;
-
-	case ESkillReleaseRangeType::Ray:
-		if (RayRange <= 0)
-		{
-			return;
-		}
-
-		for (const FLFPHexCoordinates& Direction : GetSkillRayDirections())
-		{
-			for (int32 Distance = 1; Distance <= RayRange; ++Distance)
-			{
-				ReleaseRangeCoords.Add(FLFPHexCoordinates(Direction.Q * Distance, Direction.R * Distance));
-			}
-		}
-		break;
-
-	case ESkillReleaseRangeType::Custom:
-	default:
-		break;
-	}
+void ULFPSkillBase::RebuildEffectRangeCoords()
+{
+	RebuildRangeCoords(
+		EffectRangeCoords,
+		EffectRangeType,
+		EffectMinRange,
+		EffectMaxRange,
+		EffectRayRange,
+		CustomEffectRangeData,
+		CustomEffectRangePresetName);
 }
 
 bool ULFPSkillBase::HasReleaseCoord(const FLFPHexCoordinates& RelativeCoord) const
 {
 	for (const FLFPHexCoordinates& Coord : ReleaseRangeCoords)
 	{
-		if (Coord.Q == RelativeCoord.Q && Coord.R == RelativeCoord.R && Coord.S == RelativeCoord.S)
+		if (Coord == RelativeCoord)
 		{
 			return true;
 		}
@@ -384,21 +377,159 @@ bool ULFPSkillBase::HasReleaseCoord(const FLFPHexCoordinates& RelativeCoord) con
 
 bool ULFPSkillBase::TryApplyCustomReleaseRangePreset()
 {
-	if (ReleaseRangeType != ESkillReleaseRangeType::Custom ||
-		!CustomReleaseRangeData ||
-		CustomReleaseRangePresetName.IsNone())
+	return TryApplyCustomRangePreset(
+		ReleaseRangeCoords,
+		ReleaseRangeType,
+		CustomReleaseRangeData,
+		CustomReleaseRangePresetName);
+}
+
+bool ULFPSkillBase::TryApplyCustomEffectRangePreset()
+{
+	return TryApplyCustomRangePreset(
+		EffectRangeCoords,
+		EffectRangeType,
+		CustomEffectRangeData,
+		CustomEffectRangePresetName);
+}
+
+void ULFPSkillBase::RebuildRangeCoords(
+	TArray<FLFPHexCoordinates>& RangeCoords,
+	ESkillRangeType RangeType,
+	int32 RangeMin,
+	int32 RangeMax,
+	int32 RangeRay,
+	ULFPSkillRangeDataAsset* CustomRangeData,
+	FName CustomRangePresetName)
+{
+	if (RangeType == ESkillRangeType::Custom)
+	{
+		TryApplyCustomRangePreset(RangeCoords, RangeType, CustomRangeData, CustomRangePresetName);
+		return;
+	}
+
+	RangeCoords.Empty();
+
+	switch (RangeType)
+	{
+	case ESkillRangeType::Origin:
+		RangeCoords.Add(FLFPHexCoordinates());
+		break;
+
+	case ESkillRangeType::Coverage:
+		AppendCoordsInDistanceRange(RangeCoords, RangeMax, 0);
+		break;
+
+	case ESkillRangeType::Ring:
+		AppendCoordsInDistanceRange(RangeCoords, RangeMax, FMath::Max(0, RangeMin));
+		break;
+
+	case ESkillRangeType::Ray:
+		if (RangeRay <= 0)
+		{
+			return;
+		}
+
+		for (const FLFPHexCoordinates& Direction : GetSkillRayDirections())
+		{
+			for (int32 Distance = 1; Distance <= RangeRay; ++Distance)
+			{
+				RangeCoords.Add(FLFPHexCoordinates(Direction.Q * Distance, Direction.R * Distance));
+			}
+		}
+		break;
+
+	case ESkillRangeType::Custom:
+	default:
+		break;
+	}
+}
+
+bool ULFPSkillBase::TryApplyCustomRangePreset(
+	TArray<FLFPHexCoordinates>& RangeCoords,
+	ESkillRangeType RangeType,
+	ULFPSkillRangeDataAsset* CustomRangeData,
+	FName CustomRangePresetName)
+{
+	if (RangeType != ESkillRangeType::Custom ||
+		!CustomRangeData ||
+		CustomRangePresetName.IsNone())
 	{
 		return false;
 	}
 
-	FLFPSkillReleaseRangePreset Preset;
-	if (!CustomReleaseRangeData->FindPreset(CustomReleaseRangePresetName, Preset))
+	FLFPSkillRangePreset Preset;
+	if (!CustomRangeData->FindPreset(CustomRangePresetName, Preset))
 	{
 		return false;
 	}
 
-	ReleaseRangeCoords = Preset.ReleaseRangeCoords;
+	RangeCoords = Preset.RangeCoords;
 	return true;
+}
+
+FString ULFPSkillBase::GetRangeDescription(
+	ESkillRangeType RangeType,
+	int32 RangeMin,
+	int32 RangeMax,
+	int32 RangeRay,
+	ULFPSkillRangeDataAsset* CustomRangeData,
+	FName CustomRangePresetName) const
+{
+	switch (RangeType)
+	{
+	case ESkillRangeType::Origin:
+		return TEXT("Origin");
+
+	case ESkillRangeType::Coverage:
+		return FString::Printf(TEXT("Coverage: 1-%d"), RangeMax);
+
+	case ESkillRangeType::Ring:
+		return FString::Printf(TEXT("Ring: %d-%d"), RangeMin + 1, RangeMax);
+
+	case ESkillRangeType::Ray:
+		return FString::Printf(TEXT("Ray: 1-%d"), RangeRay);
+
+	case ESkillRangeType::Custom:
+	default:
+		if (!CustomRangePresetName.IsNone())
+		{
+			if (CustomRangeData)
+			{
+				FLFPSkillRangePreset Preset;
+				if (CustomRangeData->FindPreset(CustomRangePresetName, Preset) &&
+					!Preset.DisplayName.IsEmpty())
+				{
+					return FString::Printf(TEXT("Custom: %s"), *Preset.DisplayName.ToString());
+				}
+			}
+
+			return FString::Printf(TEXT("Custom: %s"), *CustomRangePresetName.ToString());
+		}
+
+		return TEXT("Custom");
+	}
+}
+
+TArray<FName> ULFPSkillBase::GetAvailableCustomRangePresetNames(ULFPSkillRangeDataAsset* CustomRangeData) const
+{
+	if (!CustomRangeData)
+	{
+		return TArray<FName>();
+	}
+
+	return CustomRangeData->GetPresetNames();
+}
+
+TArray<FString> ULFPSkillBase::GetAvailableCustomRangePresetOptions(ULFPSkillRangeDataAsset* CustomRangeData) const
+{
+	TArray<FString> Options;
+	for (const FName PresetName : GetAvailableCustomRangePresetNames(CustomRangeData))
+	{
+		Options.Add(PresetName.ToString());
+	}
+
+	return Options;
 }
 
 #if WITH_EDITOR
@@ -408,8 +539,17 @@ void ULFPSkillBase::PostEditChangeProperty(FPropertyChangedEvent& PropertyChange
 
 	const FName PropertyName = PropertyChangedEvent.GetPropertyName();
 	if (PropertyName == GET_MEMBER_NAME_CHECKED(ULFPSkillBase, ReleaseRangeType) ||
+		PropertyName == GET_MEMBER_NAME_CHECKED(ULFPSkillBase, MinRange) ||
+		PropertyName == GET_MEMBER_NAME_CHECKED(ULFPSkillBase, MaxRange) ||
+		PropertyName == GET_MEMBER_NAME_CHECKED(ULFPSkillBase, RayRange) ||
 		PropertyName == GET_MEMBER_NAME_CHECKED(ULFPSkillBase, CustomReleaseRangeData) ||
-		PropertyName == GET_MEMBER_NAME_CHECKED(ULFPSkillBase, CustomReleaseRangePresetName))
+		PropertyName == GET_MEMBER_NAME_CHECKED(ULFPSkillBase, CustomReleaseRangePresetName) ||
+		PropertyName == GET_MEMBER_NAME_CHECKED(ULFPSkillBase, EffectRangeType) ||
+		PropertyName == GET_MEMBER_NAME_CHECKED(ULFPSkillBase, EffectMinRange) ||
+		PropertyName == GET_MEMBER_NAME_CHECKED(ULFPSkillBase, EffectMaxRange) ||
+		PropertyName == GET_MEMBER_NAME_CHECKED(ULFPSkillBase, EffectRayRange) ||
+		PropertyName == GET_MEMBER_NAME_CHECKED(ULFPSkillBase, CustomEffectRangeData) ||
+		PropertyName == GET_MEMBER_NAME_CHECKED(ULFPSkillBase, CustomEffectRangePresetName))
 	{
 		UpdateSkillRange();
 	}

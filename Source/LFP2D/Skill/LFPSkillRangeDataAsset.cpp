@@ -1,11 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "LFP2D/Skill/LFPSkillReleaseRangeDataAsset.h"
+#include "LFP2D/Skill/LFPSkillRangeDataAsset.h"
 
-bool ULFPSkillReleaseRangeDataAsset::FindPreset(FName PresetName, FLFPSkillReleaseRangePreset& OutPreset) const
+bool ULFPSkillRangeDataAsset::FindPreset(FName PresetName, FLFPSkillRangePreset& OutPreset) const
 {
-    if (const FLFPSkillReleaseRangePreset* FoundPreset = Presets.Find(PresetName))
+    if (const FLFPSkillRangePreset* FoundPreset = Presets.Find(PresetName))
     {
         OutPreset = *FoundPreset;
         return true;
@@ -14,7 +14,7 @@ bool ULFPSkillReleaseRangeDataAsset::FindPreset(FName PresetName, FLFPSkillRelea
     return false;
 }
 
-TArray<FName> ULFPSkillReleaseRangeDataAsset::GetPresetNames() const
+TArray<FName> ULFPSkillRangeDataAsset::GetPresetNames() const
 {
     TArray<FName> PresetNames;
     Presets.GetKeys(PresetNames);

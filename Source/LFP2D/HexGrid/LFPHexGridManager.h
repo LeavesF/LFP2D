@@ -262,13 +262,21 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Highlight|Attack")
 	FLinearColor AttackOverlayColor = FLinearColor(1.0f, 0.2f, 0.2f, 0.25f);
 
-	// 技能效果范围 - 边缘颜色
+	// 技能释放范围 - 边缘颜色
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Highlight|Skill")
-	FLinearColor SkillEdgeColor = FLinearColor(0.2f, 1.0f, 0.4f, 0.8f);
+	FLinearColor SkillReleaseEdgeColor = FLinearColor(0.2f, 1.0f, 0.4f, 0.8f);
 
-	// 技能效果范围 - 覆盖层颜色
+	// 技能释放范围 - 覆盖层颜色
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Highlight|Skill")
-	FLinearColor SkillOverlayColor = FLinearColor(0.2f, 1.0f, 0.4f, 0.25f);
+	FLinearColor SkillReleaseOverlayColor = FLinearColor(0.2f, 1.0f, 0.4f, 0.25f);
+
+    // 技能效果范围 - 边缘颜色
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Highlight|Skill")
+    FLinearColor SkillEffectEdgeColor = FLinearColor(0.8f, 0.0f, 0.0f, 0.8f);
+
+    // 技能效果范围 - 覆盖层颜色
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Highlight|Skill")
+    FLinearColor SkillEffectOverlayColor = FLinearColor(0.8f, 0.0f, 0.0f, 0.25f);
 
 	// 路径 - 覆盖层颜色
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Highlight|Path")
@@ -286,6 +294,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Hex Grid")
 	void ShowRangeHighlightByCoords(const TArray<FLFPHexCoordinates>& Coords, EUnitRange HexRangeType);
 
+	UFUNCTION(BlueprintCallable, Category = "Hex Grid")
+	void ClearRangeHighlight(EUnitRange HexRangeType);
+
 	// 显示路径高亮
 	UFUNCTION(BlueprintCallable, Category = "Hex Grid")
 	void ShowPathHighlight(const TArray<ALFPHexTile*>& PathTiles);
@@ -300,7 +311,10 @@ public:
 
 private:
 	// 当前高亮的格子缓存
-	TArray<ALFPHexTile*> CurrentHighlightedTiles;
+	void RebuildRangeHighlights();
+	void ClearRangeHighlightVisuals();
+	void DrawRangeHighlightGroup(const TArray<ALFPHexTile*>& RangeTiles, EUnitRange HexRangeType);
+
+	TMap<EUnitRange, TArray<ALFPHexTile*>> HighlightedTilesByRange;
 	TArray<ALFPHexTile*> CurrentPathTiles;
-	EUnitRange CurrentHighlightRange = EUnitRange::UR_Default;
 };

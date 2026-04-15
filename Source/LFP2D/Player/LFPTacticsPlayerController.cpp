@@ -592,6 +592,32 @@ void ALFPTacticsPlayerController::SelectTile(ALFPHexTile* Tile)
         break;
     case EPlayControlState::SkillReleaseState:
         SelectedTile = Tile;
+        if (CurrentSelectedSkill)
+        {
+            FLFPHexCoordinates SelectedCoord = Tile->GetCoordinates();
+            TArray<FLFPHexCoordinates> ReleaseRangeCoords = CurrentSelectedSkill->GetReleaseRangeInGrid();
+            if(ReleaseRangeCoords.Contains(SelectedCoord))
+            {
+                TArray<FLFPHexCoordinates> EffectRangeCoords = CurrentSelectedSkill->GetEffectRange();
+                TArray<FLFPHexCoordinates> EffectRangeInGridCoords;
+                for (FLFPHexCoordinates Coord : EffectRangeCoords)
+                {
+                    FLFPHexCoordinates CoordInGrid = FLFPHexCoordinates();
+                    CoordInGrid.Q = SelectedCoord.Q + Coord.Q;
+                    CoordInGrid.R = SelectedCoord.R + Coord.R;
+                    CoordInGrid.S = SelectedCoord.S + Coord.S;
+                    EffectRangeInGridCoords.Add(CoordInGrid);
+                }
+                if (GridManager)
+                {
+                    GridManager->ShowRangeHighlightByCoords(EffectRangeInGridCoords, EUnitRange::UR_SkillEffect);
+                }
+            }
+            else
+            {
+                GridManager->ClearRangeHighlight(EUnitRange::UR_SkillEffect);
+            }
+        }
         break;
     default:
         break;
@@ -879,16 +905,9 @@ void ALFPTacticsPlayerController::HandleSkillTargetSelecting(ULFPSkillBase* Skil
     {
         bIsReleaseSkill = true;
         CurrentControlState = EPlayControlState::SkillReleaseState;
-        GridManager->ShowRangeHighlightByCoords(TargetTilesCoord, EUnitRange::UR_SkillEffect);
+        GridManager->ShowRangeHighlightByCoords(TargetTilesCoord, EUnitRange::UR_SkillRelease);
     }
-    //// 高亮目标格子
-    //if (GridManager)
-    //{
-    //    GridManager->HighlightTiles(TargetTiles, FLinearColor::Red);
-    //}
 
-    // 进入目标选择模式
-    //CurrentSelectionMode = ESelectionMode::TargetSelection;
     CurrentSelectedSkill = Skill;
 }
 
@@ -930,7 +949,7 @@ void ALFPTacticsPlayerController::HideEnemyPlanPreview()
     // 清除预览格子高亮
     if (GridManager)
     {
-        GridManager->ClearAllHighlights();
+        GridManager->ClearRangeHighlight(EUnitRange::UR_SkillEffect);
     }
     PreviewEffectTiles.Empty();
     PreviewedEnemy = nullptr;

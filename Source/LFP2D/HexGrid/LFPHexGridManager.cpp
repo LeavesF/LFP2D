@@ -22,6 +22,21 @@ const TArray<FLFPHexCoordinates> ALFPHexGridManager::HexDirections = {
 	FLFPHexCoordinates(0, 1)    // 东南
 };
 
+namespace
+{
+const TArray<EUnitRange>& GetRangeHighlightPriorityOrder()
+{
+	static const TArray<EUnitRange> PriorityOrder = {
+		EUnitRange::UR_Move,
+		EUnitRange::UR_Attack,
+		EUnitRange::UR_SkillRelease,
+		EUnitRange::UR_SkillEffect
+	};
+
+	return PriorityOrder;
+}
+}
+
 // Sets default values
 ALFPHexGridManager::ALFPHexGridManager()
 {
@@ -794,53 +809,74 @@ bool ALFPHexGridManager::IsPointInHexagon(const FVector2D& Point, const FVector2
 
 void ALFPHexGridManager::ShowRangeHighlight(const TArray<ALFPHexTile*>& RangeTiles, EUnitRange HexRangeType)
 {
-	ClearAllHighlights();
+	if (HexRangeType == EUnitRange::UR_Default)
+	{
+		return;
+	}
 
-	// 建立范围集合用于 O(1) 邻居查找
-	TSet<FIntPoint> RangeSet;
+	TArray<ALFPHexTile*>& CachedTiles = HighlightedTilesByRange.FindOrAdd(HexRangeType);
+	CachedTiles.Empty();
+
 	for (ALFPHexTile* Tile : RangeTiles)
 	{
 		if (Tile)
 		{
-			FLFPHexCoordinates Coord = Tile->GetCoordinates();
-			RangeSet.Add(FIntPoint(Coord.Q, Coord.R));
+			CachedTiles.AddUnique(Tile);
 		}
 	}
 
-	FLinearColor EdgeColor = GetEdgeColorForRange(HexRangeType);
-	FLinearColor OverlayColor = GetOverlayColorForRange(HexRangeType);
-
-	// 对每个范围格子：设置覆盖层 + 检测边界
-	for (ALFPHexTile* Tile : RangeTiles)
+	if (CachedTiles.IsEmpty())
 	{
-		if (!Tile) continue;
-
-		// 显示半透明填充覆盖层
-		Tile->ShowRangeOverlay(OverlayColor);
-
-		// 检查 6 个方向的邻居，不在范围内则显示边缘描边
-		// HexDirections[i] 的方向角度与 EdgeSprite[i] 的朝向不一致
-		// EdgeSprite 按顶点顺序排列（法线从 60° 递增），HexDirections 按方向排列（从 0° 递减）
-		// 正确映射：EdgeSpriteIdx = 5 - DirIdx
-		FLFPHexCoordinates TileCoord = Tile->GetCoordinates();
-		for (int32 DirIdx = 0; DirIdx < 6; DirIdx++)
-		{
-			FLFPHexCoordinates NeighborCoord(
-				TileCoord.Q + HexDirections[DirIdx].Q,
-				TileCoord.R + HexDirections[DirIdx].R
-			);
-			FIntPoint NeighborKey(NeighborCoord.Q, NeighborCoord.R);
-
-			// 邻居不在范围集合中 → 这条边是边界
-			if (!RangeSet.Contains(NeighborKey))
-			{
-				Tile->ShowEdge(5 - DirIdx, EdgeColor);
-			}
-		}
+		HighlightedTilesByRange.Remove(HexRangeType);
 	}
 
-	CurrentHighlightedTiles = RangeTiles;
-	CurrentHighlightRange = HexRangeType;
+	RebuildRangeHighlights();
+	return;
+	//// 建立范围集合用于 O(1) 邻居查找
+	//TSet<FIntPoint> RangeSet;
+	//for (ALFPHexTile* Tile : RangeTiles)
+	//{
+	//	if (Tile)
+	//	{
+	//		FLFPHexCoordinates Coord = Tile->GetCoordinates();
+	//		RangeSet.Add(FIntPoint(Coord.Q, Coord.R));
+	//	}
+	//}
+
+	//FLinearColor EdgeColor = GetEdgeColorForRange(HexRangeType);
+	//FLinearColor OverlayColor = GetOverlayColorForRange(HexRangeType);
+
+	//// 对每个范围格子：设置覆盖层 + 检测边界
+	//for (ALFPHexTile* Tile : RangeTiles)
+	//{
+	//	if (!Tile) continue;
+
+	//	// 显示半透明填充覆盖层
+	//	Tile->ShowRangeOverlay(OverlayColor);
+
+	//	// 检查 6 个方向的邻居，不在范围内则显示边缘描边
+	//	// HexDirections[i] 的方向角度与 EdgeSprite[i] 的朝向不一致
+	//	// EdgeSprite 按顶点顺序排列（法线从 60° 递增），HexDirections 按方向排列（从 0° 递减）
+	//	// 正确映射：EdgeSpriteIdx = 5 - DirIdx
+	//	FLFPHexCoordinates TileCoord = Tile->GetCoordinates();
+	//	for (int32 DirIdx = 0; DirIdx < 6; DirIdx++)
+	//	{
+	//		FLFPHexCoordinates NeighborCoord(
+	//			TileCoord.Q + HexDirections[DirIdx].Q,
+	//			TileCoord.R + HexDirections[DirIdx].R
+	//		);
+	//		FIntPoint NeighborKey(NeighborCoord.Q, NeighborCoord.R);
+
+	//		// 邻居不在范围集合中 → 这条边是边界
+	//		if (!RangeSet.Contains(NeighborKey))
+	//		{
+	//			Tile->ShowEdge(5 - DirIdx, EdgeColor);
+	//		}
+	//	}
+	//}
+
+	//// Unreachable legacy path kept only to minimize diff noise.
+	//return;
 }
 
 void ALFPHexGridManager::ShowRangeHighlightByCoords(const TArray<FLFPHexCoordinates>& Coords, EUnitRange HexRangeType)
@@ -857,61 +893,214 @@ void ALFPHexGridManager::ShowRangeHighlightByCoords(const TArray<FLFPHexCoordina
 	ShowRangeHighlight(Tiles, HexRangeType);
 }
 
+void ALFPHexGridManager::ClearRangeHighlight(EUnitRange HexRangeType)
+{
+	if (HexRangeType == EUnitRange::UR_Default)
+	{
+		return;
+	}
+
+	HighlightedTilesByRange.Remove(HexRangeType);
+	RebuildRangeHighlights();
+}
+
 void ALFPHexGridManager::ShowPathHighlight(const TArray<ALFPHexTile*>& PathTiles)
 {
-	// 清除之前的路径高亮
-	ClearPathHighlight();
+	CurrentPathTiles.Empty();
 
 	for (ALFPHexTile* Tile : PathTiles)
+	{
+		if (Tile)
+		{
+			CurrentPathTiles.AddUnique(Tile);
+		}
+	}
+
+	RebuildRangeHighlights();
+	return;
+	//// 清除之前的路径高亮
+	//ClearPathHighlight();
+
+	//for (ALFPHexTile* Tile : PathTiles)
+	//{
+	//	if (Tile)
+	//	{
+	//		Tile->ShowPathOverlay(true, PathOverlayColor);
+	//	}
+	//}
+
+	//CurrentPathTiles = PathTiles;
+}
+
+void ALFPHexGridManager::ClearPathHighlight()
+{
+	CurrentPathTiles.Empty();
+	RebuildRangeHighlights();
+	return;
+
+	//for (ALFPHexTile* Tile : CurrentPathTiles)
+	//{
+	//	if (Tile)
+	//	{
+	//		// 恢复为范围覆盖层（如果该格子仍在范围内）
+	//		Tile->ShowPathOverlay(false);
+	//		if (false)
+	//		{
+	//			Tile->ShowRangeOverlay(GetOverlayColorForRange(EUnitRange::UR_Default));
+	//		}
+	//	}
+	//}
+	//CurrentPathTiles.Empty();
+}
+
+void ALFPHexGridManager::ClearAllHighlights()
+{
+	ClearRangeHighlightVisuals();
+	HighlightedTilesByRange.Empty();
+	CurrentPathTiles.Empty();
+	return;
+	//// 仅清除已缓存的格子，不遍历全图
+	//for (ALFPHexTile* Tile : CurrentPathTiles)
+	//{
+	//	if (Tile)
+	//	{
+	//		Tile->ClearAllHighlights();
+	//	}
+	//}
+	//HighlightedTilesByRange.Empty();
+
+	//for (ALFPHexTile* Tile : CurrentPathTiles)
+	//{
+	//	if (Tile)
+	//	{
+	//		Tile->ClearAllHighlights();
+	//	}
+	//}
+	//CurrentPathTiles.Empty();
+
+	//return;
+}
+
+void ALFPHexGridManager::RebuildRangeHighlights()
+{
+	ClearRangeHighlightVisuals();
+
+	TMap<ALFPHexTile*, EUnitRange> VisibleRangeByTile;
+	for (const EUnitRange RangeType : GetRangeHighlightPriorityOrder())
+	{
+		if (const TArray<ALFPHexTile*>* RangeTiles = HighlightedTilesByRange.Find(RangeType))
+		{
+			for (ALFPHexTile* Tile : *RangeTiles)
+			{
+				if (Tile)
+				{
+					VisibleRangeByTile.Add(Tile, RangeType);
+				}
+			}
+		}
+	}
+
+	for (const EUnitRange RangeType : GetRangeHighlightPriorityOrder())
+	{
+		TArray<ALFPHexTile*> VisibleTiles;
+		if (const TArray<ALFPHexTile*>* RangeTiles = HighlightedTilesByRange.Find(RangeType))
+		{
+			for (ALFPHexTile* Tile : *RangeTiles)
+			{
+				if (Tile && VisibleRangeByTile.FindRef(Tile) == RangeType)
+				{
+					VisibleTiles.AddUnique(Tile);
+				}
+			}
+		}
+
+		DrawRangeHighlightGroup(VisibleTiles, RangeType);
+	}
+
+	for (ALFPHexTile* Tile : CurrentPathTiles)
 	{
 		if (Tile)
 		{
 			Tile->ShowPathOverlay(true, PathOverlayColor);
 		}
 	}
-
-	CurrentPathTiles = PathTiles;
 }
 
-void ALFPHexGridManager::ClearPathHighlight()
+void ALFPHexGridManager::ClearRangeHighlightVisuals()
 {
-	for (ALFPHexTile* Tile : CurrentPathTiles)
+	TSet<ALFPHexTile*> TilesToClear;
+
+	for (const TPair<EUnitRange, TArray<ALFPHexTile*>>& Pair : HighlightedTilesByRange)
 	{
-		if (Tile)
+		for (ALFPHexTile* Tile : Pair.Value)
 		{
-			// 恢复为范围覆盖层（如果该格子仍在范围内）
-			Tile->ShowPathOverlay(false);
-			if (CurrentHighlightRange != EUnitRange::UR_Default)
+			if (Tile)
 			{
-				Tile->ShowRangeOverlay(GetOverlayColorForRange(CurrentHighlightRange));
+				TilesToClear.Add(Tile);
 			}
 		}
 	}
-	CurrentPathTiles.Empty();
-}
-
-void ALFPHexGridManager::ClearAllHighlights()
-{
-	// 仅清除已缓存的格子，不遍历全图
-	for (ALFPHexTile* Tile : CurrentHighlightedTiles)
-	{
-		if (Tile)
-		{
-			Tile->ClearAllHighlights();
-		}
-	}
-	CurrentHighlightedTiles.Empty();
 
 	for (ALFPHexTile* Tile : CurrentPathTiles)
 	{
 		if (Tile)
 		{
+			TilesToClear.Add(Tile);
+		}
+	}
+
+	for (ALFPHexTile* Tile : TilesToClear)
+	{
+		if (Tile)
+		{
 			Tile->ClearAllHighlights();
 		}
 	}
-	CurrentPathTiles.Empty();
+}
 
-	CurrentHighlightRange = EUnitRange::UR_Default;
+void ALFPHexGridManager::DrawRangeHighlightGroup(const TArray<ALFPHexTile*>& RangeTiles, EUnitRange HexRangeType)
+{
+	if (HexRangeType == EUnitRange::UR_Default || RangeTiles.IsEmpty())
+	{
+		return;
+	}
+
+	TSet<FIntPoint> RangeSet;
+	for (ALFPHexTile* Tile : RangeTiles)
+	{
+		if (Tile)
+		{
+			const FLFPHexCoordinates Coord = Tile->GetCoordinates();
+			RangeSet.Add(FIntPoint(Coord.Q, Coord.R));
+		}
+	}
+
+	const FLinearColor EdgeColor = GetEdgeColorForRange(HexRangeType);
+	const FLinearColor OverlayColor = GetOverlayColorForRange(HexRangeType);
+
+	for (ALFPHexTile* Tile : RangeTiles)
+	{
+		if (!Tile)
+		{
+			continue;
+		}
+
+		Tile->ShowRangeOverlay(OverlayColor);
+
+		const FLFPHexCoordinates TileCoord = Tile->GetCoordinates();
+		for (int32 DirIdx = 0; DirIdx < 6; DirIdx++)
+		{
+			const FLFPHexCoordinates NeighborCoord(
+				TileCoord.Q + HexDirections[DirIdx].Q,
+				TileCoord.R + HexDirections[DirIdx].R
+			);
+			const FIntPoint NeighborKey(NeighborCoord.Q, NeighborCoord.R);
+			if (!RangeSet.Contains(NeighborKey))
+			{
+				Tile->ShowEdge(5 - DirIdx, EdgeColor);
+			}
+		}
+	}
 }
 
 FLinearColor ALFPHexGridManager::GetEdgeColorForRange(EUnitRange HexRangeType) const
@@ -920,7 +1109,8 @@ FLinearColor ALFPHexGridManager::GetEdgeColorForRange(EUnitRange HexRangeType) c
 	{
 	case EUnitRange::UR_Move:        return MoveEdgeColor;
 	case EUnitRange::UR_Attack:      return AttackEdgeColor;
-	case EUnitRange::UR_SkillEffect: return SkillEdgeColor;
+    case EUnitRange::UR_SkillRelease: return SkillReleaseEdgeColor;
+	case EUnitRange::UR_SkillEffect: return SkillEffectEdgeColor;
 	default:                         return FLinearColor::Transparent;
 	}
 }
@@ -931,7 +1121,8 @@ FLinearColor ALFPHexGridManager::GetOverlayColorForRange(EUnitRange HexRangeType
 	{
 	case EUnitRange::UR_Move:        return MoveOverlayColor;
 	case EUnitRange::UR_Attack:      return AttackOverlayColor;
-	case EUnitRange::UR_SkillEffect: return SkillOverlayColor;
+    case EUnitRange::UR_SkillRelease: return SkillReleaseOverlayColor;
+	case EUnitRange::UR_SkillEffect: return SkillEffectOverlayColor;
 	default:                         return FLinearColor::Transparent;
 	}
 }
