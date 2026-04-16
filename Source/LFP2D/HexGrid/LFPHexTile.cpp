@@ -124,10 +124,41 @@ void ALFPHexTile::InitializeEdgeComponents(UPaperSprite* EdgeSprite, UPaperSprit
 	}
 }
 
-void ALFPHexTile::ShowEdge(int32 DirIndex, FLinearColor Color)
+void ALFPHexTile::ShowEdge(int32 DirIndex, FLinearColor Color, EUnitRange HexRangeType)
 {
 	if (EdgeSpriteComponents.IsValidIndex(DirIndex) && EdgeSpriteComponents[DirIndex])
 	{
+		int32 SortPriority = 0;
+		switch (HexRangeType)
+		{
+		case EUnitRange::UR_Move:
+			SortPriority = MoveEdgeTranslucencySortPriority;
+			break;
+
+		case EUnitRange::UR_SkillRelease:
+			SortPriority = SkillReleaseEdgeTranslucencySortPriority;
+			break;
+
+		case EUnitRange::UR_SkillEffect:
+			SortPriority = SkillEffectEdgeTranslucencySortPriority;
+			break;
+
+        case EUnitRange::UR_Enemy_Move:
+            SortPriority = MoveEdgeTranslucencySortPriority;
+            break;
+
+        case EUnitRange::UR_Enemy_SkillRelease:
+            SortPriority = SkillReleaseEdgeTranslucencySortPriority;
+            break;
+
+        case EUnitRange::UR_Enemy_SkillEffect:
+            SortPriority = SkillEffectEdgeTranslucencySortPriority;
+            break;
+		default:
+			break;
+		}
+
+		EdgeSpriteComponents[DirIndex]->TranslucencySortPriority = SortPriority;
 		EdgeSpriteComponents[DirIndex]->SetSpriteColor(Color);
 		EdgeSpriteComponents[DirIndex]->SetVisibility(true);
 	}

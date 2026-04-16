@@ -33,35 +33,35 @@ public:
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Hex Grid")
-    void GenerateGrid(int32 Width, int32 Height);
+	void GenerateGrid(int32 Width, int32 Height);
 
 	UFUNCTION(BlueprintCallable, Category = "Hex Grid")
 	TArray<ALFPHexTile*> GetNeighbors(const FLFPHexCoordinates& Coords) const;
 
-    UFUNCTION(BlueprintCallable, Category = "Hex Grid")
-    FLFPHexCoordinates Coord_AddQ(FLFPHexCoordinates Coord, int32 In_Q)
-    {
-        return FLFPHexCoordinates(Coord.Q + In_Q, Coord.R);
-    }
+	UFUNCTION(BlueprintCallable, Category = "Hex Grid")
+	FLFPHexCoordinates Coord_AddQ(FLFPHexCoordinates Coord, int32 In_Q)
+	{
+		return FLFPHexCoordinates(Coord.Q + In_Q, Coord.R);
+	}
 
-    UFUNCTION(BlueprintCallable, Category = "Hex Grid")
-    FLFPHexCoordinates Coord_AddR(FLFPHexCoordinates Coord, int32 In_R)
-    {
-        return FLFPHexCoordinates(Coord.Q, Coord.R + In_R);
-    }
+	UFUNCTION(BlueprintCallable, Category = "Hex Grid")
+	FLFPHexCoordinates Coord_AddR(FLFPHexCoordinates Coord, int32 In_R)
+	{
+		return FLFPHexCoordinates(Coord.Q, Coord.R + In_R);
+	}
 
 	UFUNCTION(BlueprintCallable, Category = "Hex Grid")
 	TArray<ALFPHexTile*> FindPath(ALFPHexTile* Start, ALFPHexTile* End);
 
 	UFUNCTION(BlueprintCallable, Category = "Hex Grid")
-    TArray<ALFPHexTile*> GetTilesInRange(ALFPHexTile* Center, int32 MaxRange, int32 MinRange = 0);
+	TArray<ALFPHexTile*> GetTilesInRange(ALFPHexTile* Center, int32 MaxRange, int32 MinRange = 0);
 
 	UFUNCTION(BlueprintCallable, Category = "Hex Grid")
 	ALFPHexTile* GetTileAtCoordinates(const FLFPHexCoordinates& Coords) const;
 
 
-    UFUNCTION(BlueprintCallable, Category = "Hex Grid")
-    void SetVerticalScale(float Scale) { VerticalScale = Scale; }
+	UFUNCTION(BlueprintCallable, Category = "Hex Grid")
+	void SetVerticalScale(float Scale) { VerticalScale = Scale; }
 
 	// 调试控制
 	UFUNCTION(BlueprintCallable, Category = "Hex Grid")
@@ -127,8 +127,8 @@ public:
 	// 获取 GridMap 只读引用
 	const TMap<FIntPoint, ALFPHexTile*>& GetGridMap() const { return GridMap; }
 protected:
-    UPROPERTY(EditDefaultsOnly)
-    TSubclassOf<ALFPHexTile> HexTileClass;
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<ALFPHexTile> HexTileClass;
 
 	UPROPERTY(EditAnywhere, Category = "Hex Grid")
 	float HexSize;
@@ -139,8 +139,8 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Hex Grid")
 	int32 GridHeight;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hex Grid", meta = (ClampMin = "0.1", ClampMax = "2.0"))
-    float VerticalScale = 1.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hex Grid", meta = (ClampMin = "0.1", ClampMax = "2.0"))
+	float VerticalScale = 1.0f;
 
 	// 默认地形数据（没有单独配置的格子使用此数据）
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Terrain")
@@ -166,7 +166,7 @@ private:
 
 	void DrawDebugHexagon(const FVector& Center, FColor Color) const;
 
-    void DrawDebugPath(const TArray<ALFPHexTile*>& Path, bool bPathFound);
+	void DrawDebugPath(const TArray<ALFPHexTile*>& Path, bool bPathFound);
 
 	// 六边形方向数组（静态常量）
 	static const TArray<FLFPHexCoordinates> HexDirections;
@@ -215,22 +215,22 @@ public:
 	void UpdateTransitionsAround(int32 Q, int32 R);
 
 public:
-    UFUNCTION(BlueprintCallable, Category = "Hex Grid")
-    ALFPHexTile* GetHexTileUnderCursor(const FVector2D& ScreenPosition, APlayerController* PlayerController);
+	UFUNCTION(BlueprintCallable, Category = "Hex Grid")
+	ALFPHexTile* GetHexTileUnderCursor(const FVector2D& ScreenPosition, APlayerController* PlayerController);
 
-    UFUNCTION(BlueprintPure, Category = "Hex Grid")
-    FVector2D WorldToHexGridPosition(const FVector& WorldPosition, float InHexSize, float InVerticalScale = 1.0f);
+	UFUNCTION(BlueprintPure, Category = "Hex Grid")
+	FVector2D WorldToHexGridPosition(const FVector& WorldPosition, float InHexSize, float InVerticalScale = 1.0f);
 
-    UFUNCTION(BlueprintPure, Category = "Hex Grid")
-    FLFPHexCoordinates PixelToHexCoordinates(const FVector2D& PixelPosition, float InHexSize);
+	UFUNCTION(BlueprintPure, Category = "Hex Grid")
+	FLFPHexCoordinates PixelToHexCoordinates(const FVector2D& PixelPosition, float InHexSize);
 
-    UFUNCTION(BlueprintPure, Category = "Hex Grid")
-    FLFPHexCoordinates RoundToHex(float q, float r);
+	UFUNCTION(BlueprintPure, Category = "Hex Grid")
+	FLFPHexCoordinates RoundToHex(float q, float r);
 
 protected:
-    // 检测点是否在六边形边界内
-    UFUNCTION(BlueprintPure, Category = "Hex Grid")
-    bool IsPointInHexagon(const FVector2D& Point, const FVector2D& Center, float InHexSize);
+	// 检测点是否在六边形边界内
+	UFUNCTION(BlueprintPure, Category = "Hex Grid")
+	bool IsPointInHexagon(const FVector2D& Point, const FVector2D& Center, float InHexSize);
 
 
 public:
@@ -254,14 +254,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Highlight|Move")
 	FLinearColor MoveOverlayColor = FLinearColor(0.2f, 0.5f, 1.0f, 0.25f);
 
-	// 攻击范围 - 边缘颜色
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Highlight|Attack")
-	FLinearColor AttackEdgeColor = FLinearColor(1.0f, 0.2f, 0.2f, 0.8f);
-
-	// 攻击范围 - 覆盖层颜色
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Highlight|Attack")
-	FLinearColor AttackOverlayColor = FLinearColor(1.0f, 0.2f, 0.2f, 0.25f);
-
 	// 技能释放范围 - 边缘颜色
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Highlight|Skill")
 	FLinearColor SkillReleaseEdgeColor = FLinearColor(0.2f, 1.0f, 0.4f, 0.8f);
@@ -270,13 +262,37 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Highlight|Skill")
 	FLinearColor SkillReleaseOverlayColor = FLinearColor(0.2f, 1.0f, 0.4f, 0.25f);
 
-    // 技能效果范围 - 边缘颜色
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Highlight|Skill")
-    FLinearColor SkillEffectEdgeColor = FLinearColor(0.8f, 0.0f, 0.0f, 0.8f);
+	// 技能效果范围 - 边缘颜色
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Highlight|Skill")
+	FLinearColor SkillEffectEdgeColor = FLinearColor(0.8f, 0.0f, 0.0f, 0.8f);
 
-    // 技能效果范围 - 覆盖层颜色
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Highlight|Skill")
-    FLinearColor SkillEffectOverlayColor = FLinearColor(0.8f, 0.0f, 0.0f, 0.25f);
+	// 技能效果范围 - 覆盖层颜色
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Highlight|Skill")
+	FLinearColor SkillEffectOverlayColor = FLinearColor(0.8f, 0.0f, 0.0f, 0.25f);
+
+	// 敌人移动范围 - 边缘颜色
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Highlight|Move")
+	FLinearColor EnemyMoveEdgeColor = FLinearColor(0.2f, 0.5f, 1.0f, 0.8f);
+
+	// 敌人移动范围 - 覆盖层颜色
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Highlight|Move")
+	FLinearColor EnemyMoveOverlayColor = FLinearColor(0.2f, 0.5f, 1.0f, 0.25f);
+
+	// 敌人技能释放范围 - 边缘颜色
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Highlight|Skill")
+	FLinearColor EnemySkillReleaseEdgeColor = FLinearColor(0.2f, 1.0f, 0.4f, 0.8f);
+
+	// 敌人技能释放范围 - 覆盖层颜色
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Highlight|Skill")
+	FLinearColor EnemySkillReleaseOverlayColor = FLinearColor(0.2f, 1.0f, 0.4f, 0.25f);
+
+	// 敌人技能效果范围 - 边缘颜色
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Highlight|Skill")
+	FLinearColor EnemySkillEffectEdgeColor = FLinearColor(0.8f, 0.0f, 0.0f, 0.8f);
+
+	// 敌人技能效果范围 - 覆盖层颜色
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Highlight|Skill")
+	FLinearColor EnemySkillEffectOverlayColor = FLinearColor(0.8f, 0.0f, 0.0f, 0.25f);
 
 	// 路径 - 覆盖层颜色
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Highlight|Path")
@@ -313,7 +329,7 @@ private:
 	// 当前高亮的格子缓存
 	void RebuildRangeHighlights();
 	void ClearRangeHighlightVisuals();
-    //void ClearRangeHighlightVisuals(EUnitRange HexRangeType);
+	//void ClearRangeHighlightVisuals(EUnitRange HexRangeType);
 	void DrawRangeHighlightGroup(const TArray<ALFPHexTile*>& RangeTiles, EUnitRange HexRangeType);
 
 	TMap<EUnitRange, TArray<ALFPHexTile*>> HighlightedTilesByRange;

@@ -293,6 +293,8 @@ protected:
     UPROPERTY()
     ALFPTacticsUnit* PreviewedEnemy = nullptr;
 
+    TArray<ALFPHexTile*> PreviewReleaseTiles;
+
     // 预览高亮的格子缓存
     TArray<ALFPHexTile*> PreviewEffectTiles;
 

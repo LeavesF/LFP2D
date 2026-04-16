@@ -28,8 +28,11 @@ const TArray<EUnitRange>& GetRangeHighlightPriorityOrder()
 {
 	static const TArray<EUnitRange> PriorityOrder = {
 		EUnitRange::UR_Move,
+		EUnitRange::UR_Enemy_Move,
 		EUnitRange::UR_SkillRelease,
-		EUnitRange::UR_SkillEffect
+		EUnitRange::UR_Enemy_SkillRelease,
+		EUnitRange::UR_SkillEffect,
+        EUnitRange::UR_Enemy_SkillEffect
 	};
 
 	return PriorityOrder;
@@ -1125,7 +1128,7 @@ void ALFPHexGridManager::DrawRangeHighlightGroup(const TArray<ALFPHexTile*>& Ran
 			const FIntPoint NeighborKey(NeighborCoord.Q, NeighborCoord.R);
 			if (!RangeSet.Contains(NeighborKey))
 			{
-				Tile->ShowEdge(5 - DirIdx, EdgeColor);
+				Tile->ShowEdge(5 - DirIdx, EdgeColor, HexRangeType);
 			}
 		}
 	}
@@ -1138,6 +1141,9 @@ FLinearColor ALFPHexGridManager::GetEdgeColorForRange(EUnitRange HexRangeType) c
 	case EUnitRange::UR_Move:        return MoveEdgeColor;
     case EUnitRange::UR_SkillRelease: return SkillReleaseEdgeColor;
 	case EUnitRange::UR_SkillEffect: return SkillEffectEdgeColor;
+    case EUnitRange::UR_Enemy_Move:        return EnemyMoveEdgeColor;
+    case EUnitRange::UR_Enemy_SkillRelease: return EnemySkillReleaseEdgeColor;
+    case EUnitRange::UR_Enemy_SkillEffect: return EnemySkillEffectEdgeColor;
 	default:                         return FLinearColor::Transparent;
 	}
 }
@@ -1149,6 +1155,9 @@ FLinearColor ALFPHexGridManager::GetOverlayColorForRange(EUnitRange HexRangeType
 	case EUnitRange::UR_Move:        return MoveOverlayColor;
     case EUnitRange::UR_SkillRelease: return SkillReleaseOverlayColor;
 	case EUnitRange::UR_SkillEffect: return SkillEffectOverlayColor;
+    case EUnitRange::UR_Enemy_Move:        return EnemyMoveOverlayColor;
+    case EUnitRange::UR_Enemy_SkillRelease: return EnemySkillReleaseOverlayColor;
+    case EUnitRange::UR_Enemy_SkillEffect: return EnemySkillEffectOverlayColor;
 	default:                         return FLinearColor::Transparent;
 	}
 }

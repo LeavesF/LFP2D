@@ -286,7 +286,7 @@ public:
 	void InitializeEdgeComponents(UPaperSprite* EdgeSprite, UPaperSprite* OverlaySprite, float InHexSize, float InVerticalScale);
 
 	// 显示指定方向的边缘高亮（方向索引 0-5，对应 HexDirections）
-	void ShowEdge(int32 DirIndex, FLinearColor Color);
+	void ShowEdge(int32 DirIndex, FLinearColor Color, EUnitRange HexRangeType);
 
 	// 隐藏指定方向的边缘高亮
 	void HideEdge(int32 DirIndex);
@@ -322,6 +322,15 @@ public:
 
 	// 清除所有过渡
 	void ClearAllTransitions();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Highlight|Sort")
+	int32 MoveEdgeTranslucencySortPriority = 3;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Highlight|Sort")
+	int32 SkillReleaseEdgeTranslucencySortPriority = 4;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Highlight|Sort")
+	int32 SkillEffectEdgeTranslucencySortPriority = 5;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UPaperSpriteComponent> SpriteComponent;

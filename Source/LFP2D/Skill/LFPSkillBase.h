@@ -20,10 +20,14 @@ enum class ESkillTargetType : uint8
 	Self,
 	SingleAlly,
 	SingleEnemy,
-	AreaAlly,
-	AreaEnemy,
-	AreaAll,
-	Tile
+    SingleUnit,
+    MutiAlly,
+    MutiEnemy,
+    MutiUnit,
+	AllAlly,
+	AllEnemy,
+	AllUnit,
+    AnyTile
 };
 
 UENUM(BlueprintType)
@@ -59,6 +63,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Skill")
 	bool IsHostileTarget(ALFPTacticsUnit* Target) const;
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Skill")
+	bool IsValidReleaseTargetTile(ALFPHexTile* TargetTile) const;
 
 	UFUNCTION(BlueprintCallable, Category = "Skill")
 	int32 DealOwnerRepeatedDamage(ALFPTacticsUnit* Target, int32 HitCount, float DamageScalePerHit) const;

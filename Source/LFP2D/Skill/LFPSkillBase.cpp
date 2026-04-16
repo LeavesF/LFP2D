@@ -31,7 +31,7 @@ void AppendCoordsInDistanceRange(TArray<FLFPHexCoordinates>& OutCoords, int32 Ma
 		return;
 	}
 
-	const int32 EffectiveMinDistance = FMath::Max(1, MinExclusiveDistance + 1);
+	const int32 EffectiveMinDistance = FMath::Max(0, MinExclusiveDistance);
 
 	for (int32 Q = -MaxDistance; Q <= MaxDistance; ++Q)
 	{
@@ -98,6 +98,40 @@ bool ULFPSkillBase::IsHostileTarget(ALFPTacticsUnit* Target) const
 	return Owner->GetAffiliation() != Target->GetAffiliation();
 }
 
+bool ULFPSkillBase::IsValidReleaseTargetTile(ALFPHexTile* TargetTile) const
+{
+	if (!TargetTile)
+	{
+		return false;
+	}
+
+	ALFPTacticsUnit* TargetUnit = GetUnitOnTile(TargetTile);
+	switch (TargetType)
+	{
+	case ESkillTargetType::Self:
+		return Owner && TargetUnit == Owner;
+
+	case ESkillTargetType::SingleEnemy:
+		return TargetUnit && TargetUnit->IsAlive() && IsHostileTarget(TargetUnit);
+
+	case ESkillTargetType::SingleAlly:
+		return TargetUnit && TargetUnit->IsAlive() && Owner && !IsHostileTarget(TargetUnit);
+
+	case ESkillTargetType::SingleUnit:
+		return TargetUnit && TargetUnit->IsAlive();
+
+	case ESkillTargetType::AnyTile:
+	case ESkillTargetType::MutiAlly:
+	case ESkillTargetType::MutiEnemy:
+	case ESkillTargetType::MutiUnit:
+	case ESkillTargetType::AllAlly:
+	case ESkillTargetType::AllEnemy:
+	case ESkillTargetType::AllUnit:
+	default:
+		return true;
+	}
+}
+
 int32 ULFPSkillBase::DealOwnerRepeatedDamage(ALFPTacticsUnit* Target, int32 HitCount, float DamageScalePerHit) const
 {
 	if (!Owner || !Target || HitCount <= 0)
@@ -118,6 +152,7 @@ bool ULFPSkillBase::CanExecute_Implementation(ALFPHexTile* TargetTile)
 
 	// 检查行动力
 	if (!Owner->HasEnoughActionPoints(ActionPointCost)) return false;
+	if (TargetTile && !IsValidReleaseTargetTile(TargetTile)) return false;
 
 	return true;
 }
@@ -138,6 +173,7 @@ bool ULFPSkillBase::IsAvailable() const
 bool ULFPSkillBase::CanReleaseFrom_Implementation(ALFPHexTile* CasterTile, ALFPHexTile* TargetTile)
 {
 	if (!CasterTile || !TargetTile) return false;
+	if (!IsValidReleaseTargetTile(TargetTile)) return false;
 
 	// 计算施法格子到目标格子的距离
 	UpdateSkillRange();
