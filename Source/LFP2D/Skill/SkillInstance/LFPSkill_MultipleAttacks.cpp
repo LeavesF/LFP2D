@@ -53,5 +53,5 @@ void ULFPSkill_MultipleAttacks::Execute_Implementation(ALFPHexTile* TargetTile)
     }
 
     const int32 HitCount = 2 + Owner->GetAttackCount();
-    DealOwnerRepeatedDamage(TargetUnit, HitCount, 0.6f);
+    DealOwnerRepeatedDamage(TargetUnit, HitCount, DamageScalePerHit);
 }

@@ -88,7 +88,7 @@ public:
 	TArray<ALFPHexTile*> GetTargetTiles(ALFPTacticsUnit* Caster) const;
 
 	UFUNCTION(BlueprintCallable, Category = "Skill")
-	void OnTurnStart();
+	virtual void OnTurnStart();
 
 	// ==== 技能优先级（AI 规划阶段用于全局 AP 分配） ====
 
