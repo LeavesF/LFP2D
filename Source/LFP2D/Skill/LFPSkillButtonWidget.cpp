@@ -13,7 +13,6 @@ ULFPSkillButtonWidget::ULFPSkillButtonWidget(const FObjectInitializer& ObjectIni
 {
     AssociatedSkill = nullptr;
     bIsSelected = false;
-    bIsEnabled = true;
 
     // 默认颜色设置
     CooldownTextColor = FSlateColor(FLinearColor(0.8f, 0.2f, 0.2f)); // 红色
@@ -43,7 +42,7 @@ void ULFPSkillButtonWidget::NativeConstruct()
     //}
 }
 
-void ULFPSkillButtonWidget::Initialize(ULFPSkillBase* Skill)
+void ULFPSkillButtonWidget::InitializeSkillButton(ULFPSkillBase* Skill)
 {
     if (!Skill) return;
 
@@ -61,7 +60,7 @@ void ULFPSkillButtonWidget::RefreshState()
 
 void ULFPSkillButtonWidget::SetButtonEnabled(bool bEnabled)
 {
-    bIsEnabled = bEnabled;
+    SetIsEnabled(bEnabled);
 
     if (SkillButton)
     {
@@ -103,7 +102,7 @@ void ULFPSkillButtonWidget::SetSelected(bool bSelected)
     }
 
     // 应用对应的按钮样式
-    if (SkillButton && bIsEnabled)
+    if (SkillButton && GetIsEnabled())
     {
         if (bSelected)
         {
@@ -118,7 +117,7 @@ void ULFPSkillButtonWidget::SetSelected(bool bSelected)
 
 void ULFPSkillButtonWidget::OnButtonClicked()
 {
-    if (!AssociatedSkill || !OwnerUnit || !bIsEnabled) return;
+    if (!AssociatedSkill || !OwnerUnit || !GetIsEnabled()) return;
 
     //OwnerUnit->ExecuteSkill(AssociatedSkill);
     TacticsPC->HandleSkillTargetSelecting(AssociatedSkill);
@@ -139,7 +138,7 @@ void ULFPSkillButtonWidget::NativeOnMouseEnter(const FGeometry& InGeometry, cons
 {
     Super::NativeOnMouseEnter(InGeometry, InMouseEvent);
 
-    if (!bIsEnabled) return;
+    if (!GetIsEnabled()) return;
 
     // 播放悬停音效
     if (HoverSound)

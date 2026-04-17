@@ -32,7 +32,7 @@ public:
 
     // 初始化技能按钮
     UFUNCTION(BlueprintCallable, Category = "Skill Button")
-    void Initialize(ULFPSkillBase* Skill);
+    void InitializeSkillButton(ULFPSkillBase* Skill);
 
     // 刷新按钮状态
     UFUNCTION(BlueprintCallable, Category = "Skill Button")

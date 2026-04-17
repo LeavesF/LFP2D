@@ -77,7 +77,7 @@ void ULFPSkillSelectionWidget::InitializeSkillsInfo(ALFPTacticsUnit* Unit, ALFPT
             if (SkillButton)
             {
                 // 初始化按钮
-                SkillButton->Initialize(Skill);
+                SkillButton->InitializeSkillButton(Skill);
                 SkillButton->OwnerUnit = OwnerUnit;
                 SkillButton->TacticsPC = TacticsPC;
                 // 绑定点击事件
