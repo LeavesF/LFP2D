@@ -4,15 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
+#include "LFP2D/HexGrid/LFPHexTile.h"
 #include "UObject/NoExportTypes.h"
 #include "LFPSkillBase.generated.h"
 
 class ALFPTacticsUnit;
-class ALFPHexTile;
 class ULFPSkillRangeDataAsset;
 struct FPropertyChangedEvent;
-
-struct FLFPHexCoordinates;
 
 UENUM(BlueprintType)
 enum class ESkillTargetType : uint8
