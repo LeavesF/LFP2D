@@ -353,6 +353,11 @@ void ALFPTurnManager::BeginActionPhase()
 void ALFPTurnManager::BeginUnitTurn(ALFPTacticsUnit* Unit)
 {
     if (bBattleEnded) return;
+    if (!Unit || !Unit->IsAlive())
+    {
+        PassTurn();
+        return;
+    }
 
     OnTurnChanged.Broadcast();
 
@@ -369,15 +374,22 @@ void ALFPTurnManager::BeginUnitTurn(ALFPTacticsUnit* Unit)
         }
 
         Unit->OnTurnStarted();
+        if (!Unit->IsAlive())
+        {
+            PassTurn();
+            return;
+        }
 
         ExecuteEnemyPlan(Unit);
         return;
     }
 
     // 玩家单位：保持原有逻辑
-    if (Unit)
+    Unit->OnTurnStarted();
+    if (!Unit->IsAlive())
     {
-        Unit->OnTurnStarted();
+        PassTurn();
+        return;
     }
 
     if (PC)

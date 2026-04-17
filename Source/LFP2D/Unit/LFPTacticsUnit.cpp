@@ -6,6 +6,7 @@
 #include "LFP2D/Player/LFPTacticsPlayerController.h"
 #include "LFP2D/Skill/LFPSkillBase.h"
 #include "LFP2D/Skill/LFPSkillComponent.h"
+#include "LFP2D/Buff/LFPBuffComponent.h"
 #include "LFP2D/Unit/Betrayal/LFPBetrayalCondition.h"
 #include "LFP2D/HexGrid/LFPHexTile.h"
 #include "LFP2D/HexGrid/LFPHexGridManager.h"
@@ -49,6 +50,7 @@ ALFPTacticsUnit::ALFPTacticsUnit()
 
     // 创建技能组件
     SkillComponent = CreateDefaultSubobject<ULFPSkillComponent>(TEXT("SkillComponent"));
+    BuffComponent = CreateDefaultSubobject<ULFPBuffComponent>(TEXT("BuffComponent"));
 
     // 创建头顶计划技能图标组件
     PlannedSkillIconComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("PlannedSkillIconComponent"));
@@ -394,6 +396,15 @@ void ALFPTacticsUnit::OnTurnStarted()
 {
     bOnTurn = true;
 
+    if (BuffComponent)
+    {
+        BuffComponent->OnTurnStarted();
+    }
+    if (bIsDead)
+    {
+        return;
+    }
+
     if (SkillComponent)
     {
         SkillComponent->OnTurnStarted();
@@ -586,6 +597,29 @@ int32 ALFPTacticsUnit::TakeTypedDamage(int32 Damage, ELFPAttackType DamageType)
     return ActualDamage;
 }
 
+int32 ALFPTacticsUnit::TakeTrueDamage(int32 Damage)
+{
+    if (bIsDead)
+    {
+        return 0;
+    }
+
+    const int32 ActualDamage = FMath::Max(Damage, 1);
+    CurrentHealth = FMath::Max(CurrentHealth - ActualDamage, 0);
+
+    OnHealthChangedDelegate.Broadcast(CurrentHealth, GetCurrentMaxHealth());
+    OnHealthChangedWithUnitDelegate.Broadcast(this, CurrentHealth, GetCurrentMaxHealth());
+
+    OnTakeDamage(ActualDamage);
+
+    if (CurrentHealth <= 0)
+    {
+        HandleDeath();
+    }
+
+    return ActualDamage;
+}
+
 int32 ALFPTacticsUnit::ApplyRepeatedHitDamage(ALFPTacticsUnit* Target, int32 HitCount, int32 RawDamagePerHit, ELFPAttackType DamageType)
 {
     if (!Target || HitCount <= 0 || RawDamagePerHit < 0)
@@ -605,6 +639,26 @@ int32 ALFPTacticsUnit::ApplyRepeatedHitDamage(ALFPTacticsUnit* Target, int32 Hit
     }
 
     return TotalDamage;
+}
+
+bool ALFPTacticsUnit::HasAnyBuffs() const
+{
+    return BuffComponent && BuffComponent->HasAnyBuffs();
+}
+
+bool ALFPTacticsUnit::HasBuff(ELFPBuffType BuffType) const
+{
+    return BuffComponent && BuffComponent->HasBuff(BuffType);
+}
+
+int32 ALFPTacticsUnit::GetBuffCount(ELFPBuffType BuffType) const
+{
+    return BuffComponent ? BuffComponent->GetBuffCount(BuffType) : 0;
+}
+
+int32 ALFPTacticsUnit::GetTotalBuffCount() const
+{
+    return BuffComponent ? BuffComponent->GetTotalBuffCount() : 0;
 }
 
 void ALFPTacticsUnit::Heal(int32 Amount)
@@ -638,6 +692,10 @@ void ALFPTacticsUnit::ApplyDamageToTarget(ALFPTacticsUnit* Target)
 void ALFPTacticsUnit::HandleDeath()
 {
     bIsDead = true;
+    if (BuffComponent)
+    {
+        BuffComponent->ClearAllBuffs();
+    }
 
 	// 广播死亡事件
     OnDeathDelegate.Broadcast();

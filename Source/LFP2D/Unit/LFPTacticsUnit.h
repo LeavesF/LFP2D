@@ -10,6 +10,7 @@
 #include "LFP2D/Unit/LFPUnitTypes.h"
 #include "Components/TimelineComponent.h"
 #include "PaperSpriteComponent.h"
+#include "LFP2D/Buff/LFPBuffTypes.h"
 #include "LFPTacticsUnit.generated.h"
 
 class ALFPTacticsUnit;
@@ -23,9 +24,6 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUnitDeathWithUnitSignature, ALFPT
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMoveFinishedSignature);
 
-// EUnitAffiliation 定义在 LFPBattleTypes.h 中
-// ELFPUnitRace 和 ELFPAttackType 定义在 LFPUnitTypes.h 中
-
 class ULFPSkillBase;
 class ALFPHexGridManager;
 class ALFPTurnManager;
@@ -34,6 +32,7 @@ struct FLFPUnitRegistryEntry;
 class ULFPBetrayalCondition;
 class ALFPAIController;
 class ULFPSkillComponent;
+class ULFPBuffComponent;
 
 USTRUCT(BlueprintType)
 struct FLFPUnitBaseStats
@@ -515,7 +514,25 @@ public:
     int32 TakeTypedDamage(int32 Damage, ELFPAttackType DamageType);
 
     UFUNCTION(BlueprintCallable, Category = "Unit Combat")
+    int32 TakeTrueDamage(int32 Damage);
+
+    UFUNCTION(BlueprintCallable, Category = "Unit Combat")
     int32 ApplyRepeatedHitDamage(ALFPTacticsUnit* Target, int32 HitCount, int32 RawDamagePerHit, ELFPAttackType DamageType);
+
+    UFUNCTION(BlueprintPure, Category = "Unit Buff")
+    ULFPBuffComponent* GetBuffComponent() const { return BuffComponent; }
+
+    UFUNCTION(BlueprintPure, Category = "Unit Buff")
+    bool HasAnyBuffs() const;
+
+    UFUNCTION(BlueprintPure, Category = "Unit Buff")
+    bool HasBuff(ELFPBuffType BuffType) const;
+
+    UFUNCTION(BlueprintPure, Category = "Unit Buff")
+    int32 GetBuffCount(ELFPBuffType BuffType) const;
+
+    UFUNCTION(BlueprintPure, Category = "Unit Buff")
+    int32 GetTotalBuffCount() const;
 
     // 治疗单位
     UFUNCTION(BlueprintCallable, Category = "Unit Combat")
@@ -655,6 +672,9 @@ public:
     ULFPSkillBase* GetDefaultAttackSkill();
 
 public:
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+    TObjectPtr<ULFPBuffComponent> BuffComponent;
+
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
     TObjectPtr<ULFPSkillComponent> SkillComponent;
 
