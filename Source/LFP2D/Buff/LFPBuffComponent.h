@@ -19,6 +19,15 @@ public:
     void ApplyBleed(int32 BleedStacks, int32 DurationTurns);
 
     UFUNCTION(BlueprintCallable, Category = "Buff")
+    void RegisterPersistentBuff(const FLFPPersistentBuffDefinition& BuffDefinition);
+
+    UFUNCTION(BlueprintCallable, Category = "Buff")
+    void ClearPersistentBuffs();
+
+    UFUNCTION(BlueprintCallable, Category = "Buff")
+    bool EvaluatePersistentBuffs();
+
+    UFUNCTION(BlueprintCallable, Category = "Buff")
     void OnTurnStarted();
 
     UFUNCTION(BlueprintCallable, Category = "Buff")
@@ -39,11 +48,20 @@ public:
     UFUNCTION(BlueprintPure, Category = "Buff")
     int32 GetTotalBuffCount() const;
 
+    UFUNCTION(BlueprintPure, Category = "Buff")
+    FLFPBuffStatModifier GetActivePersistentStatModifier() const;
+
+    const TArray<FLFPPersistentBuffRuntimeState>& GetPersistentBuffStates() const { return PersistentBuffs; }
+
 protected:
     UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Buff", meta = (AllowPrivateAccess = "true"))
     TArray<FLFPActiveBuff> ActiveBuffs;
 
+    UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Buff", meta = (AllowPrivateAccess = "true"))
+    TArray<FLFPPersistentBuffRuntimeState> PersistentBuffs;
+
 private:
     ALFPTacticsUnit* GetOwnerUnit() const;
     void CleanupExpiredBuffs();
+    bool EvaluatePersistentBuffCondition(const FLFPPersistentBuffDefinition& BuffDefinition, const ALFPTacticsUnit* OwnerUnit) const;
 };

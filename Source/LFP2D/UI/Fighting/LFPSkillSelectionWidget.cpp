@@ -162,19 +162,31 @@ void ULFPSkillSelectionWidget::UpdateSkillDetails(ULFPSkillBase* Skill)
     //}
 
     // 更新技能范围信息
-    FString RangeText = FString::Printf(TEXT("范围: %s"),
-        *Skill->GetReleaseRangeDescription());
-
-    if (Skill->bRequireLineOfSight)
+    FString RangeText;
+    if (Skill->IsPassiveSkill())
     {
-        RangeText += TEXT(" (需要视线)");
+        RangeText = TEXT("类型: 被动");
+    }
+    else
+    {
+        RangeText = FString::Printf(TEXT("范围: %s"),
+            *Skill->GetReleaseRangeDescription());
+
+        if (Skill->bRequireLineOfSight)
+        {
+            RangeText += TEXT(" (需要视线)");
+        }
     }
 
     SkillRangeText->SetText(FText::FromString(RangeText));
 
     // 更新冷却信息
     FString CooldownText;
-    if (Skill->CooldownRounds > 0)
+    if (Skill->IsPassiveSkill())
+    {
+        CooldownText = TEXT("被动");
+    }
+    else if (Skill->CooldownRounds > 0)
     {
         if (Skill->CurrentCooldown > 0)
         {

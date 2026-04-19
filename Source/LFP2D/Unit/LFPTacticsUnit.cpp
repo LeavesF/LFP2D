@@ -10,6 +10,7 @@
 #include "LFP2D/Unit/Betrayal/LFPBetrayalCondition.h"
 #include "LFP2D/HexGrid/LFPHexTile.h"
 #include "LFP2D/HexGrid/LFPHexGridManager.h"
+#include "LFP2D/Turn/LFPBattleRelicRuntimeManager.h"
 #include "LFP2D/Turn/LFPTurnManager.h"
 #include "LFP2D/Core/LFPTurnGameMode.h"
 #include "LFP2D/Core/LFPGameInstance.h"
@@ -21,6 +22,7 @@
 #include "Components/WidgetComponent.h"
 #include "Curves/CurveFloat.h"
 #include "DrawDebugHelpers.h"
+#include "Templates/UnrealTemplate.h"
 
 ALFPTacticsUnit::ALFPTacticsUnit()
 {
@@ -170,6 +172,85 @@ void ALFPTacticsUnit::AddCurrentPhysicalBlock(int32 Delta)
 {
     CurrentPhysicalBlock = FMath::Max(0, CurrentPhysicalBlock + Delta);
     Defense = CurrentPhysicalBlock;
+}
+
+void ALFPTacticsUnit::RebuildCurrentStatsFromRuntimeSources()
+{
+    if (bIsRebuildingRuntimeStats)
+    {
+        return;
+    }
+
+    TGuardValue<bool> RebuildGuard(bIsRebuildingRuntimeStats, true);
+
+    // 统一按 Base -> Relic -> Buff 的顺序重建运行时属性，避免不同系统互相覆盖。
+    ResetCurrentStatsToBase(false);
+
+    if (ALFPTurnGameMode* GM = Cast<ALFPTurnGameMode>(GetWorld()->GetAuthGameMode()))
+    {
+        if (ALFPBattleRelicRuntimeManager* RelicManager = GM->GetBattleRelicRuntimeManager())
+        {
+            RelicManager->ApplyPersistentModifiers(this);
+        }
+    }
+
+    if (BuffComponent)
+    {
+        const FLFPBuffStatModifier BuffModifier = BuffComponent->GetActivePersistentStatModifier();
+        AddCurrentAttack(BuffModifier.AttackDelta);
+        AddCurrentPhysicalBlock(BuffModifier.PhysicalBlockDelta);
+        AddCurrentSpeed(BuffModifier.SpeedDelta);
+    }
+
+    CurrentHealth = FMath::Clamp(CurrentHealth, 0, GetCurrentMaxHealth());
+}
+
+bool ALFPTacticsUnit::HasAliveFriendlyWithinHexRange(int32 Range, bool bExcludeSelf) const
+{
+    ALFPHexGridManager* GridManager = GetGridManager();
+    if (Range < 0 || !GridManager || !GridManager->GetTileAtCoordinates(GetCurrentCoordinates()))
+    {
+        return false;
+    }
+
+    TArray<AActor*> FoundUnits;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALFPTacticsUnit::StaticClass(), FoundUnits);
+
+    for (AActor* Actor : FoundUnits)
+    {
+        const ALFPTacticsUnit* OtherUnit = Cast<ALFPTacticsUnit>(Actor);
+        if (!OtherUnit || !OtherUnit->IsAlive())
+        {
+            continue;
+        }
+
+        if (bExcludeSelf && OtherUnit == this)
+        {
+            continue;
+        }
+
+        if (OtherUnit->GetAffiliation() != GetAffiliation())
+        {
+            continue;
+        }
+
+        if (!GridManager->GetTileAtCoordinates(OtherUnit->GetCurrentCoordinates()))
+        {
+            continue;
+        }
+
+        const int32 Distance = FLFPHexCoordinates::Distance(
+            GetCurrentCoordinates(),
+            OtherUnit->GetCurrentCoordinates());
+
+        // 条件被动使用纯 hex distance 判定，不走寻路和地形消耗。
+        if (Distance <= Range)
+        {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 void ALFPTacticsUnit::BeginPlay()
@@ -374,6 +455,11 @@ void ALFPTacticsUnit::FinishMove()
     MoveProgress = 0.0f;
 
     // 广播移动完成
+    if (ALFPTurnManager* TurnManager = GetTurnManager())
+    {
+        TurnManager->RefreshAllRuntimeUnitStates();
+    }
+
     OnMoveFinished.Broadcast();
 }
 
@@ -717,6 +803,7 @@ void ALFPTacticsUnit::HandleDeath()
     ALFPHexTile* CurrentTile = GetCurrentTile();
     if (CurrentTile)
     {
+        CurrentTile->SetIsOccupied(false);
         CurrentTile->SetUnitOnTile(nullptr);
     }
 
@@ -763,6 +850,7 @@ void ALFPTacticsUnit::ChangeAffiliation(EUnitAffiliation NewAffiliation)
     // 阵营变更后重新检查胜负条件（如最后一个敌人背叛）
     if (ALFPTurnManager* TurnManager = GetTurnManager())
     {
+        TurnManager->RefreshAllRuntimeUnitStates();
         TurnManager->CheckBattleEnd();
     }
 }

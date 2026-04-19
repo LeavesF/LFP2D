@@ -58,6 +58,9 @@ public:
     // 从回合系统注销单位
     void UnregisterUnit(ALFPTacticsUnit* Unit);
 
+    UFUNCTION(BlueprintCallable, Category = "Turn System")
+    void RefreshAllRuntimeUnitStates(bool bAllowReorder = true);
+
     // 检查战斗结束条件（单位死亡后调用）
     void CheckBattleEnd();
 
@@ -109,6 +112,8 @@ protected:
 protected:
     // 按速度排序单位
     void SortUnitsBySpeed();
+
+    void ReorderRemainingUnitsBySpeed();
 
     // 开始单位回合
     void BeginUnitTurn(ALFPTacticsUnit* Unit);

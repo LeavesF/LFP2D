@@ -2,6 +2,7 @@
 
 
 #include "LFP2D/Skill/LFPSkillComponent.h"
+#include "LFP2D/Buff/LFPBuffComponent.h"
 #include "LFP2D/Skill/LFPSkillDataAsset.h"
 #include "LFP2D/Unit/LFPTacticsUnit.h"
 
@@ -41,6 +42,11 @@ void ULFPSkillComponent::InitializeSkills()
     ALFPTacticsUnit* OwnerUnit = Cast<ALFPTacticsUnit>(GetOwner());
     if (!OwnerUnit || !SkillData) return;
 
+    if (ULFPBuffComponent* BuffComponent = OwnerUnit->GetBuffComponent())
+    {
+        BuffComponent->ClearPersistentBuffs();
+    }
+
     // 从数据资产创建技能实例
     for (TSubclassOf<ULFPSkillBase> SkillClass : SkillData->AvailableSkills)
     {
@@ -51,9 +57,12 @@ void ULFPSkillComponent::InitializeSkills()
             {
                 Skills.Add(NewSkill);
                 NewSkill->InitSkill(OwnerUnit);
+                NewSkill->RegisterPassiveBuffs(OwnerUnit);
             }
         }
     }
+
+    OwnerUnit->RebuildCurrentStatsFromRuntimeSources();
 
     //// 如果没有默认攻击技能，创建一个
     //if (!DefaultAttackSkill)
@@ -87,6 +96,7 @@ bool ULFPSkillComponent::ExecuteSkill(ULFPSkillBase* Skill, ALFPHexTile* TargetT
 {
     ALFPTacticsUnit* OwnerUnit = Cast<ALFPTacticsUnit>(GetOwner());
     if (!OwnerUnit || !Skill) return false;
+    if (Skill->IsPassiveSkill()) return false;
 
     if (!OwnerUnit->IsEnemy())
     {

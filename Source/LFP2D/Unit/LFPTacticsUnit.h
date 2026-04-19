@@ -167,6 +167,12 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Unit Stats")
     void AddCurrentPhysicalBlock(int32 Delta);
 
+    UFUNCTION(BlueprintCallable, Category = "Unit Stats")
+    void RebuildCurrentStatsFromRuntimeSources();
+
+    UFUNCTION(BlueprintPure, Category = "Unit Combat")
+    bool HasAliveFriendlyWithinHexRange(int32 Range, bool bExcludeSelf = true) const;
+
     UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
     ALFPHexGridManager* GetGridManager() const;
 
@@ -605,6 +611,8 @@ protected:
     // 死亡状态
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Unit State", meta = (AllowPrivateAccess = "true"))
     bool bIsDead = false;
+
+    bool bIsRebuildingRuntimeStats = false;
 
 public:
     UFUNCTION(BlueprintCallable, Category = "Betrayal")

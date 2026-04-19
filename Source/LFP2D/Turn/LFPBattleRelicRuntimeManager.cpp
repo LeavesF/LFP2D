@@ -170,6 +170,16 @@ void ALFPBattleRelicRuntimeManager::UnbindUnitEvents(ALFPTacticsUnit* Unit)
 
 void ALFPBattleRelicRuntimeManager::RebuildUnitRelicStats(ALFPTacticsUnit* Unit)
 {
+	if (!Unit)
+	{
+		return;
+	}
+
+	Unit->RebuildCurrentStatsFromRuntimeSources();
+}
+
+void ALFPBattleRelicRuntimeManager::ApplyPersistentModifiers(ALFPTacticsUnit* Unit)
+{
 	if (!Unit || !CachedRelicDataAsset)
 	{
 		return;
@@ -191,8 +201,6 @@ void ALFPBattleRelicRuntimeManager::RebuildUnitRelicStats(ALFPTacticsUnit* Unit)
 	}
 
 	FoundState->bIsRebuilding = true;
-
-	Unit->ResetCurrentStatsToBase(false);
 
 	for (const FName& RelicID : OwnedRelicIDs)
 	{

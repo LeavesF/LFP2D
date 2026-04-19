@@ -814,6 +814,7 @@ void ALFPTacticsPlayerController::HideSkillSelection()
 void ALFPTacticsPlayerController::HandleSkillTargetSelecting(ULFPSkillBase* Skill)
 {
 	if (!SelectedUnit || !Skill) return;
+	if (Skill->IsPassiveSkill()) return;
 
 	// 获取技能范围内的目标格子
 	TArray<FLFPHexCoordinates> TargetTilesCoord = Skill->GetReleaseRangeInGrid();

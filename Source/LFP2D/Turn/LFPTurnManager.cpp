@@ -5,6 +5,7 @@
 #include "LFP2D/Unit/LFPTacticsUnit.h"
 #include "LFP2D/Player/LFPTacticsPlayerController.h"
 #include "LFP2D/AI/LFPAIController.h"
+#include "LFP2D/Buff/LFPBuffComponent.h"
 #include "LFP2D/Skill/LFPSkillBase.h"
 #include "LFP2D/Skill/LFPSkillComponent.h"
 #include "LFP2D/Core/LFPTurnGameMode.h"
@@ -12,6 +13,53 @@
 #include "Kismet/GameplayStatics.h"
 
 FEnemyActionPlan ALFPTurnManager::EmptyPlan;
+
+namespace
+{
+void SortUnitsBySpeedStable(TArray<ALFPTacticsUnit*>& Units)
+{
+    struct FSortableTurnUnit
+    {
+        ALFPTacticsUnit* Unit = nullptr;
+        int32 OriginalIndex = INDEX_NONE;
+    };
+
+    TArray<FSortableTurnUnit> SortableUnits;
+    SortableUnits.Reserve(Units.Num());
+
+    for (int32 Index = 0; Index < Units.Num(); ++Index)
+    {
+        FSortableTurnUnit& Entry = SortableUnits.AddDefaulted_GetRef();
+        Entry.Unit = Units[Index];
+        Entry.OriginalIndex = Index;
+    }
+
+    SortableUnits.Sort([](const FSortableTurnUnit& A, const FSortableTurnUnit& B)
+    {
+        if (A.Unit == nullptr || B.Unit == nullptr)
+        {
+            if (A.Unit == B.Unit)
+            {
+                return A.OriginalIndex < B.OriginalIndex;
+            }
+
+            return A.Unit != nullptr;
+        }
+
+        if (A.Unit->GetSpeed() == B.Unit->GetSpeed())
+        {
+            return A.OriginalIndex < B.OriginalIndex;
+        }
+
+        return A.Unit->GetSpeed() > B.Unit->GetSpeed();
+    });
+
+    for (int32 Index = 0; Index < SortableUnits.Num(); ++Index)
+    {
+        Units[Index] = SortableUnits[Index].Unit;
+    }
+}
+}
 
 ALFPTurnManager::ALFPTurnManager()
 {
@@ -86,6 +134,7 @@ void ALFPTurnManager::EndDeploymentPhase()
 	}
 
 	// 开始第一回合
+    RefreshAllRuntimeUnitStates(false);
 	BeginNewRound();
 }
 
@@ -167,12 +216,96 @@ void ALFPTurnManager::SortUnitsBySpeed()
 {
     // 按速度降序排序（速度高的先行动）
     // Todo: 速度相同时随机排序（玩家优先于AI）
-    TurnOrderUnits.Sort([](const ALFPTacticsUnit& A, const ALFPTacticsUnit& B) {
-        return A.GetSpeed() > B.GetSpeed();
-        });
+    SortUnitsBySpeedStable(TurnOrderUnits);
 }
 
 // ==== 阶段管理 ====
+
+void ALFPTurnManager::ReorderRemainingUnitsBySpeed()
+{
+    if (TurnOrderUnits.IsEmpty())
+    {
+        return;
+    }
+
+    const int32 CurrentIndex = CurrentUnit ? TurnOrderUnits.Find(CurrentUnit) : INDEX_NONE;
+    const int32 StartIndex = CurrentIndex == INDEX_NONE ? 0 : CurrentIndex + 1;
+
+    TArray<int32> ReorderSlots;
+    TArray<ALFPTacticsUnit*> RemainingUnits;
+    for (int32 Index = StartIndex; Index < TurnOrderUnits.Num(); ++Index)
+    {
+        if (ALFPTacticsUnit* Unit = TurnOrderUnits[Index])
+        {
+            // 当前单位、已行动单位和死亡单位都保持原位，只重排本轮剩余可行动单位。
+            if (!Unit->IsAlive() || Unit == CurrentUnit || Unit->HasActed())
+            {
+                continue;
+            }
+
+            ReorderSlots.Add(Index);
+            RemainingUnits.Add(Unit);
+        }
+    }
+
+    if (RemainingUnits.Num() <= 1)
+    {
+        return;
+    }
+
+    SortUnitsBySpeedStable(RemainingUnits);
+
+    for (int32 Index = 0; Index < RemainingUnits.Num(); ++Index)
+    {
+        TurnOrderUnits[ReorderSlots[Index]] = RemainingUnits[Index];
+    }
+}
+
+void ALFPTurnManager::RefreshAllRuntimeUnitStates(bool bAllowReorder)
+{
+    TArray<AActor*> FoundActors;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALFPTacticsUnit::StaticClass(), FoundActors);
+
+    TArray<ALFPTacticsUnit*> Units;
+    for (AActor* Actor : FoundActors)
+    {
+        if (ALFPTacticsUnit* Unit = Cast<ALFPTacticsUnit>(Actor))
+        {
+            Units.Add(Unit);
+        }
+    }
+
+    for (ALFPTacticsUnit* Unit : Units)
+    {
+        if (Unit && Unit->GetBuffComponent())
+        {
+            // 先统一刷新条件型 Buff，再重建属性，避免用旧状态算数值。
+            Unit->GetBuffComponent()->EvaluatePersistentBuffs();
+        }
+    }
+
+    for (ALFPTacticsUnit* Unit : Units)
+    {
+        if (Unit && Unit->IsAlive())
+        {
+            Unit->RebuildCurrentStatsFromRuntimeSources();
+        }
+    }
+
+    if (bAllowReorder)
+    {
+        if (bIsInRound && CurrentPhase == EBattlePhase::BP_ActionPhase)
+        {
+            ReorderRemainingUnitsBySpeed();
+        }
+        else
+        {
+            SortUnitsBySpeed();
+        }
+    }
+
+    OnTurnChanged.Broadcast();
+}
 
 void ALFPTurnManager::SetPhase(EBattlePhase NewPhase)
 {
@@ -509,11 +642,7 @@ void ALFPTurnManager::RegisterUnit(ALFPTacticsUnit* Unit)
     {
         TurnOrderUnits.Add(Unit);
 
-        // 如果游戏已经开始，重新排序
-        if (bIsInRound)
-        {
-            SortUnitsBySpeed();
-        }
+        RefreshAllRuntimeUnitStates(bIsInRound);
     }
 }
 
@@ -523,6 +652,7 @@ void ALFPTurnManager::UnregisterUnit(ALFPTacticsUnit* Unit)
     {
         bool bWasCurrentUnit = (Unit == CurrentUnit);
         TurnOrderUnits.Remove(Unit);
+        RefreshAllRuntimeUnitStates(!bBattleEnded);
 
         // 先检查战斗结束条件
         CheckBattleEnd();
@@ -592,6 +722,7 @@ void ALFPTurnManager::AllocateEnemySkills()
         for (ULFPSkillBase* Skill : Skills)
         {
             if (!Skill) continue;
+            if (Skill->IsPassiveSkill()) continue;
             if (Skill->ActionPointCost <= 0) continue; // 0消耗技能不参与竞争
             if (Skill->CurrentCooldown > 0) continue;  // 冷却中跳过
 

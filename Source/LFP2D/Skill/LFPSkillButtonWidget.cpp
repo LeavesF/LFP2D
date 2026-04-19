@@ -118,6 +118,7 @@ void ULFPSkillButtonWidget::SetSelected(bool bSelected)
 void ULFPSkillButtonWidget::OnButtonClicked()
 {
     if (!AssociatedSkill || !OwnerUnit || !GetIsEnabled()) return;
+    if (AssociatedSkill->IsPassiveSkill()) return;
 
     //OwnerUnit->ExecuteSkill(AssociatedSkill);
     TacticsPC->HandleSkillTargetSelecting(AssociatedSkill);
@@ -197,7 +198,9 @@ void ULFPSkillButtonWidget::UpdateAppearance()
     // 更新消耗显示
     if (CostText)
     {
-        FString CostString = FString::Printf(TEXT("%d AP"), AssociatedSkill->ActionPointCost);
+        const FString CostString = AssociatedSkill->IsPassiveSkill()
+            ? FString(TEXT("被动"))
+            : FString::Printf(TEXT("%d AP"), AssociatedSkill->ActionPointCost);
         CostText->SetText(FText::FromString(CostString));
         CostText->SetVisibility(ESlateVisibility::HitTestInvisible);
     }
@@ -205,12 +208,34 @@ void ULFPSkillButtonWidget::UpdateAppearance()
     // 更新按钮可用状态
     //bool bCanExecute = AssociatedSkill->CanExecute(nullptr); // 传入nullptr，因为我们不检查具体单位
     //SetButtonEnabled(bCanExecute);
-    SetButtonEnabled(true);
+    if (AssociatedSkill->IsPassiveSkill() && AssociatedSkill->ShouldShowDisabledInSkillBar())
+    {
+        if (DisabledOverlay)
+        {
+            DisabledOverlay->SetVisibility(ESlateVisibility::Visible);
+        }
+
+        if (SkillButton)
+        {
+            SkillButton->SetStyle(DisabledButtonStyle);
+            SkillButton->SetIsEnabled(true);
+        }
+    }
+    else
+    {
+        SetButtonEnabled(true);
+    }
 }
 
 void ULFPSkillButtonWidget::UpdateCooldownDisplay()
 {
     if (!CooldownText || !AssociatedSkill) return;
+
+    if (AssociatedSkill->IsPassiveSkill())
+    {
+        CooldownText->SetVisibility(ESlateVisibility::Collapsed);
+        return;
+    }
 
     if (AssociatedSkill->CurrentCooldown > 0)
     {

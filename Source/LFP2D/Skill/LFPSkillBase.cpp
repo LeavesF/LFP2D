@@ -78,6 +78,10 @@ void ULFPSkillBase::Execute_Implementation(ALFPHexTile* TargetTile)
 {
 }
 
+void ULFPSkillBase::RegisterPassiveBuffs_Implementation(ALFPTacticsUnit* InOwner)
+{
+}
+
 ALFPTacticsUnit* ULFPSkillBase::GetUnitOnTile(ALFPHexTile* Tile) const
 {
 	if (!Tile)
@@ -146,6 +150,7 @@ int32 ULFPSkillBase::DealOwnerRepeatedDamage(ALFPTacticsUnit* Target, int32 HitC
 bool ULFPSkillBase::CanExecute_Implementation(ALFPHexTile* TargetTile)
 {
 	if (!Owner) return false;
+	if (bIsPassiveSkill) return false;
 
 	// 检查冷却
 	//if (CurrentCooldown > 0) return false;
@@ -160,6 +165,7 @@ bool ULFPSkillBase::CanExecute_Implementation(ALFPHexTile* TargetTile)
 bool ULFPSkillBase::IsAvailable() const
 {
 	if (!Owner) return false;
+	if (bIsPassiveSkill) return false;
 
 	// 检查冷却
 	if (CurrentCooldown > 0) return false;

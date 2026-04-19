@@ -71,6 +71,9 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Skill")
 	bool CanExecute(ALFPHexTile* TargetTile = nullptr);
 
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Skill|Passive")
+	void RegisterPassiveBuffs(ALFPTacticsUnit* InOwner);
+
 	// 轻量检查：冷却和行动点是否满足（AI 选技能时用）
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Skill")
 	bool IsAvailable() const;
@@ -87,6 +90,12 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Skill")
 	virtual void OnTurnStart();
+
+	UFUNCTION(BlueprintPure, Category = "Skill|Passive")
+	bool IsPassiveSkill() const { return bIsPassiveSkill; }
+
+	UFUNCTION(BlueprintPure, Category = "Skill|Passive")
+	bool ShouldShowDisabledInSkillBar() const { return bShowDisabledInSkillBar; }
 
 	// ==== 技能优先级（AI 规划阶段用于全局 AP 分配） ====
 
@@ -208,6 +217,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
 	bool bIsDefaultAttack;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill|Passive")
+	bool bIsPassiveSkill = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill|Passive", meta = (EditCondition = "bIsPassiveSkill"))
+	bool bShowDisabledInSkillBar = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill|Range")
 	TArray<FLFPHexCoordinates> ReleaseRangeCoords;

@@ -21,6 +21,43 @@ void ULFPBuffComponent::ApplyBleed(int32 BleedStacks, int32 DurationTurns)
     ActiveBuffs.Add(NewBuff);
 }
 
+void ULFPBuffComponent::RegisterPersistentBuff(const FLFPPersistentBuffDefinition& BuffDefinition)
+{
+    FLFPPersistentBuffRuntimeState RuntimeState;
+    RuntimeState.Definition = BuffDefinition;
+    PersistentBuffs.Add(RuntimeState);
+    // 注册后立即评估一次，保证初始化时就拿到正确激活态。
+    EvaluatePersistentBuffs();
+}
+
+void ULFPBuffComponent::ClearPersistentBuffs()
+{
+    PersistentBuffs.Empty();
+}
+
+bool ULFPBuffComponent::EvaluatePersistentBuffs()
+{
+    ALFPTacticsUnit* OwnerUnit = GetOwnerUnit();
+    if (!OwnerUnit)
+    {
+        return false;
+    }
+
+    bool bChanged = false;
+    for (FLFPPersistentBuffRuntimeState& BuffState : PersistentBuffs)
+    {
+        // 持续 Buff 本身常驻，激活与否完全由条件实时决定。
+        const bool bShouldBeActive = EvaluatePersistentBuffCondition(BuffState.Definition, OwnerUnit);
+        if (BuffState.bIsActive != bShouldBeActive)
+        {
+            BuffState.bIsActive = bShouldBeActive;
+            bChanged = true;
+        }
+    }
+
+    return bChanged;
+}
+
 void ULFPBuffComponent::OnTurnStarted()
 {
     ALFPTacticsUnit* OwnerUnit = GetOwnerUnit();
@@ -58,18 +95,35 @@ void ULFPBuffComponent::OnTurnStarted()
 void ULFPBuffComponent::ClearAllBuffs()
 {
     ActiveBuffs.Empty();
+    PersistentBuffs.Empty();
 }
 
 bool ULFPBuffComponent::HasAnyBuffs() const
 {
-    return ActiveBuffs.Num() > 0;
+    if (!ActiveBuffs.IsEmpty())
+    {
+        return true;
+    }
+
+    return PersistentBuffs.ContainsByPredicate([](const FLFPPersistentBuffRuntimeState& BuffState)
+    {
+        return BuffState.bIsActive;
+    });
 }
 
 bool ULFPBuffComponent::HasBuff(ELFPBuffType BuffType) const
 {
-    return ActiveBuffs.ContainsByPredicate([BuffType](const FLFPActiveBuff& Buff)
+    if (ActiveBuffs.ContainsByPredicate([BuffType](const FLFPActiveBuff& Buff)
     {
         return Buff.BuffType == BuffType && Buff.RemainingTurnTriggers > 0;
+    }))
+    {
+        return true;
+    }
+
+    return PersistentBuffs.ContainsByPredicate([BuffType](const FLFPPersistentBuffRuntimeState& BuffState)
+    {
+        return BuffState.Definition.BuffType == BuffType && BuffState.bIsActive;
     });
 }
 
@@ -83,6 +137,15 @@ int32 ULFPBuffComponent::GetBuffCount(ELFPBuffType BuffType) const
             BuffCount++;
         }
     }
+
+    for (const FLFPPersistentBuffRuntimeState& BuffState : PersistentBuffs)
+    {
+        if (BuffState.Definition.BuffType == BuffType && BuffState.bIsActive)
+        {
+            BuffCount++;
+        }
+    }
+
     return BuffCount;
 }
 
@@ -110,7 +173,31 @@ int32 ULFPBuffComponent::GetTotalBuffCount() const
             BuffCount++;
         }
     }
+
+    for (const FLFPPersistentBuffRuntimeState& BuffState : PersistentBuffs)
+    {
+        if (BuffState.bIsActive)
+        {
+            BuffCount++;
+        }
+    }
+
     return BuffCount;
+}
+
+FLFPBuffStatModifier ULFPBuffComponent::GetActivePersistentStatModifier() const
+{
+    FLFPBuffStatModifier CombinedModifier;
+    for (const FLFPPersistentBuffRuntimeState& BuffState : PersistentBuffs)
+    {
+        if (BuffState.bIsActive)
+        {
+            // 当前版本只做平面数值叠加，后续如需百分比层再单独扩展。
+            CombinedModifier.Append(BuffState.Definition.StatModifier);
+        }
+    }
+
+    return CombinedModifier;
 }
 
 ALFPTacticsUnit* ULFPBuffComponent::GetOwnerUnit() const
@@ -124,4 +211,24 @@ void ULFPBuffComponent::CleanupExpiredBuffs()
     {
         return Buff.RemainingTurnTriggers <= 0;
     });
+}
+
+bool ULFPBuffComponent::EvaluatePersistentBuffCondition(const FLFPPersistentBuffDefinition& BuffDefinition, const ALFPTacticsUnit* OwnerUnit) const
+{
+    if (!OwnerUnit || !OwnerUnit->IsAlive())
+    {
+        return false;
+    }
+
+    switch (BuffDefinition.ConditionType)
+    {
+    case ELFPBuffConditionType::BCT_None:
+        return true;
+
+    case ELFPBuffConditionType::BCT_NoFriendlyWithinRange:
+        return !OwnerUnit->HasAliveFriendlyWithinHexRange(BuffDefinition.ConditionRange, true);
+
+    default:
+        return false;
+    }
 }

@@ -50,6 +50,8 @@ public:
 	// 回合结束时执行即时效果
 	void OnRoundEnded(int32 CurrentRound);
 
+	void ApplyPersistentModifiers(ALFPTacticsUnit* Unit);
+
 protected:
 	// 扫描并绑定玩家单位
 	void ScanAndBindPlayerUnits();
