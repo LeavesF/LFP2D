@@ -34,6 +34,9 @@ public:
     int32 GetBuffCount(ELFPBuffType BuffType) const;
 
     UFUNCTION(BlueprintPure, Category = "Buff")
+    int32 GetBleedStacks() const;
+
+    UFUNCTION(BlueprintPure, Category = "Buff")
     int32 GetTotalBuffCount() const;
 
 protected:

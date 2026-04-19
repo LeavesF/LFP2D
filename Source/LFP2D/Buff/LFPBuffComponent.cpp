@@ -86,6 +86,20 @@ int32 ULFPBuffComponent::GetBuffCount(ELFPBuffType BuffType) const
     return BuffCount;
 }
 
+int32 ULFPBuffComponent::GetBleedStacks() const
+{
+    int32 BleedStacks = 0;
+    for (const FLFPActiveBuff& Buff : ActiveBuffs)
+    {
+        if (Buff.BuffType == ELFPBuffType::BT_Bleed && Buff.RemainingTurnTriggers > 0)
+        {
+            BleedStacks += FMath::Max(Buff.DamagePerTrigger, 0);
+        }
+    }
+
+    return BleedStacks;
+}
+
 int32 ULFPBuffComponent::GetTotalBuffCount() const
 {
     int32 BuffCount = 0;
