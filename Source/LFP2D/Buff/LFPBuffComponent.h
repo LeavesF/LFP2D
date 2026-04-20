@@ -19,10 +19,16 @@ public:
     void ApplyBleed(int32 BleedStacks, int32 DurationTurns);
 
     UFUNCTION(BlueprintCallable, Category = "Buff")
+    void RegisterBuff(const FLFPBuffDefinition& BuffDefinition);
+
+    UFUNCTION(BlueprintCallable, Category = "Buff")
     void RegisterPersistentBuff(const FLFPPersistentBuffDefinition& BuffDefinition);
 
     UFUNCTION(BlueprintCallable, Category = "Buff")
     void ClearPersistentBuffs();
+
+    UFUNCTION(BlueprintCallable, Category = "Buff")
+    bool EvaluateBuffs();
 
     UFUNCTION(BlueprintCallable, Category = "Buff")
     bool EvaluatePersistentBuffs();
@@ -49,19 +55,22 @@ public:
     int32 GetTotalBuffCount() const;
 
     UFUNCTION(BlueprintPure, Category = "Buff")
+    FLFPBuffStatModifier GetActiveStatModifier() const;
+
+    UFUNCTION(BlueprintPure, Category = "Buff")
     FLFPBuffStatModifier GetActivePersistentStatModifier() const;
 
-    const TArray<FLFPPersistentBuffRuntimeState>& GetPersistentBuffStates() const { return PersistentBuffs; }
+    const TArray<FLFPBuffRuntimeState>& GetBuffStates() const { return Buffs; }
+    TArray<FLFPPersistentBuffRuntimeState> GetPersistentBuffStates() const;
 
 protected:
     UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Buff", meta = (AllowPrivateAccess = "true"))
-    TArray<FLFPActiveBuff> ActiveBuffs;
-
-    UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Buff", meta = (AllowPrivateAccess = "true"))
-    TArray<FLFPPersistentBuffRuntimeState> PersistentBuffs;
+    TArray<FLFPBuffRuntimeState> Buffs;
 
 private:
     ALFPTacticsUnit* GetOwnerUnit() const;
+    void AddBuff(const FLFPBuffDefinition& BuffDefinition, bool bIsPersistent);
+    void ExecuteBuffEffects(FLFPBuffRuntimeState& BuffState, ELFPBuffTriggerType TriggerType, ALFPTacticsUnit* OwnerUnit);
     void CleanupExpiredBuffs();
-    bool EvaluatePersistentBuffCondition(const FLFPPersistentBuffDefinition& BuffDefinition, const ALFPTacticsUnit* OwnerUnit) const;
+    bool EvaluateBuffCondition(const FLFPBuffDefinition& BuffDefinition, const ALFPTacticsUnit* OwnerUnit) const;
 };

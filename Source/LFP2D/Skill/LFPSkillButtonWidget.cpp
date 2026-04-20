@@ -210,7 +210,7 @@ void ULFPSkillButtonWidget::UpdateAppearance()
     //SetButtonEnabled(bCanExecute);
     if (AssociatedSkill->IsPassiveSkill() && AssociatedSkill->ShouldShowDisabledInSkillBar())
     {
-        if (DisabledOverlay)
+        /*if (DisabledOverlay)
         {
             DisabledOverlay->SetVisibility(ESlateVisibility::Visible);
         }
@@ -219,7 +219,9 @@ void ULFPSkillButtonWidget::UpdateAppearance()
         {
             SkillButton->SetStyle(DisabledButtonStyle);
             SkillButton->SetIsEnabled(true);
-        }
+        }*/
+        SetButtonEnabled(true);
+        SkillButton->SetIsEnabled(false);
     }
     else
     {

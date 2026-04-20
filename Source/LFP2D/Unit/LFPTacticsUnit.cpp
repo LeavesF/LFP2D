@@ -196,7 +196,7 @@ void ALFPTacticsUnit::RebuildCurrentStatsFromRuntimeSources()
 
     if (BuffComponent)
     {
-        const FLFPBuffStatModifier BuffModifier = BuffComponent->GetActivePersistentStatModifier();
+        const FLFPBuffStatModifier BuffModifier = BuffComponent->GetActiveStatModifier();
         AddCurrentAttack(BuffModifier.AttackDelta);
         AddCurrentPhysicalBlock(BuffModifier.PhysicalBlockDelta);
         AddCurrentSpeed(BuffModifier.SpeedDelta);

@@ -1,5 +1,5 @@
 ---,NodeID,PosX,PosY,NodeType,BattleMapName,StarRating,bCanEscape,BaseGoldReward,BaseFoodReward,EventID,TownBuildingList,ShopID,HireMarketID,PrerequisiteNodeIDs
-0,0,601.846191,-524.273987,WNT_Battle,,1,True,0,0,,,None,None,
+0,0,601.846191,-524.273987,WNT_Battle,test,1,True,2,3,,,None,None,
 1,1,71.214951,7.245561,WNT_HireMarket,,1,True,0,0,,,None,Test_HireMarket_01,
 2,2,168.154022,1032.969238,WNT_Battle,test,4,True,0,0,,,None,None,
 4,4,417.081390,112.303909,WNT_Town,,1,True,0,0,,Shop;HireMarket;EvolutionTower;Teleport,Test_Shop_02,Test_HireMarket_01,

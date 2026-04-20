@@ -29,15 +29,21 @@ void ULFPSkill_LoneWolf::RegisterPassiveBuffs_Implementation(ALFPTacticsUnit* In
         return;
     }
 
-    FLFPPersistentBuffDefinition BuffDefinition;
+    FLFPBuffDefinition BuffDefinition;
     BuffDefinition.BuffType = ELFPBuffType::BT_StatModifier;
+    BuffDefinition.LifetimeType = ELFPBuffLifetimeType::BLT_WhileConditionTrue;
     BuffDefinition.ConditionType = ELFPBuffConditionType::BCT_NoFriendlyWithinRange;
     BuffDefinition.ConditionRange = FriendlyCheckRange;
-    // 这个被动本身不处理逻辑，只是把条件与数值加成注册给 Buff 运行时。
-    BuffDefinition.StatModifier.AttackDelta = AttackBonus;
-    BuffDefinition.StatModifier.PhysicalBlockDelta = PhysicalBlockBonus;
-    BuffDefinition.StatModifier.SpeedDelta = SpeedBonus;
     BuffDefinition.SourceSkillName = TEXT("LoneWolf");
     BuffDefinition.bVisibleInUI = true;
-    BuffComponent->RegisterPersistentBuff(BuffDefinition);
+
+    FLFPBuffEffectSpec EffectSpec;
+    EffectSpec.EffectType = ELFPBuffEffectType::BET_StatModifier;
+    EffectSpec.TriggerType = ELFPBuffTriggerType::BTT_PassiveStat;
+    EffectSpec.StatModifier.AttackDelta = AttackBonus;
+    EffectSpec.StatModifier.PhysicalBlockDelta = PhysicalBlockBonus;
+    EffectSpec.StatModifier.SpeedDelta = SpeedBonus;
+    BuffDefinition.Effects.Add(EffectSpec);
+
+    BuffComponent->RegisterBuff(BuffDefinition);
 }

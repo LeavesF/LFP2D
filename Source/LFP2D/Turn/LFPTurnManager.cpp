@@ -280,7 +280,7 @@ void ALFPTurnManager::RefreshAllRuntimeUnitStates(bool bAllowReorder)
         if (Unit && Unit->GetBuffComponent())
         {
             // 先统一刷新条件型 Buff，再重建属性，避免用旧状态算数值。
-            Unit->GetBuffComponent()->EvaluatePersistentBuffs();
+            Unit->GetBuffComponent()->EvaluateBuffs();
         }
     }
 

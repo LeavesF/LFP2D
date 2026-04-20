@@ -14,28 +14,42 @@ void ULFPBuffComponent::ApplyBleed(int32 BleedStacks, int32 DurationTurns)
         return;
     }
 
-    FLFPActiveBuff NewBuff;
-    NewBuff.BuffType = ELFPBuffType::BT_Bleed;
-    NewBuff.DamagePerTrigger = BleedStacks;
-    NewBuff.RemainingTurnTriggers = DurationTurns;
-    ActiveBuffs.Add(NewBuff);
+    // 流血现在也走统一 BuffDefinition，只是效果列表里挂一个回合开始触发的伤害效果。
+    FLFPBuffDefinition BuffDefinition;
+    BuffDefinition.BuffType = ELFPBuffType::BT_Bleed;
+    BuffDefinition.LifetimeType = ELFPBuffLifetimeType::BLT_TimedTurns;
+    BuffDefinition.DurationTurns = DurationTurns;
+
+    FLFPBuffEffectSpec EffectSpec;
+    EffectSpec.EffectType = ELFPBuffEffectType::BET_PeriodicDamage;
+    EffectSpec.TriggerType = ELFPBuffTriggerType::BTT_OnTurnStart;
+    EffectSpec.Magnitude = BleedStacks;
+    BuffDefinition.Effects.Add(EffectSpec);
+
+    RegisterBuff(BuffDefinition);
+}
+
+void ULFPBuffComponent::RegisterBuff(const FLFPBuffDefinition& BuffDefinition)
+{
+    // 统一入口：不区分临时 Buff 和条件常驻 Buff，差异由 Lifetime/Condition 描述。
+    AddBuff(BuffDefinition, !BuffDefinition.HasTimedDuration());
+    EvaluateBuffs();
 }
 
 void ULFPBuffComponent::RegisterPersistentBuff(const FLFPPersistentBuffDefinition& BuffDefinition)
 {
-    FLFPPersistentBuffRuntimeState RuntimeState;
-    RuntimeState.Definition = BuffDefinition;
-    PersistentBuffs.Add(RuntimeState);
-    // 注册后立即评估一次，保证初始化时就拿到正确激活态。
-    EvaluatePersistentBuffs();
+    RegisterBuff(BuffDefinition.ToBuffDefinition());
 }
 
 void ULFPBuffComponent::ClearPersistentBuffs()
 {
-    PersistentBuffs.Empty();
+    Buffs.RemoveAll([](const FLFPBuffRuntimeState& BuffState)
+    {
+        return BuffState.bIsPersistent;
+    });
 }
 
-bool ULFPBuffComponent::EvaluatePersistentBuffs()
+bool ULFPBuffComponent::EvaluateBuffs()
 {
     ALFPTacticsUnit* OwnerUnit = GetOwnerUnit();
     if (!OwnerUnit)
@@ -44,18 +58,23 @@ bool ULFPBuffComponent::EvaluatePersistentBuffs()
     }
 
     bool bChanged = false;
-    for (FLFPPersistentBuffRuntimeState& BuffState : PersistentBuffs)
+    for (FLFPBuffRuntimeState& BuffState : Buffs)
     {
-        // 持续 Buff 本身常驻，激活与否完全由条件实时决定。
-        const bool bShouldBeActive = EvaluatePersistentBuffCondition(BuffState.Definition, OwnerUnit);
-        if (BuffState.bIsActive != bShouldBeActive)
+        // 条件是否满足是运行时状态，和 Definition 分离，便于统一处理常驻与临时 Buff。
+        const bool bShouldBeConditionMet = EvaluateBuffCondition(BuffState.Definition, OwnerUnit);
+        if (BuffState.bIsConditionMet != bShouldBeConditionMet)
         {
-            BuffState.bIsActive = bShouldBeActive;
+            BuffState.bIsConditionMet = bShouldBeConditionMet;
             bChanged = true;
         }
     }
 
     return bChanged;
+}
+
+bool ULFPBuffComponent::EvaluatePersistentBuffs()
+{
+    return EvaluateBuffs();
 }
 
 void ULFPBuffComponent::OnTurnStarted()
@@ -66,26 +85,29 @@ void ULFPBuffComponent::OnTurnStarted()
         return;
     }
 
-    for (FLFPActiveBuff& Buff : ActiveBuffs)
+    EvaluateBuffs();
+
+    for (FLFPBuffRuntimeState& BuffState : Buffs)
     {
         if (!OwnerUnit->IsAlive())
         {
             break;
         }
 
-        if (Buff.RemainingTurnTriggers <= 0)
+        if (BuffState.Definition.HasTimedDuration() && BuffState.RemainingTurns <= 0)
         {
             continue;
         }
 
-        switch (Buff.BuffType)
+        if (BuffState.IsActive())
         {
-        case ELFPBuffType::BT_Bleed:
-            OwnerUnit->TakeTrueDamage(Buff.DamagePerTrigger);
-            Buff.RemainingTurnTriggers--;
-            break;
-        default:
-            break;
+            // 先执行本回合开始的效果，再扣减持续回合，保证 N 回合 Buff 能触发 N 次。
+            ExecuteBuffEffects(BuffState, ELFPBuffTriggerType::BTT_OnTurnStart, OwnerUnit);
+        }
+
+        if (BuffState.Definition.HasTimedDuration())
+        {
+            BuffState.RemainingTurns--;
         }
     }
 
@@ -94,53 +116,41 @@ void ULFPBuffComponent::OnTurnStarted()
 
 void ULFPBuffComponent::ClearAllBuffs()
 {
-    ActiveBuffs.Empty();
-    PersistentBuffs.Empty();
+    Buffs.Empty();
 }
 
 bool ULFPBuffComponent::HasAnyBuffs() const
 {
-    if (!ActiveBuffs.IsEmpty())
+    for (const FLFPBuffRuntimeState& BuffState : Buffs)
     {
-        return true;
+        if (BuffState.IsActive())
+        {
+            return true;
+        }
     }
 
-    return PersistentBuffs.ContainsByPredicate([](const FLFPPersistentBuffRuntimeState& BuffState)
-    {
-        return BuffState.bIsActive;
-    });
+    return false;
 }
 
 bool ULFPBuffComponent::HasBuff(ELFPBuffType BuffType) const
 {
-    if (ActiveBuffs.ContainsByPredicate([BuffType](const FLFPActiveBuff& Buff)
+    for (const FLFPBuffRuntimeState& BuffState : Buffs)
     {
-        return Buff.BuffType == BuffType && Buff.RemainingTurnTriggers > 0;
-    }))
-    {
-        return true;
+        if (BuffState.Definition.BuffType == BuffType && BuffState.IsActive())
+        {
+            return true;
+        }
     }
 
-    return PersistentBuffs.ContainsByPredicate([BuffType](const FLFPPersistentBuffRuntimeState& BuffState)
-    {
-        return BuffState.Definition.BuffType == BuffType && BuffState.bIsActive;
-    });
+    return false;
 }
 
 int32 ULFPBuffComponent::GetBuffCount(ELFPBuffType BuffType) const
 {
     int32 BuffCount = 0;
-    for (const FLFPActiveBuff& Buff : ActiveBuffs)
+    for (const FLFPBuffRuntimeState& BuffState : Buffs)
     {
-        if (Buff.BuffType == BuffType && Buff.RemainingTurnTriggers > 0)
-        {
-            BuffCount++;
-        }
-    }
-
-    for (const FLFPPersistentBuffRuntimeState& BuffState : PersistentBuffs)
-    {
-        if (BuffState.Definition.BuffType == BuffType && BuffState.bIsActive)
+        if (BuffState.Definition.BuffType == BuffType && BuffState.IsActive())
         {
             BuffCount++;
         }
@@ -152,11 +162,22 @@ int32 ULFPBuffComponent::GetBuffCount(ELFPBuffType BuffType) const
 int32 ULFPBuffComponent::GetBleedStacks() const
 {
     int32 BleedStacks = 0;
-    for (const FLFPActiveBuff& Buff : ActiveBuffs)
+
+    for (const FLFPBuffRuntimeState& BuffState : Buffs)
     {
-        if (Buff.BuffType == ELFPBuffType::BT_Bleed && Buff.RemainingTurnTriggers > 0)
+        if (BuffState.Definition.BuffType != ELFPBuffType::BT_Bleed || !BuffState.IsActive())
         {
-            BleedStacks += FMath::Max(Buff.DamagePerTrigger, 0);
+            continue;
+        }
+
+        const int32 EffectiveStackCount = FMath::Max(BuffState.StackCount, 1);
+        for (const FLFPBuffEffectSpec& EffectSpec : BuffState.Definition.Effects)
+        {
+            if (EffectSpec.EffectType == ELFPBuffEffectType::BET_PeriodicDamage &&
+                EffectSpec.TriggerType == ELFPBuffTriggerType::BTT_OnTurnStart)
+            {
+                BleedStacks += FMath::Max(EffectSpec.Magnitude, 0) * EffectiveStackCount;
+            }
         }
     }
 
@@ -166,17 +187,9 @@ int32 ULFPBuffComponent::GetBleedStacks() const
 int32 ULFPBuffComponent::GetTotalBuffCount() const
 {
     int32 BuffCount = 0;
-    for (const FLFPActiveBuff& Buff : ActiveBuffs)
+    for (const FLFPBuffRuntimeState& BuffState : Buffs)
     {
-        if (Buff.RemainingTurnTriggers > 0)
-        {
-            BuffCount++;
-        }
-    }
-
-    for (const FLFPPersistentBuffRuntimeState& BuffState : PersistentBuffs)
-    {
-        if (BuffState.bIsActive)
+        if (BuffState.IsActive())
         {
             BuffCount++;
         }
@@ -185,19 +198,56 @@ int32 ULFPBuffComponent::GetTotalBuffCount() const
     return BuffCount;
 }
 
-FLFPBuffStatModifier ULFPBuffComponent::GetActivePersistentStatModifier() const
+FLFPBuffStatModifier ULFPBuffComponent::GetActiveStatModifier() const
 {
     FLFPBuffStatModifier CombinedModifier;
-    for (const FLFPPersistentBuffRuntimeState& BuffState : PersistentBuffs)
+
+    for (const FLFPBuffRuntimeState& BuffState : Buffs)
     {
-        if (BuffState.bIsActive)
+        if (!BuffState.IsActive())
         {
-            // 当前版本只做平面数值叠加，后续如需百分比层再单独扩展。
-            CombinedModifier.Append(BuffState.Definition.StatModifier);
+            continue;
+        }
+
+        const int32 EffectiveStackCount = FMath::Max(BuffState.StackCount, 1);
+        for (const FLFPBuffEffectSpec& EffectSpec : BuffState.Definition.Effects)
+        {
+            if (EffectSpec.EffectType != ELFPBuffEffectType::BET_StatModifier ||
+                EffectSpec.TriggerType != ELFPBuffTriggerType::BTT_PassiveStat)
+            {
+                continue;
+            }
+
+            // 属性类效果在重建属性时统一汇总，而不是在 Buff 注册时直接改角色数值。
+            FLFPBuffStatModifier WeightedModifier = EffectSpec.StatModifier;
+            WeightedModifier.AttackDelta *= EffectiveStackCount;
+            WeightedModifier.PhysicalBlockDelta *= EffectiveStackCount;
+            WeightedModifier.SpeedDelta *= EffectiveStackCount;
+            CombinedModifier.Append(WeightedModifier);
         }
     }
 
     return CombinedModifier;
+}
+
+FLFPBuffStatModifier ULFPBuffComponent::GetActivePersistentStatModifier() const
+{
+    return GetActiveStatModifier();
+}
+
+TArray<FLFPPersistentBuffRuntimeState> ULFPBuffComponent::GetPersistentBuffStates() const
+{
+    TArray<FLFPPersistentBuffRuntimeState> PersistentStates;
+
+    for (const FLFPBuffRuntimeState& BuffState : Buffs)
+    {
+        if (BuffState.bIsPersistent)
+        {
+            PersistentStates.Add(FLFPPersistentBuffRuntimeState::FromRuntimeState(BuffState));
+        }
+    }
+
+    return PersistentStates;
 }
 
 ALFPTacticsUnit* ULFPBuffComponent::GetOwnerUnit() const
@@ -205,15 +255,63 @@ ALFPTacticsUnit* ULFPBuffComponent::GetOwnerUnit() const
     return Cast<ALFPTacticsUnit>(GetOwner());
 }
 
+void ULFPBuffComponent::AddBuff(const FLFPBuffDefinition& BuffDefinition, bool bIsPersistent)
+{
+    FLFPBuffRuntimeState RuntimeState;
+    RuntimeState.Definition = BuffDefinition;
+    RuntimeState.RemainingTurns = BuffDefinition.HasTimedDuration() ? BuffDefinition.DurationTurns : 0;
+    // 无条件 Buff 默认激活；带条件的 Buff 会在 EvaluateBuffs 中实时刷新。
+    RuntimeState.bIsConditionMet = BuffDefinition.ConditionType == ELFPBuffConditionType::BCT_None;
+    RuntimeState.bIsPersistent = bIsPersistent;
+    Buffs.Add(RuntimeState);
+}
+
+void ULFPBuffComponent::ExecuteBuffEffects(FLFPBuffRuntimeState& BuffState, ELFPBuffTriggerType TriggerType, ALFPTacticsUnit* OwnerUnit)
+{
+    if (!OwnerUnit)
+    {
+        return;
+    }
+
+    const int32 EffectiveStackCount = FMath::Max(BuffState.StackCount, 1);
+    for (const FLFPBuffEffectSpec& EffectSpec : BuffState.Definition.Effects)
+    {
+        // 一个 Buff 可以挂多个效果，只执行当前触发时机匹配的那部分。
+        if (EffectSpec.TriggerType != TriggerType)
+        {
+            continue;
+        }
+
+        switch (EffectSpec.EffectType)
+        {
+        case ELFPBuffEffectType::BET_PeriodicDamage:
+            if (EffectSpec.Magnitude > 0)
+            {
+                OwnerUnit->TakeTrueDamage(EffectSpec.Magnitude * EffectiveStackCount);
+            }
+            break;
+
+        case ELFPBuffEffectType::BET_StatModifier:
+        default:
+            break;
+        }
+
+        if (!OwnerUnit->IsAlive())
+        {
+            break;
+        }
+    }
+}
+
 void ULFPBuffComponent::CleanupExpiredBuffs()
 {
-    ActiveBuffs.RemoveAll([](const FLFPActiveBuff& Buff)
+    Buffs.RemoveAll([](const FLFPBuffRuntimeState& BuffState)
     {
-        return Buff.RemainingTurnTriggers <= 0;
+        return BuffState.IsExpired();
     });
 }
 
-bool ULFPBuffComponent::EvaluatePersistentBuffCondition(const FLFPPersistentBuffDefinition& BuffDefinition, const ALFPTacticsUnit* OwnerUnit) const
+bool ULFPBuffComponent::EvaluateBuffCondition(const FLFPBuffDefinition& BuffDefinition, const ALFPTacticsUnit* OwnerUnit) const
 {
     if (!OwnerUnit || !OwnerUnit->IsAlive())
     {
