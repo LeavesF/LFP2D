@@ -39,6 +39,8 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Skill")
     bool ExecuteSkill(ULFPSkillBase* Skill, ALFPHexTile* TargetTile);
 
+    void NotifySkillCommitted(ALFPHexTile* TargetTile);
+
     // 获取默认攻击技能
     UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Skill")
     ULFPSkillBase* GetDefaultAttackSkill() const;
@@ -63,4 +65,7 @@ protected:
     // 技能数据资产
     UPROPERTY(EditAnywhere, Category = "Skill")
     class ULFPSkillDataAsset* SkillData;
+
+private:
+    bool ShouldTreatActionPointsAsPreConsumed(ALFPTacticsUnit* OwnerUnit, ULFPSkillBase* Skill) const;
 };

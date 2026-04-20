@@ -536,24 +536,26 @@ void ALFPTurnManager::BeginUnitTurn(ALFPTacticsUnit* Unit)
 void ALFPTurnManager::ExecuteEnemyPlan(ALFPTacticsUnit* Unit)
 {
     const FEnemyActionPlan& Plan = GetPlanForEnemy(Unit);
+    Unit->ClearActionPlan();
 
     if (Plan.bIsValid && Plan.PlannedSkill)
     {
         // 在原定目标格子释放技能（即使目标已死亡）
         // AP 已在规划阶段 AllocateEnemySkills 中扣除
-        Unit->ExecuteSkill(Plan.PlannedSkill, Plan.TargetTile);
+        if (!Unit->ExecuteSkill(Plan.PlannedSkill, Plan.TargetTile))
+        {
+            Unit->SetHasActed(true);
+            PassTurn();
+        }
+        return;
     }
 
     // 清除头顶技能图标
     Unit->ClearActionPlan();
 
     // 短延时后结束回合（让玩家看到技能效果）
-    FTimerHandle TimerHandle;
-    GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this, Unit]()
-    {
-        Unit->SetHasActed(true);
-        PassTurn();
-    }, 0.5f, false);
+    Unit->SetHasActed(true);
+    PassTurn();
 }
 
 void ALFPTurnManager::EndUnitTurn(ALFPTacticsUnit* Unit)

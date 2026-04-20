@@ -255,7 +255,7 @@ void ALFPTacticsPlayerController::Tick(float DeltaTime)
 // 选择开始
 void ALFPTacticsPlayerController::OnSelectStarted(const FInputActionValue& Value)
 {
-	if (bWaitingForMove) return;
+	if (bWaitingForMove || bWaitingForAction) return;
 
 	bIsSelecting = true;
 
@@ -270,7 +270,7 @@ void ALFPTacticsPlayerController::OnSelectStarted(const FInputActionValue& Value
 // 选择完成
 void ALFPTacticsPlayerController::OnSelectCompleted(const FInputActionValue& Value)
 {
-	if (bWaitingForMove) return;
+	if (bWaitingForMove || bWaitingForAction) return;
 	if (!bIsSelecting) return;
 	bIsSelecting = false;
 
@@ -308,7 +308,7 @@ void ALFPTacticsPlayerController::OnSelectCompleted(const FInputActionValue& Val
 
 void ALFPTacticsPlayerController::OnConfirmAction(const FInputActionValue& Value)
 {
-	if (bWaitingForMove) return;
+	if (bWaitingForMove || bWaitingForAction) return;
 	bIsDragging = false;
 	if (DragTime > DragThresholdTime)
 	{
@@ -391,7 +391,7 @@ void ALFPTacticsPlayerController::OnConfirmAction(const FInputActionValue& Value
 
 void ALFPTacticsPlayerController::OnCancelAction(const FInputActionValue& Value)
 {
-	if (bWaitingForMove) return;
+	if (bWaitingForMove || bWaitingForAction) return;
 	bIsDragging = false;
 	if (DragTime > DragThresholdTime)
 	{
@@ -442,7 +442,7 @@ void ALFPTacticsPlayerController::OnToggleDebug(const FInputActionValue& Value)
 
 void ALFPTacticsPlayerController::OnSkipTurnAction(const FInputActionValue& Value)
 {
-	if (bWaitingForMove) return;
+	if (bWaitingForMove || bWaitingForAction) return;
 	if (!SelectedUnit) return;
 	SkipTurn(SelectedUnit);
 }
@@ -722,6 +722,18 @@ void ALFPTacticsPlayerController::OnUnitMoveComplete()
 	MovingUnit = nullptr;
 }
 
+void ALFPTacticsPlayerController::OnUnitActionAnimationFinished(ALFPTacticsUnit* Unit)
+{
+    bWaitingForAction = false;
+
+    if (ActingUnit)
+    {
+        ActingUnit->OnActionAnimationFinished.RemoveDynamic(this, &ALFPTacticsPlayerController::OnUnitActionAnimationFinished);
+    }
+
+    ActingUnit = nullptr;
+}
+
 void ALFPTacticsPlayerController::SkipTurn(ALFPTacticsUnit* Unit)
 {
 	if (!Unit || !Unit->CanAct()) return;
@@ -745,12 +757,27 @@ void ALFPTacticsPlayerController::ExecuteSkill(ULFPSkillBase* CurrentSkill)
 	{
 		if (CurrentSkill->CanExecute(SelectedTile))
 		{
-			bIsReleaseSkill = false;
-			CurrentSkill->Execute(SelectedTile);
-			SelectedUnit->ConsumeActionPoints(CurrentSkill->ActionPointCost);
-			CurrentControlState = EPlayControlState::MoveState;
-			ShowUnitRange(EUnitRange::UR_Move);
-			SkipTurn(SelectedUnit);
+            bIsReleaseSkill = false;
+            CurrentControlState = EPlayControlState::MoveState;
+            CurrentSelectedSkill = nullptr;
+            ShowUnitRange(EUnitRange::UR_Default);
+
+            bWaitingForAction = true;
+            ActingUnit = SelectedUnit;
+            ActingUnit->OnActionAnimationFinished.AddDynamic(this, &ALFPTacticsPlayerController::OnUnitActionAnimationFinished);
+
+            if (!SelectedUnit->ExecuteSkill(CurrentSkill, SelectedTile))
+            {
+                bWaitingForAction = false;
+
+                if (ActingUnit)
+                {
+                    ActingUnit->OnActionAnimationFinished.RemoveDynamic(this, &ALFPTacticsPlayerController::OnUnitActionAnimationFinished);
+                }
+
+                ActingUnit = nullptr;
+                HandleSkillTargetSelecting(CurrentSkill);
+            }
 		}
 		else
 		{
