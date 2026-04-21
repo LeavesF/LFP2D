@@ -6,7 +6,6 @@
 #include "LFP2D/HexGrid/LFPHexTile.h"
 #include "LFP2D/Skill/LFPSkillRangeDataAsset.h"
 #include "LFP2D/Unit/LFPTacticsUnit.h"
-#include "Templates/UnrealTemplate.h"
 #include "UObject/UnrealType.h"
 
 namespace
@@ -148,33 +147,6 @@ int32 ULFPSkillBase::DealOwnerRepeatedDamage(ALFPTacticsUnit* Target, int32 HitC
 	return Owner->ApplyRepeatedHitDamage(Target, HitCount, RawDamagePerHit, Owner->GetAttackType());
 }
 
-void ULFPSkillBase::ExecuteFromAnimationCommit(ALFPHexTile* TargetTile)
-{
-    // 技能已经在请求动作阶段扣过 AP，这里只跳过 AP 校验并执行真正效果。
-    TGuardValue<bool> GuardBypassActionPointValidation(bBypassActionPointValidation, true);
-    Execute(TargetTile);
-}
-
-bool ULFPSkillBase::CanExecuteIgnoringActionPoints(ALFPHexTile* TargetTile)
-{
-    // 给“规划阶段已预扣 AP”的敌方技能复用同一套 CanExecute 逻辑。
-    TGuardValue<bool> GuardBypassActionPointValidation(bBypassActionPointValidation, true);
-    return CanExecute(TargetTile);
-}
-
-FName ULFPSkillBase::GetResolvedAnimationKey() const
-{
-    if (!AnimationKey.IsNone())
-    {
-        return AnimationKey;
-    }
-
-    // 不填专用 key 时，统一落到通用 Attack/Cast 序列。
-    return ActionAnimType == ELFPSkillActionAnimType::Cast
-        ? TEXT("Cast_Generic")
-        : TEXT("Attack_Generic");
-}
-
 bool ULFPSkillBase::CanExecute_Implementation(ALFPHexTile* TargetTile)
 {
 	if (!Owner) return false;
@@ -184,7 +156,7 @@ bool ULFPSkillBase::CanExecute_Implementation(ALFPHexTile* TargetTile)
 	//if (CurrentCooldown > 0) return false;
 
 	// 检查行动力
-	if (!bBypassActionPointValidation && !Owner->HasEnoughActionPoints(ActionPointCost)) return false;
+	if (!Owner->HasEnoughActionPoints(ActionPointCost)) return false;
 	if (TargetTile && !IsValidReleaseTargetTile(TargetTile)) return false;
 
 	return true;

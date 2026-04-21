@@ -193,21 +193,14 @@ protected:
 
     // 等待单位移动动画完成（期间锁定游戏输入）
     bool bWaitingForMove = false;
-    bool bWaitingForAction = false;
 
     // 当前正在移动的单位（用于解绑委托）
     UPROPERTY()
     TObjectPtr<ALFPTacticsUnit> MovingUnit;
 
-    UPROPERTY()
-    TObjectPtr<ALFPTacticsUnit> ActingUnit;
-
     // 单位移动完成回调
     UFUNCTION()
     void OnUnitMoveComplete();
-
-    UFUNCTION()
-    void OnUnitActionAnimationFinished(ALFPTacticsUnit* Unit);
 
 public:
     ALFPTurnManager* GetTurnManager() const;

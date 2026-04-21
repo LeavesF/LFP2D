@@ -7,12 +7,9 @@
 #include "GameFramework/Actor.h"
 #include "LFP2D/HexGrid/LFPHexTile.h"
 #include "LFP2D/Turn/LFPBattleTypes.h"
-#include "LFP2D/Unit/LFPUnitAnimationTypes.h"
 #include "LFP2D/Unit/LFPUnitTypes.h"
 #include "Components/TimelineComponent.h"
-#include "PaperFlipbookComponent.h"
 #include "PaperSpriteComponent.h"
-#include "PaperZDAnimInstance.h"
 #include "LFP2D/Buff/LFPBuffTypes.h"
 #include "LFPTacticsUnit.generated.h"
 
@@ -26,7 +23,6 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUnitDeathSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUnitDeathWithUnitSignature, ALFPTacticsUnit*, Unit);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMoveFinishedSignature);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnActionAnimationFinishedSignature, ALFPTacticsUnit*, Unit);
 
 class ULFPSkillBase;
 class ALFPHexGridManager;
@@ -37,8 +33,6 @@ class ULFPBetrayalCondition;
 class ALFPAIController;
 class ULFPSkillComponent;
 class ULFPBuffComponent;
-class ULFPUnitAnimInstance;
-class UPaperZDAnimationComponent;
 
 USTRUCT(BlueprintType)
 struct FLFPUnitBaseStats
@@ -313,63 +307,6 @@ public:
 
     UPROPERTY(VisibleAnywhere, Category = "Components")
     UPaperSpriteComponent* SpriteComponent;
-
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-    TObjectPtr<UPaperFlipbookComponent> PaperZDRenderComponent;
-
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-    TObjectPtr<UPaperZDAnimationComponent> PaperZDAnimationComponent;
-
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation")
-    TSubclassOf<UPaperZDAnimInstance> PaperZDAnimInstanceClass;
-
-    UFUNCTION(BlueprintPure, Category = "Animation")
-    ELFPUnitAnimState GetCurrentAnimState() const { return CurrentAnimState; }
-
-    UFUNCTION(BlueprintPure, Category = "Animation")
-    FName GetCurrentAnimationKey() const { return CurrentAnimationKey; }
-
-    UFUNCTION(BlueprintPure, Category = "Animation")
-    bool IsActionAnimationLocked() const { return bActionAnimationLocked; }
-
-    UFUNCTION(BlueprintPure, Category = "Animation")
-    bool HasPendingSkillAction() const { return PendingActionContext.bIsActive; }
-
-    UFUNCTION(BlueprintPure, Category = "Animation")
-    bool IsHitReactionActive() const { return bHitReactionActive; }
-
-    UFUNCTION(BlueprintPure, Category = "Animation")
-    bool UsesPaperZDAnimation() const { return PaperZDAnimInstanceClass != nullptr; }
-
-    UFUNCTION(BlueprintPure, Category = "Animation")
-    bool CanBeginSkillAction() const { return !bIsDead && !bIsMoving && !PendingActionContext.bIsActive && !bActionAnimationLocked; }
-
-    UFUNCTION(BlueprintCallable, Category = "Animation")
-    bool BeginSkillAction(ULFPSkillBase* Skill, ALFPHexTile* InTargetTile, bool bActionPointsConsumed);
-
-    UFUNCTION(BlueprintCallable, Category = "Animation")
-    void CommitPendingAction();
-
-    UFUNCTION(BlueprintCallable, Category = "Animation")
-    void FinishPendingAction();
-
-    UFUNCTION(BlueprintCallable, Category = "Animation")
-    void CancelPendingAction(bool bBroadcastFinish = false);
-
-    UFUNCTION(BlueprintCallable, Category = "Animation")
-    void RefreshAnimationState();
-
-    UFUNCTION(BlueprintCallable, Category = "Animation")
-    void OnAnimCommitAction();
-
-    UFUNCTION(BlueprintCallable, Category = "Animation")
-    void OnAnimActionFinished();
-
-    UFUNCTION(BlueprintCallable, Category = "Animation")
-    void OnAnimHitFinished();
-
-    UPROPERTY(BlueprintAssignable, Category = "Animation")
-    FOnActionAnimationFinishedSignature OnActionAnimationFinished;
 
 public:
     // 回合系统相关
@@ -662,11 +599,6 @@ public:
 protected:
     // 处理死亡
     void HandleDeath();
-    void SetAnimationState(ELFPUnitAnimState NewState, FName NewAnimationKey = NAME_None, bool bForce = false);
-    ELFPUnitAnimState GetDesiredActionAnimState() const;
-    void ConfigureAnimationComponents();
-    void SetVisualColor(const FLinearColor& NewColor);
-    void TriggerHitReaction();
 
     // 攻击范围
     UPROPERTY(EditAnywhere, Category = "Unit Combat")
@@ -681,24 +613,6 @@ protected:
     bool bIsDead = false;
 
     bool bIsRebuildingRuntimeStats = false;
-
-    UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = "true"))
-    ELFPUnitAnimState CurrentAnimState = ELFPUnitAnimState::Idle;
-
-    UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = "true"))
-    FName CurrentAnimationKey = NAME_None;
-
-    UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = "true"))
-    FLFPPendingActionContext PendingActionContext;
-
-    UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = "true"))
-    bool bActionAnimationLocked = false;
-
-    UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = "true"))
-    bool bHitReactionActive = false;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation", meta = (AllowPrivateAccess = "true", ClampMin = "0.0"))
-    float DeathDestroyDelay = 2.0f;
 
 public:
     UFUNCTION(BlueprintCallable, Category = "Betrayal")

@@ -15,7 +15,6 @@
 #include "LFP2D/Core/LFPTurnGameMode.h"
 #include "LFP2D/Core/LFPGameInstance.h"
 #include "LFP2D/Core/LFPUnitRegistryDataAsset.h"
-#include "LFP2D/Animation/LFPUnitAnimInstance.h"
 #include "LFP2D/UI/Fighting/LFPHealthBarWidget.h"
 #include "LFP2D/UI/Fighting/LFPPlannedSkillIconWidget.h"
 #include "Kismet/GameplayStatics.h"
@@ -23,7 +22,6 @@
 #include "Components/WidgetComponent.h"
 #include "Curves/CurveFloat.h"
 #include "DrawDebugHelpers.h"
-#include "PaperZDAnimationComponent.h"
 #include "Templates/UnrealTemplate.h"
 
 ALFPTacticsUnit::ALFPTacticsUnit()
@@ -38,14 +36,6 @@ ALFPTacticsUnit::ALFPTacticsUnit()
     SpriteComponent = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("SpriteComponent"));
     SpriteComponent->SetupAttachment(RootComponent);
     SpriteComponent->SetRelativeLocation(FVector(0, 0, 0)); // 在根组件上方
-
-    PaperZDRenderComponent = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("PaperZDRenderComponent"));
-    PaperZDRenderComponent->SetupAttachment(RootComponent);
-    PaperZDRenderComponent->SetRelativeLocation(FVector(0, 0, 0));
-    PaperZDRenderComponent->SetVisibility(false);
-
-    PaperZDAnimationComponent = CreateDefaultSubobject<UPaperZDAnimationComponent>(TEXT("PaperZDAnimationComponent"));
-    PaperZDAnimationComponent->InitRenderComponent(PaperZDRenderComponent);
 
     // 默认值
     ResetCurrentStatsToBase();
@@ -215,224 +205,6 @@ void ALFPTacticsUnit::RebuildCurrentStatsFromRuntimeSources()
     CurrentHealth = FMath::Clamp(CurrentHealth, 0, GetCurrentMaxHealth());
 }
 
-void ALFPTacticsUnit::ConfigureAnimationComponents()
-{
-    const bool bUsePaperZD = UsesPaperZDAnimation();
-
-    // 配了 PaperZD AnimInstance 就切到 Flipbook 渲染，否则继续走旧 Sprite 回退。
-    if (PaperZDRenderComponent)
-    {
-        PaperZDRenderComponent->SetVisibility(bUsePaperZD);
-        PaperZDRenderComponent->SetHiddenInGame(!bUsePaperZD);
-    }
-
-    if (SpriteComponent)
-    {
-        SpriteComponent->SetVisibility(!bUsePaperZD);
-        SpriteComponent->SetHiddenInGame(bUsePaperZD);
-    }
-
-    if (PaperZDAnimationComponent)
-    {
-        PaperZDAnimationComponent->SetAnimInstanceClass(PaperZDAnimInstanceClass);
-    }
-}
-
-void ALFPTacticsUnit::SetVisualColor(const FLinearColor& NewColor)
-{
-    if (SpriteComponent)
-    {
-        SpriteComponent->SetSpriteColor(NewColor);
-    }
-
-    if (PaperZDRenderComponent)
-    {
-        PaperZDRenderComponent->SetSpriteColor(NewColor);
-    }
-}
-
-ELFPUnitAnimState ALFPTacticsUnit::GetDesiredActionAnimState() const
-{
-    return PendingActionContext.ActionAnimType == ELFPSkillActionAnimType::Cast
-        ? ELFPUnitAnimState::Cast
-        : ELFPUnitAnimState::Attack;
-}
-
-void ALFPTacticsUnit::SetAnimationState(ELFPUnitAnimState NewState, FName NewAnimationKey, bool bForce)
-{
-    const bool bNeedsAnimationKey = NewState == ELFPUnitAnimState::Attack || NewState == ELFPUnitAnimState::Cast;
-    const FName EffectiveAnimationKey = bNeedsAnimationKey ? NewAnimationKey : NAME_None;
-
-    if (!bForce && CurrentAnimState == NewState && CurrentAnimationKey == EffectiveAnimationKey)
-    {
-        return;
-    }
-
-    CurrentAnimState = NewState;
-    CurrentAnimationKey = EffectiveAnimationKey;
-}
-
-void ALFPTacticsUnit::RefreshAnimationState()
-{
-    // 状态优先级固定为 Death > Action > Hit > Move > Idle。
-    if (bIsDead)
-    {
-        SetAnimationState(ELFPUnitAnimState::Death, NAME_None, true);
-        return;
-    }
-
-    if (bActionAnimationLocked || PendingActionContext.bIsActive)
-    {
-        SetAnimationState(GetDesiredActionAnimState(), PendingActionContext.AnimationKey, true);
-        return;
-    }
-
-    if (bHitReactionActive)
-    {
-        SetAnimationState(ELFPUnitAnimState::Hit, NAME_None, true);
-        return;
-    }
-
-    if (bIsMoving)
-    {
-        SetAnimationState(ELFPUnitAnimState::Move);
-        return;
-    }
-
-    SetAnimationState(ELFPUnitAnimState::Idle);
-}
-
-void ALFPTacticsUnit::TriggerHitReaction()
-{
-    if (bIsDead || bActionAnimationLocked)
-    {
-        return;
-    }
-
-    // 受击只作为短时覆盖状态，不打断正在执行的动作动画。
-    bHitReactionActive = true;
-    RefreshAnimationState();
-
-    if (!UsesPaperZDAnimation())
-    {
-        OnAnimHitFinished();
-    }
-}
-
-bool ALFPTacticsUnit::BeginSkillAction(ULFPSkillBase* Skill, ALFPHexTile* InTargetTile, bool bActionPointsConsumed)
-{
-    if (!Skill || bIsDead || bIsMoving || PendingActionContext.bIsActive || bActionAnimationLocked)
-    {
-        return false;
-    }
-
-    // 这里不立即结算技能，只记录上下文并切入动作动画，真正效果由 notify 提交。
-    PendingActionContext.Reset();
-    PendingActionContext.bIsActive = true;
-    PendingActionContext.bActionPointsConsumed = bActionPointsConsumed;
-    PendingActionContext.Skill = Skill;
-    PendingActionContext.TargetTile = InTargetTile;
-    PendingActionContext.TargetUnit = Skill->GetUnitOnTile(InTargetTile);
-    PendingActionContext.ActionAnimType = Skill->ActionAnimType;
-    PendingActionContext.AnimationKey = Skill->GetResolvedAnimationKey();
-
-    bActionAnimationLocked = true;
-    bHitReactionActive = false;
-    RefreshAnimationState();
-
-    if (!UsesPaperZDAnimation())
-    {
-        // 过渡期兼容：未配置 PaperZD 资产时，仍然走“立刻提交 + 立刻收尾”。
-        CommitPendingAction();
-        FinishPendingAction();
-    }
-
-    return true;
-}
-
-void ALFPTacticsUnit::CommitPendingAction()
-{
-    if (!PendingActionContext.bIsActive || PendingActionContext.bCommitted)
-    {
-        return;
-    }
-
-    // commit 只允许一次，避免 notify 重复触发造成双重扣费或双重伤害。
-    PendingActionContext.bCommitted = true;
-
-    ULFPSkillBase* Skill = PendingActionContext.Skill;
-    ALFPHexTile* CommitTargetTile = PendingActionContext.TargetTile;
-    if (Skill)
-    {
-        Skill->ExecuteFromAnimationCommit(CommitTargetTile);
-    }
-
-    if (SkillComponent)
-    {
-        SkillComponent->NotifySkillCommitted(CommitTargetTile);
-    }
-}
-
-void ALFPTacticsUnit::FinishPendingAction()
-{
-    if (!PendingActionContext.bIsActive && !bActionAnimationLocked)
-    {
-        return;
-    }
-
-    // finish 负责解锁单位，并把回合系统推进到“本次动作已完成”。
-    PendingActionContext.Reset();
-    bActionAnimationLocked = false;
-    RefreshAnimationState();
-    OnActionAnimationFinished.Broadcast(this);
-
-    if (ALFPTurnManager* TurnManager = GetTurnManager())
-    {
-        if (TurnManager->GetCurrentPhase() == EBattlePhase::BP_ActionPhase &&
-            TurnManager->GetCurrentUnit() == this)
-        {
-            TurnManager->OnUnitFinishedAction(this);
-        }
-    }
-}
-
-void ALFPTacticsUnit::CancelPendingAction(bool bBroadcastFinish)
-{
-    const bool bHadPendingAction = PendingActionContext.bIsActive || bActionAnimationLocked;
-
-    // 死亡、销毁或强制中断时统一走这里，后续 notify 即使到达也不会再生效。
-    PendingActionContext.Reset();
-    bActionAnimationLocked = false;
-    RefreshAnimationState();
-
-    if (bBroadcastFinish && bHadPendingAction)
-    {
-        OnActionAnimationFinished.Broadcast(this);
-    }
-}
-
-void ALFPTacticsUnit::OnAnimCommitAction()
-{
-    // PaperZD notify 统一回流到单位入口，再由单位决定如何结算。
-    CommitPendingAction();
-}
-
-void ALFPTacticsUnit::OnAnimActionFinished()
-{
-    FinishPendingAction();
-}
-
-void ALFPTacticsUnit::OnAnimHitFinished()
-{
-    if (!bHitReactionActive)
-    {
-        return;
-    }
-
-    bHitReactionActive = false;
-    RefreshAnimationState();
-}
-
 bool ALFPTacticsUnit::HasAliveFriendlyWithinHexRange(int32 Range, bool bExcludeSelf) const
 {
     ALFPHexGridManager* GridManager = GetGridManager();
@@ -517,8 +289,6 @@ void ALFPTacticsUnit::BeginPlay()
 	// 初始化血量
     CurrentHealth = FMath::Clamp(CurrentHealth, 0, GetCurrentMaxHealth());
 	InitializeHealthBar();
-    ConfigureAnimationComponents();
-    RefreshAnimationState();
 
     PlannedSkillIconComponent->SetRelativeLocation(FVector(0, SkillIconTopDist, 0)); // 在血条上方
 
@@ -543,7 +313,6 @@ void ALFPTacticsUnit::BeginPlay()
 
 void ALFPTacticsUnit::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-    CancelPendingAction(true);
     Super::EndPlay(EndPlayReason);
 
     if (ALFPTurnManager* TurnManager = GetTurnManager())
@@ -653,7 +422,6 @@ bool ALFPTacticsUnit::MoveToTile(ALFPHexTile* NewTargetTile)
 
     // 启动移动动画（Tick 驱动逐格插值）
     bIsMoving = true;
-    RefreshAnimationState();
 
     return true;
 }
@@ -692,7 +460,6 @@ void ALFPTacticsUnit::FinishMove()
         TurnManager->RefreshAllRuntimeUnitStates();
     }
 
-    RefreshAnimationState();
     OnMoveFinished.Broadcast();
 }
 
@@ -700,13 +467,15 @@ void ALFPTacticsUnit::ResetForNewRound()
 {
     CurrentMovePoints = CurrentMaxMovePoints;
     bHasActed = false;
-    bHitReactionActive = false;
-    CancelPendingAction();
+
+    // 重置精灵视觉效果
+    if (SpriteComponent)
+    {
+        SpriteComponent->SetSpriteColor(FLinearColor::White);
+    }
 
     // 清除上一轮的行动计划
     ClearActionPlan();
-    SetVisualColor(FLinearColor::White);
-    RefreshAnimationState();
 }
 
 void ALFPTacticsUnit::OnTurnStarted()
@@ -726,14 +495,11 @@ void ALFPTacticsUnit::OnTurnStarted()
     {
         SkillComponent->OnTurnStarted();
     }
-
-    RefreshAnimationState();
 }
 
 void ALFPTacticsUnit::OnTurnEnded()
 {
     bOnTurn = false;
-    RefreshAnimationState();
 }
 
 void ALFPTacticsUnit::OnMouseEnter()
@@ -746,11 +512,11 @@ void ALFPTacticsUnit::SetSelected(bool bSelected)
     // 视觉反馈：高亮选中单位
     if (bSelected)
     {
-        SetVisualColor(FLinearColor::Yellow);
+        SpriteComponent->SetSpriteColor(FLinearColor::Yellow);
     }
     else
     {
-        SetVisualColor(FLinearColor::White);
+        SpriteComponent->SetSpriteColor(FLinearColor::White);
     }
 }
 
@@ -913,10 +679,6 @@ int32 ALFPTacticsUnit::TakeTypedDamage(int32 Damage, ELFPAttackType DamageType)
     {
         HandleDeath();
     }
-    else
-    {
-        TriggerHitReaction();
-    }
 
     return ActualDamage;
 }
@@ -939,10 +701,6 @@ int32 ALFPTacticsUnit::TakeTrueDamage(int32 Damage)
     if (CurrentHealth <= 0)
     {
         HandleDeath();
-    }
-    else
-    {
-        TriggerHitReaction();
     }
 
     return ActualDamage;
@@ -1020,13 +778,6 @@ void ALFPTacticsUnit::ApplyDamageToTarget(ALFPTacticsUnit* Target)
 void ALFPTacticsUnit::HandleDeath()
 {
     bIsDead = true;
-    bIsMoving = false;
-    bHitReactionActive = false;
-    MovePath.Empty();
-    CurrentPathIndex = -1;
-    MoveProgress = 0.0f;
-    CancelPendingAction(true);
-    RefreshAnimationState();
     if (BuffComponent)
     {
         BuffComponent->ClearAllBuffs();
@@ -1070,7 +821,7 @@ void ALFPTacticsUnit::HandleDeath()
     GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]()
         {
             Destroy();
-        }, DeathDestroyDelay, false);
+        }, 2.0f, false);
 }
 
 void ALFPTacticsUnit::ChangeAffiliation(EUnitAffiliation NewAffiliation)

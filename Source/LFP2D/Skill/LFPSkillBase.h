@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
 #include "LFP2D/HexGrid/LFPHexTile.h"
-#include "LFP2D/Unit/LFPUnitAnimationTypes.h"
 #include "UObject/NoExportTypes.h"
 #include "LFPSkillBase.generated.h"
 
@@ -68,15 +67,6 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Skill")
 	int32 DealOwnerRepeatedDamage(ALFPTacticsUnit* Target, int32 HitCount, float DamageScalePerHit) const;
-
-    UFUNCTION(BlueprintCallable, Category = "Skill|Animation")
-    void ExecuteFromAnimationCommit(ALFPHexTile* TargetTile = nullptr);
-
-    UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Skill|Animation")
-    bool CanExecuteIgnoringActionPoints(ALFPHexTile* TargetTile = nullptr);
-
-    UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Skill|Animation")
-    FName GetResolvedAnimationKey() const;
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Skill")
 	bool CanExecute(ALFPHexTile* TargetTile = nullptr);
@@ -234,12 +224,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill|Passive", meta = (EditCondition = "bIsPassiveSkill"))
 	bool bShowDisabledInSkillBar = true;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill|Animation")
-    ELFPSkillActionAnimType ActionAnimType = ELFPSkillActionAnimType::Attack;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill|Animation")
-    FName AnimationKey = NAME_None;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill|Range")
 	TArray<FLFPHexCoordinates> ReleaseRangeCoords;
 
@@ -287,9 +271,6 @@ public:
 	// 每轮优先级回复值
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill|Priority")
 	float PriorityRecoveryPerRound = 10.0f;
-
-    UPROPERTY(Transient)
-    bool bBypassActionPointValidation = false;
 
 private:
 	void RebuildReleaseRangeCoords();
