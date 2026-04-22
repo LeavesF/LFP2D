@@ -14,6 +14,8 @@ public:
 
     virtual bool CanExecute_Implementation(ALFPHexTile* TargetTile = nullptr) override;
     virtual void Execute_Implementation(ALFPHexTile* TargetTile = nullptr) override;
+    virtual int32 GetHitCount_Implementation(ALFPTacticsUnit* Target) const override;
+    virtual float GetDamageScalePerHit_Implementation(ALFPTacticsUnit* Target) const override;
 
 protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")

@@ -664,26 +664,67 @@ void ALFPTacticsUnit::ReceiveTypedDamage(int32 Damage)
 
 int32 ALFPTacticsUnit::TakeTypedDamage(int32 Damage, ELFPAttackType DamageType)
 {
-    if (bIsDead) return 0;
+    return TakeTypedDamageInternal(Damage, DamageType);
+}
+
+int32 ALFPTacticsUnit::TakeTypedDamageInternal(int32 Damage, ELFPAttackType DamageType)
+{
+    if (bIsDead)
+    {
+        return 0;
+    }
 
     const int32 DefenseValue = (DamageType == ELFPAttackType::AT_Magical) ? GetSpellDefense() : GetPhysicalBlock();
     const int32 ActualDamage = FMath::Max(Damage - DefenseValue, 1);
-    CurrentHealth = FMath::Max(CurrentHealth - ActualDamage, 0);
-
-    OnHealthChangedDelegate.Broadcast(CurrentHealth, GetCurrentMaxHealth());
-    OnHealthChangedWithUnitDelegate.Broadcast(this, CurrentHealth, GetCurrentMaxHealth());
-
-    OnTakeDamage(ActualDamage);
-
-    if (CurrentHealth <= 0)
-    {
-        HandleDeath();
-    }
-
-    return ActualDamage;
+    return ApplyResolvedDamage(ActualDamage);
 }
 
 int32 ALFPTacticsUnit::TakeTrueDamage(int32 Damage)
+{
+    return ApplyResolvedDamage(Damage);
+}
+
+int32 ALFPTacticsUnit::ApplySkillDamage(ALFPTacticsUnit* Target, const ULFPSkillBase* SourceSkill)
+{
+    if (!Target || !SourceSkill || !SourceSkill->Owner)
+    {
+        return 0;
+    }
+
+    const int32 HitCount = FMath::Max(0, SourceSkill->GetHitCount(Target));
+    if (HitCount <= 0)
+    {
+        return 0;
+    }
+
+    int32 TotalDamage = 0;
+    for (int32 HitIndex = 0; HitIndex < HitCount; ++HitIndex)
+    {
+        if (!Target->IsAlive())
+        {
+            break;
+        }
+
+        const float DamageScalePerHit = FMath::Max(0.0f, SourceSkill->GetDamageScalePerHit(Target));
+        const ELFPAttackType DamageType = SourceSkill->GetDamageType(Target);
+        const int32 RawDamage = FMath::Max(0, FMath::RoundToInt(SourceSkill->Owner->GetCurrentAttack() * DamageScalePerHit));
+        const int32 DefenseValue = (DamageType == ELFPAttackType::AT_Magical) ? Target->GetSpellDefense() : Target->GetPhysicalBlock();
+        int32 ActualDamage = FMath::Max(RawDamage - DefenseValue, 1);
+
+        const float CriticalChance = FMath::Clamp(SourceSkill->GetCriticalChance(Target), 0.0f, 1.0f);
+        if (CriticalChance > 0.0f && FMath::FRand() < CriticalChance)
+        {
+            const float CriticalMultiplier = FMath::Max(1.0f, SourceSkill->GetCriticalMultiplier(Target));
+            ActualDamage = FMath::Max(1, FMath::RoundToInt(ActualDamage * CriticalMultiplier));
+        }
+
+        TotalDamage += Target->ApplyResolvedDamage(ActualDamage);
+    }
+
+    return TotalDamage;
+}
+
+int32 ALFPTacticsUnit::ApplyResolvedDamage(int32 Damage)
 {
     if (bIsDead)
     {

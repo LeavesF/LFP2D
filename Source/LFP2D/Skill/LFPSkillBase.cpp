@@ -136,15 +136,39 @@ bool ULFPSkillBase::IsValidReleaseTargetTile(ALFPHexTile* TargetTile) const
 	}
 }
 
-int32 ULFPSkillBase::DealOwnerRepeatedDamage(ALFPTacticsUnit* Target, int32 HitCount, float DamageScalePerHit) const
+int32 ULFPSkillBase::DealOwnerSkillDamage(ALFPTacticsUnit* Target) const
 {
-	if (!Owner || !Target || HitCount <= 0)
+	if (!Owner || !Target)
 	{
 		return 0;
 	}
 
-	const int32 RawDamagePerHit = FMath::Max(0, FMath::RoundToInt(Owner->GetCurrentAttack() * DamageScalePerHit));
-	return Owner->ApplyRepeatedHitDamage(Target, HitCount, RawDamagePerHit, Owner->GetAttackType());
+	return Owner->ApplySkillDamage(Target, this);
+}
+
+int32 ULFPSkillBase::GetHitCount_Implementation(ALFPTacticsUnit* Target) const
+{
+	return 1;
+}
+
+float ULFPSkillBase::GetDamageScalePerHit_Implementation(ALFPTacticsUnit* Target) const
+{
+	return 1.0f;
+}
+
+ELFPAttackType ULFPSkillBase::GetDamageType_Implementation(ALFPTacticsUnit* Target) const
+{
+	return Owner ? Owner->GetAttackType() : ELFPAttackType::AT_Physical;
+}
+
+float ULFPSkillBase::GetCriticalChance_Implementation(ALFPTacticsUnit* Target) const
+{
+	return 0.0f;
+}
+
+float ULFPSkillBase::GetCriticalMultiplier_Implementation(ALFPTacticsUnit* Target) const
+{
+	return 2.0f;
 }
 
 bool ULFPSkillBase::CanExecute_Implementation(ALFPHexTile* TargetTile)
@@ -156,7 +180,7 @@ bool ULFPSkillBase::CanExecute_Implementation(ALFPHexTile* TargetTile)
 	//if (CurrentCooldown > 0) return false;
 
 	// 检查行动力
-	if (!Owner->HasEnoughActionPoints(ActionPointCost)) return false;
+	if (!Owner->IsEnemy() && !Owner->HasEnoughActionPoints(ActionPointCost)) return false;
 	if (TargetTile && !IsValidReleaseTargetTile(TargetTile)) return false;
 
 	return true;

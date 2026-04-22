@@ -54,7 +54,7 @@ void ULFPSkill_Claw::Execute_Implementation(ALFPHexTile* TargetTile)
         return;
     }
 
-    DealOwnerRepeatedDamage(TargetUnit, 1, DamageScale);
+    DealOwnerSkillDamage(TargetUnit);
 
     if (!TargetUnit->IsAlive())
     {
@@ -65,4 +65,9 @@ void ULFPSkill_Claw::Execute_Implementation(ALFPHexTile* TargetTile)
     {
         BuffComponent->ApplyBleed(BleedStacks, BleedDurationTurns);
     }
+}
+
+float ULFPSkill_Claw::GetDamageScalePerHit_Implementation(ALFPTacticsUnit* Target) const
+{
+    return DamageScale;
 }

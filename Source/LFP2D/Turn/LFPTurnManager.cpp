@@ -541,7 +541,28 @@ void ALFPTurnManager::ExecuteEnemyPlan(ALFPTacticsUnit* Unit)
     {
         // 在原定目标格子释放技能（即使目标已死亡）
         // AP 已在规划阶段 AllocateEnemySkills 中扣除
-        Unit->ExecuteSkill(Plan.PlannedSkill, Plan.TargetTile);
+        ALFPHexTile* ExecutionTargetTile = Plan.TargetTile;
+
+        if (Plan.PlannedSkill->bTrackTargetUnitForAIExecution)
+        {
+            ExecutionTargetTile = nullptr;
+
+            if (Plan.TargetUnit && Plan.TargetUnit->IsAlive())
+            {
+                ALFPHexTile* CurrentTargetTile = Plan.TargetUnit->GetCurrentTile();
+                ALFPHexTile* CasterTile = Unit ? Unit->GetCurrentTile() : nullptr;
+
+                if (CasterTile && CurrentTargetTile && Plan.PlannedSkill->CanReleaseFrom(CasterTile, CurrentTargetTile))
+                {
+                    ExecutionTargetTile = CurrentTargetTile;
+                }
+            }
+        }
+
+        if (ExecutionTargetTile)
+        {
+            Unit->ExecuteSkill(Plan.PlannedSkill, ExecutionTargetTile);
+        }
     }
 
     // 清除头顶技能图标

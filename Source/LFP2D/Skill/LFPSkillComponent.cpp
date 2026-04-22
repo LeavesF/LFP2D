@@ -38,6 +38,7 @@ void ULFPSkillComponent::InitializeSkills()
 {
     // 清空所有技能
     Skills.Empty();
+    DefaultAttackSkill = nullptr;
 
     ALFPTacticsUnit* OwnerUnit = Cast<ALFPTacticsUnit>(GetOwner());
     if (!OwnerUnit || !SkillData) return;
@@ -58,6 +59,23 @@ void ULFPSkillComponent::InitializeSkills()
                 Skills.Add(NewSkill);
                 NewSkill->InitSkill(OwnerUnit);
                 NewSkill->RegisterPassiveBuffs(OwnerUnit);
+
+                if (!DefaultAttackSkill && NewSkill->bIsDefaultAttack)
+                {
+                    DefaultAttackSkill = NewSkill;
+                }
+            }
+        }
+    }
+
+    if (!DefaultAttackSkill)
+    {
+        for (ULFPSkillBase* Skill : Skills)
+        {
+            if (Skill && !Skill->IsPassiveSkill())
+            {
+                DefaultAttackSkill = Skill;
+                break;
             }
         }
     }

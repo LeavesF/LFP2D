@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
 #include "LFP2D/HexGrid/LFPHexTile.h"
+#include "LFP2D/Unit/LFPUnitTypes.h"
 #include "UObject/NoExportTypes.h"
 #include "LFPSkillBase.generated.h"
 
@@ -65,8 +66,32 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Skill")
 	bool IsValidReleaseTargetTile(ALFPHexTile* TargetTile) const;
 
+	// 统一技能出伤入口。
+	// 仅适用于“按施法者攻击力 * 技能倍率”结算的通用技能；
+	// 固定伤害、真实伤害、DoT 等特殊技能应继续走自定义逻辑。
 	UFUNCTION(BlueprintCallable, Category = "Skill")
-	int32 DealOwnerRepeatedDamage(ALFPTacticsUnit* Target, int32 HitCount, float DamageScalePerHit) const;
+	int32 DealOwnerSkillDamage(ALFPTacticsUnit* Target) const;
+
+	// 以下 getter 由统一伤害结算侧读取。
+	// 子类只需覆盖自己需要变化的部分，未覆盖时使用默认规则。
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, BlueprintPure, Category = "Skill|Combat")
+	int32 GetHitCount(ALFPTacticsUnit* Target) const;
+
+	// 返回每一段伤害使用的攻击倍率。
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, BlueprintPure, Category = "Skill|Combat")
+	float GetDamageScalePerHit(ALFPTacticsUnit* Target) const;
+
+	// 返回每一段伤害的类型；默认取 Owner 的当前攻击类型。
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, BlueprintPure, Category = "Skill|Combat")
+	ELFPAttackType GetDamageType(ALFPTacticsUnit* Target) const;
+
+	// 返回每一段独立判定的暴击概率，范围为 0~1。
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, BlueprintPure, Category = "Skill|Combat")
+	float GetCriticalChance(ALFPTacticsUnit* Target) const;
+
+	// 返回暴击时对最终伤害生效的倍率。
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, BlueprintPure, Category = "Skill|Combat")
+	float GetCriticalMultiplier(ALFPTacticsUnit* Target) const;
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Skill")
 	bool CanExecute(ALFPHexTile* TargetTile = nullptr);
@@ -217,6 +242,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
 	bool bIsDefaultAttack;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill|AI")
+	bool bTrackTargetUnitForAIExecution = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill|Passive")
 	bool bIsPassiveSkill = false;

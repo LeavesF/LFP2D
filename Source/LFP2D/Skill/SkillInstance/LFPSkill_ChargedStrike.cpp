@@ -64,5 +64,10 @@ void ULFPSkill_ChargedStrike::OnTurnStart()
         return;
     }
 
-    DealOwnerRepeatedDamage(TargetUnit, 1, DamageScale);
+    DealOwnerSkillDamage(TargetUnit);
+}
+
+float ULFPSkill_ChargedStrike::GetDamageScalePerHit_Implementation(ALFPTacticsUnit* Target) const
+{
+    return DamageScale;
 }

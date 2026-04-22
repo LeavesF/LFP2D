@@ -522,6 +522,12 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Unit Combat")
     int32 TakeTrueDamage(int32 Damage);
 
+    // 统一技能伤害结算入口：
+    // 从 SourceSkill 读取段数、倍率、伤害类型、暴击率和暴击倍率，
+    // 并按“每段独立判暴击”的规则完成整次技能结算。
+    int32 ApplySkillDamage(ALFPTacticsUnit* Target, const ULFPSkillBase* SourceSkill);
+
+    // 旧接口兼容路径：直接按显式参数重复出伤，不读取技能规格。
     UFUNCTION(BlueprintCallable, Category = "Unit Combat")
     int32 ApplyRepeatedHitDamage(ALFPTacticsUnit* Target, int32 HitCount, int32 RawDamagePerHit, ELFPAttackType DamageType);
 
@@ -595,6 +601,13 @@ public:
     FLinearColor GetAffiliationColor() const;
 
     void UpdateHealthUI();
+
+private:
+    // 纯扣血入口；传入值视为已经完成防御、暴击等结算后的最终伤害。
+    int32 ApplyResolvedDamage(int32 Damage);
+
+    // 单段属性伤害入口：只负责防御减伤，不处理技能暴击规则。
+    int32 TakeTypedDamageInternal(int32 Damage, ELFPAttackType DamageType);
 
 protected:
     // 处理死亡

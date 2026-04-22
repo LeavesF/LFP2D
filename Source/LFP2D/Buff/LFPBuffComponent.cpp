@@ -80,7 +80,7 @@ bool ULFPBuffComponent::EvaluatePersistentBuffs()
 void ULFPBuffComponent::OnTurnStarted()
 {
     ALFPTacticsUnit* OwnerUnit = GetOwnerUnit();
-    if (!OwnerUnit || !OwnerUnit->IsAlive())
+    if (!OwnerUnit || !OwnerUnit->IsAlive() || Buffs.IsEmpty())
     {
         return;
     }
