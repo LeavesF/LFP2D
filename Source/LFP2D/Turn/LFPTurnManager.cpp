@@ -720,6 +720,20 @@ void ALFPTurnManager::ConsumeFactionAP(EUnitAffiliation Faction, int32 Amount)
     }
 }
 
+void ALFPTurnManager::RestoreFactionAP(EUnitAffiliation Faction, int32 Amount)
+{
+    if (Amount <= 0)
+    {
+        return;
+    }
+
+    if (int32* AP = FactionCurrentAP.Find(Faction))
+    {
+        *AP = FMath::Min(*AP + Amount, FactionMaxAP);
+        OnFactionAPChanged.Broadcast(Faction, *AP);
+    }
+}
+
 // ==== 全局技能分配 ====
 
 void ALFPTurnManager::AllocateEnemySkills()
@@ -744,7 +758,7 @@ void ALFPTurnManager::AllocateEnemySkills()
         {
             if (!Skill) continue;
             if (Skill->IsPassiveSkill()) continue;
-            if (Skill->ActionPointCost <= 0) continue; // 0消耗技能不参与竞争
+            //if (Skill->ActionPointCost <= 0) continue; // 0消耗技能不参与竞争
             if (Skill->CurrentCooldown > 0) continue;  // 冷却中跳过
 
             FSkillCandidate Candidate;

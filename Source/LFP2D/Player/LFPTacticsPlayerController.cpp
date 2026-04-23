@@ -741,13 +741,20 @@ void ALFPTacticsPlayerController::SkipTurn(ALFPTacticsUnit* Unit)
 
 void ALFPTacticsPlayerController::ExecuteSkill(ULFPSkillBase* CurrentSkill)
 {
-	if (SelectedUnit && SelectedTile && CurrentSkill)
+	if (SelectedUnit && CurrentSkill)
 	{
-		if (CurrentSkill->CanExecute(SelectedTile))
+		ALFPHexTile* TargetTile = SelectedTile;
+		if (CurrentSkill->TargetType == ESkillTargetType::Self)
+		{
+			TargetTile = SelectedUnit->GetCurrentTile();
+		}
+
+		if (SelectedUnit->ExecuteSkill(CurrentSkill, TargetTile))
 		{
 			bIsReleaseSkill = false;
-			CurrentSkill->Execute(SelectedTile);
 			SelectedUnit->ConsumeActionPoints(CurrentSkill->ActionPointCost);
+			CurrentSelectedSkill = nullptr;
+			SelectedTile = nullptr;
 			CurrentControlState = EPlayControlState::MoveState;
 			ShowUnitRange(EUnitRange::UR_Move);
 			SkipTurn(SelectedUnit);

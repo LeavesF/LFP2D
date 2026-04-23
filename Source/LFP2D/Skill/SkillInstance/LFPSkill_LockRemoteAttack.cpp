@@ -1,8 +1,8 @@
-#include "LFP2D/Skill/SkillInstance/LFPSkill_LockOnRangedAttack.h"
+#include "LFP2D/Skill/SkillInstance/LFPSkill_LockRemoteAttack.h"
 #include "LFP2D/HexGrid/LFPHexTile.h"
 #include "LFP2D/Unit/LFPTacticsUnit.h"
 
-ULFPSkill_LockOnRangedAttack::ULFPSkill_LockOnRangedAttack()
+ULFPSkill_LockRemoteAttack::ULFPSkill_LockRemoteAttack()
 {
     SkillName = FText::FromString(TEXT("锁头远程攻击"));
     SkillDescription = FText::FromString(TEXT("对2到5格内的单个敌方单位造成一次100%攻击力的物理伤害。敌方AI使用时会在释放瞬间锁定目标当前所在位置。"));
@@ -16,7 +16,7 @@ ULFPSkill_LockOnRangedAttack::ULFPSkill_LockOnRangedAttack()
     bTrackTargetUnitForAIExecution = true;
 }
 
-bool ULFPSkill_LockOnRangedAttack::CanExecute_Implementation(ALFPHexTile* TargetTile)
+bool ULFPSkill_LockRemoteAttack::CanExecute_Implementation(ALFPHexTile* TargetTile)
 {
     if (!Super::CanExecute_Implementation(TargetTile) || !Owner || !TargetTile)
     {
@@ -43,7 +43,7 @@ bool ULFPSkill_LockOnRangedAttack::CanExecute_Implementation(ALFPHexTile* Target
     return CanReleaseFrom(OwnerTile, TargetTile);
 }
 
-void ULFPSkill_LockOnRangedAttack::Execute_Implementation(ALFPHexTile* TargetTile)
+void ULFPSkill_LockRemoteAttack::Execute_Implementation(ALFPHexTile* TargetTile)
 {
     if (!CanExecute(TargetTile) || !Owner)
     {
@@ -59,12 +59,12 @@ void ULFPSkill_LockOnRangedAttack::Execute_Implementation(ALFPHexTile* TargetTil
     DealOwnerSkillDamage(TargetUnit);
 }
 
-float ULFPSkill_LockOnRangedAttack::GetDamageScalePerHit_Implementation(ALFPTacticsUnit* Target) const
+float ULFPSkill_LockRemoteAttack::GetDamageScalePerHit_Implementation(ALFPTacticsUnit* Target) const
 {
     return DamageScale;
 }
 
-ELFPAttackType ULFPSkill_LockOnRangedAttack::GetDamageType_Implementation(ALFPTacticsUnit* Target) const
+ELFPAttackType ULFPSkill_LockRemoteAttack::GetDamageType_Implementation(ALFPTacticsUnit* Target) const
 {
     return ELFPAttackType::AT_Physical;
 }

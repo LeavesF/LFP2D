@@ -93,6 +93,9 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Action Points")
     void ConsumeFactionAP(EUnitAffiliation Faction, int32 Amount);
 
+    UFUNCTION(BlueprintCallable, Category = "Action Points")
+    void RestoreFactionAP(EUnitAffiliation Faction, int32 Amount);
+
 public:
     UPROPERTY(BlueprintAssignable, Category = "Turn System")
     FOnTurnChangedSignature OnTurnChanged;

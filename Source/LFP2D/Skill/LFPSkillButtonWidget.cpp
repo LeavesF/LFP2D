@@ -120,7 +120,12 @@ void ULFPSkillButtonWidget::OnButtonClicked()
     if (!AssociatedSkill || !OwnerUnit || !GetIsEnabled()) return;
     if (AssociatedSkill->IsPassiveSkill()) return;
 
-    //OwnerUnit->ExecuteSkill(AssociatedSkill);
+    if (AssociatedSkill->TargetType == ESkillTargetType::Self)
+    {
+        TacticsPC->ExecuteSkill(AssociatedSkill);
+        return;
+    }
+
     TacticsPC->HandleSkillTargetSelecting(AssociatedSkill);
     //// 播放点击音效
     //if (ClickSound)
@@ -225,7 +230,10 @@ void ULFPSkillButtonWidget::UpdateAppearance()
     }
     else
     {
-        SetButtonEnabled(true);
+        const bool bCanClick = AssociatedSkill->TargetType == ESkillTargetType::Self
+            ? AssociatedSkill->CanExecute(nullptr)
+            : AssociatedSkill->IsAvailable();
+        SetButtonEnabled(bCanClick);
     }
 }
 
