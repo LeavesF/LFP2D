@@ -3,8 +3,38 @@
 
 #include "LFP2D/Skill/LFPSkillComponent.h"
 #include "LFP2D/Buff/LFPBuffComponent.h"
+#include "LFP2D/HexGrid/LFPHexTile.h"
 #include "LFP2D/Skill/LFPSkillDataAsset.h"
 #include "LFP2D/Unit/LFPTacticsUnit.h"
+
+namespace
+{
+FString GetSkillLogName(const ULFPSkillBase* Skill)
+{
+    if (!Skill)
+    {
+        return TEXT("None");
+    }
+
+    return Skill->SkillName.IsEmpty() ? Skill->GetName() : Skill->SkillName.ToString();
+}
+
+FString GetUnitLogName(const ALFPTacticsUnit* Unit)
+{
+    return Unit ? Unit->GetName() : TEXT("None");
+}
+
+FString GetTileLogName(ALFPHexTile* Tile)
+{
+    if (!Tile)
+    {
+        return TEXT("None");
+    }
+
+    const FLFPHexCoordinates Coordinates = Tile->GetCoordinates();
+    return FString::Printf(TEXT("(%d,%d,%d)"), Coordinates.Q, Coordinates.R, Coordinates.S);
+}
+}
 
 // Sets default values for this component's properties
 ULFPSkillComponent::ULFPSkillComponent()
@@ -116,14 +146,46 @@ bool ULFPSkillComponent::ExecuteSkill(ULFPSkillBase* Skill, ALFPHexTile* TargetT
     if (!OwnerUnit || !Skill) return false;
     if (Skill->IsPassiveSkill()) return false;
 
+    // 技能组件是统一释放入口，这里记日志可以同时覆盖玩家和敌方的实际施法。
+    const FString SkillLogName = GetSkillLogName(Skill);
+    ALFPTacticsUnit* TargetUnit = TargetTile ? TargetTile->GetUnitOnTile() : nullptr;
+
     if (!OwnerUnit->IsEnemy())
     {
 		// 检查技能是否可用
-		if (!Skill->CanExecute(TargetTile)) return false;
+		if (!Skill->CanExecute(TargetTile))
+        {
+            UE_LOG(
+                LogTemp,
+                Warning,
+                TEXT("技能释放失败: 单位[%s] 技能[%s] 目标格[%s] 目标单位[%s]"),
+                *GetUnitLogName(OwnerUnit),
+                *SkillLogName,
+                *GetTileLogName(TargetTile),
+                *GetUnitLogName(TargetUnit));
+            return false;
+        }
     }
 
     // 执行技能
+    UE_LOG(
+        LogTemp,
+        Log,
+        TEXT("技能释放: 单位[%s] 技能[%s] 目标格[%s] 目标单位[%s] AP[%d]"),
+        *GetUnitLogName(OwnerUnit),
+        *SkillLogName,
+        *GetTileLogName(TargetTile),
+        *GetUnitLogName(TargetUnit),
+        Skill->ActionPointCost);
+
     Skill->Execute(TargetTile);
+
+    UE_LOG(
+        LogTemp,
+        Log,
+        TEXT("技能释放完成: 单位[%s] 技能[%s]"),
+        *GetUnitLogName(OwnerUnit),
+        *SkillLogName);
 
     // 更新技能优先级（降低已使用技能的优先级）
     Skill->OnSkillUsed();

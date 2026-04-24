@@ -1146,10 +1146,7 @@ ULFPSkillBase* ALFPTacticsUnit::GetDefaultAttackSkill()
 void ALFPTacticsUnit::SetActionPlan(const FEnemyActionPlan& Plan)
 {
     CurrentActionPlan = Plan;
-    if (Plan.bIsValid)
-    {
-        ShowPlannedSkillIcon(true);
-    }
+    ShowPlannedSkillIcon(Plan.bIsValid && Plan.PlannedSkill != nullptr);
 }
 
 void ALFPTacticsUnit::ClearActionPlan()

@@ -12,6 +12,70 @@
 #include "BehaviorTree/BehaviorTree.h"
 #include "Kismet/GameplayStatics.h"
 
+namespace
+{
+constexpr float CandidatePriorityWeight = 0.7f;
+constexpr float CandidateHatredWeight = 0.3f;
+
+float NormalizeValue(float Value, float MinValue, float MaxValue)
+{
+    if (MaxValue <= MinValue)
+    {
+        return 1.0f;
+    }
+
+    return (Value - MinValue) / (MaxValue - MinValue);
+}
+
+void NormalizeCandidateScores(TArray<FEnemySkillPlanCandidate>& Candidates)
+{
+    if (Candidates.IsEmpty())
+    {
+        return;
+    }
+
+    float MinPriority = Candidates[0].EffectivePriority;
+    float MaxPriority = Candidates[0].EffectivePriority;
+    float MinHatred = Candidates[0].HatredValue;
+    float MaxHatred = Candidates[0].HatredValue;
+
+    for (const FEnemySkillPlanCandidate& Candidate : Candidates)
+    {
+        MinPriority = FMath::Min(MinPriority, Candidate.EffectivePriority);
+        MaxPriority = FMath::Max(MaxPriority, Candidate.EffectivePriority);
+        MinHatred = FMath::Min(MinHatred, Candidate.HatredValue);
+        MaxHatred = FMath::Max(MaxHatred, Candidate.HatredValue);
+    }
+
+    for (FEnemySkillPlanCandidate& Candidate : Candidates)
+    {
+        Candidate.NormalizedPriorityScore = NormalizeValue(Candidate.EffectivePriority, MinPriority, MaxPriority);
+        Candidate.NormalizedHatredScore = NormalizeValue(Candidate.HatredValue, MinHatred, MaxHatred);
+        Candidate.TotalScore =
+            (CandidatePriorityWeight * Candidate.NormalizedPriorityScore) +
+            (CandidateHatredWeight * Candidate.NormalizedHatredScore);
+    }
+}
+}
+
+FEnemyActionPlan FEnemySkillPlanCandidate::ToActionPlan() const
+{
+    FEnemyActionPlan Plan;
+    if (!bIsValid)
+    {
+        return Plan;
+    }
+
+    Plan.EnemyUnit = EnemyUnit;
+    Plan.PlannedSkill = Skill;
+    Plan.TargetUnit = TargetUnit;
+    Plan.TargetTile = TargetTile;
+    Plan.CasterPositionTile = CasterPositionTile;
+    Plan.EffectAreaTiles = EffectAreaTiles;
+    Plan.bIsValid = true;
+    return Plan;
+}
+
 ALFPAIController::ALFPAIController()
 {
     BlackboardComponent = CreateDefaultSubobject<UBlackboardComponent>(TEXT("BlackboardComponent"));
@@ -26,13 +90,11 @@ void ALFPAIController::OnPossess(APawn* InPawn)
     ControlledUnit = Cast<ALFPTacticsUnit>(InPawn);
     if (ControlledUnit)
     {
-        // 初始化黑板
         if (BehaviorTree && BlackboardComponent)
         {
             BlackboardComponent->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
         }
 
-        // 获取网格管理器
         TArray<AActor*> GridManagers;
         UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALFPHexGridManager::StaticClass(), GridManagers);
         if (GridManagers.Num() > 0)
@@ -40,7 +102,6 @@ void ALFPAIController::OnPossess(APawn* InPawn)
             GridManager = Cast<ALFPHexGridManager>(GridManagers[0]);
         }
 
-        // 启动行为树
         RunBehaviorTree(BehaviorTree);
     }
 }
@@ -54,28 +115,24 @@ void ALFPAIController::StartUnitTurn()
 {
     if (!ControlledUnit || !BlackboardComponent) return;
 
-    // 设置黑板值
     BlackboardComponent->SetValueAsObject("TargetUnit", nullptr);
     BlackboardComponent->SetValueAsObject("TargetTile", nullptr);
     BlackboardComponent->SetValueAsBool("IsInAttackRange", false);
     BlackboardComponent->SetValueAsBool("CanAttack", false);
     BlackboardComponent->SetValueAsBool("ShouldEndTurn", false);
 
-    // 寻找初始目标
     ALFPTacticsUnit* BestTarget = FindBestTarget();
     BlackboardComponent->SetValueAsObject("TargetUnit", BestTarget);
 }
 
 void ALFPAIController::EndUnitTurn()
 {
-    // 行为树会自动处理后续逻辑
 }
 
 ALFPTacticsUnit* ALFPAIController::FindBestTarget() const
 {
     if (!ControlledUnit || !GridManager) return nullptr;
 
-    // 获取所有玩家单位
     TArray<AActor*> PlayerUnits;
     UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALFPTacticsUnit::StaticClass(), PlayerUnits);
 
@@ -101,36 +158,14 @@ ALFPTacticsUnit* ALFPAIController::FindBestTarget() const
 
 ALFPTacticsUnit* ALFPAIController::FindBestSkillTarget(ULFPSkillBase* Skill) const
 {
-    if (!ControlledUnit || !Skill) return nullptr;
-
-    TArray<AActor*> AllUnits;
-    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALFPTacticsUnit::StaticClass(), AllUnits);
-
-    ALFPTacticsUnit* BestTarget = nullptr;
-    float BestHatred = -MAX_FLT;
-
-    for (AActor* Actor : AllUnits)
-    {
-        ALFPTacticsUnit* Unit = Cast<ALFPTacticsUnit>(Actor);
-        if (Unit && Unit->IsAlive() && Unit->IsAlly())
-        {
-            float Hatred = Skill->CalculateHatredValue(ControlledUnit, Unit);
-            if (Hatred > BestHatred)
-            {
-                BestHatred = Hatred;
-                BestTarget = Unit;
-            }
-        }
-    }
-
-    return BestTarget;
+    FEnemySkillPlanCandidate Candidate;
+    return BuildBestSkillPlanCandidate(Skill, 0, Candidate) ? Candidate.TargetUnit : nullptr;
 }
 
 ALFPHexTile* ALFPAIController::FindBestMovementTile(ALFPTacticsUnit* Target) const
 {
     if (!ControlledUnit || !Target || !GridManager) return nullptr;
 
-    // 获取所有可移动位置
     TArray<ALFPHexTile*> MovementRange = GridManager->GetTilesInRange(ControlledUnit->GetCurrentTile(), ControlledUnit->GetCurrentMovePoints());
 
     ALFPHexTile* BestTile = nullptr;
@@ -138,7 +173,6 @@ ALFPHexTile* ALFPAIController::FindBestMovementTile(ALFPTacticsUnit* Target) con
 
     for (ALFPHexTile* Tile : MovementRange)
     {
-        // 跳过有单位的格子
         if (Tile->GetUnitOnTile()) continue;
 
         float PositionValue = CalculatePositionValue(Tile, Target);
@@ -156,27 +190,21 @@ float ALFPAIController::CalculateThreatValue(ALFPTacticsUnit* Target) const
 {
     if (!ControlledUnit || !Target) return 0.0f;
 
-    // 威胁值 = 目标攻击力 * (1 - 目标当前血量/最大血量)
     float ThreatValue = Target->GetCurrentAttack() * (1.0f - (float)Target->GetCurrentHealth() / Target->GetMaxHealth());
 
-    // 距离因素（越近威胁越大）
-    int32 Distance = FLFPHexCoordinates::Distance(
+    const int32 Distance = FLFPHexCoordinates::Distance(
         ControlledUnit->GetCurrentCoordinates(),
-        Target->GetCurrentCoordinates()
-    );
-    float DistanceFactor = 1.0f / FMath::Max(Distance, 1);
+        Target->GetCurrentCoordinates());
+    const float DistanceFactor = 1.0f / FMath::Max(Distance, 1);
 
-    // 应用行为数据
     if (BehaviorData)
     {
         if (BehaviorData->bPrioritizeWeakTargets)
         {
-            // 增加对低血量目标的权重
-            float HealthRatio = (float)Target->GetCurrentHealth() / Target->GetMaxHealth();
-            ThreatValue *= (2.0f - HealthRatio); // 血量越低，威胁值越高
+            const float HealthRatio = (float)Target->GetCurrentHealth() / Target->GetMaxHealth();
+            ThreatValue *= (2.0f - HealthRatio);
         }
 
-        // 应用攻击性系数
         ThreatValue *= BehaviorData->Aggressiveness;
     }
 
@@ -189,20 +217,16 @@ float ALFPAIController::CalculatePositionValue(ALFPHexTile* Tile, ALFPTacticsUni
 
     float PositionValue = 0.0f;
 
-    // 1. 离目标越近越好
-    int32 DistanceToTarget = FLFPHexCoordinates::Distance(
+    const int32 DistanceToTarget = FLFPHexCoordinates::Distance(
         Tile->GetCoordinates(),
-        Target->GetCurrentCoordinates()
-    );
+        Target->GetCurrentCoordinates());
     PositionValue += 10.0f / FMath::Max(DistanceToTarget, 1);
 
-    // 2. 如果在攻击范围内额外加分
     if (DistanceToTarget <= ControlledUnit->GetAttackRange())
     {
         PositionValue += 20.0f;
     }
 
-    // 3. 靠近其他敌方单位（团队协作加分）
     TArray<AActor*> EnemyUnits;
     UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALFPTacticsUnit::StaticClass(), EnemyUnits);
 
@@ -211,10 +235,9 @@ float ALFPAIController::CalculatePositionValue(ALFPHexTile* Tile, ALFPTacticsUni
         ALFPTacticsUnit* Unit = Cast<ALFPTacticsUnit>(Actor);
         if (Unit && Unit != ControlledUnit && Unit->IsEnemy() && Unit->IsAlive())
         {
-            int32 DistanceToAlly = FLFPHexCoordinates::Distance(
+            const int32 DistanceToAlly = FLFPHexCoordinates::Distance(
                 Tile->GetCoordinates(),
-                Unit->GetCurrentCoordinates()
-            );
+                Unit->GetCurrentCoordinates());
 
             if (DistanceToAlly <= 2)
             {
@@ -226,8 +249,6 @@ float ALFPAIController::CalculatePositionValue(ALFPHexTile* Tile, ALFPTacticsUni
     return PositionValue;
 }
 
-// ==== 规划阶段方法 ====
-
 FEnemyActionPlan ALFPAIController::CreateActionPlan(ULFPSkillBase* PreAllocatedSkill)
 {
     FEnemyActionPlan Plan;
@@ -238,132 +259,393 @@ FEnemyActionPlan ALFPAIController::CreateActionPlan(ULFPSkillBase* PreAllocatedS
         return Plan;
     }
 
-    // 1. 选择技能：优先使用预分配的，否则自行选择（会 fallback 到默认攻击）
-    ULFPSkillBase* ChosenSkill = PreAllocatedSkill ? PreAllocatedSkill : SelectBestSkill();
-    if (!ChosenSkill)
+    if (PreAllocatedSkill)
     {
-        return Plan;
-    }
-    Plan.PlannedSkill = ChosenSkill;
-
-    // 2. 根据技能的仇恨值选择目标
-    ALFPTacticsUnit* Target = FindBestSkillTarget(ChosenSkill);
-    if (!Target)
-    {
-        return Plan;
-    }
-    Plan.TargetUnit = Target;
-
-    // 3. 目标格子 = 目标单位当前所在格子
-    ALFPHexTile* TargetTile = Target->GetCurrentTile();
-    if (!TargetTile)
-    {
-        return Plan;
-    }
-    Plan.TargetTile = TargetTile;
-
-    // 4. 寻找最佳施法站位
-    ALFPHexTile* CasterPos = FindBestCasterPosition(ChosenSkill, TargetTile);
-    if (!CasterPos)
-    {
-        // 找不到合适的施法位置，尝试原地
-        CasterPos = ControlledUnit->GetCurrentTile();
-    }
-    Plan.CasterPositionTile = CasterPos;
-
-    // 5. 移动到施法位置
-    if (CasterPos && CasterPos != ControlledUnit->GetCurrentTile())
-    {
-        ControlledUnit->MoveToTile(CasterPos);
-    }
-
-    // 6. 计算技能生效范围（EffectRangeCoords 相对于目标格子偏移）
-    FLFPHexCoordinates TargetCoords = TargetTile->GetCoordinates();
-    for (const FLFPHexCoordinates& Offset : ChosenSkill->EffectRangeCoords)
-    {
-        FLFPHexCoordinates AbsCoord(
-            TargetCoords.Q + Offset.Q,
-            TargetCoords.R + Offset.R
-        );
-        if (ALFPHexTile* EffectTile = GridManager->GetTileAtCoordinates(AbsCoord))
+        FEnemySkillPlanCandidate Candidate;
+        if (BuildBestSkillPlanCandidate(PreAllocatedSkill, 0, Candidate))
         {
-            Plan.EffectAreaTiles.Add(EffectTile);
+            return Candidate.ToActionPlan();
         }
     }
 
-    // 如果没有定义 EffectRangeCoords，至少包含目标格子本身
-    if (Plan.EffectAreaTiles.Num() == 0)
+    TArray<FEnemySkillPlanCandidate> Candidates;
+    TArray<ULFPSkillBase*> Skills = ControlledUnit->GetAvailableSkills();
+    for (ULFPSkillBase* Skill : Skills)
     {
-        Plan.EffectAreaTiles.Add(TargetTile);
+        FEnemySkillPlanCandidate Candidate;
+        if (BuildBestSkillPlanCandidate(Skill, 0, Candidate))
+        {
+            Candidates.Add(Candidate);
+        }
     }
 
-    Plan.bIsValid = true;
-    return Plan;
+    NormalizeCandidateScores(Candidates);
+
+    FEnemySkillPlanCandidate* BestCandidate = nullptr;
+    for (FEnemySkillPlanCandidate& Candidate : Candidates)
+    {
+        if (!BestCandidate ||
+            Candidate.TotalScore > BestCandidate->TotalScore ||
+            (FMath::IsNearlyEqual(Candidate.TotalScore, BestCandidate->TotalScore) &&
+                Candidate.EffectivePriority > BestCandidate->EffectivePriority) ||
+            (FMath::IsNearlyEqual(Candidate.TotalScore, BestCandidate->TotalScore) &&
+                FMath::IsNearlyEqual(Candidate.EffectivePriority, BestCandidate->EffectivePriority) &&
+                Candidate.HatredValue > BestCandidate->HatredValue))
+        {
+            BestCandidate = &Candidate;
+        }
+    }
+
+    if (BestCandidate)
+    {
+        return BestCandidate->ToActionPlan();
+    }
+
+    return CreateMovementOnlyPlan(nullptr);
 }
 
 ULFPSkillBase* ALFPAIController::SelectBestSkill()
 {
-    if (!ControlledUnit) return nullptr;
+    if (!ControlledUnit)
+    {
+        return nullptr;
+    }
 
+    TArray<FEnemySkillPlanCandidate> Candidates;
     TArray<ULFPSkillBase*> Skills = ControlledUnit->GetAvailableSkills();
-    ULFPSkillBase* BestSkill = nullptr;
-    float BestScore = -MAX_FLT;
-
     for (ULFPSkillBase* Skill : Skills)
     {
-        if (!Skill) continue;
-
-        // 轻量检查：冷却和行动点
-        if (!Skill->IsAvailable()) continue;
-
-        // 找该技能的最佳目标
-        ALFPTacticsUnit* PotentialTarget = FindBestSkillTarget(Skill);
-        if (!PotentialTarget) continue;
-
-        // 检查是否存在可达的施法位置
-        ALFPHexTile* PotentialTargetTile = PotentialTarget->GetCurrentTile();
-        if (!PotentialTargetTile) continue;
-
-        ALFPHexTile* CasterPos = FindBestCasterPosition(Skill, PotentialTargetTile);
-        if (!CasterPos) continue;
-
-        // 评分：仇恨值作为基础分
-        float Score = Skill->CalculateHatredValue(ControlledUnit, PotentialTarget);
-
-        // 非默认攻击技能额外加分（鼓励使用特殊技能）
-        if (!Skill->bIsDefaultAttack)
+        FEnemySkillPlanCandidate Candidate;
+        if (BuildBestSkillPlanCandidate(Skill, 0, Candidate))
         {
-            Score *= 1.5f;
-        }
-
-        if (Score > BestScore)
-        {
-            BestScore = Score;
-            BestSkill = Skill;
+            Candidates.Add(Candidate);
         }
     }
 
-    // Fallback 到默认攻击
-    if (!BestSkill)
+    NormalizeCandidateScores(Candidates);
+
+    FEnemySkillPlanCandidate* BestCandidate = nullptr;
+    for (FEnemySkillPlanCandidate& Candidate : Candidates)
     {
-        BestSkill = ControlledUnit->GetDefaultAttackSkill();
+        if (!BestCandidate ||
+            Candidate.TotalScore > BestCandidate->TotalScore ||
+            (FMath::IsNearlyEqual(Candidate.TotalScore, BestCandidate->TotalScore) &&
+                Candidate.EffectivePriority > BestCandidate->EffectivePriority) ||
+            (FMath::IsNearlyEqual(Candidate.TotalScore, BestCandidate->TotalScore) &&
+                FMath::IsNearlyEqual(Candidate.EffectivePriority, BestCandidate->EffectivePriority) &&
+                Candidate.HatredValue > BestCandidate->HatredValue))
+        {
+            BestCandidate = &Candidate;
+        }
     }
 
-    return BestSkill;
+    return BestCandidate ? BestCandidate->Skill : ControlledUnit->GetDefaultAttackSkill();
 }
 
 ALFPHexTile* ALFPAIController::FindBestCasterPosition(ULFPSkillBase* Skill, ALFPHexTile* TargetTile)
 {
-    if (!ControlledUnit || !Skill || !TargetTile || !GridManager) return nullptr;
+    float BestValue = -MAX_FLT;
+    return FindBestCasterPositionInternal(Skill, TargetTile, BestValue);
+}
 
-    // 获取移动范围内的所有格子
+bool ALFPAIController::BuildBestSkillPlanCandidate(ULFPSkillBase* Skill, int32 PlanningOrderIndex, FEnemySkillPlanCandidate& OutCandidate) const
+{
+    OutCandidate = FEnemySkillPlanCandidate();
+
+    if (!ControlledUnit || !GridManager || !Skill)
+    {
+        return false;
+    }
+
+    if (Skill->IsPassiveSkill() || Skill->CurrentCooldown > 0)
+    {
+        return false;
+    }
+
+    bool bFoundCandidate = false;
+    FEnemySkillPlanCandidate BestCandidate;
+    float BestHatred = -MAX_FLT;
+    float BestPositionValue = -MAX_FLT;
+
+    // 每个(敌人, 技能)只保留一个当前回合最优的完整候选，
+    // 这里会把目标、施法位和效果范围一次性确定下来。
+    if (Skill->TargetType == ESkillTargetType::Self)
+    {
+        ALFPHexTile* CurrentTile = ControlledUnit->GetCurrentTile();
+        if (!CurrentTile)
+        {
+            return false;
+        }
+
+        // 自目标技能也允许先移动再释放，所以要把可达格一起纳入评估。
+        TArray<ALFPHexTile*> SelfTargetTiles = GridManager->GetTilesInRange(CurrentTile, ControlledUnit->GetCurrentMovePoints());
+        SelfTargetTiles.AddUnique(CurrentTile);
+
+        for (ALFPHexTile* SelfTargetTile : SelfTargetTiles)
+        {
+            float PositionValue = -MAX_FLT;
+            FEnemySkillPlanCandidate Candidate;
+            if (!TryBuildCandidateForTarget(Skill, ControlledUnit, SelfTargetTile, PlanningOrderIndex, PositionValue, Candidate))
+            {
+                continue;
+            }
+
+            if (!bFoundCandidate ||
+                Candidate.HatredValue > BestHatred ||
+                (FMath::IsNearlyEqual(Candidate.HatredValue, BestHatred) && PositionValue > BestPositionValue))
+            {
+                bFoundCandidate = true;
+                BestHatred = Candidate.HatredValue;
+                BestPositionValue = PositionValue;
+                BestCandidate = Candidate;
+            }
+        }
+    }
+    else
+    {
+        TArray<ALFPTacticsUnit*> PotentialTargets;
+        CollectPotentialTargets(Skill, PotentialTargets);
+
+        for (ALFPTacticsUnit* TargetUnit : PotentialTargets)
+        {
+            if (!TargetUnit)
+            {
+                continue;
+            }
+
+            ALFPHexTile* TargetTile = TargetUnit->GetCurrentTile();
+            if (!TargetTile)
+            {
+                continue;
+            }
+
+            float PositionValue = -MAX_FLT;
+            FEnemySkillPlanCandidate Candidate;
+            if (!TryBuildCandidateForTarget(Skill, TargetUnit, TargetTile, PlanningOrderIndex, PositionValue, Candidate))
+            {
+                continue;
+            }
+
+            if (!bFoundCandidate ||
+                Candidate.HatredValue > BestHatred ||
+                (FMath::IsNearlyEqual(Candidate.HatredValue, BestHatred) && PositionValue > BestPositionValue))
+            {
+                bFoundCandidate = true;
+                BestHatred = Candidate.HatredValue;
+                BestPositionValue = PositionValue;
+                BestCandidate = Candidate;
+            }
+        }
+    }
+
+    if (!bFoundCandidate)
+    {
+        return false;
+    }
+
+    // 候选池里只保留该技能本回合最好的那个完整方案，避免排列组合膨胀。
+    OutCandidate = BestCandidate;
+    return true;
+}
+
+FEnemyActionPlan ALFPAIController::CreateMovementOnlyPlan(const FEnemySkillPlanCandidate* PreferredCandidate) const
+{
+    FEnemyActionPlan Plan;
+    Plan.EnemyUnit = ControlledUnit;
+
+    if (!ControlledUnit || !GridManager)
+    {
+        return Plan;
+    }
+
+    ALFPHexTile* MoveTargetTile = nullptr;
+    if (PreferredCandidate)
+    {
+        // 优先朝“本回合其实成立，只是 AP 不够”的技能施法位铺路。
+        Plan.TargetUnit = PreferredCandidate->TargetUnit;
+        Plan.TargetTile = PreferredCandidate->TargetTile;
+        MoveTargetTile = FindBestApproachTile(PreferredCandidate);
+    }
+
+    ALFPTacticsUnit* FallbackTarget = nullptr;
+    if (!MoveTargetTile)
+    {
+        // 没有可铺路的高分候选时，退化为朝当前最高威胁目标逼近。
+        FallbackTarget = FindBestTarget();
+        if (!Plan.TargetUnit)
+        {
+            Plan.TargetUnit = FallbackTarget;
+        }
+        if (!Plan.TargetTile && FallbackTarget)
+        {
+            Plan.TargetTile = FallbackTarget->GetCurrentTile();
+        }
+        if (FallbackTarget)
+        {
+            MoveTargetTile = FindBestMovementTile(FallbackTarget);
+        }
+    }
+
+    if (!MoveTargetTile)
+    {
+        MoveTargetTile = ControlledUnit->GetCurrentTile();
+    }
+
+    Plan.CasterPositionTile = MoveTargetTile;
+    Plan.bIsValid = MoveTargetTile != nullptr;
+    return Plan;
+}
+
+void ALFPAIController::CollectPotentialTargets(ULFPSkillBase* Skill, TArray<ALFPTacticsUnit*>& OutTargets) const
+{
+    OutTargets.Empty();
+
+    if (!ControlledUnit || !Skill)
+    {
+        return;
+    }
+
+    if (Skill->TargetType == ESkillTargetType::Self)
+    {
+        OutTargets.Add(ControlledUnit);
+        return;
+    }
+
+    TArray<AActor*> AllUnits;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALFPTacticsUnit::StaticClass(), AllUnits);
+
+    for (AActor* Actor : AllUnits)
+    {
+        ALFPTacticsUnit* Unit = Cast<ALFPTacticsUnit>(Actor);
+        if (!Unit || !Unit->IsAlive())
+        {
+            continue;
+        }
+
+        switch (Skill->TargetType)
+        {
+        case ESkillTargetType::SingleEnemy:
+        case ESkillTargetType::MutiEnemy:
+        case ESkillTargetType::AllEnemy:
+        case ESkillTargetType::AnyTile:
+            if (Skill->IsHostileTarget(Unit))
+            {
+                OutTargets.Add(Unit);
+            }
+            break;
+
+        case ESkillTargetType::SingleAlly:
+        case ESkillTargetType::MutiAlly:
+        case ESkillTargetType::AllAlly:
+            if (Unit->GetAffiliation() == ControlledUnit->GetAffiliation())
+            {
+                OutTargets.Add(Unit);
+            }
+            break;
+
+        case ESkillTargetType::SingleUnit:
+        case ESkillTargetType::MutiUnit:
+        case ESkillTargetType::AllUnit:
+            OutTargets.Add(Unit);
+            break;
+
+        default:
+            break;
+        }
+    }
+}
+
+bool ALFPAIController::TryBuildCandidateForTarget(
+    ULFPSkillBase* Skill,
+    ALFPTacticsUnit* TargetUnit,
+    ALFPHexTile* TargetTile,
+    int32 PlanningOrderIndex,
+    float& OutPositionValue,
+    FEnemySkillPlanCandidate& OutCandidate) const
+{
+    OutPositionValue = -MAX_FLT;
+    OutCandidate = FEnemySkillPlanCandidate();
+
+    if (!ControlledUnit || !Skill || !TargetTile)
+    {
+        return false;
+    }
+
+    // 只有“除 AP 外其余条件都满足”的完整方案，才允许进入全局候选池。
+    float PositionValue = -MAX_FLT;
+    ALFPHexTile* CasterTile = FindBestCasterPositionInternal(Skill, TargetTile, PositionValue);
+    if (!CasterTile)
+    {
+        return false;
+    }
+
+    if (!Skill->CanPlanFrom(CasterTile, TargetTile))
+    {
+        return false;
+    }
+
+    OutCandidate.EnemyUnit = ControlledUnit;
+    OutCandidate.Skill = Skill;
+    OutCandidate.TargetUnit = TargetUnit;
+    OutCandidate.TargetTile = TargetTile;
+    OutCandidate.CasterPositionTile = CasterTile;
+    OutCandidate.APCost = FMath::Max(0, Skill->ActionPointCost);
+    OutCandidate.EffectivePriority = Skill->GetEffectivePriority();
+    OutCandidate.HatredValue = TargetUnit ? Skill->CalculateHatredValue(ControlledUnit, TargetUnit) : 0.0f;
+    OutCandidate.PlanningOrderIndex = PlanningOrderIndex;
+    OutCandidate.bIsValid = true;
+    BuildEffectAreaTiles(Skill, TargetTile, OutCandidate.EffectAreaTiles);
+
+    OutPositionValue = PositionValue;
+    return true;
+}
+
+void ALFPAIController::BuildEffectAreaTiles(ULFPSkillBase* Skill, ALFPHexTile* TargetTile, TArray<ALFPHexTile*>& OutTiles) const
+{
+    OutTiles.Empty();
+
+    if (!Skill || !TargetTile || !GridManager)
+    {
+        return;
+    }
+
+    const FLFPHexCoordinates TargetCoords = TargetTile->GetCoordinates();
+    for (const FLFPHexCoordinates& Offset : Skill->EffectRangeCoords)
+    {
+        const FLFPHexCoordinates AbsCoord(
+            TargetCoords.Q + Offset.Q,
+            TargetCoords.R + Offset.R);
+
+        if (ALFPHexTile* EffectTile = GridManager->GetTileAtCoordinates(AbsCoord))
+        {
+            OutTiles.Add(EffectTile);
+        }
+    }
+
+    if (OutTiles.Num() == 0)
+    {
+        OutTiles.Add(TargetTile);
+    }
+}
+
+ALFPHexTile* ALFPAIController::FindBestCasterPositionInternal(ULFPSkillBase* Skill, ALFPHexTile* TargetTile, float& OutValue) const
+{
+    OutValue = -MAX_FLT;
+
+    if (!ControlledUnit || !Skill || !TargetTile || !GridManager)
+    {
+        return nullptr;
+    }
+
     ALFPHexTile* CurrentTile = ControlledUnit->GetCurrentTile();
+    if (!CurrentTile)
+    {
+        return nullptr;
+    }
+
     TArray<ALFPHexTile*> MovementRange = GridManager->GetTilesInRange(
         CurrentTile,
-        ControlledUnit->GetCurrentMovePoints()
-    );
-
-    // 也包含当前格子（可能不需要移动）
+        ControlledUnit->GetCurrentMovePoints());
     MovementRange.AddUnique(CurrentTile);
 
     ALFPHexTile* BestTile = nullptr;
@@ -371,39 +653,96 @@ ALFPHexTile* ALFPAIController::FindBestCasterPosition(ULFPSkillBase* Skill, ALFP
 
     for (ALFPHexTile* Tile : MovementRange)
     {
-        if (!Tile) continue;
+        if (!Tile)
+        {
+            continue;
+        }
 
-        // 跳过被其他单位占据的格子（但允许自己当前所在格）
         ALFPTacticsUnit* Occupant = Tile->GetUnitOnTile();
-        if (Occupant && Occupant != ControlledUnit) continue;
+        if (Occupant && Occupant != ControlledUnit)
+        {
+            continue;
+        }
 
-        // 位置检查：从该格子能否对目标格子释放技能
-        if (!Skill->CanReleaseFrom(Tile, TargetTile)) continue;
+        if (!Skill->CanPlanFrom(Tile, TargetTile))
+        {
+            continue;
+        }
 
-        // 评估位置价值
-        float Value = 0.0f;
-
-        int32 DistToTarget = FLFPHexCoordinates::Distance(
-            Tile->GetCoordinates(),
-            TargetTile->GetCoordinates()
-        );
-
-        // 在技能范围内加分
-        Value += 30.0f;
-
-        // 离目标越近越好（在范围内的前提下）
-        //Value += 10.0f / FMath::Max(DistToTarget, 1);
-
-        // 离当前位置越近越好（减少移动消耗）
-        int32 MoveDistance = FLFPHexCoordinates::Distance(
+        float Value = 30.0f;
+        const int32 MoveDistance = FLFPHexCoordinates::Distance(
             CurrentTile->GetCoordinates(),
-            Tile->GetCoordinates()
-        );
+            Tile->GetCoordinates());
         Value -= MoveDistance * 2.0f;
 
         if (Value > BestValue)
         {
             BestValue = Value;
+            BestTile = Tile;
+        }
+    }
+
+    OutValue = BestValue;
+    return BestTile;
+}
+
+ALFPHexTile* ALFPAIController::FindBestApproachTile(const FEnemySkillPlanCandidate* PreferredCandidate) const
+{
+    if (!ControlledUnit || !GridManager)
+    {
+        return nullptr;
+    }
+
+    ALFPHexTile* CurrentTile = ControlledUnit->GetCurrentTile();
+    if (!CurrentTile)
+    {
+        return nullptr;
+    }
+
+    ALFPHexTile* GoalTile = PreferredCandidate ? PreferredCandidate->CasterPositionTile : nullptr;
+    if (!GoalTile)
+    {
+        return nullptr;
+    }
+
+    TArray<ALFPHexTile*> MovementRange = GridManager->GetTilesInRange(CurrentTile, ControlledUnit->GetCurrentMovePoints());
+    MovementRange.AddUnique(CurrentTile);
+
+    ALFPHexTile* BestTile = nullptr;
+    float BestScore = -MAX_FLT;
+
+    for (ALFPHexTile* Tile : MovementRange)
+    {
+        if (!Tile)
+        {
+            continue;
+        }
+
+        ALFPTacticsUnit* Occupant = Tile->GetUnitOnTile();
+        if (Occupant && Occupant != ControlledUnit)
+        {
+            continue;
+        }
+
+        const int32 GoalDistance = FLFPHexCoordinates::Distance(
+            Tile->GetCoordinates(),
+            GoalTile->GetCoordinates());
+        const int32 MoveDistance = FLFPHexCoordinates::Distance(
+            CurrentTile->GetCoordinates(),
+            Tile->GetCoordinates());
+
+        float Score = -static_cast<float>(GoalDistance * 100 + MoveDistance);
+        if (PreferredCandidate->TargetTile)
+        {
+            const int32 TargetDistance = FLFPHexCoordinates::Distance(
+                Tile->GetCoordinates(),
+                PreferredCandidate->TargetTile->GetCoordinates());
+            Score -= TargetDistance * 0.1f;
+        }
+
+        if (Score > BestScore)
+        {
+            BestScore = Score;
             BestTile = Tile;
         }
     }

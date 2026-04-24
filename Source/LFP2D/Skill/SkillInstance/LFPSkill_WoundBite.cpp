@@ -14,6 +14,23 @@ ULFPSkill_WoundBite::ULFPSkill_WoundBite()
     MaxRange = 1;
 }
 
+bool ULFPSkill_WoundBite::CanPlanFrom_Implementation(ALFPHexTile* CasterTile, ALFPHexTile* TargetTile)
+{
+    if (!Super::CanPlanFrom_Implementation(CasterTile, TargetTile))
+    {
+        return false;
+    }
+
+    ALFPTacticsUnit* TargetUnit = GetUnitOnTile(TargetTile);
+    if (!TargetUnit || !TargetUnit->IsAlive() || !IsHostileTarget(TargetUnit))
+    {
+        return false;
+    }
+
+    const ULFPBuffComponent* BuffComponent = TargetUnit->GetBuffComponent();
+    return BuffComponent && BuffComponent->GetBleedStacks() > 0;
+}
+
 bool ULFPSkill_WoundBite::CanExecute_Implementation(ALFPHexTile* TargetTile)
 {
     if (!Super::CanExecute_Implementation(TargetTile) || !Owner || !TargetTile)

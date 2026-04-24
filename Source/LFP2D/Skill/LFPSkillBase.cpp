@@ -224,6 +224,18 @@ bool ULFPSkillBase::CanReleaseFrom_Implementation(ALFPHexTile* CasterTile, ALFPH
 	return true;
 }
 
+bool ULFPSkillBase::CanPlanFrom_Implementation(ALFPHexTile* CasterTile, ALFPHexTile* TargetTile)
+{
+	if (!Owner || bIsPassiveSkill)
+	{
+		return false;
+	}
+
+	// 规划阶段按“计划施法位 -> 计划目标位”做判断，
+	// 不直接依赖 Owner 当前真实站位。
+	return CanReleaseFromInternal(CasterTile, TargetTile, true);
+}
+
 FString ULFPSkillBase::GetCooldownStatus() const
 {
 	if (CurrentCooldown <= 0)
@@ -439,6 +451,37 @@ bool ULFPSkillBase::HasReleaseCoord(const FLFPHexCoordinates& RelativeCoord) con
 	}
 
 	return false;
+}
+
+bool ULFPSkillBase::CanReleaseFromInternal(ALFPHexTile* CasterTile, ALFPHexTile* TargetTile, bool bAllowPlannedSelfTarget) const
+{
+	if (!CasterTile || !TargetTile)
+	{
+		return false;
+	}
+
+	const bool bIsPlannedSelfTarget =
+		bAllowPlannedSelfTarget &&
+		TargetType == ESkillTargetType::Self &&
+		TargetTile == CasterTile;
+
+	if (!bIsPlannedSelfTarget && !IsValidReleaseTargetTile(TargetTile))
+	{
+		return false;
+	}
+
+	const_cast<ULFPSkillBase*>(this)->UpdateSkillRange();
+	const FLFPHexCoordinates CasterCoord = CasterTile->GetCoordinates();
+	const FLFPHexCoordinates TargetCoord = TargetTile->GetCoordinates();
+	const FLFPHexCoordinates RelativeCoord(TargetCoord.Q - CasterCoord.Q, TargetCoord.R - CasterCoord.R);
+	if (!HasReleaseCoord(RelativeCoord))
+	{
+		return false;
+	}
+
+	// TODO: 瑙嗙嚎妫€鏌?(bRequireLineOfSight)
+
+	return true;
 }
 
 bool ULFPSkillBase::TryApplyCustomReleaseRangePreset()

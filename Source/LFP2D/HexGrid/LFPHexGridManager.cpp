@@ -479,14 +479,14 @@ TArray<ALFPHexTile*> ALFPHexGridManager::FindPath(ALFPHexTile* Start, ALFPHexTil
 	// 验证输入有效性
 	if (!Start || !End || !End->IsWalkable())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("FindPath: Invalid start or end tile"));
+		//UE_LOG(LogTemp, Warning, TEXT("FindPath: Invalid start or end tile"));
 		return Path;
 	}
 
 	// 如果起点和终点相同
 	if (Start == End) {
 		Path.Add(Start);
-		UE_LOG(LogTemp, Log, TEXT("FindPath: Start and end are the same tile"));
+        //UE_LOG(LogTemp, Log, TEXT("FindPath: Start and end are the same tile"));
 		return Path;
 	}
 
@@ -579,12 +579,12 @@ TArray<ALFPHexTile*> ALFPHexGridManager::FindPath(ALFPHexTile* Start, ALFPHexTil
 	// 调试绘制路径
 	//DrawDebugPath(Path, bPathFound);
 
-	if (bPathFound) {
+	/*if (bPathFound) {
 		UE_LOG(LogTemp, Log, TEXT("FindPath: Found path with %d tiles"), Path.Num());
 	}
 	else {
 		UE_LOG(LogTemp, Warning, TEXT("FindPath: No valid path found"));
-	}
+	}*/
 
 	return Path;
 }

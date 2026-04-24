@@ -12,6 +12,7 @@ class LFP2D_API ULFPSkill_GatherSpirit : public ULFPSkillBase
 public:
     ULFPSkill_GatherSpirit();
 
+    virtual bool CanPlanFrom_Implementation(ALFPHexTile* CasterTile, ALFPHexTile* TargetTile) override;
     virtual bool CanExecute_Implementation(ALFPHexTile* TargetTile = nullptr) override;
     virtual void Execute_Implementation(ALFPHexTile* TargetTile = nullptr) override;
 

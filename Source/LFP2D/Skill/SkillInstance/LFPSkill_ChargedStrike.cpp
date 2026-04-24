@@ -13,6 +13,16 @@ ULFPSkill_ChargedStrike::ULFPSkill_ChargedStrike()
     EffectRangeType = ESkillRangeType::Origin;
 }
 
+bool ULFPSkill_ChargedStrike::CanPlanFrom_Implementation(ALFPHexTile* CasterTile, ALFPHexTile* TargetTile)
+{
+    if (bHasPendingStrike)
+    {
+        return false;
+    }
+
+    return Super::CanPlanFrom_Implementation(CasterTile, TargetTile);
+}
+
 bool ULFPSkill_ChargedStrike::CanExecute_Implementation(ALFPHexTile* TargetTile)
 {
     if (!Super::CanExecute_Implementation(TargetTile) || !Owner || !TargetTile || bHasPendingStrike)

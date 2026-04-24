@@ -761,7 +761,7 @@ void ALFPTacticsPlayerController::ExecuteSkill(ULFPSkillBase* CurrentSkill)
 		}
 		else
 		{
-			UE_LOG(LogTemp, Log, TEXT("Skill:%s can not release!"), *CurrentSkill->SkillName.ToString());
+			UE_LOG(LogTemp, Warning, TEXT("玩家主动释放失败: 技能[%s]"), *CurrentSkill->SkillName.ToString());
 		}
 	}
 }
@@ -863,6 +863,16 @@ void ALFPTacticsPlayerController::ShowEnemyPlanPreview(ALFPTacticsUnit* EnemyUni
 
 	PreviewedEnemy = EnemyUnit;
 	const FEnemyActionPlan& Plan = EnemyUnit->CurrentActionPlan;
+    PreviewReleaseTiles.Empty();
+    PreviewEffectTiles.Empty();
+
+    GridManager->ClearRangeHighlight(EUnitRange::UR_Enemy_SkillRelease);
+    GridManager->ClearRangeHighlight(EUnitRange::UR_Enemy_SkillEffect);
+
+    if (!Plan.PlannedSkill)
+    {
+        return;
+    }
 
     TArray<FLFPHexCoordinates> PreviewReleaseCoords = Plan.PlannedSkill->GetReleaseRangeInGrid();
     for (FLFPHexCoordinates ReleaseCoord : PreviewReleaseCoords)
@@ -884,6 +894,7 @@ void ALFPTacticsPlayerController::HideEnemyPlanPreview()
 	// 清除预览格子高亮
 	if (GridManager)
 	{
+		PreviewReleaseTiles.Empty();
 		PreviewEffectTiles.Empty();
 		PreviewedEnemy = nullptr;
         GridManager->ClearRangeHighlight(EUnitRange::UR_Enemy_SkillRelease);

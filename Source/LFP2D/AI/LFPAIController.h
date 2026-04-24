@@ -14,6 +14,27 @@ class ALFPTacticsUnit;
 class ALFPHexGridManager;
 class ALFPHexTile;
 class ULFPEnemyBehaviorData;
+
+struct FEnemySkillPlanCandidate
+{
+    ALFPTacticsUnit* EnemyUnit = nullptr;
+    ULFPSkillBase* Skill = nullptr;
+    ALFPTacticsUnit* TargetUnit = nullptr;
+    ALFPHexTile* TargetTile = nullptr;
+    ALFPHexTile* CasterPositionTile = nullptr;
+    TArray<ALFPHexTile*> EffectAreaTiles;
+    int32 APCost = 0;
+    float EffectivePriority = 0.0f;
+    float HatredValue = 0.0f;
+    float NormalizedPriorityScore = 0.0f;
+    float NormalizedHatredScore = 0.0f;
+    float TotalScore = 0.0f;
+    int32 PlanningOrderIndex = INDEX_NONE;
+    bool bBlockedByInsufficientAP = false;
+    bool bIsValid = false;
+
+    FEnemyActionPlan ToActionPlan() const;
+};
 /**
  *
  */
@@ -68,6 +89,8 @@ public:
     // PreAllocatedSkill: 全局分配阶段预分配的技能，为空则自行选择
     UFUNCTION(BlueprintCallable, Category = "AI|Planning")
     FEnemyActionPlan CreateActionPlan(ULFPSkillBase* PreAllocatedSkill = nullptr);
+    bool BuildBestSkillPlanCandidate(ULFPSkillBase* Skill, int32 PlanningOrderIndex, FEnemySkillPlanCandidate& OutCandidate) const;
+    FEnemyActionPlan CreateMovementOnlyPlan(const FEnemySkillPlanCandidate* PreferredCandidate = nullptr) const;
 
     // 选择最佳技能（virtual 可覆盖）
     UFUNCTION(BlueprintCallable, Category = "AI|Planning")
@@ -103,4 +126,17 @@ protected:
     // AI 行为数据
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
     ULFPEnemyBehaviorData* BehaviorData;
+
+private:
+    void CollectPotentialTargets(ULFPSkillBase* Skill, TArray<ALFPTacticsUnit*>& OutTargets) const;
+    bool TryBuildCandidateForTarget(
+        ULFPSkillBase* Skill,
+        ALFPTacticsUnit* TargetUnit,
+        ALFPHexTile* TargetTile,
+        int32 PlanningOrderIndex,
+        float& OutPositionValue,
+        FEnemySkillPlanCandidate& OutCandidate) const;
+    void BuildEffectAreaTiles(ULFPSkillBase* Skill, ALFPHexTile* TargetTile, TArray<ALFPHexTile*>& OutTiles) const;
+    ALFPHexTile* FindBestCasterPositionInternal(ULFPSkillBase* Skill, ALFPHexTile* TargetTile, float& OutValue) const;
+    ALFPHexTile* FindBestApproachTile(const FEnemySkillPlanCandidate* PreferredCandidate) const;
 };

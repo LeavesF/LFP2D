@@ -16,6 +16,22 @@ ULFPSkill_GatherSpirit::ULFPSkill_GatherSpirit()
     bRequireLineOfSight = false;
 }
 
+bool ULFPSkill_GatherSpirit::CanPlanFrom_Implementation(ALFPHexTile* CasterTile, ALFPHexTile* TargetTile)
+{
+    if (!Super::CanPlanFrom_Implementation(CasterTile, TargetTile) || !Owner)
+    {
+        return false;
+    }
+
+    ALFPTurnManager* TurnManager = Owner->GetTurnManager();
+    if (!TurnManager)
+    {
+        return false;
+    }
+
+    return TurnManager->GetFactionAP(Owner->GetAffiliation()) < TurnManager->GetFactionMaxAP();
+}
+
 bool ULFPSkill_GatherSpirit::CanExecute_Implementation(ALFPHexTile* TargetTile)
 {
     if (!Owner)

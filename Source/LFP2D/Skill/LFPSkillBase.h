@@ -107,6 +107,9 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Skill")
 	bool CanReleaseFrom(ALFPHexTile* CasterTile, ALFPHexTile* TargetTile);
 
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Skill|AI")
+	bool CanPlanFrom(ALFPHexTile* CasterTile, ALFPHexTile* TargetTile);
+
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Skill")
 	FString GetCooldownStatus() const;
 
@@ -304,6 +307,7 @@ private:
 	void RebuildReleaseRangeCoords();
 	void RebuildEffectRangeCoords();
 	bool HasReleaseCoord(const FLFPHexCoordinates& RelativeCoord) const;
+	bool CanReleaseFromInternal(ALFPHexTile* CasterTile, ALFPHexTile* TargetTile, bool bAllowPlannedSelfTarget) const;
 	bool TryApplyCustomReleaseRangePreset();
 	bool TryApplyCustomEffectRangePreset();
 	void RebuildRangeCoords(

@@ -138,7 +138,7 @@ protected:
     void BeginEnemyPlanningPhase();
 
     // Step 1: 全局技能分配（按优先级分配AP技能）
-    void AllocateEnemySkills();
+    void AllocateEnemyPlans();
 
     // 处理下一个敌人的规划（先等待，再执行）
     void ProcessNextEnemyPlan();
@@ -199,7 +199,7 @@ protected:
 
     // 技能分配结果（Step1 → Step2 传递）
     UPROPERTY()
-    TMap<ALFPTacticsUnit*, ULFPSkillBase*> AllocatedSkills;
+    TMap<ALFPTacticsUnit*, FEnemyActionPlan> AllocatedPlans;
 
     // ==== 阵营行动点配置 ====
 

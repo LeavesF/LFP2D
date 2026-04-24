@@ -16,6 +16,9 @@ FEnemyActionPlan ALFPTurnManager::EmptyPlan;
 
 namespace
 {
+constexpr float CandidatePriorityWeight = 0.7f;
+constexpr float CandidateHatredWeight = 0.3f;
+
 void SortUnitsBySpeedStable(TArray<ALFPTacticsUnit*>& Units)
 {
     struct FSortableTurnUnit
@@ -57,6 +60,68 @@ void SortUnitsBySpeedStable(TArray<ALFPTacticsUnit*>& Units)
     for (int32 Index = 0; Index < SortableUnits.Num(); ++Index)
     {
         Units[Index] = SortableUnits[Index].Unit;
+    }
+}
+
+float NormalizeValue(float Value, float MinValue, float MaxValue)
+{
+    if (MaxValue <= MinValue)
+    {
+        return 1.0f;
+    }
+
+    return (Value - MinValue) / (MaxValue - MinValue);
+}
+
+void NormalizeCandidateScores(TArray<FEnemySkillPlanCandidate>& Candidates)
+{
+    if (Candidates.IsEmpty())
+    {
+        return;
+    }
+
+    float MinPriority = Candidates[0].EffectivePriority;
+    float MaxPriority = Candidates[0].EffectivePriority;
+    float MinHatred = Candidates[0].HatredValue;
+    float MaxHatred = Candidates[0].HatredValue;
+
+    for (const FEnemySkillPlanCandidate& Candidate : Candidates)
+    {
+        MinPriority = FMath::Min(MinPriority, Candidate.EffectivePriority);
+        MaxPriority = FMath::Max(MaxPriority, Candidate.EffectivePriority);
+        MinHatred = FMath::Min(MinHatred, Candidate.HatredValue);
+        MaxHatred = FMath::Max(MaxHatred, Candidate.HatredValue);
+    }
+
+    for (FEnemySkillPlanCandidate& Candidate : Candidates)
+    {
+        Candidate.NormalizedPriorityScore = NormalizeValue(Candidate.EffectivePriority, MinPriority, MaxPriority);
+        Candidate.NormalizedHatredScore = NormalizeValue(Candidate.HatredValue, MinHatred, MaxHatred);
+        Candidate.TotalScore =
+            (CandidatePriorityWeight * Candidate.NormalizedPriorityScore) +
+            (CandidateHatredWeight * Candidate.NormalizedHatredScore);
+    }
+}
+
+void UpdateBestBlockedCandidate(
+    TMap<ALFPTacticsUnit*, FEnemySkillPlanCandidate>& BestBlockedCandidates,
+    const FEnemySkillPlanCandidate& Candidate)
+{
+    if (!Candidate.EnemyUnit)
+    {
+        return;
+    }
+
+    FEnemySkillPlanCandidate* Existing = BestBlockedCandidates.Find(Candidate.EnemyUnit);
+    if (!Existing ||
+        Candidate.TotalScore > Existing->TotalScore ||
+        (FMath::IsNearlyEqual(Candidate.TotalScore, Existing->TotalScore) &&
+            Candidate.EffectivePriority > Existing->EffectivePriority) ||
+        (FMath::IsNearlyEqual(Candidate.TotalScore, Existing->TotalScore) &&
+            FMath::IsNearlyEqual(Candidate.EffectivePriority, Existing->EffectivePriority) &&
+            Candidate.HatredValue > Existing->HatredValue))
+    {
+        BestBlockedCandidates.Add(Candidate.EnemyUnit, Candidate);
     }
 }
 }
@@ -168,7 +233,7 @@ void ALFPTurnManager::BeginNewRound()
 
     // 清空上一轮的敌人计划
     EnemyActionPlans.Empty();
-    AllocatedSkills.Empty();
+    AllocatedPlans.Empty();
 
     // 恢复阵营 AP
     for (auto& Pair : FactionCurrentAP)
@@ -348,7 +413,7 @@ void ALFPTurnManager::BeginEnemyPlanningPhase()
     }
 
     // Step 1: 全局技能分配（按优先级分配AP技能）
-    AllocateEnemySkills();
+    AllocateEnemyPlans();
 
     // Step 2: 按速度顺序移动展示
     ProcessNextEnemyPlan();
@@ -417,22 +482,28 @@ void ALFPTurnManager::ExecuteCurrentEnemyPlan()
     }
 
     // 创建行动计划，传入预分配的技能
-    ULFPSkillBase* PreAllocatedSkill = nullptr;
-    if (ULFPSkillBase** Found = AllocatedSkills.Find(Enemy))
+    FEnemyActionPlan Plan;
+    Plan.EnemyUnit = Enemy;
+    if (const FEnemyActionPlan* Found = AllocatedPlans.Find(Enemy))
     {
-        PreAllocatedSkill = *Found;
+        Plan = *Found;
     }
-    FEnemyActionPlan Plan = AIController->CreateActionPlan(PreAllocatedSkill);
 
     // 存储计划
     EnemyActionPlans.Add(Plan);
     Enemy->SetActionPlan(Plan);
 
+    const bool bStartedMove =
+        Plan.bIsValid &&
+        Plan.CasterPositionTile &&
+        Plan.CasterPositionTile != Enemy->GetCurrentTile() &&
+        Enemy->MoveToTile(Plan.CasterPositionTile);
+
     // 推进到下一个敌人
     CurrentPlanningEnemyIndex++;
 
     // 如果敌人正在移动，等移动完成后再推进
-    if (Enemy->bIsMoving)
+    if (bStartedMove && Enemy->bIsMoving)
     {
         // 记录当前移动中的敌人，回调中需要解绑
         PlanningMovingEnemy = Enemy;
@@ -542,6 +613,8 @@ void ALFPTurnManager::ExecuteEnemyPlan(ALFPTacticsUnit* Unit)
         // 在原定目标格子释放技能（即使目标已死亡）
         // AP 已在规划阶段 AllocateEnemySkills 中扣除
         ALFPHexTile* ExecutionTargetTile = Plan.TargetTile;
+        const FString SkillLogName =
+            Plan.PlannedSkill->SkillName.IsEmpty() ? Plan.PlannedSkill->GetName() : Plan.PlannedSkill->SkillName.ToString();
 
         if (Plan.PlannedSkill->bTrackTargetUnitForAIExecution)
         {
@@ -561,7 +634,25 @@ void ALFPTurnManager::ExecuteEnemyPlan(ALFPTacticsUnit* Unit)
 
         if (ExecutionTargetTile)
         {
-            Unit->ExecuteSkill(Plan.PlannedSkill, ExecutionTargetTile);
+            UE_LOG(LogTemp, Log, TEXT("敌方计划执行: 单位[%s] 技能[%s]"), *Unit->GetName(), *SkillLogName);
+
+            const bool bExecuted = Unit->ExecuteSkill(Plan.PlannedSkill, ExecutionTargetTile);
+            UE_LOG(
+                LogTemp,
+                Log,
+                TEXT("敌方计划执行结果: 单位[%s] 技能[%s] %s"),
+                *Unit->GetName(),
+                *SkillLogName,
+                bExecuted ? TEXT("已调用释放") : TEXT("释放失败"));
+        }
+        else
+        {
+            UE_LOG(
+                LogTemp,
+                Warning,
+                TEXT("敌方计划执行跳过: 单位[%s] 技能[%s] 当前没有合法目标格"),
+                *Unit->GetName(),
+                *SkillLogName);
         }
     }
 
@@ -736,24 +827,31 @@ void ALFPTurnManager::RestoreFactionAP(EUnitAffiliation Faction, int32 Amount)
 
 // ==== 全局技能分配 ====
 
-void ALFPTurnManager::AllocateEnemySkills()
+void ALFPTurnManager::AllocateEnemyPlans()
 {
-    AllocatedSkills.Empty();
+    AllocatedPlans.Empty();
 
     // 收集所有敌方单位的所有消耗AP的技能候选
-    struct FSkillCandidate
-    {
-        ALFPTacticsUnit* Unit;
-        ULFPSkillBase* Skill;
-        float EffectivePriority;
-    };
-    TArray<FSkillCandidate> Candidates;
+    // 先把“每个敌人每个技能”的最佳完整候选收集到同一个全局池里。
+    TArray<FEnemySkillPlanCandidate> Candidates;
+    TSet<ALFPHexTile*> ReservedDestinationTiles;
+    TMap<ALFPTacticsUnit*, FEnemySkillPlanCandidate> BestBlockedCandidates;
 
-    for (ALFPTacticsUnit* Enemy : PlanningOrderEnemies)
+    for (int32 EnemyIndex = 0; EnemyIndex < PlanningOrderEnemies.Num(); ++EnemyIndex)
     {
-        if (!Enemy || !Enemy->IsAlive()) continue;
+        ALFPTacticsUnit* Enemy = PlanningOrderEnemies[EnemyIndex];
+        if (!Enemy || !Enemy->IsAlive())
+        {
+            continue;
+        }
 
-        TArray<ULFPSkillBase*> Skills = Enemy->GetAvailableSkills();
+        ALFPAIController* AIController = Enemy->GetAIController();
+        if (!AIController)
+        {
+            continue;
+        }
+
+        const TArray<ULFPSkillBase*> Skills = Enemy->GetAvailableSkills();
         for (ULFPSkillBase* Skill : Skills)
         {
             if (!Skill) continue;
@@ -761,31 +859,142 @@ void ALFPTurnManager::AllocateEnemySkills()
             //if (Skill->ActionPointCost <= 0) continue; // 0消耗技能不参与竞争
             if (Skill->CurrentCooldown > 0) continue;  // 冷却中跳过
 
-            FSkillCandidate Candidate;
-            Candidate.Unit = Enemy;
-            Candidate.Skill = Skill;
-            Candidate.EffectivePriority = Skill->GetEffectivePriority();
-            Candidates.Add(Candidate);
+            FEnemySkillPlanCandidate Candidate;
+            if (AIController->BuildBestSkillPlanCandidate(Skill, EnemyIndex, Candidate))
+            {
+                Candidates.Add(Candidate);
+            }
         }
     }
 
     // 按有效优先级降序排序
-    Candidates.Sort([](const FSkillCandidate& A, const FSkillCandidate& B) {
-        return A.EffectivePriority > B.EffectivePriority;
+    // 全局统一归一化打分，再按稳定规则排序，保证相同局面下结果一致。
+    NormalizeCandidateScores(Candidates);
+
+    Candidates.StableSort([](const FEnemySkillPlanCandidate& A, const FEnemySkillPlanCandidate& B)
+    {
+        if (!FMath::IsNearlyEqual(A.TotalScore, B.TotalScore))
+        {
+            return A.TotalScore > B.TotalScore;
+        }
+
+        if (!FMath::IsNearlyEqual(A.EffectivePriority, B.EffectivePriority))
+        {
+            return A.EffectivePriority > B.EffectivePriority;
+        }
+
+        if (!FMath::IsNearlyEqual(A.HatredValue, B.HatredValue))
+        {
+            return A.HatredValue > B.HatredValue;
+        }
+
+        if (A.APCost != B.APCost)
+        {
+            return A.APCost > B.APCost;
+        }
+
+        return A.PlanningOrderIndex < B.PlanningOrderIndex;
     });
 
     // 依次分配：如果阵营AP足够且该单位尚未分配
-    for (const FSkillCandidate& Candidate : Candidates)
+    // 依次扫描候选池：
+    // 1. 每个敌人本轮最多只拿一个计划
+    // 2. 遇到“完整成立但 AP 不够”的正耗 AP 候选后，后续正耗 AP 候选整体截断
+    // 3. 后续 0 AP 候选仍继续参与分配
+    int32 RemainingEnemyAP = GetFactionAP(EUnitAffiliation::UA_Enemy);
+    bool bStopPositiveCostAllocation = false;
+
+    for (const FEnemySkillPlanCandidate& Candidate : Candidates)
     {
         // 该单位已分配过技能，跳过
-        if (AllocatedSkills.Contains(Candidate.Unit)) continue;
+        if (!Candidate.bIsValid || !Candidate.EnemyUnit)
+        {
+            continue;
+        }
+
+        if (AllocatedPlans.Contains(Candidate.EnemyUnit))
+        {
+            continue;
+        }
+
+        if (Candidate.CasterPositionTile && ReservedDestinationTiles.Contains(Candidate.CasterPositionTile))
+        {
+            continue;
+        }
 
         // 检查阵营AP是否足够
-        if (HasEnoughFactionAP(EUnitAffiliation::UA_Enemy, Candidate.Skill->ActionPointCost))
+        if (Candidate.APCost > 0)
         {
-            AllocatedSkills.Add(Candidate.Unit, Candidate.Skill);
-            ConsumeFactionAP(EUnitAffiliation::UA_Enemy, Candidate.Skill->ActionPointCost);
+            if (bStopPositiveCostAllocation)
+            {
+                FEnemySkillPlanCandidate BlockedCandidate = Candidate;
+                BlockedCandidate.bBlockedByInsufficientAP = true;
+                UpdateBestBlockedCandidate(BestBlockedCandidates, BlockedCandidate);
+                continue;
+            }
+
+            if (RemainingEnemyAP < Candidate.APCost)
+            {
+                FEnemySkillPlanCandidate BlockedCandidate = Candidate;
+                BlockedCandidate.bBlockedByInsufficientAP = true;
+                UpdateBestBlockedCandidate(BestBlockedCandidates, BlockedCandidate);
+                bStopPositiveCostAllocation = true;
+                continue;
+            }
         }
+
+        AllocatedPlans.Add(Candidate.EnemyUnit, Candidate.ToActionPlan());
+        if (Candidate.CasterPositionTile)
+        {
+            ReservedDestinationTiles.Add(Candidate.CasterPositionTile);
+        }
+
+        if (Candidate.APCost > 0)
+        {
+            RemainingEnemyAP -= Candidate.APCost;
+            ConsumeFactionAP(EUnitAffiliation::UA_Enemy, Candidate.APCost);
+        }
+    }
+
+    for (ALFPTacticsUnit* Enemy : PlanningOrderEnemies)
+    {
+        if (!Enemy || !Enemy->IsAlive() || AllocatedPlans.Contains(Enemy))
+        {
+            continue;
+        }
+
+        // 没分到技能计划的敌人仍然会得到一个纯移动铺路计划。
+        FEnemyActionPlan Plan;
+        Plan.EnemyUnit = Enemy;
+
+        ALFPAIController* AIController = Enemy->GetAIController();
+        const FEnemySkillPlanCandidate* PreferredBlockedCandidate = BestBlockedCandidates.Find(Enemy);
+        if (AIController)
+        {
+            Plan = AIController->CreateMovementOnlyPlan(PreferredBlockedCandidate);
+            Plan.EnemyUnit = Enemy;
+        }
+
+        if (!Plan.CasterPositionTile)
+        {
+            Plan.CasterPositionTile = Enemy->GetCurrentTile();
+        }
+
+        if (Plan.CasterPositionTile &&
+            Plan.CasterPositionTile != Enemy->GetCurrentTile() &&
+            ReservedDestinationTiles.Contains(Plan.CasterPositionTile))
+        {
+            Plan.CasterPositionTile = Enemy->GetCurrentTile();
+        }
+
+        Plan.bIsValid = Plan.CasterPositionTile != nullptr;
+
+        if (Plan.bIsValid && Plan.CasterPositionTile)
+        {
+            ReservedDestinationTiles.Add(Plan.CasterPositionTile);
+        }
+
+        AllocatedPlans.Add(Enemy, Plan);
     }
 
     // 未分配到AP技能的敌人会在 CreateActionPlan 中 fallback 到默认攻击
