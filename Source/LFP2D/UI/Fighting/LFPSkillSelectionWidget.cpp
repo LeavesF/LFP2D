@@ -288,8 +288,8 @@ void ULFPSkillSelectionWidget::OnConfirmClicked()
         OnSkillConfirmed.Broadcast(SelectedSkill);
     }
 
-    // 关闭窗口
-    RemoveFromParent();
+    // 隐藏窗口（由 HUD 统一管理生命周期）
+    SetVisibility(ESlateVisibility::Collapsed);
 }
 
 void ULFPSkillSelectionWidget::OnCancelClicked()
@@ -300,8 +300,8 @@ void ULFPSkillSelectionWidget::OnCancelClicked()
         OnSelectionCanceled.Broadcast();
     }
 
-    // 关闭窗口
-    RemoveFromParent();
+    // 隐藏窗口（由 HUD 统一管理生命周期）
+    SetVisibility(ESlateVisibility::Collapsed);
 }
 
 void ULFPSkillSelectionWidget::RefreshSkillButtons()

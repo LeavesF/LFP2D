@@ -35,6 +35,52 @@ struct FEnemySkillPlanCandidate
 
     FEnemyActionPlan ToActionPlan() const;
 };
+
+// 候选人评分权重常量
+constexpr float CandidatePriorityWeight_AI = 0.7f;
+constexpr float CandidateHatredWeight_AI = 0.3f;
+
+// 归一化值（MinMax 缩放）
+inline float NormalizeCandidateValue(float Value, float MinValue, float MaxValue)
+{
+    if (MaxValue <= MinValue)
+    {
+        return 1.0f;
+    }
+    return (Value - MinValue) / (MaxValue - MinValue);
+}
+
+// 对候选人列表进行归一化评分并计算总分
+inline void NormalizeCandidateScores(TArray<FEnemySkillPlanCandidate>& Candidates)
+{
+    if (Candidates.IsEmpty())
+    {
+        return;
+    }
+
+    float MinPriority = Candidates[0].EffectivePriority;
+    float MaxPriority = Candidates[0].EffectivePriority;
+    float MinHatred = Candidates[0].HatredValue;
+    float MaxHatred = Candidates[0].HatredValue;
+
+    for (const FEnemySkillPlanCandidate& Candidate : Candidates)
+    {
+        MinPriority = FMath::Min(MinPriority, Candidate.EffectivePriority);
+        MaxPriority = FMath::Max(MaxPriority, Candidate.EffectivePriority);
+        MinHatred = FMath::Min(MinHatred, Candidate.HatredValue);
+        MaxHatred = FMath::Max(MaxHatred, Candidate.HatredValue);
+    }
+
+    for (FEnemySkillPlanCandidate& Candidate : Candidates)
+    {
+        Candidate.NormalizedPriorityScore = NormalizeCandidateValue(Candidate.EffectivePriority, MinPriority, MaxPriority);
+        Candidate.NormalizedHatredScore = NormalizeCandidateValue(Candidate.HatredValue, MinHatred, MaxHatred);
+        Candidate.TotalScore =
+            (CandidatePriorityWeight_AI * Candidate.NormalizedPriorityScore) +
+            (CandidateHatredWeight_AI * Candidate.NormalizedHatredScore);
+    }
+}
+
 /**
  *
  */

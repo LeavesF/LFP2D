@@ -11,7 +11,6 @@ class ALFPTacticsUnit;
 class ALFPHexGridManager;
 class ALFPTurnManager;
 class ALFPBattleRelicRuntimeManager;
-class ULFPBattleResultWidget;
 
 /**
  * 战斗游戏模式
@@ -83,14 +82,6 @@ protected:
 	int32 AccumulatedDropFood = 0;
 
 	// ============== 结算 UI ==============
-
-	// 结算 Widget 蓝图类
-	UPROPERTY(EditDefaultsOnly, Category = "UI")
-	TSubclassOf<ULFPBattleResultWidget> BattleResultWidgetClass;
-
-	// 结算 Widget 实例
-	UPROPERTY()
-	TObjectPtr<ULFPBattleResultWidget> BattleResultWidget;
 
 	// 缓存的战斗结果（确认后写回 GameInstance）
 	UPROPERTY()

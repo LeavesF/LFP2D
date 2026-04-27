@@ -7,6 +7,8 @@
 #include "LFP2D/Turn/LFPBattleRelicRuntimeManager.h"
 #include "LFP2D/Unit/LFPTacticsUnit.h"
 #include "LFP2D/HexGrid/LFPHexGridManager.h"
+#include "LFP2D/Player/LFPTacticsPlayerController.h"
+#include "LFP2D/UI/Fighting/LFPBattleHUDWidget.h"
 #include "LFP2D/UI/Fighting/LFPBattleResultWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "Misc/Paths.h"
@@ -99,30 +101,32 @@ void ALFPTurnGameMode::EndBattle(bool bVictory, bool bEscaped)
     // 缓存结果，确认后写回
     CachedBattleResult = Result;
 
-    // 显示结算 UI
-    if (BattleResultWidgetClass)
+    // 通过 HUD 显示结算 UI
+    ALFPTacticsPlayerController* TacticsPC = Cast<ALFPTacticsPlayerController>(GetWorld()->GetFirstPlayerController());
+    if (TacticsPC && TacticsPC->GetBattleHUD())
     {
-        APlayerController* PC = GetWorld()->GetFirstPlayerController();
-        if (PC)
+        ULFPBattleResultWidget* ResultWidget = TacticsPC->GetBattleHUD()->GetBattleResultWidget();
+        if (ResultWidget)
         {
-            BattleResultWidget = CreateWidget<ULFPBattleResultWidget>(PC, BattleResultWidgetClass);
-            if (BattleResultWidget)
-            {
-                BattleResultWidget->Setup(Result, GI->UnitRegistry);
-                BattleResultWidget->OnConfirmPressed.AddDynamic(this, &ALFPTurnGameMode::OnBattleResultConfirmed);
-                BattleResultWidget->AddToViewport(100);
+            ResultWidget->Setup(Result, GI->UnitRegistry);
+            ResultWidget->OnConfirmPressed.AddDynamic(this, &ALFPTurnGameMode::OnBattleResultConfirmed);
+            TacticsPC->GetBattleHUD()->ShowBattleResultWidget();
 
-                // 切换到 UI 输入模式
-                FInputModeUIOnly InputMode;
-                InputMode.SetWidgetToFocus(BattleResultWidget->TakeWidget());
-                PC->SetInputMode(InputMode);
-                PC->SetShowMouseCursor(true);
-            }
+            // 切换到 UI 输入模式
+            FInputModeUIOnly InputMode;
+            InputMode.SetWidgetToFocus(ResultWidget->TakeWidget());
+            TacticsPC->SetInputMode(InputMode);
+            TacticsPC->SetShowMouseCursor(true);
+        }
+        else
+        {
+            // 无 ResultWidget，直接返回（兼容测试场景）
+            OnBattleResultConfirmed();
         }
     }
     else
     {
-        // 无 Widget 类配置，直接返回（兼容测试场景）
+        // 无 HUD，直接返回（兼容测试场景）
         OnBattleResultConfirmed();
     }
 }
@@ -135,12 +139,15 @@ void ALFPTurnGameMode::OnBattleResultConfirmed()
     // 写回战斗结果
     GI->SetBattleResult(CachedBattleResult);
 
-    // 移除结算 UI
-    if (BattleResultWidget)
+    // 通过 HUD 隐藏结算 UI
+    ALFPTacticsPlayerController* TacticsPC = Cast<ALFPTacticsPlayerController>(GetWorld()->GetFirstPlayerController());
+    if (TacticsPC && TacticsPC->GetBattleHUD())
     {
-        BattleResultWidget->OnConfirmPressed.RemoveDynamic(this, &ALFPTurnGameMode::OnBattleResultConfirmed);
-        BattleResultWidget->RemoveFromParent();
-        BattleResultWidget = nullptr;
+        if (ULFPBattleResultWidget* ResultWidget = TacticsPC->GetBattleHUD()->GetBattleResultWidget())
+        {
+            ResultWidget->OnConfirmPressed.RemoveDynamic(this, &ALFPTurnGameMode::OnBattleResultConfirmed);
+        }
+        TacticsPC->GetBattleHUD()->HideBattleResultWidget();
     }
 
     // 恢复输入模式

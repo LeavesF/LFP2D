@@ -7,8 +7,9 @@
 #include "LFP2D/Skill/LFPSkillBase.h"
 #include "LFP2D/Unit/LFPTacticsUnit.h"
 #include "LFP2D/Turn/LFPTurnManager.h"
-#include "LFP2D/UI/Fighting/LFPSkillSelectionWidget.h"
+#include "LFP2D/UI/Fighting/LFPBattleHUDWidget.h"
 #include "LFP2D/UI/Fighting/LFPTurnSpeedListWidget.h"
+#include "LFP2D/UI/Fighting/LFPSkillSelectionWidget.h"
 #include "LFP2D/UI/Fighting/LFPDeploymentWidget.h"
 #include "LFP2D/HexGrid/LFPMapEditorComponent.h"
 #include "LFP2D/UI/MapEditor/LFPMapEditorWidget.h"
@@ -67,14 +68,19 @@ void ALFPTacticsPlayerController::BeginPlay()
 		}
 	}
 
-	// 初始化UI
-	if (TurnSpeedWidgetClass)
+	// 初始化战斗 HUD
+	if (BattleHUDClass)
 	{
-		TurnSpeedListWidget = CreateWidget<ULFPTurnSpeedListWidget>(this, TurnSpeedWidgetClass);
-		if (TurnSpeedListWidget)
+		BattleHUDWidget = CreateWidget<ULFPBattleHUDWidget>(this, BattleHUDClass);
+		if (BattleHUDWidget)
 		{
-			TurnSpeedListWidget->AddToViewport();
-			TurnSpeedListWidget->InitializeTurnOrder(); // 初始化单位顺序
+			BattleHUDWidget->AddToViewport();
+
+			// 初始化回合速度列表（HUD 内始终可见的子组件）
+			if (ULFPTurnSpeedListWidget* TurnSpeedList = BattleHUDWidget->GetTurnSpeedListWidget())
+			{
+				TurnSpeedList->InitializeTurnOrder();
+			}
 		}
 	}
 
@@ -781,40 +787,21 @@ ALFPTurnManager* ALFPTacticsPlayerController::GetTurnManager() const
 void ALFPTacticsPlayerController::HandleSkillSelection()
 {
 	if (!SelectedUnit) return;
+	if (!BattleHUDWidget) return;
 
-	// 显示技能选择UI
-	if (SkillSelectionWidgetClass)
+	ULFPSkillSelectionWidget* SkillWidget = BattleHUDWidget->GetSkillSelectionWidget();
+	if (SkillWidget)
 	{
-		if (!SkillSelectionWidget)
-		{
-			SkillSelectionWidget = CreateWidget<ULFPSkillSelectionWidget>(this, SkillSelectionWidgetClass);
-			if (SkillSelectionWidget)
-			{
-				SkillSelectionWidget->Show();
-				SkillSelectionWidget->InitializeSkillsInfo(SelectedUnit, this);
-				SkillSelectionWidget->AddToViewport();
-
-				//// 进入技能选择模式
-				//CurrentSelectionMode = ESelectionMode::SkillSelection;
-			}
-		}
-		else
-		{
-			SkillSelectionWidget->Show();
-			SkillSelectionWidget->InitializeSkillsInfo(SelectedUnit, this);
-
-			//// 进入技能选择模式
-			//CurrentSelectionMode = ESelectionMode::SkillSelection;
-		}
-
+		BattleHUDWidget->ShowSkillSelection();
+		SkillWidget->InitializeSkillsInfo(SelectedUnit, this);
 	}
 }
 
 void ALFPTacticsPlayerController::HideSkillSelection()
 {
-	if (SkillSelectionWidget)
+	if (BattleHUDWidget)
 	{
-		SkillSelectionWidget->Hide();
+		BattleHUDWidget->HideSkillSelection();
 	}
 }
 
@@ -991,18 +978,17 @@ void ALFPTacticsPlayerController::OnDeploymentPhaseStarted()
 	DeployedUnits.Empty();
 	DeployedUnits.SetNum(GI->PartyUnits.Num());
 
-	// 创建布置 UI
-	if (DeploymentWidgetClass && !DeploymentWidget)
+	// 显示布置 UI（通过 HUD）
+	if (BattleHUDWidget)
 	{
-		DeploymentWidget = CreateWidget<ULFPDeploymentWidget>(this, DeploymentWidgetClass);
-	}
-
-	if (DeploymentWidget)
-	{
-		DeploymentWidget->Setup(GI->PartyUnits, GI->UnitRegistry);
-		DeploymentWidget->OnUnitSelected.AddDynamic(this, &ALFPTacticsPlayerController::StartPlacingUnit);
-		DeploymentWidget->OnConfirmPressed.AddDynamic(this, &ALFPTacticsPlayerController::ConfirmDeployment);
-		DeploymentWidget->AddToViewport();
+		ULFPDeploymentWidget* DeploymentWidget = BattleHUDWidget->GetDeploymentWidget();
+		if (DeploymentWidget)
+		{
+			DeploymentWidget->Setup(GI->PartyUnits, GI->UnitRegistry);
+			DeploymentWidget->OnUnitSelected.AddDynamic(this, &ALFPTacticsPlayerController::StartPlacingUnit);
+			DeploymentWidget->OnConfirmPressed.AddDynamic(this, &ALFPTacticsPlayerController::ConfirmDeployment);
+			BattleHUDWidget->ShowDeploymentWidget();
+		}
 	}
 
 	UE_LOG(LogTemp, Log, TEXT("布置阶段：%d 个出生点，%d 个队伍单位"),
@@ -1049,9 +1035,12 @@ void ALFPTacticsPlayerController::StartPlacingUnit(int32 PartyIndex)
 	PlacingPartyIndex = PartyIndex;
 	bIsPlacingUnit = true;
 
-	if (DeploymentWidget)
+	if (BattleHUDWidget)
 	{
-		DeploymentWidget->MarkUnitSelecting(PartyIndex);
+		if (ULFPDeploymentWidget* Dw = BattleHUDWidget->GetDeploymentWidget())
+		{
+			Dw->MarkUnitSelecting(PartyIndex);
+		}
 	}
 
 	UE_LOG(LogTemp, Log, TEXT("开始放置单位 %s（索引 %d）"), *Entry.TypeID.ToString(), PartyIndex);
@@ -1077,9 +1066,12 @@ void ALFPTacticsPlayerController::PlaceUnit(ALFPHexTile* Tile)
 	}
 
 	// 更新 UI
-	if (DeploymentWidget)
+	if (BattleHUDWidget)
 	{
-		DeploymentWidget->MarkUnitPlaced(PlacingPartyIndex, true);
+		if (ULFPDeploymentWidget* Dw = BattleHUDWidget->GetDeploymentWidget())
+		{
+			Dw->MarkUnitPlaced(PlacingPartyIndex, true);
+		}
 	}
 
 	UE_LOG(LogTemp, Log, TEXT("放置单位到格子 (%d, %d)"), Tile->GetCoordinates().Q, Tile->GetCoordinates().R);
@@ -1127,9 +1119,12 @@ void ALFPTacticsPlayerController::PickupDeployedUnit(ALFPTacticsUnit* Unit)
 	DeployedUnits[FoundIndex] = nullptr;
 
 	// 更新 UI
-	if (DeploymentWidget)
+	if (BattleHUDWidget)
 	{
-		DeploymentWidget->MarkUnitPlaced(FoundIndex, false);
+		if (ULFPDeploymentWidget* Dw = BattleHUDWidget->GetDeploymentWidget())
+		{
+			Dw->MarkUnitPlaced(FoundIndex, false);
+		}
 	}
 
 	UE_LOG(LogTemp, Log, TEXT("拾起已放置的单位（索引 %d）"), FoundIndex);
@@ -1144,12 +1139,15 @@ void ALFPTacticsPlayerController::ConfirmDeployment()
 	GridManager->ClearAllHighlights();
 	PlayerSpawnTiles.Empty();
 
-	// 移除布置 UI
-	if (DeploymentWidget)
+	// 隐藏布置 UI
+	if (BattleHUDWidget)
 	{
-		DeploymentWidget->OnUnitSelected.RemoveDynamic(this, &ALFPTacticsPlayerController::StartPlacingUnit);
-		DeploymentWidget->OnConfirmPressed.RemoveDynamic(this, &ALFPTacticsPlayerController::ConfirmDeployment);
-		DeploymentWidget->RemoveFromParent();
+		if (ULFPDeploymentWidget* DeploymentWidget = BattleHUDWidget->GetDeploymentWidget())
+		{
+			DeploymentWidget->OnUnitSelected.RemoveDynamic(this, &ALFPTacticsPlayerController::StartPlacingUnit);
+			DeploymentWidget->OnConfirmPressed.RemoveDynamic(this, &ALFPTacticsPlayerController::ConfirmDeployment);
+		}
+		BattleHUDWidget->HideDeploymentWidget();
 	}
 
 	bIsInDeployment = false;

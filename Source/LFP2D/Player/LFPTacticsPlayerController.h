@@ -19,11 +19,9 @@ class ULFPSkillBase;
 
 class ALFPTurnManager;
 
-class ULFPTurnSpeedListWidget;
-class ULFPSkillSelectionWidget;
+class ULFPBattleHUDWidget;
 class ULFPMapEditorComponent;
 class ULFPMapEditorWidget;
-class ULFPDeploymentWidget;
 class ULFPUnitRegistryDataAsset;
 /**
  *
@@ -205,6 +203,10 @@ protected:
 public:
     ALFPTurnManager* GetTurnManager() const;
 
+    // 获取战斗 HUD（供 GameMode 等外部访问）
+    UFUNCTION(BlueprintPure, Category = "UI")
+    ULFPBattleHUDWidget* GetBattleHUD() const { return BattleHUDWidget; }
+
     UFUNCTION(BlueprintCallable, Category = "Skill")
     void HideSkillSelection();
 
@@ -237,22 +239,17 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Unit Actions")
     void SkipTurn(ALFPTacticsUnit* Unit);
 
-// UI相关
-protected:
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
-    TSubclassOf<class UUserWidget> TurnSpeedWidgetClass;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
-    TObjectPtr<ULFPTurnSpeedListWidget> TurnSpeedListWidget;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
-    TSubclassOf<class UUserWidget> SkillSelectionWidgetClass;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
-
-    TObjectPtr<ULFPSkillSelectionWidget> SkillSelectionWidget;
-
+	// UI相关
 	// 地图编辑器 UI
+protected:
+	// 战斗 HUD
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<ULFPBattleHUDWidget> BattleHUDClass;
+
+	UPROPERTY()
+	TObjectPtr<ULFPBattleHUDWidget> BattleHUDWidget;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<ULFPMapEditorWidget> MapEditorWidgetClass;
 
@@ -340,10 +337,4 @@ protected:
     // 缓存的玩家出生点格子
     TArray<ALFPHexTile*> PlayerSpawnTiles;
 
-    // 布置 UI
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
-    TSubclassOf<ULFPDeploymentWidget> DeploymentWidgetClass;
-
-    UPROPERTY()
-    TObjectPtr<ULFPDeploymentWidget> DeploymentWidget;
 };

@@ -16,9 +16,6 @@ FEnemyActionPlan ALFPTurnManager::EmptyPlan;
 
 namespace
 {
-constexpr float CandidatePriorityWeight = 0.7f;
-constexpr float CandidateHatredWeight = 0.3f;
-
 void SortUnitsBySpeedStable(TArray<ALFPTacticsUnit*>& Units)
 {
     struct FSortableTurnUnit
@@ -60,46 +57,6 @@ void SortUnitsBySpeedStable(TArray<ALFPTacticsUnit*>& Units)
     for (int32 Index = 0; Index < SortableUnits.Num(); ++Index)
     {
         Units[Index] = SortableUnits[Index].Unit;
-    }
-}
-
-float NormalizeValue(float Value, float MinValue, float MaxValue)
-{
-    if (MaxValue <= MinValue)
-    {
-        return 1.0f;
-    }
-
-    return (Value - MinValue) / (MaxValue - MinValue);
-}
-
-void NormalizeCandidateScores(TArray<FEnemySkillPlanCandidate>& Candidates)
-{
-    if (Candidates.IsEmpty())
-    {
-        return;
-    }
-
-    float MinPriority = Candidates[0].EffectivePriority;
-    float MaxPriority = Candidates[0].EffectivePriority;
-    float MinHatred = Candidates[0].HatredValue;
-    float MaxHatred = Candidates[0].HatredValue;
-
-    for (const FEnemySkillPlanCandidate& Candidate : Candidates)
-    {
-        MinPriority = FMath::Min(MinPriority, Candidate.EffectivePriority);
-        MaxPriority = FMath::Max(MaxPriority, Candidate.EffectivePriority);
-        MinHatred = FMath::Min(MinHatred, Candidate.HatredValue);
-        MaxHatred = FMath::Max(MaxHatred, Candidate.HatredValue);
-    }
-
-    for (FEnemySkillPlanCandidate& Candidate : Candidates)
-    {
-        Candidate.NormalizedPriorityScore = NormalizeValue(Candidate.EffectivePriority, MinPriority, MaxPriority);
-        Candidate.NormalizedHatredScore = NormalizeValue(Candidate.HatredValue, MinHatred, MaxHatred);
-        Candidate.TotalScore =
-            (CandidatePriorityWeight * Candidate.NormalizedPriorityScore) +
-            (CandidateHatredWeight * Candidate.NormalizedHatredScore);
     }
 }
 
