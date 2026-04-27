@@ -26,32 +26,22 @@ void ULFPMapEditorWidget::NativeConstruct()
 	if (LoadButton) LoadButton->OnClicked.AddDynamic(this, &ULFPMapEditorWidget::OnLoadClicked);
 	if (NewMapButton) NewMapButton->OnClicked.AddDynamic(this, &ULFPMapEditorWidget::OnNewMapClicked);
 
-	// 填充地形类型下拉框
-	if (TerrainTypeComboBox)
+	// 自动填充枚举下拉框
+	auto PopulateEnumComboBox = [](UComboBoxString* ComboBox, const UEnum* EnumPtr, const FString& DefaultOption)
 	{
-		TerrainTypeComboBox->ClearOptions();
-		TerrainTypeComboBox->AddOption(TEXT("TT_Grass"));
-		TerrainTypeComboBox->AddOption(TEXT("TT_Sand"));
-		TerrainTypeComboBox->AddOption(TEXT("TT_Dirt"));
-		TerrainTypeComboBox->AddOption(TEXT("TT_Stone"));
-		TerrainTypeComboBox->AddOption(TEXT("TT_Snow"));
-		TerrainTypeComboBox->AddOption(TEXT("TT_Water"));
-		TerrainTypeComboBox->AddOption(TEXT("TT_Lava"));
-		TerrainTypeComboBox->AddOption(TEXT("TT_Magic"));
-		TerrainTypeComboBox->AddOption(TEXT("TT_Bridge"));
-		TerrainTypeComboBox->SetSelectedOption(TEXT("TT_Grass"));
-	}
+		if (!ComboBox || !EnumPtr) return;
+		ComboBox->ClearOptions();
+		for (int32 i = 0; i < EnumPtr->NumEnums(); ++i)
+		{
+			const FString Name = EnumPtr->GetNameStringByIndex(i);
+			if (Name.IsEmpty()) continue;
+			ComboBox->AddOption(Name);
+		}
+		ComboBox->SetSelectedOption(DefaultOption);
+	};
 
-	// 填充出生点阵营下拉框
-	if (SpawnFactionComboBox)
-	{
-		SpawnFactionComboBox->ClearOptions();
-		SpawnFactionComboBox->AddOption(TEXT("SF_None"));
-		SpawnFactionComboBox->AddOption(TEXT("SF_Player"));
-		SpawnFactionComboBox->AddOption(TEXT("SF_Enemy"));
-		SpawnFactionComboBox->AddOption(TEXT("SF_Neutral"));
-		SpawnFactionComboBox->SetSelectedOption(TEXT("SF_Player"));
-	}
+	PopulateEnumComboBox(TerrainTypeComboBox, StaticEnum<ELFPTerrainType>(), TEXT("TT_Grass"));
+	PopulateEnumComboBox(SpawnFactionComboBox, StaticEnum<ELFPSpawnFaction>(), TEXT("SF_Player"));
 }
 
 void ULFPMapEditorWidget::InitializeEditor(ULFPMapEditorComponent* EditorComp)
@@ -102,22 +92,11 @@ void ULFPMapEditorWidget::OnTerrainTypeChanged(FString SelectedItem, ESelectInfo
 {
 	if (!EditorComponent) return;
 
-	// 字符串映射到枚举
-	static const TMap<FString, ELFPTerrainType> TerrainMap = {
-		{TEXT("TT_Grass"), ELFPTerrainType::TT_Grass},
-		{TEXT("TT_Sand"), ELFPTerrainType::TT_Sand},
-		{TEXT("TT_Dirt"), ELFPTerrainType::TT_Dirt},
-		{TEXT("TT_Stone"), ELFPTerrainType::TT_Stone},
-		{TEXT("TT_Snow"), ELFPTerrainType::TT_Snow},
-		{TEXT("TT_Water"), ELFPTerrainType::TT_Water},
-		{TEXT("TT_Lava"), ELFPTerrainType::TT_Lava},
-		{TEXT("TT_Magic"), ELFPTerrainType::TT_Magic},
-		{TEXT("TT_Bridge"), ELFPTerrainType::TT_Bridge},
-	};
-
-	if (const ELFPTerrainType* Found = TerrainMap.Find(SelectedItem))
+	const UEnum* EnumPtr = StaticEnum<ELFPTerrainType>();
+	const int64 Value = EnumPtr->GetValueByNameString(SelectedItem);
+	if (Value != INDEX_NONE)
 	{
-		EditorComponent->SetBrushTerrainType(*Found);
+		EditorComponent->SetBrushTerrainType(static_cast<ELFPTerrainType>(Value));
 	}
 }
 
@@ -131,16 +110,11 @@ void ULFPMapEditorWidget::OnSpawnFactionChanged(FString SelectedItem, ESelectInf
 {
 	if (!EditorComponent) return;
 
-	static const TMap<FString, ELFPSpawnFaction> FactionMap = {
-		{TEXT("SF_None"), ELFPSpawnFaction::SF_None},
-		{TEXT("SF_Player"), ELFPSpawnFaction::SF_Player},
-		{TEXT("SF_Enemy"), ELFPSpawnFaction::SF_Enemy},
-		{TEXT("SF_Neutral"), ELFPSpawnFaction::SF_Neutral},
-	};
-
-	if (const ELFPSpawnFaction* Found = FactionMap.Find(SelectedItem))
+	const UEnum* EnumPtr = StaticEnum<ELFPSpawnFaction>();
+	const int64 Value = EnumPtr->GetValueByNameString(SelectedItem);
+	if (Value != INDEX_NONE)
 	{
-		EditorComponent->SetBrushSpawnFaction(*Found);
+		EditorComponent->SetBrushSpawnFaction(static_cast<ELFPSpawnFaction>(Value));
 	}
 }
 

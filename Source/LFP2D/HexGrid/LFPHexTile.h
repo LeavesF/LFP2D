@@ -242,6 +242,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Hex Tile")
 	int32 GetMovementCost() const;
 
+	// 是否阻挡弩箭类投射物（从地形数据获取，无数据默认不阻挡）
+	UFUNCTION(BlueprintCallable, Category = "Hex Tile")
+	bool BlocksProjectile() const;
+
 	// 设置地形数据（同步可行走性和精灵）
 	UFUNCTION(BlueprintCallable, Category = "Hex Tile")
 	void SetTerrainData(ULFPTerrainDataAsset* InTerrainData);

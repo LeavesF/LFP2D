@@ -28,6 +28,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Terrain")
 	bool bIsWalkable = true;
 
+	// 是否阻挡弩箭类投射物（巨石、树林设为 true，草地/水域等设 false）
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Terrain")
+	bool bBlockProjectile = false;
+
 	// 地形基础精灵
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Terrain|Visuals")
 	TObjectPtr<UPaperSprite> DefaultSprite = nullptr;

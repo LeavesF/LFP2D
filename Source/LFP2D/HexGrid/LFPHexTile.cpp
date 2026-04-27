@@ -233,6 +233,15 @@ int32 ALFPHexTile::GetMovementCost() const
 	return 1; // 默认代价
 }
 
+bool ALFPHexTile::BlocksProjectile() const
+{
+	if (TerrainData)
+	{
+		return TerrainData->bBlockProjectile;
+	}
+	return false; // 默认不阻挡
+}
+
 void ALFPHexTile::SetTerrainData(ULFPTerrainDataAsset* InTerrainData)
 {
 	TerrainData = InTerrainData;
