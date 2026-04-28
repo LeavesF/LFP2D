@@ -26,6 +26,11 @@ ALFPHexTile::ALFPHexTile()
 	DecorationSpriteComponent->SetupAttachment(RootComponent);
 	DecorationSpriteComponent->SetRelativeLocation(FVector(0, 0, 0.5f));
 
+	// 创建植被覆盖精灵组件（自动叠加在地形上方，Z=0.25）
+	FoliageSpriteComponent = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("FoliageSpriteComponent"));
+	FoliageSpriteComponent->SetupAttachment(RootComponent);
+	FoliageSpriteComponent->SetRelativeLocation(FVector(0, 0, 0.25f));
+
 	// 创建范围覆盖层精灵（半透明填充，Z=0.3f）
 	OverlaySpriteComponent = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("OverlaySpriteComponent"));
 	OverlaySpriteComponent->SetupAttachment(RootComponent);
@@ -251,10 +256,21 @@ void ALFPHexTile::SetTerrainData(ULFPTerrainDataAsset* InTerrainData)
 		bIsWalkable = TerrainData->bIsWalkable;
 
 		// 设置基础精灵
-		if (TerrainData->DefaultSprite)
+		if (TerrainData->TerrainSprite)
 		{
-			DefaultSprite = TerrainData->DefaultSprite;
-			SpriteComponent->SetSprite(DefaultSprite);
+			TerrainSprite = TerrainData->TerrainSprite;
+			SpriteComponent->SetSprite(TerrainSprite);
+		}
+
+		// 设置植被覆盖精灵
+		if (TerrainData->FoliageSprite)
+		{
+			FoliageSpriteComponent->SetSprite(TerrainData->FoliageSprite);
+			FoliageSpriteComponent->TranslucencySortPriority = TerrainData->RenderPriority + 1;
+		}
+		else
+		{
+			FoliageSpriteComponent->SetSprite(nullptr);
 		}
 
 		// 更新基础材质的纹理参数

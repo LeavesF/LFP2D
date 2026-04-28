@@ -196,7 +196,7 @@ public:
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Hex Tile")
-	FLFPHexCoordinates GetCoordinates() { return Coordinates; }
+	FLFPHexCoordinates GetCoordinates() const { return Coordinates; }
 	// 设置六边形坐标
 	void SetCoordinates(const FLFPHexCoordinates& NewCoords) { Coordinates = NewCoords; }
 
@@ -340,7 +340,11 @@ public:
 	TObjectPtr<UPaperSpriteComponent> SpriteComponent;
 
 	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<UPaperSprite> DefaultSprite;
+	TObjectPtr<UPaperSprite> TerrainSprite;
+
+	// 植被覆盖精灵组件（地形自动叠加，Z=0.25）
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<UPaperSpriteComponent> FoliageSpriteComponent;
 
 	// 覆盖层精灵组件（半透明填充）
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")

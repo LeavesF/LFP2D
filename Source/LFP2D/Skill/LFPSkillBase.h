@@ -234,6 +234,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill|Range")
 	bool bRequireLineOfSight = true;
 
+	// Ray 类型且为 true 时，释放范围遇阻挡（地形/单位）即止，阻挡格本身仍在范围内
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill|Range",
+		meta = (EditCondition = "ReleaseRangeType == ESkillRangeType::Ray"))
+	bool bStopOnBlocker = false;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill|Custom Range", meta = (EditCondition = "ReleaseRangeType == ESkillRangeType::Custom"))
 	TObjectPtr<ULFPSkillRangeDataAsset> CustomReleaseRangeData = nullptr;
 

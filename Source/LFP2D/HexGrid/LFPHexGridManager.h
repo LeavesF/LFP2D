@@ -59,6 +59,23 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Hex Grid")
 	ALFPHexTile* GetTileAtCoordinates(const FLFPHexCoordinates& Coords) const;
 
+	// Bresenham 六角直线：返回 Start→End 直线上所有坐标（含两端）
+	UFUNCTION(BlueprintCallable, Category = "Hex Grid")
+	static TArray<FLFPHexCoordinates> GetHexLineCoords(
+		const FLFPHexCoordinates& Start, const FLFPHexCoordinates& End);
+
+	// 单格是否阻挡投射物（地形 BlockProjectile 或有单位）
+	UFUNCTION(BlueprintCallable, Category = "Hex Grid")
+	bool IsTileBlockedForProjectile(ALFPHexTile* Tile) const;
+
+	// 沿一个方向步进，遇阻挡即停（阻挡格本身在结果中）
+	UFUNCTION(BlueprintCallable, Category = "Hex Grid")
+	TArray<ALFPHexTile*> WalkRayUntilBlocked(
+		const FLFPHexCoordinates& Start, const FLFPHexCoordinates& Direction, int32 MaxDistance) const;
+
+	// 两点之间视线是否通畅（只检查中间格，不含首尾）
+	UFUNCTION(BlueprintCallable, Category = "Hex Grid")
+	bool IsLineOfSightClear(ALFPHexTile* From, ALFPHexTile* To) const;
 
 	UFUNCTION(BlueprintCallable, Category = "Hex Grid")
 	void SetVerticalScale(float Scale) { VerticalScale = Scale; }
@@ -168,10 +185,10 @@ private:
 
 	void DrawDebugPath(const TArray<ALFPHexTile*>& Path, bool bPathFound);
 
+public:
 	// 六边形方向数组（静态常量）
 	static const TArray<FLFPHexCoordinates> HexDirections;
 
-public:
 	// ============== 地形过渡系统 ==============
 
 	// 基础地形材质（World-Space UV）

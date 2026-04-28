@@ -472,6 +472,79 @@ ALFPHexTile* ALFPHexGridManager::GetTileAtCoordinates(const FLFPHexCoordinates& 
 	return nullptr;
 }
 
+TArray<FLFPHexCoordinates> ALFPHexGridManager::GetHexLineCoords(
+	const FLFPHexCoordinates& Start, const FLFPHexCoordinates& End)
+{
+	TArray<FLFPHexCoordinates> Result;
+	const int32 N = FLFPHexCoordinates::Distance(Start, End);
+
+	for (int32 i = 0; i <= N; ++i)
+	{
+		const float t = (N == 0) ? 0.0f : static_cast<float>(i) / static_cast<float>(N);
+		const float fQ = Start.Q + (End.Q - Start.Q) * t;
+		const float fR = Start.R + (End.R - Start.R) * t;
+		const float fS = -fQ - fR;
+
+		int32 q = FMath::RoundToInt(fQ);
+		int32 r = FMath::RoundToInt(fR);
+		int32 s = FMath::RoundToInt(fS);
+
+		const float qDiff = FMath::Abs(q - fQ);
+		const float rDiff = FMath::Abs(r - fR);
+		const float sDiff = FMath::Abs(s - fS);
+
+		if (qDiff > rDiff && qDiff > sDiff)
+		{
+			q = -r - s;
+		}
+		else if (rDiff > sDiff)
+		{
+			r = -q - s;
+		}
+
+		Result.Add(FLFPHexCoordinates(q, r));
+	}
+	return Result;
+}
+
+bool ALFPHexGridManager::IsTileBlockedForProjectile(ALFPHexTile* Tile) const
+{
+	if (!Tile) return false;
+	return Tile->BlocksProjectile() || Tile->GetUnitOnTile() != nullptr;
+}
+
+TArray<ALFPHexTile*> ALFPHexGridManager::WalkRayUntilBlocked(
+	const FLFPHexCoordinates& Start, const FLFPHexCoordinates& Direction, int32 MaxDistance) const
+{
+	TArray<ALFPHexTile*> Result;
+	for (int32 d = 1; d <= MaxDistance; ++d)
+	{
+		const FLFPHexCoordinates Coord(Start.Q + Direction.Q * d, Start.R + Direction.R * d);
+		ALFPHexTile* Tile = GetTileAtCoordinates(Coord);
+		if (!Tile) break;
+		Result.Add(Tile);
+		if (IsTileBlockedForProjectile(Tile)) break;
+	}
+	return Result;
+}
+
+bool ALFPHexGridManager::IsLineOfSightClear(ALFPHexTile* From, ALFPHexTile* To) const
+{
+	if (!From || !To) return false;
+	if (From == To) return true;
+
+	const TArray<FLFPHexCoordinates> LineCoords = GetHexLineCoords(
+		From->GetCoordinates(), To->GetCoordinates());
+
+	for (int32 i = 1; i < LineCoords.Num() - 1; ++i)
+	{
+		ALFPHexTile* IntermediateTile = GetTileAtCoordinates(LineCoords[i]);
+		if (!IntermediateTile) return false;
+		if (IsTileBlockedForProjectile(IntermediateTile)) return false;
+	}
+	return true;
+}
+
 TArray<ALFPHexTile*> ALFPHexGridManager::FindPath(ALFPHexTile* Start, ALFPHexTile* End)
 {
 	TArray<ALFPHexTile*> Path;

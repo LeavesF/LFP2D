@@ -219,7 +219,17 @@ bool ULFPSkillBase::CanReleaseFrom_Implementation(ALFPHexTile* CasterTile, ALFPH
 	// 检查是否在技能释放范围内
 	if (!bHasReleaseCoord) return false;
 
-	// TODO: 视线检查 (bRequireLineOfSight)
+	// 视线检查
+	if (bRequireLineOfSight && Owner)
+	{
+		if (ALFPHexGridManager* GridManager = Owner->GetGridManager())
+		{
+			if (!GridManager->IsLineOfSightClear(CasterTile, TargetTile))
+			{
+				return false;
+			}
+		}
+	}
 
 	return true;
 }
@@ -365,14 +375,32 @@ TArray<FLFPHexCoordinates> ULFPSkillBase::GetReleaseRangeInGrid_Implementation()
 
 	UpdateSkillRange();
 
-	for (FLFPHexCoordinates Coord : ReleaseRangeCoords)
+	// Ray 类型 + 阻挡截断：直接在网格上沿 6 方向步进，遇阻挡即停
+	if (ReleaseRangeType == ESkillRangeType::Ray && bStopOnBlocker)
 	{
-		FLFPHexCoordinates CoordInGrid = FLFPHexCoordinates();
-		FLFPHexCoordinates OwnerCoord = Owner->GetCurrentCoordinates();
-		CoordInGrid.Q = OwnerCoord.Q + Coord.Q;
-		CoordInGrid.R = OwnerCoord.R + Coord.R;
-		CoordInGrid.S = OwnerCoord.S + Coord.S;
-		ReleaseRangeInGridCoords.Add(CoordInGrid);
+		if (ALFPHexGridManager* GM = Owner->GetGridManager())
+		{
+			const FLFPHexCoordinates OwnerCoord = Owner->GetCurrentCoordinates();
+			for (const FLFPHexCoordinates& Dir : ALFPHexGridManager::HexDirections)
+			{
+				TArray<ALFPHexTile*> RayTiles = GM->WalkRayUntilBlocked(OwnerCoord, Dir, RayRange);
+				for (const ALFPHexTile* Tile : RayTiles)
+				{
+					ReleaseRangeInGridCoords.Add(Tile->GetCoordinates());
+				}
+			}
+			return ReleaseRangeInGridCoords;
+		}
+		// GridManager 不可用时回退到标准转换
+	}
+
+	// 标准转换：相对坐标 + 施法者位置
+	for (const FLFPHexCoordinates& Coord : ReleaseRangeCoords)
+	{
+		const FLFPHexCoordinates OwnerCoord = Owner->GetCurrentCoordinates();
+		ReleaseRangeInGridCoords.Add(FLFPHexCoordinates(
+			OwnerCoord.Q + Coord.Q,
+			OwnerCoord.R + Coord.R));
 	}
 	return ReleaseRangeInGridCoords;
 }
@@ -479,7 +507,17 @@ bool ULFPSkillBase::CanReleaseFromInternal(ALFPHexTile* CasterTile, ALFPHexTile*
 		return false;
 	}
 
-	// TODO: 瑙嗙嚎妫€鏌?(bRequireLineOfSight)
+	// 视线检查
+	if (bRequireLineOfSight && Owner)
+	{
+		if (ALFPHexGridManager* GridManager = Owner->GetGridManager())
+		{
+			if (!GridManager->IsLineOfSightClear(CasterTile, TargetTile))
+			{
+				return false;
+			}
+		}
+	}
 
 	return true;
 }
