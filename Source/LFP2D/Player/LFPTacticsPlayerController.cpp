@@ -413,22 +413,32 @@ void ALFPTacticsPlayerController::OnCancelAction(const FInputActionValue& Value)
 		return;
 	}
 
-	bIsReleaseSkill = false;
-	CurrentControlState = EPlayControlState::MoveState;
-	ShowUnitRange(EUnitRange::UR_Move);
-	// 取消当前选择
-	if (SelectedTile)
+	// 技能释放状态：取消技能选择，回到移动预览状态
+	if (bIsReleaseSkill)
 	{
-		//HidePathToDefault();
-		//SelectedTile = nullptr;
+		bIsReleaseSkill = false;
+		CurrentControlState = EPlayControlState::MoveState;
+		CurrentSelectedSkill = nullptr;
+		if (GridManager)
+		{
+			GridManager->ClearRangeHighlight(EUnitRange::UR_SkillRelease);
+			GridManager->ClearRangeHighlight(EUnitRange::UR_SkillEffect);
+		}
+		ShowUnitRange(EUnitRange::UR_Move);
+		return;
 	}
-	else if (SelectedUnit)
+
+	// 预览移动状态：回到原始位置
+	if (SelectedUnit && SelectedUnit->bHasPreviewMoved)
 	{
-		// 取消单位的高亮范围
-		//ShowMovementRange(false);
-		//SelectedUnit->SetSelected(false);
-		//SelectedUnit = nullptr;
+		SelectedUnit->RevertToOriginalPosition();
+		ShowUnitRange(EUnitRange::UR_Move);
+		return;
 	}
+
+	// 未预览移动：不清除单位选中，仅清除路径预览
+	HidePathToRange();
+	SelectedTile = nullptr;
 }
 
 //void ALFPTacticsPlayerController::OnRotateCamera(const FInputActionValue& Value)
@@ -602,11 +612,31 @@ void ALFPTacticsPlayerController::ConfirmMove()
 	{
 		return;
 	}
-	//HidePathToDefault();
-	// 移动前取消高亮
-	ShowUnitRange(EUnitRange::UR_Default);
+	// 检查目标格是否在原始移动范围内
+	if (!MovementRangeTiles.Contains(SelectedTile))
+	{
+		return;
+	}
+	// 约束寻路验证：在原始范围内查找路径（找到不到合法路径则阻止移动）
+	if (GridManager)
+	{
+		ALFPHexTile* UnitTile = GridManager->GetTileAtCoordinates(SelectedUnit->GetCurrentCoordinates());
+		if (UnitTile)
+		{
+			TArray<ALFPHexTile*> ConstrainedPath = GridManager->FindPath(UnitTile, SelectedTile, &MovementRangeTiles);
+			if (ConstrainedPath.Num() == 0)
+			{
+				return;
+			}
+		}
+	}
+	// 预览移动：只清除路径高亮，保留原始移动范围
+	HidePathToRange();
 
-	// 移动单位
+	// 将移动范围约束写入单位，MoveToTile 将在此范围内寻路
+	SelectedUnit->MovementRangeTiles = MovementRangeTiles;
+
+	// 移动单位（预览移动，不消耗移动力）
 	MoveUnit(SelectedUnit, SelectedTile);
 
 	CurrentPath.Empty();
@@ -628,11 +658,14 @@ void ALFPTacticsPlayerController::ShowUnitRange(EUnitRange UnitRange)
 		break;
 	case EUnitRange::UR_Move:
 	{
-		// 获取可移动范围
-		ALFPHexTile* UnitTile = GridManager->GetTileAtCoordinates(SelectedUnit->GetCurrentCoordinates());
+		// 使用回合原始位置计算移动范围（预览移动后仍显示原始范围）
+		ALFPHexTile* UnitTile = GridManager->GetTileAtCoordinates(SelectedUnit->OriginalTurnCoordinates);
 		if (UnitTile)
 		{
-			CacheRangeTiles= MovementRangeTiles = GridManager->GetTilesInRange(UnitTile, SelectedUnit->GetMovementRange());
+			CacheRangeTiles = MovementRangeTiles = GridManager->GetTilesInRange(UnitTile, SelectedUnit->GetMovementRange());
+			// GetTilesInRange 排除了中心格，手动纳入原点
+			MovementRangeTiles.AddUnique(UnitTile);
+			CacheRangeTiles.AddUnique(UnitTile);
 			// 显示范围高亮（描边 + 填充）
 			GridManager->ShowRangeHighlight(MovementRangeTiles, EUnitRange::UR_Move);
 		}
@@ -653,7 +686,15 @@ void ALFPTacticsPlayerController::ShowPathToSelectedTile()
 	ALFPHexTile* UnitTile = GridManager->GetTileAtCoordinates(SelectedUnit->GetCurrentCoordinates());
 	if (UnitTile)
 	{
-		CurrentPath = GridManager->FindPath(UnitTile, SelectedTile);
+		// 约束寻路：有移动范围时限制在范围内，保证显示路径与实际路径一致
+		if (MovementRangeTiles.Num() > 0)
+		{
+			CurrentPath = GridManager->FindPath(UnitTile, SelectedTile, &MovementRangeTiles);
+		}
+		else
+		{
+			CurrentPath = GridManager->FindPath(UnitTile, SelectedTile);
+		}
 
 		// 高亮显示路径
 		GridManager->ShowPathHighlight(CurrentPath);
@@ -712,17 +753,10 @@ void ALFPTacticsPlayerController::OnUnitMoveComplete()
 		MovingUnit->OnMoveFinished.RemoveDynamic(this, &ALFPTacticsPlayerController::OnUnitMoveComplete);
 	}
 
-	// 刷新移动范围显示
+	// 预览移动完成后重新显示原始移动范围
 	if (SelectedUnit && SelectedUnit == MovingUnit)
 	{
-		if (SelectedUnit->HasEnoughMovePoints(1))
-		{
-			ShowUnitRange(EUnitRange::UR_Move);
-		}
-		else
-		{
-			ShowUnitRange(EUnitRange::UR_Default);
-		}
+		ShowUnitRange(EUnitRange::UR_Move);
 	}
 
 	MovingUnit = nullptr;
@@ -730,9 +764,11 @@ void ALFPTacticsPlayerController::OnUnitMoveComplete()
 
 void ALFPTacticsPlayerController::SkipTurn(ALFPTacticsUnit* Unit)
 {
+
 	if (!Unit || !Unit->CanAct()) return;
 
-	// 标记为已行动
+	// 提交预览移动（消耗移动力）
+	Unit->CommitMovePosition();
 	Unit->SetHasActed(true);
 
 	// 可选：消耗1个行动力作为跳过代价
@@ -749,6 +785,8 @@ void ALFPTacticsPlayerController::ExecuteSkill(ULFPSkillBase* CurrentSkill)
 {
 	if (SelectedUnit && CurrentSkill)
 	{
+		// 提交预览移动（消耗移动力）
+		SelectedUnit->CommitMovePosition();
 		ALFPHexTile* TargetTile = SelectedTile;
 		if (CurrentSkill->TargetType == ESkillTargetType::Self)
 		{

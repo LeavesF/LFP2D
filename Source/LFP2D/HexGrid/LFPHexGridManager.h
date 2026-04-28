@@ -51,7 +51,13 @@ public:
 	}
 
 	UFUNCTION(BlueprintCallable, Category = "Hex Grid")
-	TArray<ALFPHexTile*> FindPath(ALFPHexTile* Start, ALFPHexTile* End);
+	TArray<ALFPHexTile*> FindPath(ALFPHexTile* Start, ALFPHexTile* End)
+	{
+		return FindPath(Start, End, nullptr);
+	}
+
+	// C++ 专用：限定搜索范围（AllowedTiles 为空时不限制）
+	TArray<ALFPHexTile*> FindPath(ALFPHexTile* Start, ALFPHexTile* End, const TArray<ALFPHexTile*>* AllowedTiles);
 
 	UFUNCTION(BlueprintCallable, Category = "Hex Grid")
 	TArray<ALFPHexTile*> GetTilesInRange(ALFPHexTile* Center, int32 MaxRange, int32 MinRange = 0);

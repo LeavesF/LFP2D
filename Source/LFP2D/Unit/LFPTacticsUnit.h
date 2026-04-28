@@ -84,9 +84,9 @@ class LFP2D_API ALFPTacticsUnit : public APawn
 public:
     ALFPTacticsUnit();
 
-    // 设置/获取当前坐标
+    // 设置/获取当前坐标（bUpdateOccupancy=false 时仅更新坐标和位置，不更新格子占用）
     UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
-    void SetCurrentCoordinates(const FLFPHexCoordinates& NewCoords);
+    void SetCurrentCoordinates(const FLFPHexCoordinates& NewCoords, bool bUpdateOccupancy = true);
 
     UFUNCTION(BlueprintPure, Category = "Tactics Unit")
     FLFPHexCoordinates GetCurrentCoordinates() const { return CurrentCoordinates; }
@@ -101,9 +101,25 @@ public:
     UPROPERTY(VisibleInstanceOnly, Category = "Unit State")
     TArray<ALFPHexTile*> MovementRangeTiles;
 
-    // 移动到目标格子
+    // 回合开始时的原始位置（预览移动未提交前的起点）
+    UPROPERTY(VisibleInstanceOnly, Category = "Unit State")
+    FLFPHexCoordinates OriginalTurnCoordinates;
+
+    // 是否处于预览移动状态
+    UPROPERTY(VisibleInstanceOnly, Category = "Unit State")
+    bool bHasPreviewMoved = false;
+
+    // 移动到目标格子（预览移动，不消耗移动力）
     UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
     bool MoveToTile(ALFPHexTile* NewTargetTile);
+
+    // 提交移动位置（消耗从原始位置到当前位置的移动力）
+    UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
+    void CommitMovePosition();
+
+    // 回到回合开始时的原始位置（取消预览移动）
+    UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
+    void RevertToOriginalPosition();
 
     // 设置选中状态
     UFUNCTION(BlueprintCallable, Category = "Tactics Unit")

@@ -329,21 +329,27 @@ void ALFPTacticsUnit::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	}
 }
 
-void ALFPTacticsUnit::SetCurrentCoordinates(const FLFPHexCoordinates& NewCoords)
+void ALFPTacticsUnit::SetCurrentCoordinates(const FLFPHexCoordinates& NewCoords, bool bUpdateOccupancy)
 {
-    // 清除旧位置
     if (ALFPHexGridManager* GridManager = GetGridManager())
     {
-        if (ALFPHexTile* LastTile = GridManager->GetTileAtCoordinates(CurrentCoordinates))
+        if (bUpdateOccupancy)
         {
-            LastTile->SetIsOccupied(false);
-            LastTile->SetUnitOnTile(nullptr);
+            // 清除旧位置占用
+            if (ALFPHexTile* LastTile = GridManager->GetTileAtCoordinates(CurrentCoordinates))
+            {
+                LastTile->SetIsOccupied(false);
+                LastTile->SetUnitOnTile(nullptr);
+            }
         }
         if (ALFPHexTile* Tile = GridManager->GetTileAtCoordinates(NewCoords))
         {
             SetActorLocation(Tile->GetActorLocation() + FVector(0, 0, 1));
-            Tile->SetIsOccupied(true);
-            Tile->SetUnitOnTile(this);
+            if (bUpdateOccupancy)
+            {
+                Tile->SetIsOccupied(true);
+                Tile->SetUnitOnTile(this);
+            }
             CurrentCoordinates = NewCoords;
         }
     }
@@ -391,7 +397,7 @@ ALFPHexTile* ALFPTacticsUnit::GetCurrentTile()
 
 bool ALFPTacticsUnit::MoveToTile(ALFPHexTile* NewTargetTile)
 {
-    if (!NewTargetTile || !HasEnoughMovePoints(1)) return false;
+    if (!NewTargetTile) return false;
 
     ALFPHexGridManager* GridManager = GetGridManager();
     if (!GridManager) return false;
@@ -400,25 +406,26 @@ bool ALFPTacticsUnit::MoveToTile(ALFPHexTile* NewTargetTile)
     ALFPHexTile* CurrentTile = GridManager->GetTileAtCoordinates(CurrentCoordinates);
     if (!CurrentTile) return false;
 
-    // 寻找路径（FindPath 返回的路径不包含起点）
-    MovePath = GridManager->FindPath(CurrentTile, NewTargetTile);
-    // 计算路径实际移动代价（考虑地形）
-    int32 PathCost = 0;
-    for (ALFPHexTile* Tile : MovePath)
+    // 受约束寻路（有 MovementRangeTiles 时限制搜索范围）
+    if (MovementRangeTiles.Num() > 0)
     {
-        PathCost += Tile->GetMovementCost();
+        MovePath = GridManager->FindPath(CurrentTile, NewTargetTile, &MovementRangeTiles);
     }
-    if (MovePath.Num() == 0 || PathCost > CurrentMovePoints) return false;
+    else
+    {
+        MovePath = GridManager->FindPath(CurrentTile, NewTargetTile);
+    }
+    if (MovePath.Num() == 0) return false;
 
     // 在路径开头插入当前格子，使 Tick 中 MovePath[0] → MovePath[1] 为第一段移动
     MovePath.Insert(CurrentTile, 0);
 
-    // 设置移动状态
+    // 设置移动状态：清除起点占用，目标格暂不占用（等 CommitMovePosition 提交）
     CurrentTile->SetIsOccupied(false);
+    CurrentTile->SetUnitOnTile(nullptr);
     TargetTile = NewTargetTile;
     CurrentPathIndex = 0;
     MoveProgress = 0.0f;
-    MovementRangeTiles.Empty();
 
     // 启动移动动画（Tick 驱动逐格插值）
     bIsMoving = true;
@@ -435,17 +442,11 @@ void ALFPTacticsUnit::FinishMove()
 {
     bIsMoving = false;
 
-    // 更新到目标位置
+    // 预览移动：仅更新坐标和位置，不占用目标格子（提交时由 CommitMovePosition 占用）
     if (TargetTile)
     {
-        SetCurrentCoordinates(TargetTile->GetCoordinates());
-        // 计算路径实际移动代价（跳过 MovePath[0] 即起点格子）
-        int32 TotalCost = 0;
-        for (int32 i = 1; i < MovePath.Num(); i++)
-        {
-            TotalCost += MovePath[i]->GetMovementCost();
-        }
-        ConsumeMovePoints(TotalCost);
+        SetCurrentCoordinates(TargetTile->GetCoordinates(), false);
+        bHasPreviewMoved = true;
     }
 
     // 清除移动状态
@@ -463,10 +464,48 @@ void ALFPTacticsUnit::FinishMove()
     OnMoveFinished.Broadcast();
 }
 
+void ALFPTacticsUnit::CommitMovePosition()
+{
+    // 已提交过（如 ExecuteSkill 内部已提交，SkipTurn 再次调用时跳过）
+    if (!bHasPreviewMoved) return;
+
+    ALFPHexGridManager* GM = GetGridManager();
+    if (!GM) return;
+
+    ALFPHexTile* OrigTile = GM->GetTileAtCoordinates(OriginalTurnCoordinates);
+    ALFPHexTile* CurrTile = GetCurrentTile();
+    if (!OrigTile || !CurrTile) return;
+    if (OriginalTurnCoordinates == CurrentCoordinates) return; // 未移动
+
+    TArray<ALFPHexTile*> Path = GM->FindPath(OrigTile, CurrTile);
+    int32 TotalCost = 0;
+    for (ALFPHexTile* Tile : Path)
+    {
+        TotalCost += Tile->GetMovementCost();
+    }
+    ConsumeMovePoints(TotalCost);
+    // 占用当前格子（预览模式下未占用，提交后正式占用）
+    if (ALFPHexTile* Tile = GetCurrentTile())
+    {
+        Tile->SetIsOccupied(true);
+        Tile->SetUnitOnTile(this);
+    }
+    bHasPreviewMoved = false;
+}
+
+void ALFPTacticsUnit::RevertToOriginalPosition()
+{
+    if (!bHasPreviewMoved) return;
+    SetCurrentCoordinates(OriginalTurnCoordinates);
+    bHasPreviewMoved = false;
+}
+
 void ALFPTacticsUnit::ResetForNewRound()
 {
     CurrentMovePoints = CurrentMaxMovePoints;
     bHasActed = false;
+    bHasPreviewMoved = false;
+    OriginalTurnCoordinates = CurrentCoordinates;
 
     // 重置精灵视觉效果
     if (SpriteComponent)
@@ -481,6 +520,10 @@ void ALFPTacticsUnit::ResetForNewRound()
 void ALFPTacticsUnit::OnTurnStarted()
 {
     bOnTurn = true;
+
+    // 保存回合开始时的位置，用于预览移动的提交和撤销
+    OriginalTurnCoordinates = CurrentCoordinates;
+    bHasPreviewMoved = false;
 
     if (BuffComponent)
     {

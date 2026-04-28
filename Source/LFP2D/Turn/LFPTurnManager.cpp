@@ -478,6 +478,8 @@ void ALFPTurnManager::OnEnemyPlanMoveComplete()
     // 解绑委托
     if (PlanningMovingEnemy)
     {
+		// 提交敌方移动消耗
+		PlanningMovingEnemy->CommitMovePosition();
         PlanningMovingEnemy->OnMoveFinished.RemoveDynamic(this, &ALFPTurnManager::OnEnemyPlanMoveComplete);
         PlanningMovingEnemy = nullptr;
     }

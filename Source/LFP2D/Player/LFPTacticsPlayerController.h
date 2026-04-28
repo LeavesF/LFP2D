@@ -130,7 +130,7 @@ protected:
     UPROPERTY()
     ALFPHexTile* LastHoveredTile;
 
-    // 当前显示的可移动范围
+    // 当前显示的可移动范围（缓存的原始位置范围，用于预览移动时判断合法目标）
     TArray<ALFPHexTile*> MovementRangeTiles;
 
     TArray<ALFPHexTile*> CacheRangeTiles;

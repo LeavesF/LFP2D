@@ -545,7 +545,7 @@ bool ALFPHexGridManager::IsLineOfSightClear(ALFPHexTile* From, ALFPHexTile* To) 
 	return true;
 }
 
-TArray<ALFPHexTile*> ALFPHexGridManager::FindPath(ALFPHexTile* Start, ALFPHexTile* End)
+TArray<ALFPHexTile*> ALFPHexGridManager::FindPath(ALFPHexTile* Start, ALFPHexTile* End, const TArray<ALFPHexTile*>* AllowedTiles)
 {
 	TArray<ALFPHexTile*> Path;
 
@@ -628,6 +628,12 @@ TArray<ALFPHexTile*> ALFPHexGridManager::FindPath(ALFPHexTile* Start, ALFPHexTil
 				!Neighbor->IsWalkable() ||
 				Neighbor->IsOccupied() ||
 				ClosedSet.Contains(Neighbor))
+			{
+				continue;
+			}
+
+			// 限定搜索范围：邻居不在允许列表内则跳过
+			if (AllowedTiles && !AllowedTiles->Contains(Neighbor))
 			{
 				continue;
 			}
