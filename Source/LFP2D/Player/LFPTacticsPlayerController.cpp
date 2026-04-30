@@ -624,7 +624,7 @@ void ALFPTacticsPlayerController::ConfirmMove()
 		ALFPHexTile* UnitTile = GridManager->GetTileAtCoordinates(SelectedUnit->GetCurrentCoordinates());
 		if (UnitTile)
 		{
-			TArray<ALFPHexTile*> ConstrainedPath = GridManager->FindPath(UnitTile, SelectedTile, &MovementRangeTiles);
+			TArray<ALFPHexTile*> ConstrainedPath = GridManager->FindPath(UnitTile, SelectedTile, &MovementRangeTiles, SelectedUnit->GetAffiliation());
 			if (ConstrainedPath.Num() == 0)
 			{
 				return;
@@ -663,7 +663,7 @@ void ALFPTacticsPlayerController::ShowUnitRange(EUnitRange UnitRange)
 		ALFPHexTile* UnitTile = GridManager->GetTileAtCoordinates(SelectedUnit->OriginalTurnCoordinates);
 		if (UnitTile)
 		{
-			CacheRangeTiles = MovementRangeTiles = GridManager->GetTilesInRange(UnitTile, SelectedUnit->GetMovementRange());
+			CacheRangeTiles = MovementRangeTiles = GridManager->GetTilesInRange(UnitTile, SelectedUnit->GetMovementRange(), SelectedUnit->GetAffiliation());
 			// GetTilesInRange 排除了中心格，手动纳入原点
 			MovementRangeTiles.AddUnique(UnitTile);
 			CacheRangeTiles.AddUnique(UnitTile);
@@ -690,11 +690,11 @@ void ALFPTacticsPlayerController::ShowPathToSelectedTile()
 		// 约束寻路：有移动范围时限制在范围内，保证显示路径与实际路径一致
 		if (MovementRangeTiles.Num() > 0)
 		{
-			CurrentPath = GridManager->FindPath(UnitTile, SelectedTile, &MovementRangeTiles);
+			CurrentPath = GridManager->FindPath(UnitTile, SelectedTile, &MovementRangeTiles, SelectedUnit->GetAffiliation());
 		}
 		else
 		{
-			CurrentPath = GridManager->FindPath(UnitTile, SelectedTile);
+			CurrentPath = GridManager->FindPath(UnitTile, SelectedTile, nullptr, SelectedUnit->GetAffiliation());
 		}
 
 		// 高亮显示路径

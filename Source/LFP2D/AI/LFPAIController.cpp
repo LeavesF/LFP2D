@@ -119,7 +119,7 @@ ALFPHexTile* ALFPAIController::FindBestMovementTile(ALFPTacticsUnit* Target) con
 {
     if (!ControlledUnit || !Target || !GridManager) return nullptr;
 
-    TArray<ALFPHexTile*> MovementRange = GridManager->GetTilesInRange(ControlledUnit->GetCurrentTile(), ControlledUnit->GetCurrentMovePoints());
+    TArray<ALFPHexTile*> MovementRange = GridManager->GetTilesInRange(ControlledUnit->GetCurrentTile(), ControlledUnit->GetCurrentMovePoints(), ControlledUnit->GetAffiliation());
 
     ALFPHexTile* BestTile = nullptr;
     float BestPositionValue = -MAX_FLT;
@@ -331,7 +331,7 @@ bool ALFPAIController::BuildBestSkillPlanCandidate(ULFPSkillBase* Skill, int32 P
         }
 
         // 自目标技能也允许先移动再释放，所以要把可达格一起纳入评估。
-        TArray<ALFPHexTile*> SelfTargetTiles = GridManager->GetTilesInRange(CurrentTile, ControlledUnit->GetCurrentMovePoints());
+        TArray<ALFPHexTile*> SelfTargetTiles = GridManager->GetTilesInRange(CurrentTile, ControlledUnit->GetCurrentMovePoints(), ControlledUnit->GetAffiliation());
         SelfTargetTiles.AddUnique(CurrentTile);
 
         for (ALFPHexTile* SelfTargetTile : SelfTargetTiles)
@@ -658,7 +658,7 @@ ALFPHexTile* ALFPAIController::FindBestApproachTile(const FEnemySkillPlanCandida
         return nullptr;
     }
 
-    TArray<ALFPHexTile*> MovementRange = GridManager->GetTilesInRange(CurrentTile, ControlledUnit->GetCurrentMovePoints());
+    TArray<ALFPHexTile*> MovementRange = GridManager->GetTilesInRange(CurrentTile, ControlledUnit->GetCurrentMovePoints(), ControlledUnit->GetAffiliation());
     MovementRange.AddUnique(CurrentTile);
 
     ALFPHexTile* BestTile = nullptr;

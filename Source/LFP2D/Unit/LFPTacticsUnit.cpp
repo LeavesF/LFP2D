@@ -409,11 +409,11 @@ bool ALFPTacticsUnit::MoveToTile(ALFPHexTile* NewTargetTile)
     // 受约束寻路（有 MovementRangeTiles 时限制搜索范围）
     if (MovementRangeTiles.Num() > 0)
     {
-        MovePath = GridManager->FindPath(CurrentTile, NewTargetTile, &MovementRangeTiles);
+        MovePath = GridManager->FindPath(CurrentTile, NewTargetTile, &MovementRangeTiles, GetAffiliation());
     }
     else
     {
-        MovePath = GridManager->FindPath(CurrentTile, NewTargetTile);
+        MovePath = GridManager->FindPath(CurrentTile, NewTargetTile, nullptr, GetAffiliation());
     }
     if (MovePath.Num() == 0) return false;
 
@@ -477,7 +477,7 @@ void ALFPTacticsUnit::CommitMovePosition()
     if (!OrigTile || !CurrTile) return;
     if (OriginalTurnCoordinates == CurrentCoordinates) return; // 未移动
 
-    TArray<ALFPHexTile*> Path = GM->FindPath(OrigTile, CurrTile);
+    TArray<ALFPHexTile*> Path = GM->FindPath(OrigTile, CurrTile, nullptr, GetAffiliation());
     int32 TotalCost = 0;
     for (ALFPHexTile* Tile : Path)
     {
@@ -982,7 +982,7 @@ ALFPHexTile* ALFPTacticsUnit::FindBestMovementTile(ALFPTacticsUnit* Target)
         return nullptr;
     }
     // 获取所有可移动位置
-    MovementRangeTiles = GridManager->GetTilesInRange(GetCurrentTile(), GetCurrentMovePoints());
+    MovementRangeTiles = GridManager->GetTilesInRange(GetCurrentTile(), GetCurrentMovePoints(), GetAffiliation());
 
     ALFPHexTile* BestTile = nullptr;
     float BestPositionValue = -MAX_FLT;
@@ -1111,7 +1111,7 @@ TArray<ALFPHexTile*> ALFPTacticsUnit::GetAttackRangeTiles()
         else
         {
             // 获取攻击范围内的所有格子
-            TArray<ALFPHexTile*> TilesInRange = GridManager->GetTilesInRange(GetCurrentTile(), AttackRange);
+            TArray<ALFPHexTile*> TilesInRange = GridManager->GetTilesInRange(GetCurrentTile(), AttackRange, GetAffiliation());
 
             for (ALFPHexTile* Tile : TilesInRange)
             {

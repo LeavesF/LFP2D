@@ -399,6 +399,11 @@ TArray<ALFPHexTile*> ALFPHexGridManager::GetNeighbors(const FLFPHexCoordinates& 
 
 TArray<ALFPHexTile*> ALFPHexGridManager::GetTilesInRange(ALFPHexTile* Center, int32 MaxRange, int32 MinRange)
 {
+	return GetTilesInRange(Center, MaxRange, EUnitAffiliation::UA_Neutral, MinRange);
+}
+
+TArray<ALFPHexTile*> ALFPHexGridManager::GetTilesInRange(ALFPHexTile* Center, int32 MaxRange, EUnitAffiliation MovingFaction, int32 MinRange)
+{
 	TArray<ALFPHexTile*> ReachableTiles;
 	if (!Center || MaxRange <= 0) return ReachableTiles;
 
@@ -431,7 +436,17 @@ TArray<ALFPHexTile*> ALFPHexGridManager::GetTilesInRange(ALFPHexTile* Center, in
 		// 获取所有邻居
 		for (ALFPHexTile* Neighbor : GetNeighbors(CurrentTile->GetCoordinates()))
 		{
-			if (!Neighbor || !Neighbor->IsWalkable() || Neighbor->IsOccupied()) continue;
+			if (!Neighbor || !Neighbor->IsWalkable()) continue;
+
+			// 阵营感知占用：同阵营可经过，非同阵营阻断
+			if (Neighbor->IsOccupied())
+			{
+				ALFPTacticsUnit* OccupyingUnit = Neighbor->GetUnitOnTile();
+				if (!OccupyingUnit || OccupyingUnit->GetAffiliation() != MovingFaction)
+				{
+					continue;
+				}
+			}
 
 			// 计算移动代价（使用地形代价）
 			const int32 NewCost = CurrentCost + Neighbor->GetMovementCost();
@@ -547,6 +562,11 @@ bool ALFPHexGridManager::IsLineOfSightClear(ALFPHexTile* From, ALFPHexTile* To) 
 
 TArray<ALFPHexTile*> ALFPHexGridManager::FindPath(ALFPHexTile* Start, ALFPHexTile* End, const TArray<ALFPHexTile*>* AllowedTiles)
 {
+	return FindPath(Start, End, AllowedTiles, EUnitAffiliation::UA_Neutral);
+}
+
+TArray<ALFPHexTile*> ALFPHexGridManager::FindPath(ALFPHexTile* Start, ALFPHexTile* End, const TArray<ALFPHexTile*>* AllowedTiles, EUnitAffiliation MovingFaction)
+{
 	TArray<ALFPHexTile*> Path;
 
 	// 验证输入有效性
@@ -624,12 +644,19 @@ TArray<ALFPHexTile*> ALFPHexGridManager::FindPath(ALFPHexTile* Start, ALFPHexTil
 			ALFPHexTile* Neighbor = GetTileAtCoordinates(NeighborCoords);
 
 			// 跳过无效邻居
-			if (!Neighbor ||
-				!Neighbor->IsWalkable() ||
-				Neighbor->IsOccupied() ||
-				ClosedSet.Contains(Neighbor))
+			if (!Neighbor || !Neighbor->IsWalkable() || ClosedSet.Contains(Neighbor))
 			{
 				continue;
+			}
+
+			// 阵营感知占用：同阵营可经过，非同阵营阻断
+			if (Neighbor->IsOccupied())
+			{
+				ALFPTacticsUnit* OccupyingUnit = Neighbor->GetUnitOnTile();
+				if (!OccupyingUnit || OccupyingUnit->GetAffiliation() != MovingFaction)
+				{
+					continue;
+				}
 			}
 
 			// 限定搜索范围：邻居不在允许列表内则跳过

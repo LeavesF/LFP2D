@@ -59,8 +59,14 @@ public:
 	// C++ 专用：限定搜索范围（AllowedTiles 为空时不限制）
 	TArray<ALFPHexTile*> FindPath(ALFPHexTile* Start, ALFPHexTile* End, const TArray<ALFPHexTile*>* AllowedTiles);
 
+	// 阵营感知版：同阵营单位可经过，非同阵营阻断
+	TArray<ALFPHexTile*> FindPath(ALFPHexTile* Start, ALFPHexTile* End, const TArray<ALFPHexTile*>* AllowedTiles, EUnitAffiliation MovingFaction);
+
 	UFUNCTION(BlueprintCallable, Category = "Hex Grid")
 	TArray<ALFPHexTile*> GetTilesInRange(ALFPHexTile* Center, int32 MaxRange, int32 MinRange = 0);
+
+	// 阵营感知版范围计算
+	TArray<ALFPHexTile*> GetTilesInRange(ALFPHexTile* Center, int32 MaxRange, EUnitAffiliation MovingFaction, int32 MinRange = 0);
 
 	UFUNCTION(BlueprintCallable, Category = "Hex Grid")
 	ALFPHexTile* GetTileAtCoordinates(const FLFPHexCoordinates& Coords) const;
