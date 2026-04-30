@@ -764,6 +764,15 @@ int32 ALFPTacticsUnit::ApplySkillDamage(ALFPTacticsUnit* Target, const ULFPSkill
         TotalDamage += Target->ApplyResolvedDamage(ActualDamage);
     }
 
+    if (TotalDamage > 0)
+    {
+        UE_LOG(LogTemp, Log, TEXT("[SkillDamage] 释放者=%s, 技能=%s, 伤害=%d, 受击者=%s"),
+            *SourceSkill->Owner->GetName(),
+            *SourceSkill->GetName(),
+            TotalDamage,
+            *Target->GetName());
+    }
+
     return TotalDamage;
 }
 
