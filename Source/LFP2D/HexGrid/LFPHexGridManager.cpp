@@ -397,6 +397,43 @@ TArray<ALFPHexTile*> ALFPHexGridManager::GetNeighbors(const FLFPHexCoordinates& 
 	return Neighbors;
 }
 
+TMap<FIntPoint, int32> ALFPHexGridManager::BuildZocCountMap(EUnitAffiliation MovingFaction) const
+{
+	TMap<FIntPoint, int32> ZocMap;
+
+	// 中立阵营不受 ZoC 影响
+	if (MovingFaction == EUnitAffiliation::UA_Neutral)
+	{
+		return ZocMap;
+	}
+
+	// 遍历所有格子，非同阵营存活单位对其6个邻居施加 ZoC
+	for (const auto& Pair : GridMap)
+	{
+		ALFPHexTile* Tile = Pair.Value;
+		if (!Tile || !Tile->IsOccupied()) continue;
+
+		ALFPTacticsUnit* Unit = Tile->GetUnitOnTile();
+		if (!Unit || !Unit->IsAlive()) continue;
+		if (Unit->GetAffiliation() == MovingFaction || Unit->GetAffiliation() == EUnitAffiliation::UA_Neutral)
+		{
+			continue;
+		}
+
+		const TArray<FLFPHexCoordinates> NeighborCoords = Tile->GetCoordinates().GetNeighbors();
+		for (const FLFPHexCoordinates& NCoord : NeighborCoords)
+		{
+			const FIntPoint Key(NCoord.Q, NCoord.R);
+			if (GridMap.Contains(Key))
+			{
+				++ZocMap.FindOrAdd(Key, 0);
+			}
+		}
+	}
+
+	return ZocMap;
+}
+
 TArray<ALFPHexTile*> ALFPHexGridManager::GetTilesInRange(ALFPHexTile* Center, int32 MaxRange, int32 MinRange)
 {
 	return GetTilesInRange(Center, MaxRange, EUnitAffiliation::UA_Neutral, MinRange);
@@ -406,6 +443,9 @@ TArray<ALFPHexTile*> ALFPHexGridManager::GetTilesInRange(ALFPHexTile* Center, in
 {
 	TArray<ALFPHexTile*> ReachableTiles;
 	if (!Center || MaxRange <= 0) return ReachableTiles;
+
+	// 构建 ZoC 计数映射（从当前格出发时的 ZoC 惩罚）
+	const TMap<FIntPoint, int32> ZocCountMap = BuildZocCountMap(MovingFaction);
 
 	// Dijkstra 数据结构（支持变代价地形）
 	TMap<ALFPHexTile*, int32> MoveCosts;
@@ -448,8 +488,12 @@ TArray<ALFPHexTile*> ALFPHexGridManager::GetTilesInRange(ALFPHexTile* Center, in
 				}
 			}
 
-			// 计算移动代价（使用地形代价）
-			const int32 NewCost = CurrentCost + Neighbor->GetMovementCost();
+			// 计算移动代价：若当前格在 ZoC 中，消耗改为 ZoCBaseCost × 层数；否则地形代价
+			const FIntPoint CurKey(CurrentTile->GetCoordinates().Q, CurrentTile->GetCoordinates().R);
+			const int32 StepCost = ZocCountMap.Contains(CurKey)
+				? ZocCountMap[CurKey] * ZoCBaseCost
+				: Neighbor->GetMovementCost();
+			const int32 NewCost = CurrentCost + StepCost;
 
 			// 如果未访问或找到更短路径
 			if (!MoveCosts.Contains(Neighbor) || NewCost < MoveCosts[Neighbor])
@@ -583,6 +627,9 @@ TArray<ALFPHexTile*> ALFPHexGridManager::FindPath(ALFPHexTile* Start, ALFPHexTil
 		return Path;
 	}
 
+	// 构建 ZoC 计数映射
+	const TMap<FIntPoint, int32> ZocCountMap = BuildZocCountMap(MovingFaction);
+
 	// 寻路数据结构
 	TMap<ALFPHexTile*, ALFPHexTile*> ParentMap;
 	TMap<ALFPHexTile*, float> GScoreMap;  // 实际移动代价
@@ -665,8 +712,12 @@ TArray<ALFPHexTile*> ALFPHexGridManager::FindPath(ALFPHexTile* Start, ALFPHexTil
 				continue;
 			}
 
-			// 计算新G值（使用地形移动代价）
-			const float TentativeG = GScoreMap[Current] + (float)Neighbor->GetMovementCost();
+			// 计算新G值：若当前格在 ZoC 中，消耗改为 ZoCBaseCost × 层数；否则地形代价
+			const FIntPoint CurKey(Current->GetCoordinates().Q, Current->GetCoordinates().R);
+			const float StepCost = ZocCountMap.Contains(CurKey)
+				? (float)(ZocCountMap[CurKey] * ZoCBaseCost)
+				: (float)Neighbor->GetMovementCost();
+			const float TentativeG = GScoreMap[Current] + StepCost;
 
 			// 发现新节点或找到更短路径
 			if (!OpenSet.Contains(Neighbor) || TentativeG < GScoreMap[Neighbor])
@@ -693,6 +744,20 @@ TArray<ALFPHexTile*> ALFPHexGridManager::FindPath(ALFPHexTile* Start, ALFPHexTil
 	}*/
 
 	return Path;
+}
+
+int32 ALFPHexGridManager::GetZocCostForTile(ALFPHexTile* Tile, EUnitAffiliation MovingFaction) const
+{
+	if (!Tile || MovingFaction == EUnitAffiliation::UA_Neutral) return 0;
+
+	const TMap<FIntPoint, int32> ZocMap = BuildZocCountMap(MovingFaction);
+	const FIntPoint Key(Tile->GetCoordinates().Q, Tile->GetCoordinates().R);
+
+	if (const int32* Count = ZocMap.Find(Key))
+	{
+		return (*Count) * ZoCBaseCost;
+	}
+	return 0;
 }
 
 void ALFPHexGridManager::DrawDebugHexagon(const FVector& Center, FColor Color) const

@@ -68,6 +68,13 @@ public:
 	// 阵营感知版范围计算
 	TArray<ALFPHexTile*> GetTilesInRange(ALFPHexTile* Center, int32 MaxRange, EUnitAffiliation MovingFaction, int32 MinRange = 0);
 
+	// 构建 ZoC 计数映射：坐标 → 该格上重叠的敌方 ZoC 层数
+	TMap<FIntPoint, int32> BuildZocCountMap(EUnitAffiliation MovingFaction) const;
+
+	// 获取从某格出发时的 ZoC 移动消耗（= ZoC层数 × ZoCBaseCost）
+	UFUNCTION(BlueprintPure, Category = "Hex Grid|Zone of Control")
+	int32 GetZocCostForTile(ALFPHexTile* Tile, EUnitAffiliation MovingFaction) const;
+
 	UFUNCTION(BlueprintCallable, Category = "Hex Grid")
 	ALFPHexTile* GetTileAtCoordinates(const FLFPHexCoordinates& Coords) const;
 
@@ -155,6 +162,11 @@ public:
 
 	// 获取 GridMap 只读引用
 	const TMap<FIntPoint, ALFPHexTile*>& GetGridMap() const { return GridMap; }
+
+	// Zone of Control：离开 ZoC 格时的移动消耗（每层叠加）
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hex Grid|Zone of Control", meta = (ClampMin = "0"))
+	int32 ZoCBaseCost = 3;
+
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<ALFPHexTile> HexTileClass;

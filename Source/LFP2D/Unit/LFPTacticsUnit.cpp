@@ -478,10 +478,23 @@ void ALFPTacticsUnit::CommitMovePosition()
     if (OriginalTurnCoordinates == CurrentCoordinates) return; // 未移动
 
     TArray<ALFPHexTile*> Path = GM->FindPath(OrigTile, CurrTile, nullptr, GetAffiliation());
+
+    // 构建 ZoC 映射，逐格累计消耗（从 ZoC 格出发时消耗替换为 ZoC 代价）
+    const TMap<FIntPoint, int32> ZocMap = GM->BuildZocCountMap(GetAffiliation());
     int32 TotalCost = 0;
+    ALFPHexTile* PrevTile = OrigTile;
     for (ALFPHexTile* Tile : Path)
     {
-        TotalCost += Tile->GetMovementCost();
+        const FIntPoint PrevKey(PrevTile->GetCoordinates().Q, PrevTile->GetCoordinates().R);
+        if (const int32* Count = ZocMap.Find(PrevKey))
+        {
+            TotalCost += (*Count) * GM->ZoCBaseCost;
+        }
+        else
+        {
+            TotalCost += Tile->GetMovementCost();
+        }
+        PrevTile = Tile;
     }
     ConsumeMovePoints(TotalCost);
     // 占用当前格子（预览模式下未占用，提交后正式占用）
