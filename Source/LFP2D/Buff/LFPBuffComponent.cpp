@@ -92,12 +92,15 @@ void ULFPBuffComponent::OnTurnStarted()
         return;
     }
 
-    for (FLFPBuffRuntimeState& BuffState : Buffs)
+    // 使用索引遍历，防止ExecuteBuffEffects中单位死亡导致Buffs被清空后range-for迭代器失效
+    for (int32 i = 0; i < Buffs.Num(); ++i)
     {
         if (!OwnerUnit->IsAlive())
         {
             break;
         }
+
+        FLFPBuffRuntimeState& BuffState = Buffs[i];
 
         if (BuffState.Definition.HasTimedDuration() && BuffState.RemainingTurns <= 0)
         {
@@ -106,8 +109,13 @@ void ULFPBuffComponent::OnTurnStarted()
 
         if (BuffState.IsActive())
         {
-            // 先执行本回合开始的效果，再扣减持续回合，保证 N 回合 Buff 能触发 N 次。
             ExecuteBuffEffects(BuffState, ELFPBuffTriggerType::BTT_OnTurnStart, OwnerUnit);
+        }
+
+        // ExecuteBuffEffects可能导致单位死亡并清空Buffs，需再次检查防止访问无效内存
+        if (!OwnerUnit->IsAlive())
+        {
+            break;
         }
 
         if (BuffState.Definition.HasTimedDuration())

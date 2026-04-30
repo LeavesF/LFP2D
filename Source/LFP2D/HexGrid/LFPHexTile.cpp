@@ -31,6 +31,12 @@ ALFPHexTile::ALFPHexTile()
 	FoliageSpriteComponent->SetupAttachment(RootComponent);
 	FoliageSpriteComponent->SetRelativeLocation(FVector(0, 0, 0.25f));
 
+	// 创建选中高亮精灵组件（Z=0.35f，默认隐藏）
+	SelectionHighlightComponent = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("SelectionHighlightComponent"));
+	SelectionHighlightComponent->SetupAttachment(RootComponent);
+	SelectionHighlightComponent->SetRelativeLocation(FVector(0, 0, 0.35f));
+	SelectionHighlightComponent->SetVisibility(false);
+
 	// 创建范围覆盖层精灵（半透明填充，Z=0.3f）
 	OverlaySpriteComponent = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("OverlaySpriteComponent"));
 	OverlaySpriteComponent->SetupAttachment(RootComponent);
@@ -199,6 +205,18 @@ void ALFPHexTile::ShowPathOverlay(bool bActive, FLinearColor Color)
 		{
 			OverlaySpriteComponent->SetVisibility(false);
 		}
+	}
+}
+
+void ALFPHexTile::ShowSelectionHighlight(bool bShow)
+{
+	if (SelectionHighlightComponent)
+	{
+		if (bShow && SelectionHighlightSprite)
+		{
+			SelectionHighlightComponent->SetSprite(SelectionHighlightSprite);
+		}
+		SelectionHighlightComponent->SetVisibility(bShow);
 	}
 }
 

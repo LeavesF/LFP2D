@@ -262,6 +262,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Decoration")
 	TObjectPtr<UPaperSprite> DecorationSprite;
 
+	// 选中高亮精灵组件（单位被选中时显示，Z=0.35f）
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<UPaperSpriteComponent> SelectionHighlightComponent;
+
+	// 选中高亮精灵（编辑器中可配置）
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Selection")
+	TObjectPtr<UPaperSprite> SelectionHighlightSprite;
+
 	// ============== 地图数据字段 ==============
 
 	// 出生点阵营
@@ -300,6 +308,9 @@ public:
 
 	// 显示路径覆盖层（传入颜色）
 	void ShowPathOverlay(bool bActive, FLinearColor Color = FLinearColor::Transparent);
+
+	// 显示/隐藏选中高亮
+	void ShowSelectionHighlight(bool bShow);
 
 	// 清除所有高亮（覆盖层 + 所有边缘）
 	void ClearAllHighlights();

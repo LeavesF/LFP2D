@@ -1,173 +1,214 @@
 #include "LFP2D/UI/Fighting/LFPDeploymentWidget.h"
+#include "LFP2D/UI/LFPUnitSlotWidget.h"
 #include "LFP2D/Core/LFPUnitRegistryDataAsset.h"
 #include "Components/Button.h"
-#include "Components/Image.h"
+#include "Components/WrapBox.h"
 
 void ULFPDeploymentWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	// 绑定按钮点击事件
-	if (Button_Unit0) Button_Unit0->OnClicked.AddDynamic(this, &ULFPDeploymentWidget::OnUnit0Clicked);
-	if (Button_Unit1) Button_Unit1->OnClicked.AddDynamic(this, &ULFPDeploymentWidget::OnUnit1Clicked);
-	if (Button_Unit2) Button_Unit2->OnClicked.AddDynamic(this, &ULFPDeploymentWidget::OnUnit2Clicked);
-	if (Button_Confirm) Button_Confirm->OnClicked.AddDynamic(this, &ULFPDeploymentWidget::OnConfirmClicked);
+	if (Button_Confirm)
+	{
+		Button_Confirm->OnClicked.AddDynamic(this, &ULFPDeploymentWidget::OnConfirmClicked);
+	}
 }
 
-void ULFPDeploymentWidget::Setup(const TArray<FLFPUnitEntry>& PartyUnits, ULFPUnitRegistryDataAsset* Registry)
+void ULFPDeploymentWidget::Setup(const TArray<FLFPUnitEntry>& PartyUnits, const TArray<FLFPUnitEntry>& ReserveUnits, ULFPUnitRegistryDataAsset* Registry)
 {
 	CachedPartyUnits = PartyUnits;
+	CachedReserveUnits = ReserveUnits;
 	UnitRegistry = Registry;
+	SelectedPartyIndex = -1;
+	SelectedReserveIndex = -1;
 
-	// 初始化放置状态
-	PlacedStates.Empty();
-	PlacedStates.SetNum(3);
-	for (int32 i = 0; i < 3; i++)
+	// 清空并重建出战行
+	ClearContainer(Box_Party, PartySlotWidgets);
+	if (Box_Party)
 	{
-		PlacedStates[i] = false;
+		CreateSlots(PartyUnits, Box_Party, PartySlotWidgets, true);
 	}
 
-	bConfirmEnabled = false;
-
-	// 设置各槽位图标和可见性
-	for (int32 i = 0; i < 3; i++)
+	// 清空并重建备战行
+	ClearContainer(Box_Reserve, ReserveSlotWidgets);
+	if (Box_Reserve)
 	{
-		UButton* Btn = GetUnitButton(i);
-		UImage* Img = GetUnitImage(i);
+		CreateSlots(ReserveUnits, Box_Reserve, ReserveSlotWidgets, false);
+	}
 
-		if (i < PartyUnits.Num() && PartyUnits[i].IsValid() && Registry)
+	if (Button_Confirm)
+	{
+		Button_Confirm->SetIsEnabled(true);
+	}
+}
+
+void ULFPDeploymentWidget::CreateSlots(const TArray<FLFPUnitEntry>& Units, UWrapBox* Container,
+	TArray<TObjectPtr<ULFPUnitSlotWidget>>& OutWidgets, bool bIsParty)
+{
+	if (!Container || !UnitSlotWidgetClass) return;
+
+	OutWidgets.Empty();
+
+	for (int32 i = 0; i < Units.Num(); i++)
+	{
+		if (!Units[i].IsValid()) continue;
+
+		ULFPUnitSlotWidget* UnitSlot = CreateWidget<ULFPUnitSlotWidget>(this, UnitSlotWidgetClass);
+		if (!UnitSlot) continue;
+
+		UnitSlot->Setup(Units[i], UnitRegistry);
+		if (bIsParty)
 		{
-			// 有单位：显示按钮，设置图标
-			if (Btn) Btn->SetVisibility(ESlateVisibility::Visible);
+			UnitSlot->OnClicked.AddDynamic(this, &ULFPDeploymentWidget::OnPartySlotClicked);
+		}
+		else
+		{
+			UnitSlot->OnClicked.AddDynamic(this, &ULFPDeploymentWidget::OnReserveSlotClicked);
+		}
+		Container->AddChildToWrapBox(UnitSlot);
+		OutWidgets.Add(UnitSlot);
+	}
+}
 
-			FLFPUnitRegistryEntry Entry;
-			if (Img && Registry->FindEntry(PartyUnits[i].TypeID, Entry) && Entry.Icon)
+void ULFPDeploymentWidget::ClearContainer(UWrapBox* Container, TArray<TObjectPtr<ULFPUnitSlotWidget>>& OutWidgets)
+{
+	if (Container)
+	{
+		Container->ClearChildren();
+	}
+	OutWidgets.Empty();
+}
+
+// ============== 更新槽位 ==============
+
+void ULFPDeploymentWidget::UpdatePartySlot(int32 PartyIndex, const FLFPUnitEntry& Entry)
+{
+	if (!CachedPartyUnits.IsValidIndex(PartyIndex)) return;
+
+	CachedPartyUnits[PartyIndex] = Entry;
+
+	if (PartySlotWidgets.IsValidIndex(PartyIndex))
+	{
+		if (Entry.IsValid())
+		{
+			PartySlotWidgets[PartyIndex]->Setup(Entry, UnitRegistry);
+			if (SelectedPartyIndex == PartyIndex)
 			{
-				Img->SetBrushFromTexture(Entry.Icon);
-				Img->SetVisibility(ESlateVisibility::Visible);
+				PartySlotWidgets[PartyIndex]->SetSelected(true);
 			}
 		}
 		else
 		{
-			// 无单位：隐藏按钮
-			if (Btn) Btn->SetVisibility(ESlateVisibility::Collapsed);
+			PartySlotWidgets[PartyIndex]->Clear();
 		}
 	}
-
-	// 确认按钮初始禁用
-	if (Button_Confirm)
-	{
-		Button_Confirm->SetIsEnabled(false);
-	}
 }
 
-void ULFPDeploymentWidget::MarkUnitPlaced(int32 PartyIndex, bool bPlaced)
+void ULFPDeploymentWidget::UpdateReserveSlot(int32 ReserveIndex, const FLFPUnitEntry& Entry)
 {
-	if (!PlacedStates.IsValidIndex(PartyIndex)) return;
+	if (!CachedReserveUnits.IsValidIndex(ReserveIndex)) return;
 
-	PlacedStates[PartyIndex] = bPlaced;
-	UpdateSlotVisual(PartyIndex);
+	CachedReserveUnits[ReserveIndex] = Entry;
 
-	// 检查是否全部放置完毕
-	bool bAllPlaced = true;
-	for (int32 i = 0; i < CachedPartyUnits.Num() && i < PlacedStates.Num(); i++)
+	if (ReserveSlotWidgets.IsValidIndex(ReserveIndex))
 	{
-		if (CachedPartyUnits[i].IsValid() && !PlacedStates[i])
+		if (Entry.IsValid())
 		{
-			bAllPlaced = false;
-			break;
-		}
-	}
-	SetConfirmEnabled(bAllPlaced);
-}
-
-void ULFPDeploymentWidget::SetConfirmEnabled(bool bEnabled)
-{
-	bConfirmEnabled = bEnabled;
-	if (Button_Confirm)
-	{
-		Button_Confirm->SetIsEnabled(bEnabled);
-	}
-}
-
-void ULFPDeploymentWidget::MarkUnitSelecting(int32 PartyIndex)
-{
-	// 可扩展：高亮正在放置的槽位
-}
-
-void ULFPDeploymentWidget::UpdateSlotVisual(int32 Index)
-{
-	UImage* Img = GetUnitImage(Index);
-	UButton* Btn = GetUnitButton(Index);
-
-	bool bPlaced = PlacedStates.IsValidIndex(Index) && PlacedStates[Index];
-
-	// 已放置：禁用按钮，防止重复生成
-	if (Btn)
-	{
-		Btn->SetIsEnabled(!bPlaced);
-	}
-
-	if (Img)
-	{
-		if (bPlaced)
-		{
-			// 已放置：半透明
-			Img->SetColorAndOpacity(FLinearColor(0.5f, 0.5f, 0.5f, 0.5f));
+			ReserveSlotWidgets[ReserveIndex]->Setup(Entry, UnitRegistry);
+			if (SelectedReserveIndex == ReserveIndex)
+			{
+				ReserveSlotWidgets[ReserveIndex]->SetSelected(true);
+			}
 		}
 		else
 		{
-			// 未放置：正常
-			Img->SetColorAndOpacity(FLinearColor::White);
+			ReserveSlotWidgets[ReserveIndex]->Clear();
 		}
+	}
+}
+
+// ============== 选中高亮 ==============
+
+void ULFPDeploymentWidget::MarkPartyUnitSelected(int32 PartyIndex, bool bSelected)
+{
+	if (PartySlotWidgets.IsValidIndex(PartyIndex))
+	{
+		PartySlotWidgets[PartyIndex]->SetSelected(bSelected);
+	}
+
+	if (bSelected)
+	{
+		SelectedPartyIndex = PartyIndex;
+		// 取消备战选中
+		if (SelectedReserveIndex >= 0 && ReserveSlotWidgets.IsValidIndex(SelectedReserveIndex))
+		{
+			ReserveSlotWidgets[SelectedReserveIndex]->SetSelected(false);
+			SelectedReserveIndex = -1;
+		}
+	}
+	else if (SelectedPartyIndex == PartyIndex)
+	{
+		SelectedPartyIndex = -1;
+	}
+}
+
+void ULFPDeploymentWidget::MarkReserveUnitSelected(int32 ReserveIndex, bool bSelected)
+{
+	if (ReserveSlotWidgets.IsValidIndex(ReserveIndex))
+	{
+		ReserveSlotWidgets[ReserveIndex]->SetSelected(bSelected);
+	}
+
+	if (bSelected)
+	{
+		SelectedReserveIndex = ReserveIndex;
+		if (SelectedPartyIndex >= 0 && PartySlotWidgets.IsValidIndex(SelectedPartyIndex))
+		{
+			PartySlotWidgets[SelectedPartyIndex]->SetSelected(false);
+			SelectedPartyIndex = -1;
+		}
+	}
+	else if (SelectedReserveIndex == ReserveIndex)
+	{
+		SelectedReserveIndex = -1;
+	}
+}
+
+void ULFPDeploymentWidget::ClearAllSelections()
+{
+	if (SelectedPartyIndex >= 0 && PartySlotWidgets.IsValidIndex(SelectedPartyIndex))
+	{
+		PartySlotWidgets[SelectedPartyIndex]->SetSelected(false);
+		SelectedPartyIndex = -1;
+	}
+	if (SelectedReserveIndex >= 0 && ReserveSlotWidgets.IsValidIndex(SelectedReserveIndex))
+	{
+		ReserveSlotWidgets[SelectedReserveIndex]->SetSelected(false);
+		SelectedReserveIndex = -1;
 	}
 }
 
 // ============== 按钮回调 ==============
 
-void ULFPDeploymentWidget::OnUnit0Clicked()
+void ULFPDeploymentWidget::OnPartySlotClicked(ULFPUnitSlotWidget* ClickedSlot)
 {
-	OnUnitSelected.Broadcast(0);
+	int32 Index = PartySlotWidgets.Find(ClickedSlot);
+	if (Index != INDEX_NONE)
+	{
+		OnPartyUnitClicked.Broadcast(Index);
+	}
 }
 
-void ULFPDeploymentWidget::OnUnit1Clicked()
+void ULFPDeploymentWidget::OnReserveSlotClicked(ULFPUnitSlotWidget* ClickedSlot)
 {
-	OnUnitSelected.Broadcast(1);
-}
-
-void ULFPDeploymentWidget::OnUnit2Clicked()
-{
-	OnUnitSelected.Broadcast(2);
+	int32 Index = ReserveSlotWidgets.Find(ClickedSlot);
+	if (Index != INDEX_NONE)
+	{
+		OnReserveUnitClicked.Broadcast(Index);
+	}
 }
 
 void ULFPDeploymentWidget::OnConfirmClicked()
 {
-	if (bConfirmEnabled)
-	{
-		OnConfirmPressed.Broadcast();
-	}
-}
-
-// ============== 辅助方法 ==============
-
-UButton* ULFPDeploymentWidget::GetUnitButton(int32 Index) const
-{
-	switch (Index)
-	{
-	case 0: return Button_Unit0;
-	case 1: return Button_Unit1;
-	case 2: return Button_Unit2;
-	default: return nullptr;
-	}
-}
-
-UImage* ULFPDeploymentWidget::GetUnitImage(int32 Index) const
-{
-	switch (Index)
-	{
-	case 0: return Image_Unit0;
-	case 1: return Image_Unit1;
-	case 2: return Image_Unit2;
-	default: return nullptr;
-	}
+	OnConfirmPressed.Broadcast();
 }

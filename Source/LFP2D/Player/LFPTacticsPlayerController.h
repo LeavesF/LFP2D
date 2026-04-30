@@ -300,41 +300,73 @@ protected:
 
     // ==== 布置阶段 ====
 public:
-    // 布置阶段开始时调用
+    // 布置阶段开始时调用（自动部署出战队伍、初始化 UI）
     void OnDeploymentPhaseStarted();
 
-    // 开始放置某个队伍单位（UI 委托回调）
+    // 自动将所有出战单位放置到出生点
+    void AutoPlacePartyUnits();
+
+    // UI 委托：点击出战单位图标
     UFUNCTION()
-    void StartPlacingUnit(int32 PartyIndex);
+    void OnDeploymentPartyUnitClicked(int32 PartyIndex);
 
-    // 将当前放置的单位放到指定格子
-    void PlaceUnit(ALFPHexTile* Tile);
-
-    // 取消当前放置
-    void CancelPlacing();
-
-    // 拾起已放置的单位重新放置
-    void PickupDeployedUnit(ALFPTacticsUnit* Unit);
+    // UI 委托：点击备战单位图标
+    UFUNCTION()
+    void OnDeploymentReserveUnitClicked(int32 ReserveIndex);
 
     // 确认布置完毕
     UFUNCTION()
     void ConfirmDeployment();
 
 protected:
+    // 选中地图上的已部署单位（确认键点击单位）
+    void SelectDeployedUnit(ALFPTacticsUnit* Unit);
+
+    // 点击部署格子处理（移动/交换）
+    void OnDeploymentTileClicked(ALFPHexTile* Tile);
+
+    // 清除布置阶段选中状态
+    void ClearDeploymentSelection();
+
+    // 移动已部署单位到空格子
+    void MoveDeployedUnitToTile(int32 PartyIndex, ALFPHexTile* TargetTile);
+
+    // 交换两个已部署单位的位置（地图上互换）
+    void SwapDeployedUnits(int32 PartyIndexA, int32 PartyIndexB);
+
+    // 交换两个出战图标（仅 UI，不影响地图位置）
+    void SwapPartyUnitIcons(int32 PartyIndexA, int32 PartyIndexB);
+
+    // 交换两个备战图标
+    void SwapReserveUnitIcons(int32 PartyIndexA, int32 PartyIndexB);
+
+    // 用备战单位替换出战单位
+    void ReplacePartyWithReserve(int32 PartyIndex, int32 ReserveIndex);
+
     // 布置阶段状态
     bool bIsInDeployment = false;
-    bool bIsPlacingUnit = false;
-    int32 PlacingPartyIndex = -1;
 
-    // 跟随鼠标的预览单位
-    UPROPERTY()
-    TObjectPtr<ALFPTacticsUnit> PlacingUnitPreview;
+    // 当前选中的地图单位（确认键点击场上的单位）
+    int32 SelectedMapUnitIndex = -1;
 
-    // 已布置的单位列表（索引对应 PartyIndex）
+    // 当前选中的出战图标（-1 = 无）
+    int32 SelectedPartyIconIdx = -1;
+
+    // 当前选中的备战图标（-1 = 无）
+    int32 SelectedReserveIndex = -1;
+
+    // 已部署的单位列表（索引对应 GameInstance->PartyUnits 索引）
     UPROPERTY()
     TArray<TObjectPtr<ALFPTacticsUnit>> DeployedUnits;
 
+    // 单位 → PartyIndex 反向映射
+    TMap<ALFPTacticsUnit*, int32> UnitToPartyIndex;
+
     // 缓存的玩家出生点格子
     TArray<ALFPHexTile*> PlayerSpawnTiles;
+
+    // 当前选中高亮的格子（用于清除上一次高亮）
+    UPROPERTY()
+    TObjectPtr<ALFPHexTile> HighlightedSelectionTile;
 
 };
