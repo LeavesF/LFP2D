@@ -119,13 +119,9 @@ class LFP2D_API ULFPSkillEffect_DamageByTargetBuffStack : public ULFPSkillEffect
 public:
     ULFPSkillEffect_DamageByTargetBuffStack();
 
-    // 要读取层数的 BuffId，例如 Buff.Status.Bleed。
+    // 要读取层数的 BuffId，例如 Buff.Status.Bleed；未配置时默认读取 Buff.Status.Bleed。
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill|Effect")
     FGameplayTag RequiredBuffId;
-
-    // RequiredBuffId 未配置时，是否回退读取旧流血层数接口。
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill|Effect")
-    bool bFallbackToLegacyBleedStacks = true;
 
     // 每层 Buff 造成的基础伤害。
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill|Effect", meta = (ClampMin = "0"))

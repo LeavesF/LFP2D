@@ -5,6 +5,16 @@
 #include "LFP2D/Skill/LFPSkillBase.h"
 #include "LFP2D/Unit/LFPTacticsUnit.h"
 
+namespace
+{
+constexpr const TCHAR* DefaultBleedBuffIdName = TEXT("Buff.Status.Bleed");
+
+FGameplayTag GetDefaultBleedBuffId()
+{
+    return FGameplayTag::RequestGameplayTag(FName(DefaultBleedBuffIdName), false);
+}
+}
+
 bool ULFPSkillEffect::CanApply_Implementation(const FLFPSkillEffectContext& Context) const
 {
     ALFPTacticsUnit* EffectTarget = ResolveTargetUnit(Context);
@@ -72,6 +82,7 @@ void ULFPSkillEffect_ApplyBuff::Apply_Implementation(const FLFPSkillEffectContex
 ULFPSkillEffect_DamageByTargetBuffStack::ULFPSkillEffect_DamageByTargetBuffStack()
 {
     Target = ELFPSkillEffectTarget::TargetUnit;
+    RequiredBuffId = GetDefaultBleedBuffId();
 }
 
 bool ULFPSkillEffect_DamageByTargetBuffStack::CanApply_Implementation(const FLFPSkillEffectContext& Context) const
@@ -106,12 +117,8 @@ int32 ULFPSkillEffect_DamageByTargetBuffStack::GetStackCount(const FLFPSkillEffe
         return 0;
     }
 
-    if (RequiredBuffId.IsValid())
-    {
-        return BuffComponent->GetBuffStack(RequiredBuffId);
-    }
-
-    return bFallbackToLegacyBleedStacks ? BuffComponent->GetBleedStacks() : 0;
+    const FGameplayTag BuffId = RequiredBuffId.IsValid() ? RequiredBuffId : GetDefaultBleedBuffId();
+    return BuffId.IsValid() ? BuffComponent->GetBuffStack(BuffId) : 0;
 }
 
 ELFPAttackType ULFPSkillEffect_DamageByTargetBuffStack::ResolveDamageType(const FLFPSkillEffectContext& Context) const

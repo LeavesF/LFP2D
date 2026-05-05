@@ -1,5 +1,4 @@
 #include "LFP2D/Buff/LFPBuffComponent.h"
-#include "LFP2D/Buff/LFPBuffCondition.h"
 #include "LFP2D/Buff/LFPBuffDefinitionDataAsset.h"
 #include "LFP2D/Buff/LFPBuffEffect.h"
 #include "LFP2D/Unit/LFPTacticsUnit.h"
@@ -7,21 +6,7 @@
 namespace
 {
 constexpr const TCHAR* BleedBuffIdName = TEXT("Buff.Status.Bleed");
-constexpr const TCHAR* LegacyBleedBuffIdName = TEXT("Status.Bleed");
-constexpr const TCHAR* StatModifierBuffIdName = TEXT("Buff.StatModifier");
 constexpr int32 DefaultBleedDurationTurns = 2;
-
-FGameplayTag RequestOptionalGameplayTag(const TCHAR* TagName)
-{
-    return FGameplayTag::RequestGameplayTag(FName(TagName), false);
-}
-
-FGameplayTag GetLegacyBuffId(ELFPBuffType BuffType)
-{
-    return BuffType == ELFPBuffType::BT_Bleed
-        ? RequestOptionalGameplayTag(BleedBuffIdName)
-        : RequestOptionalGameplayTag(StatModifierBuffIdName);
-}
 
 bool IsTagNamed(const FGameplayTag& Tag, const TCHAR* TagName)
 {
@@ -30,7 +15,7 @@ bool IsTagNamed(const FGameplayTag& Tag, const TCHAR* TagName)
 
 bool IsBleedBuffId(const FGameplayTag& Tag)
 {
-    return IsTagNamed(Tag, BleedBuffIdName) || IsTagNamed(Tag, LegacyBleedBuffIdName);
+    return IsTagNamed(Tag, BleedBuffIdName);
 }
 
 bool IsBleedDefinition(const ULFPBuffDefinitionDataAsset* BuffDefinition)
@@ -93,112 +78,11 @@ int32 GetEffectiveDurationTurns(const ULFPBuffDefinitionDataAsset* BuffDefinitio
 
     return ConfiguredTurns;
 }
-
-int32 NormalizeLegacyBleedDefinition(FLFPBuffDefinition& LegacyDefinition)
-{
-    if (LegacyDefinition.BuffType != ELFPBuffType::BT_Bleed)
-    {
-        return 1;
-    }
-
-    int32 TotalBleedStacks = 0;
-    bool bHasBleedDamageEffect = false;
-    for (FLFPBuffEffectSpec& EffectSpec : LegacyDefinition.Effects)
-    {
-        if (EffectSpec.EffectType != ELFPBuffEffectType::BET_PeriodicDamage ||
-            EffectSpec.TriggerType != ELFPBuffTriggerType::BTT_OnTurnStart)
-        {
-            continue;
-        }
-
-        TotalBleedStacks += FMath::Max(EffectSpec.Magnitude, 0);
-
-        // 旧接口里 Magnitude 表示“流血层数”。新运行时统一使用 StackCount 表示层数，所以伤害系数归一为 1。
-        EffectSpec.Magnitude = bHasBleedDamageEffect ? 0 : 1;
-        bHasBleedDamageEffect = true;
-    }
-
-    return FMath::Max(TotalBleedStacks, 1);
-}
-
-ELFPBuffDurationType ConvertLegacyDurationType(ELFPBuffLifetimeType LifetimeType)
-{
-    switch (LifetimeType)
-    {
-    case ELFPBuffLifetimeType::BLT_TimedTurns:
-        return ELFPBuffDurationType::TimedTurns;
-    case ELFPBuffLifetimeType::BLT_WhileConditionTrue:
-        return ELFPBuffDurationType::WhileConditionTrue;
-    case ELFPBuffLifetimeType::BLT_Infinite:
-    default:
-        return ELFPBuffDurationType::Infinite;
-    }
-}
-
-ELFPBuffLifetimeType ConvertToLegacyDurationType(ELFPBuffDurationType DurationType)
-{
-    switch (DurationType)
-    {
-    case ELFPBuffDurationType::TimedTurns:
-        return ELFPBuffLifetimeType::BLT_TimedTurns;
-    case ELFPBuffDurationType::WhileConditionTrue:
-        return ELFPBuffLifetimeType::BLT_WhileConditionTrue;
-    case ELFPBuffDurationType::Infinite:
-    default:
-        return ELFPBuffLifetimeType::BLT_Infinite;
-    }
-}
-
-ELFPBuffTriggerEvent ConvertLegacyTriggerType(ELFPBuffTriggerType TriggerType)
-{
-    switch (TriggerType)
-    {
-    case ELFPBuffTriggerType::BTT_OnTurnStart:
-        return ELFPBuffTriggerEvent::OnTurnStart;
-    case ELFPBuffTriggerType::BTT_PassiveStat:
-    default:
-        return ELFPBuffTriggerEvent::PassiveStat;
-    }
-}
-
-ELFPBuffTriggerType ConvertToLegacyTriggerType(ELFPBuffTriggerEvent TriggerEvent)
-{
-    switch (TriggerEvent)
-    {
-    case ELFPBuffTriggerEvent::OnTurnStart:
-        return ELFPBuffTriggerType::BTT_OnTurnStart;
-    case ELFPBuffTriggerEvent::PassiveStat:
-    default:
-        return ELFPBuffTriggerType::BTT_PassiveStat;
-    }
-}
 }
 
 ULFPBuffComponent::ULFPBuffComponent()
 {
     PrimaryComponentTick.bCanEverTick = false;
-}
-
-void ULFPBuffComponent::ApplyBleed(int32 BleedStacks, int32 DurationTurns)
-{
-    ALFPTacticsUnit* OwnerUnit = GetOwnerUnit();
-    if (!OwnerUnit || !OwnerUnit->IsAlive() || BleedStacks <= 0 || DurationTurns <= 0)
-    {
-        return;
-    }
-
-    FLFPBuffDefinition BuffDefinition;
-    BuffDefinition.BuffType = ELFPBuffType::BT_Bleed;
-    BuffDefinition.LifetimeType = ELFPBuffLifetimeType::BLT_TimedTurns;
-    BuffDefinition.DurationTurns = DurationTurns;
-
-    FLFPBuffEffectSpec EffectSpec;
-    EffectSpec.EffectType = ELFPBuffEffectType::BET_PeriodicDamage;
-    EffectSpec.TriggerType = ELFPBuffTriggerType::BTT_OnTurnStart;
-    EffectSpec.Magnitude = BleedStacks;
-    BuffDefinition.Effects.Add(EffectSpec);
-
-    RegisterBuff(BuffDefinition);
 }
 
 void ULFPBuffComponent::ApplyBuff(ULFPBuffDefinitionDataAsset* BuffDefinition, ALFPTacticsUnit* SourceUnit, int32 InitialStackCount, int32 DurationTurnsOverride)
@@ -209,22 +93,11 @@ void ULFPBuffComponent::ApplyBuff(ULFPBuffDefinitionDataAsset* BuffDefinition, A
         return;
     }
 
-    AddBuffInstance(BuffDefinition, SourceUnit ? SourceUnit : OwnerUnit, InitialStackCount, DurationTurnsOverride, false, FLFPBuffDefinition());
+    AddBuffInstance(BuffDefinition, SourceUnit ? SourceUnit : OwnerUnit, InitialStackCount, DurationTurnsOverride);
     EvaluateBuffs();
 }
 
-void ULFPBuffComponent::RegisterBuff(const FLFPBuffDefinition& BuffDefinition)
-{
-    AddBuff(BuffDefinition, !BuffDefinition.HasTimedDuration());
-    EvaluateBuffs();
-}
-
-void ULFPBuffComponent::RegisterPersistentBuff(const FLFPPersistentBuffDefinition& BuffDefinition)
-{
-    RegisterBuff(BuffDefinition.ToBuffDefinition());
-}
-
-void ULFPBuffComponent::ClearPersistentBuffs()
+void ULFPBuffComponent::ClearPassiveBuffs()
 {
     ALFPTacticsUnit* OwnerUnit = GetOwnerUnit();
     bool bRemovedAny = false;
@@ -245,7 +118,6 @@ void ULFPBuffComponent::ClearPersistentBuffs()
 
     if (bRemovedAny)
     {
-        SyncLegacyBuffsFromInstances();
         BroadcastBuffListChanged();
     }
 }
@@ -255,7 +127,6 @@ bool ULFPBuffComponent::EvaluateBuffs()
     ALFPTacticsUnit* OwnerUnit = GetOwnerUnit();
     if (!OwnerUnit || BuffInstances.IsEmpty())
     {
-        SyncLegacyBuffsFromInstances();
         return false;
     }
 
@@ -272,16 +143,10 @@ bool ULFPBuffComponent::EvaluateBuffs()
 
     if (bChanged)
     {
-        SyncLegacyBuffsFromInstances();
         BroadcastBuffListChanged();
     }
 
     return bChanged;
-}
-
-bool ULFPBuffComponent::EvaluatePersistentBuffs()
-{
-    return EvaluateBuffs();
 }
 
 void ULFPBuffComponent::OnTurnStarted()
@@ -325,7 +190,6 @@ void ULFPBuffComponent::OnTurnStarted()
     }
 
     CleanupExpiredBuffs();
-    SyncLegacyBuffsFromInstances();
     if (bHadBuffs)
     {
         BroadcastBuffListChanged();
@@ -358,7 +222,6 @@ void ULFPBuffComponent::OnTurnEnded()
     }
 
     CleanupExpiredBuffs();
-    SyncLegacyBuffsFromInstances();
     if (bHadBuffs)
     {
         BroadcastBuffListChanged();
@@ -391,7 +254,6 @@ int32 ULFPBuffComponent::RemoveBuffById(FGameplayTag BuffId)
 
     if (RemovedCount > 0)
     {
-        SyncLegacyBuffsFromInstances();
         BroadcastBuffListChanged();
     }
 
@@ -411,7 +273,6 @@ void ULFPBuffComponent::ClearAllBuffs()
     }
 
     BuffInstances.Empty();
-    Buffs.Empty();
     if (bHadBuffs)
     {
         BroadcastBuffListChanged();
@@ -423,19 +284,6 @@ bool ULFPBuffComponent::HasAnyBuffs() const
     for (const FLFPBuffInstance& BuffInstance : BuffInstances)
     {
         if (BuffInstance.IsActive())
-        {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-bool ULFPBuffComponent::HasBuff(ELFPBuffType BuffType) const
-{
-    for (const FLFPBuffInstance& BuffInstance : BuffInstances)
-    {
-        if (BuffInstance.IsActive() && DoesInstanceMatchLegacyType(BuffInstance, BuffType))
         {
             return true;
         }
@@ -462,20 +310,6 @@ bool ULFPBuffComponent::HasBuffById(FGameplayTag BuffId) const
     return false;
 }
 
-int32 ULFPBuffComponent::GetBuffCount(ELFPBuffType BuffType) const
-{
-    int32 BuffCount = 0;
-    for (const FLFPBuffInstance& BuffInstance : BuffInstances)
-    {
-        if (BuffInstance.IsActive() && DoesInstanceMatchLegacyType(BuffInstance, BuffType))
-        {
-            BuffCount++;
-        }
-    }
-
-    return BuffCount;
-}
-
 int32 ULFPBuffComponent::GetBuffStack(FGameplayTag BuffId) const
 {
     if (!BuffId.IsValid())
@@ -493,21 +327,6 @@ int32 ULFPBuffComponent::GetBuffStack(FGameplayTag BuffId) const
     }
 
     return StackCount;
-}
-
-int32 ULFPBuffComponent::GetBleedStacks() const
-{
-    int32 BleedStacks = 0;
-
-    for (const FLFPBuffInstance& BuffInstance : BuffInstances)
-    {
-        if (BuffInstance.IsActive())
-        {
-            BleedStacks += GetBleedMagnitudeFromInstance(BuffInstance);
-        }
-    }
-
-    return BleedStacks;
 }
 
 int32 ULFPBuffComponent::GetTotalBuffCount() const
@@ -541,11 +360,6 @@ FLFPBuffStatModifier ULFPBuffComponent::GetActiveStatModifier() const
     }
 
     return CombinedModifier;
-}
-
-FLFPBuffStatModifier ULFPBuffComponent::GetActivePersistentStatModifier() const
-{
-    return GetActiveStatModifier();
 }
 
 TArray<FLFPBuffDisplayEntry> ULFPBuffComponent::GetBuffDisplayEntries(bool bOnlyVisible, bool bOnlyActive) const
@@ -619,40 +433,12 @@ TArray<FLFPBuffDisplayEntry> ULFPBuffComponent::GetAggregatedVisibleBuffDisplayE
     return AggregatedEntries;
 }
 
-TArray<FLFPPersistentBuffRuntimeState> ULFPBuffComponent::GetPersistentBuffStates() const
-{
-    TArray<FLFPPersistentBuffRuntimeState> PersistentStates;
-
-    for (const FLFPBuffRuntimeState& BuffState : Buffs)
-    {
-        if (BuffState.bIsPersistent)
-        {
-            PersistentStates.Add(FLFPPersistentBuffRuntimeState::FromRuntimeState(BuffState));
-        }
-    }
-
-    return PersistentStates;
-}
-
 ALFPTacticsUnit* ULFPBuffComponent::GetOwnerUnit() const
 {
     return Cast<ALFPTacticsUnit>(GetOwner());
 }
 
-void ULFPBuffComponent::AddBuff(const FLFPBuffDefinition& BuffDefinition, bool /*bIsPersistent*/)
-{
-    FLFPBuffDefinition LegacyDefinition = BuffDefinition;
-    const int32 InitialStackCount = NormalizeLegacyBleedDefinition(LegacyDefinition);
-    ULFPBuffDefinitionDataAsset* TransientDefinition = CreateTransientDefinitionFromLegacy(LegacyDefinition);
-    if (!TransientDefinition)
-    {
-        return;
-    }
-
-    AddBuffInstance(TransientDefinition, GetOwnerUnit(), InitialStackCount, LegacyDefinition.HasTimedDuration() ? LegacyDefinition.DurationTurns : -1, true, LegacyDefinition);
-}
-
-void ULFPBuffComponent::AddBuffInstance(ULFPBuffDefinitionDataAsset* BuffDefinition, ALFPTacticsUnit* SourceUnit, int32 InitialStackCount, int32 DurationTurnsOverride, bool bHasLegacyDefinition, const FLFPBuffDefinition& LegacyDefinition)
+void ULFPBuffComponent::AddBuffInstance(ULFPBuffDefinitionDataAsset* BuffDefinition, ALFPTacticsUnit* SourceUnit, int32 InitialStackCount, int32 DurationTurnsOverride)
 {
     ALFPTacticsUnit* OwnerUnit = GetOwnerUnit();
     if (!OwnerUnit || !OwnerUnit->IsAlive() || !BuffDefinition)
@@ -679,7 +465,6 @@ void ULFPBuffComponent::AddBuffInstance(ULFPBuffDefinitionDataAsset* BuffDefinit
             {
             case ELFPBuffStackingMode::RefreshDuration:
                 RefreshInstanceDuration(ExistingInstance, DurationTurnsOverride);
-                SyncLegacyBuffsFromInstances();
                 BroadcastBuffListChanged();
                 return;
 
@@ -689,7 +474,6 @@ void ULFPBuffComponent::AddBuffInstance(ULFPBuffDefinitionDataAsset* BuffDefinit
                     1,
                     FMath::Max(BuffDefinition->StackingPolicy.MaxStacks, 1));
                 RefreshInstanceDuration(ExistingInstance, DurationTurnsOverride);
-                SyncLegacyBuffsFromInstances();
                 BroadcastBuffListChanged();
                 return;
 
@@ -720,8 +504,6 @@ void ULFPBuffComponent::AddBuffInstance(ULFPBuffDefinitionDataAsset* BuffDefinit
         FMath::Max(BuffDefinition->StackingPolicy.MaxStacks, 1));
     RuntimeInstance.bIsPersistent = RuntimeInstance.DurationType != ELFPBuffDurationType::TimedTurns;
     RuntimeInstance.InstanceId = FGuid::NewGuid();
-    RuntimeInstance.bHasLegacyDefinition = bHasLegacyDefinition;
-    RuntimeInstance.LegacyDefinition = LegacyDefinition;
     RefreshInstanceDuration(RuntimeInstance, DurationTurnsOverride);
     RuntimeInstance.bIsConditionMet = EvaluateBuffCondition(RuntimeInstance, OwnerUnit);
 
@@ -731,7 +513,6 @@ void ULFPBuffComponent::AddBuffInstance(ULFPBuffDefinitionDataAsset* BuffDefinit
         ExecuteBuffEffects(BuffInstances[AddedIndex], ELFPBuffTriggerEvent::OnApply, OwnerUnit);
     }
 
-    SyncLegacyBuffsFromInstances();
     BroadcastBuffListChanged();
 }
 
@@ -774,72 +555,6 @@ bool ULFPBuffComponent::EvaluateBuffCondition(const FLFPBuffInstance& BuffInstan
     return BuffInstance.Definition->AreConditionsMet(MakeConditionContext(BuffInstance, OwnerUnit));
 }
 
-ULFPBuffDefinitionDataAsset* ULFPBuffComponent::CreateTransientDefinitionFromLegacy(const FLFPBuffDefinition& BuffDefinition)
-{
-    ULFPBuffDefinitionDataAsset* TransientDefinition = NewObject<ULFPBuffDefinitionDataAsset>(this);
-    if (!TransientDefinition)
-    {
-        return nullptr;
-    }
-
-    TransientDefinition->BuffId = GetLegacyBuffId(BuffDefinition.BuffType);
-    TransientDefinition->Category = BuffDefinition.BuffType == ELFPBuffType::BT_Bleed
-        ? ELFPBuffCategory::Debuff
-        : ELFPBuffCategory::Buff;
-    TransientDefinition->DurationPolicy.DurationType = ConvertLegacyDurationType(BuffDefinition.LifetimeType);
-    TransientDefinition->DurationPolicy.DurationTurns = BuffDefinition.DurationTurns;
-    TransientDefinition->StackingPolicy.StackingMode = ELFPBuffStackingMode::AddInstance;
-    TransientDefinition->StackingPolicy.MaxStacks = 99;
-    TransientDefinition->bVisibleInUI = BuffDefinition.bVisibleInUI;
-
-    if (BuffDefinition.ConditionType == ELFPBuffConditionType::BCT_NoFriendlyWithinRange)
-    {
-        ULFPBuffCondition_NoFriendlyWithinRange* Condition = NewObject<ULFPBuffCondition_NoFriendlyWithinRange>(TransientDefinition);
-        if (Condition)
-        {
-            Condition->Range = BuffDefinition.ConditionRange;
-            TransientDefinition->Conditions.Add(Condition);
-        }
-    }
-
-    for (const FLFPBuffEffectSpec& EffectSpec : BuffDefinition.Effects)
-    {
-        switch (EffectSpec.EffectType)
-        {
-        case ELFPBuffEffectType::BET_PeriodicDamage:
-            {
-                ULFPBuffEffect_PeriodicDamage* Effect = NewObject<ULFPBuffEffect_PeriodicDamage>(TransientDefinition);
-                if (Effect)
-                {
-                    Effect->TriggerEvent = ConvertLegacyTriggerType(EffectSpec.TriggerType);
-                    Effect->Damage = EffectSpec.Magnitude;
-                    Effect->bScaleByStack = true;
-                    TransientDefinition->Effects.Add(Effect);
-                }
-            }
-            break;
-
-        case ELFPBuffEffectType::BET_StatModifier:
-            {
-                ULFPBuffEffect_ModifyStat* Effect = NewObject<ULFPBuffEffect_ModifyStat>(TransientDefinition);
-                if (Effect)
-                {
-                    Effect->TriggerEvent = ConvertLegacyTriggerType(EffectSpec.TriggerType);
-                    Effect->StatModifier = EffectSpec.StatModifier;
-                    Effect->bScaleByStack = true;
-                    TransientDefinition->Effects.Add(Effect);
-                }
-            }
-            break;
-
-        default:
-            break;
-        }
-    }
-
-    return TransientDefinition;
-}
-
 FLFPBuffEffectContext ULFPBuffComponent::MakeEffectContext(const FLFPBuffInstance& BuffInstance, ALFPTacticsUnit* OwnerUnit) const
 {
     FLFPBuffEffectContext Context;
@@ -862,119 +577,9 @@ FLFPBuffConditionContext ULFPBuffComponent::MakeConditionContext(const FLFPBuffI
     return Context;
 }
 
-FLFPBuffRuntimeState ULFPBuffComponent::MakeLegacyStateFromInstance(const FLFPBuffInstance& BuffInstance) const
-{
-    FLFPBuffRuntimeState RuntimeState;
-    RuntimeState.Definition = BuffInstance.bHasLegacyDefinition
-        ? BuffInstance.LegacyDefinition
-        : FLFPBuffDefinition();
-
-    if (!BuffInstance.bHasLegacyDefinition)
-    {
-        RuntimeState.Definition.BuffType = IsBleedInstance(BuffInstance)
-            ? ELFPBuffType::BT_Bleed
-            : ELFPBuffType::BT_StatModifier;
-        RuntimeState.Definition.LifetimeType = ConvertToLegacyDurationType(BuffInstance.DurationType);
-        RuntimeState.Definition.DurationTurns = BuffInstance.Definition
-            ? BuffInstance.Definition->DurationPolicy.DurationTurns
-            : 0;
-        RuntimeState.Definition.SourceSkillName = BuffInstance.BuffId.IsValid()
-            ? FName(*BuffInstance.BuffId.ToString())
-            : NAME_None;
-        RuntimeState.Definition.bVisibleInUI = BuffInstance.Definition
-            ? BuffInstance.Definition->bVisibleInUI
-            : true;
-
-        if (BuffInstance.Definition)
-        {
-            for (const ULFPBuffEffect* Effect : BuffInstance.Definition->Effects)
-            {
-                if (const ULFPBuffEffect_PeriodicDamage* DamageEffect = Cast<ULFPBuffEffect_PeriodicDamage>(Effect))
-                {
-                    FLFPBuffEffectSpec EffectSpec;
-                    EffectSpec.EffectType = ELFPBuffEffectType::BET_PeriodicDamage;
-                    EffectSpec.TriggerType = ConvertToLegacyTriggerType(DamageEffect->TriggerEvent);
-                    EffectSpec.Magnitude = DamageEffect->Damage;
-                    RuntimeState.Definition.Effects.Add(EffectSpec);
-                }
-                else if (const ULFPBuffEffect_ModifyStat* StatEffect = Cast<ULFPBuffEffect_ModifyStat>(Effect))
-                {
-                    FLFPBuffEffectSpec EffectSpec;
-                    EffectSpec.EffectType = ELFPBuffEffectType::BET_StatModifier;
-                    EffectSpec.TriggerType = ConvertToLegacyTriggerType(StatEffect->TriggerEvent);
-                    EffectSpec.StatModifier = StatEffect->StatModifier;
-                    RuntimeState.Definition.Effects.Add(EffectSpec);
-                }
-            }
-        }
-    }
-
-    RuntimeState.RemainingTurns = BuffInstance.RemainingTurns;
-    RuntimeState.StackCount = BuffInstance.StackCount;
-    RuntimeState.bIsConditionMet = BuffInstance.bIsConditionMet;
-    RuntimeState.bIsPersistent = BuffInstance.bIsPersistent;
-    return RuntimeState;
-}
-
-bool ULFPBuffComponent::DoesInstanceMatchLegacyType(const FLFPBuffInstance& BuffInstance, ELFPBuffType BuffType) const
-{
-    if (BuffInstance.bHasLegacyDefinition)
-    {
-        return BuffInstance.LegacyDefinition.BuffType == BuffType;
-    }
-
-    if (BuffType == ELFPBuffType::BT_Bleed)
-    {
-        return IsBleedInstance(BuffInstance);
-    }
-
-    return !IsBleedInstance(BuffInstance);
-}
-
 bool ULFPBuffComponent::IsBleedInstance(const FLFPBuffInstance& BuffInstance) const
 {
-    return (BuffInstance.bHasLegacyDefinition && BuffInstance.LegacyDefinition.BuffType == ELFPBuffType::BT_Bleed) ||
-        IsBleedBuffId(BuffInstance.BuffId);
-}
-
-int32 ULFPBuffComponent::GetBleedMagnitudeFromInstance(const FLFPBuffInstance& BuffInstance) const
-{
-    if (!IsBleedInstance(BuffInstance))
-    {
-        return 0;
-    }
-
-    if (BuffInstance.bHasLegacyDefinition)
-    {
-        int32 LegacyMagnitude = 0;
-        for (const FLFPBuffEffectSpec& EffectSpec : BuffInstance.LegacyDefinition.Effects)
-        {
-            if (EffectSpec.EffectType == ELFPBuffEffectType::BET_PeriodicDamage &&
-                EffectSpec.TriggerType == ELFPBuffTriggerType::BTT_OnTurnStart)
-            {
-                LegacyMagnitude += FMath::Max(EffectSpec.Magnitude, 0) * FMath::Max(BuffInstance.StackCount, 1);
-            }
-        }
-        return LegacyMagnitude;
-    }
-
-    int32 Magnitude = 0;
-    if (BuffInstance.Definition)
-    {
-        for (const ULFPBuffEffect* Effect : BuffInstance.Definition->Effects)
-        {
-            const ULFPBuffEffect_PeriodicDamage* DamageEffect = Cast<ULFPBuffEffect_PeriodicDamage>(Effect);
-            if (!DamageEffect || DamageEffect->TriggerEvent != ELFPBuffTriggerEvent::OnTurnStart)
-            {
-                continue;
-            }
-
-            const int32 StackScale = DamageEffect->bScaleByStack ? FMath::Max(BuffInstance.StackCount, 1) : 1;
-            Magnitude += FMath::Max(DamageEffect->Damage, 0) * StackScale;
-        }
-    }
-
-    return Magnitude;
+    return IsBleedBuffId(BuffInstance.BuffId);
 }
 
 FLFPBuffDisplayEntry ULFPBuffComponent::MakeDisplayEntryFromInstance(const FLFPBuffInstance& BuffInstance) const
@@ -994,20 +599,12 @@ FLFPBuffDisplayEntry ULFPBuffComponent::MakeDisplayEntryFromInstance(const FLFPB
         Entry.Category = BuffInstance.Definition->Category;
         Entry.bVisibleInUI = BuffInstance.Definition->bVisibleInUI;
     }
-    else
-    {
-        Entry.bVisibleInUI = BuffInstance.LegacyDefinition.bVisibleInUI;
-    }
 
     if (Entry.DisplayName.IsEmpty())
     {
         if (BuffInstance.BuffId.IsValid())
         {
             Entry.DisplayName = FText::FromString(BuffInstance.BuffId.ToString());
-        }
-        else if (!BuffInstance.LegacyDefinition.SourceSkillName.IsNone())
-        {
-            Entry.DisplayName = FText::FromName(BuffInstance.LegacyDefinition.SourceSkillName);
         }
         else
         {
@@ -1034,17 +631,6 @@ void ULFPBuffComponent::RefreshInstanceDuration(FLFPBuffInstance& BuffInstance, 
     else
     {
         BuffInstance.RemainingTurns = 0;
-    }
-}
-
-void ULFPBuffComponent::SyncLegacyBuffsFromInstances()
-{
-    Buffs.Empty();
-    Buffs.Reserve(BuffInstances.Num());
-
-    for (const FLFPBuffInstance& BuffInstance : BuffInstances)
-    {
-        Buffs.Add(MakeLegacyStateFromInstance(BuffInstance));
     }
 }
 

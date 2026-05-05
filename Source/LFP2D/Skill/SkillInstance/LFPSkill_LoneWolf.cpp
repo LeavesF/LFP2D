@@ -35,21 +35,5 @@ void ULFPSkill_LoneWolf::RegisterPassiveBuffs_Implementation(ALFPTacticsUnit* In
         return;
     }
 
-    FLFPBuffDefinition BuffDefinition;
-    BuffDefinition.BuffType = ELFPBuffType::BT_StatModifier;
-    BuffDefinition.LifetimeType = ELFPBuffLifetimeType::BLT_WhileConditionTrue;
-    BuffDefinition.ConditionType = ELFPBuffConditionType::BCT_NoFriendlyWithinRange;
-    BuffDefinition.ConditionRange = FriendlyCheckRange;
-    BuffDefinition.SourceSkillName = TEXT("LoneWolf");
-    BuffDefinition.bVisibleInUI = true;
-
-    FLFPBuffEffectSpec EffectSpec;
-    EffectSpec.EffectType = ELFPBuffEffectType::BET_StatModifier;
-    EffectSpec.TriggerType = ELFPBuffTriggerType::BTT_PassiveStat;
-    EffectSpec.StatModifier.AttackDelta = AttackBonus;
-    EffectSpec.StatModifier.PhysicalBlockDelta = PhysicalBlockBonus;
-    EffectSpec.StatModifier.SpeedDelta = SpeedBonus;
-    BuffDefinition.Effects.Add(EffectSpec);
-
-    BuffComponent->RegisterBuff(BuffDefinition);
+    UE_LOG(LogTemp, Warning, TEXT("[LoneWolf] 未配置 PassiveBuffDefinition，已跳过孤狼被动 Buff。"));
 }

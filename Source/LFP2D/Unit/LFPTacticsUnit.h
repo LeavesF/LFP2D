@@ -10,7 +10,6 @@
 #include "LFP2D/Unit/LFPUnitTypes.h"
 #include "Components/TimelineComponent.h"
 #include "PaperSpriteComponent.h"
-#include "LFP2D/Buff/LFPBuffTypes.h"
 #include "LFPTacticsUnit.generated.h"
 
 class ALFPTacticsUnit;
@@ -554,10 +553,10 @@ public:
     bool HasAnyBuffs() const;
 
     UFUNCTION(BlueprintPure, Category = "Unit Buff")
-    bool HasBuff(ELFPBuffType BuffType) const;
+    bool HasBuffById(FGameplayTag BuffId) const;
 
     UFUNCTION(BlueprintPure, Category = "Unit Buff")
-    int32 GetBuffCount(ELFPBuffType BuffType) const;
+    int32 GetBuffStack(FGameplayTag BuffId) const;
 
     UFUNCTION(BlueprintPure, Category = "Unit Buff")
     int32 GetTotalBuffCount() const;

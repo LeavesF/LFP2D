@@ -17,18 +17,6 @@ public:
 	virtual void RegisterPassiveBuffs_Implementation(ALFPTacticsUnit* InOwner) override;
 
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill|Passive", meta = (ClampMin = "0"))
-	int32 FriendlyCheckRange = 2;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill|Passive")
-	int32 AttackBonus = 10;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill|Passive")
-	int32 PhysicalBlockBonus = 5;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill|Passive")
-	int32 SpeedBonus = 3;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill|Passive")
 	TObjectPtr<ULFPBuffDefinitionDataAsset> PassiveBuffDefinition = nullptr;
 };

@@ -20,14 +20,14 @@ enum class ESkillTargetType : uint8
 	Self,
 	SingleAlly,
 	SingleEnemy,
-    SingleUnit,
-    MutiAlly,
-    MutiEnemy,
-    MutiUnit,
+	SingleUnit,
+	MutiAlly,
+	MutiEnemy,
+	MutiUnit,
 	AllAlly,
 	AllEnemy,
 	AllUnit,
-    AnyTile
+	AnyTile
 };
 
 UENUM(BlueprintType)
@@ -192,8 +192,8 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Skill|Range")
 	TArray<FLFPHexCoordinates> GetReleaseRangeInGrid();
 
-    UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Skill|Range")
-    TArray<FLFPHexCoordinates> GetEffectRangeInGrid();
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Skill|Range")
+	TArray<FLFPHexCoordinates> GetEffectRangeInGrid();
 
 	// AI 目标选择：计算对目标的仇恨值（值越高，越优先攻击）
 	// Caster：使用技能的敌方单位（自身属性/位置）
@@ -279,7 +279,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill|Range")
 	TArray<FLFPHexCoordinates> ReleaseRangeCoords;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Skill|Range")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Skill|Range")
 	TArray<FLFPHexCoordinates> ReleaseRangeInGridCoords;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill|Range")

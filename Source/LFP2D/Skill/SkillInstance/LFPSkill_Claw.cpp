@@ -75,7 +75,7 @@ void ULFPSkill_Claw::Execute_Implementation(ALFPHexTile* TargetTile)
         }
         else
         {
-            BuffComponent->ApplyBleed(BleedStacks, BleedDurationTurns);
+            UE_LOG(LogTemp, Warning, TEXT("[Claw] 未配置 BleedBuffDefinition，已跳过流血效果。"));
         }
     }
 }

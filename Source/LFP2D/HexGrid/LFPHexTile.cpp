@@ -154,17 +154,17 @@ void ALFPHexTile::ShowEdge(int32 DirIndex, FLinearColor Color, EUnitRange HexRan
 			SortPriority = SkillEffectEdgeTranslucencySortPriority;
 			break;
 
-        case EUnitRange::UR_Enemy_Move:
-            SortPriority = MoveEdgeTranslucencySortPriority;
-            break;
+		case EUnitRange::UR_Enemy_Move:
+			SortPriority = MoveEdgeTranslucencySortPriority;
+			break;
 
-        case EUnitRange::UR_Enemy_SkillRelease:
-            SortPriority = SkillReleaseEdgeTranslucencySortPriority;
-            break;
+		case EUnitRange::UR_Enemy_SkillRelease:
+			SortPriority = SkillReleaseEdgeTranslucencySortPriority;
+			break;
 
-        case EUnitRange::UR_Enemy_SkillEffect:
-            SortPriority = SkillEffectEdgeTranslucencySortPriority;
-            break;
+		case EUnitRange::UR_Enemy_SkillEffect:
+			SortPriority = SkillEffectEdgeTranslucencySortPriority;
+			break;
 		default:
 			break;
 		}

@@ -33,7 +33,7 @@ enum class ELFPBuffDurationType : uint8
 UENUM(BlueprintType)
 enum class ELFPBuffStackingMode : uint8
 {
-    // 每次施加都新增一个独立实例。旧版流血默认使用该规则，所以多个流血各自倒计时。
+    // 每次施加都新增一个独立实例，适合多个来源需要各自倒计时的状态。
     AddInstance UMETA(DisplayName = "Add Instance"),
 
     // 如果目标已有同 BuffId，只刷新持续时间，不增加层数；适合“攻击力提升 2 回合，重复施加只续时”。
@@ -210,7 +210,7 @@ struct FLFPBuffInstance
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Buff")
     TObjectPtr<ULFPBuffDefinitionDataAsset> Definition = nullptr;
 
-    // Buff 唯一配置 ID。新系统使用 GameplayTag 替代旧 ELFPBuffType 枚举。
+    // Buff 唯一配置 ID。使用 GameplayTag 方便蓝图、数据资产和 UI 统一查询。
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Buff")
     FGameplayTag BuffId;
 
@@ -238,21 +238,13 @@ struct FLFPBuffInstance
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Buff")
     bool bIsConditionMet = true;
 
-    // 兼容旧接口：非有限回合 Buff 视为 persistent，用于 ClearPersistentBuffs。
+    // 是否是非有限回合 Buff；技能组件刷新被动时会清理这类 Buff 后重新注册。
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Buff")
     bool bIsPersistent = false;
 
     // 运行时唯一实例 ID，后续 UI 或日志可以用它区分同 BuffId 的多个实例。
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Buff")
     FGuid InstanceId;
-
-    // 当前实例是否由旧 FLFPBuffDefinition 转换而来。
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Buff")
-    bool bHasLegacyDefinition = false;
-
-    // 旧系统兼容快照，用于 GetBuffStates / GetPersistentBuffStates 等旧查询。
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Buff")
-    FLFPBuffDefinition LegacyDefinition;
 
     bool HasTimedDuration() const
     {

@@ -3,6 +3,22 @@
 #include "LFP2D/HexGrid/LFPHexTile.h"
 #include "LFP2D/Unit/LFPTacticsUnit.h"
 
+namespace
+{
+constexpr const TCHAR* BleedBuffIdName = TEXT("Buff.Status.Bleed");
+
+int32 GetBleedStackCount(const ULFPBuffComponent* BuffComponent)
+{
+    if (!BuffComponent)
+    {
+        return 0;
+    }
+
+    const FGameplayTag BleedBuffId = FGameplayTag::RequestGameplayTag(FName(BleedBuffIdName), false);
+    return BleedBuffId.IsValid() ? BuffComponent->GetBuffStack(BleedBuffId) : 0;
+}
+}
+
 ULFPSkill_WoundBite::ULFPSkill_WoundBite()
 {
     SkillName = FText::FromString(TEXT("伤口撕咬"));
@@ -33,7 +49,7 @@ bool ULFPSkill_WoundBite::CanPlanFrom_Implementation(ALFPHexTile* CasterTile, AL
         return CanExecuteConfiguredEffects(TargetTile);
     }
 
-    return BuffComponent && BuffComponent->GetBleedStacks() > 0;
+    return GetBleedStackCount(BuffComponent) > 0;
 }
 
 bool ULFPSkill_WoundBite::CanExecute_Implementation(ALFPHexTile* TargetTile)
@@ -66,7 +82,7 @@ bool ULFPSkill_WoundBite::CanExecute_Implementation(ALFPHexTile* TargetTile)
     }
 
     const ULFPBuffComponent* BuffComponent = TargetUnit->GetBuffComponent();
-    return BuffComponent && BuffComponent->GetBleedStacks() > 0;
+    return GetBleedStackCount(BuffComponent) > 0;
 }
 
 void ULFPSkill_WoundBite::Execute_Implementation(ALFPHexTile* TargetTile)
@@ -94,7 +110,7 @@ void ULFPSkill_WoundBite::Execute_Implementation(ALFPHexTile* TargetTile)
         return;
     }
 
-    const int32 BleedStacks = BuffComponent->GetBleedStacks();
+    const int32 BleedStacks = GetBleedStackCount(BuffComponent);
     if (BleedStacks <= 0)
     {
         return;

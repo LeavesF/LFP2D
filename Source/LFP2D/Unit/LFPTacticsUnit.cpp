@@ -843,14 +843,14 @@ bool ALFPTacticsUnit::HasAnyBuffs() const
     return BuffComponent && BuffComponent->HasAnyBuffs();
 }
 
-bool ALFPTacticsUnit::HasBuff(ELFPBuffType BuffType) const
+bool ALFPTacticsUnit::HasBuffById(FGameplayTag BuffId) const
 {
-    return BuffComponent && BuffComponent->HasBuff(BuffType);
+    return BuffComponent && BuffComponent->HasBuffById(BuffId);
 }
 
-int32 ALFPTacticsUnit::GetBuffCount(ELFPBuffType BuffType) const
+int32 ALFPTacticsUnit::GetBuffStack(FGameplayTag BuffId) const
 {
-    return BuffComponent ? BuffComponent->GetBuffCount(BuffType) : 0;
+    return BuffComponent ? BuffComponent->GetBuffStack(BuffId) : 0;
 }
 
 int32 ALFPTacticsUnit::GetTotalBuffCount() const

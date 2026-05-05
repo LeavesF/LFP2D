@@ -75,7 +75,7 @@ void ULFPSkillComponent::InitializeSkills()
 
     if (ULFPBuffComponent* BuffComponent = OwnerUnit->GetBuffComponent())
     {
-        BuffComponent->ClearPersistentBuffs();
+        BuffComponent->ClearPassiveBuffs();
     }
 
     // 从数据资产创建技能实例
