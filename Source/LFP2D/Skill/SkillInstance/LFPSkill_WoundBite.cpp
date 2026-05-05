@@ -28,6 +28,11 @@ bool ULFPSkill_WoundBite::CanPlanFrom_Implementation(ALFPHexTile* CasterTile, AL
     }
 
     const ULFPBuffComponent* BuffComponent = TargetUnit->GetBuffComponent();
+    if (HasConfiguredEffects())
+    {
+        return CanExecuteConfiguredEffects(TargetTile);
+    }
+
     return BuffComponent && BuffComponent->GetBleedStacks() > 0;
 }
 
@@ -55,6 +60,11 @@ bool ULFPSkill_WoundBite::CanExecute_Implementation(ALFPHexTile* TargetTile)
         return false;
     }
 
+    if (HasConfiguredEffects())
+    {
+        return CanExecuteConfiguredEffects(TargetTile);
+    }
+
     const ULFPBuffComponent* BuffComponent = TargetUnit->GetBuffComponent();
     return BuffComponent && BuffComponent->GetBleedStacks() > 0;
 }
@@ -63,6 +73,12 @@ void ULFPSkill_WoundBite::Execute_Implementation(ALFPHexTile* TargetTile)
 {
     if (!CanExecute(TargetTile))
     {
+        return;
+    }
+
+    if (HasConfiguredEffects())
+    {
+        ExecuteConfiguredEffects(TargetTile);
         return;
     }
 

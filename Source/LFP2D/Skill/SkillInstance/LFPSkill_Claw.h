@@ -4,6 +4,8 @@
 #include "LFP2D/Skill/LFPSkillBase.h"
 #include "LFPSkill_Claw.generated.h"
 
+class ULFPBuffDefinitionDataAsset;
+
 UCLASS(Blueprintable)
 class LFP2D_API ULFPSkill_Claw : public ULFPSkillBase
 {
@@ -25,4 +27,7 @@ protected:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
     int32 BleedDurationTurns = 2;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill|Buff")
+    TObjectPtr<ULFPBuffDefinitionDataAsset> BleedBuffDefinition = nullptr;
 };

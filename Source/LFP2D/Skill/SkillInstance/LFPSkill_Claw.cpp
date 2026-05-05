@@ -48,6 +48,12 @@ void ULFPSkill_Claw::Execute_Implementation(ALFPHexTile* TargetTile)
         return;
     }
 
+    if (HasConfiguredEffects())
+    {
+        ExecuteConfiguredEffects(TargetTile);
+        return;
+    }
+
     ALFPTacticsUnit* TargetUnit = GetUnitOnTile(TargetTile);
     if (!TargetUnit)
     {
@@ -63,7 +69,14 @@ void ULFPSkill_Claw::Execute_Implementation(ALFPHexTile* TargetTile)
 
     if (ULFPBuffComponent* BuffComponent = TargetUnit->GetBuffComponent())
     {
-        BuffComponent->ApplyBleed(BleedStacks, BleedDurationTurns);
+        if (BleedBuffDefinition)
+        {
+            BuffComponent->ApplyBuff(BleedBuffDefinition, Owner, BleedStacks, BleedDurationTurns);
+        }
+        else
+        {
+            BuffComponent->ApplyBleed(BleedStacks, BleedDurationTurns);
+        }
     }
 }
 

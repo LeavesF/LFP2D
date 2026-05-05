@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/PanelWidget.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 #include "Components/Image.h"
@@ -11,6 +12,7 @@
 #include "LFPHealthBarWidget.generated.h"
 
 class ALFPTacticsUnit;
+class ULFPBuffIconWidget;
 
 /**
  *
@@ -34,6 +36,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Health Bar")
 	void UpdateHealthBar(int32 CurrentHealth, int32 MaxHealth);
 
+	// 重新读取当前单位的可见 Buff，并刷新血条下方的 Buff 图标。
+	UFUNCTION(BlueprintCallable, Category = "Health Bar|Buff")
+	void RefreshBuffIcons();
+
 protected:
 	// 血量变化事件处理
 	UFUNCTION()
@@ -43,6 +49,10 @@ protected:
 	UFUNCTION()
 	void OnUnitDeath();
 
+	// Buff 列表变化事件处理
+	UFUNCTION()
+	void OnBuffListChanged();
+
 	// 血条控件
 	UPROPERTY(BlueprintReadOnly, Category = "Health Bar", meta = (BindWidget))
 	UProgressBar* HealthProgressBar;
@@ -50,6 +60,18 @@ protected:
 	// 血量文本
 	UPROPERTY(BlueprintReadOnly, Category = "Health Bar", meta = (BindWidget))
 	UTextBlock* HealthText;
+
+	// 血条下方的 Buff 容器。蓝图中可使用 HorizontalBox、WrapBox 等任意 PanelWidget，并命名为 BuffContainer。
+	UPROPERTY(BlueprintReadOnly, Category = "Health Bar|Buff", meta = (BindWidgetOptional))
+	UPanelWidget* BuffContainer;
+
+	// 单个 Buff 图标 Widget 类。建议设置为继承自 LFPBuffIconWidget 的蓝图。
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health Bar|Buff")
+	TSubclassOf<ULFPBuffIconWidget> BuffIconWidgetClass;
+
+	// 最多显示的 Buff 图标数量，避免单位身上 Buff 太多时遮挡战场。
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health Bar|Buff", meta = (ClampMin = "0"))
+	int32 MaxBuffIcons = 6;
 
 	// 绑定的单位
 	UPROPERTY(BlueprintReadOnly, Category = "Health Bar")

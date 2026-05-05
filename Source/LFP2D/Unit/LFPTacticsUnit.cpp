@@ -555,6 +555,11 @@ void ALFPTacticsUnit::OnTurnStarted()
 
 void ALFPTacticsUnit::OnTurnEnded()
 {
+    if (BuffComponent)
+    {
+        BuffComponent->OnTurnEnded();
+    }
+
     bOnTurn = false;
 }
 

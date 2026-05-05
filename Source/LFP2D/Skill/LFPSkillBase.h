@@ -11,6 +11,7 @@
 
 class ALFPTacticsUnit;
 class ULFPSkillRangeDataAsset;
+class ULFPSkillEffect;
 struct FPropertyChangedEvent;
 
 UENUM(BlueprintType)
@@ -71,6 +72,17 @@ public:
 	// 固定伤害、真实伤害、DoT 等特殊技能应继续走自定义逻辑。
 	UFUNCTION(BlueprintCallable, Category = "Skill")
 	int32 DealOwnerSkillDamage(ALFPTacticsUnit* Target) const;
+
+	// 执行 ConfiguredEffects 中配置的技能效果。
+	UFUNCTION(BlueprintCallable, Category = "Skill|Effects")
+	void ExecuteConfiguredEffects(ALFPHexTile* TargetTile = nullptr);
+
+	// 检查 ConfiguredEffects 是否都能对当前目标生效。
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Skill|Effects")
+	bool CanExecuteConfiguredEffects(ALFPHexTile* TargetTile = nullptr) const;
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Skill|Effects")
+	bool HasConfiguredEffects() const { return !ConfiguredEffects.IsEmpty(); }
 
 	// 以下 getter 由统一伤害结算侧读取。
 	// 子类只需覆盖自己需要变化的部分，未覆盖时使用默认规则。
@@ -218,6 +230,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
 	FGameplayTagContainer SkillTags;
+
+	// 数据驱动技能效果列表。为空时技能继续使用子类自己的 Execute 逻辑。
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Instanced, Category = "Skill|Effects")
+	TArray<TObjectPtr<ULFPSkillEffect>> ConfiguredEffects;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill|Range")
 	ESkillRangeType ReleaseRangeType = ESkillRangeType::Coverage;

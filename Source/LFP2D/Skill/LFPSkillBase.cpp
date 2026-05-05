@@ -4,6 +4,7 @@
 #include "LFP2D/Skill/LFPSkillBase.h"
 #include "LFP2D/HexGrid/LFPHexGridManager.h"
 #include "LFP2D/HexGrid/LFPHexTile.h"
+#include "LFP2D/Skill/LFPSkillEffect.h"
 #include "LFP2D/Skill/LFPSkillRangeDataAsset.h"
 #include "LFP2D/Unit/LFPTacticsUnit.h"
 #include "UObject/UnrealType.h"
@@ -49,6 +50,16 @@ void AppendCoordsInDistanceRange(TArray<FLFPHexCoordinates>& OutCoords, int32 Ma
 		}
 	}
 }
+
+FLFPSkillEffectContext MakeSkillEffectContext(ULFPSkillBase* Skill, ALFPHexTile* TargetTile)
+{
+	FLFPSkillEffectContext Context;
+	Context.Skill = Skill;
+	Context.OwnerUnit = Skill ? Skill->Owner : nullptr;
+	Context.TargetTile = TargetTile;
+	Context.TargetUnit = TargetTile ? TargetTile->GetUnitOnTile() : nullptr;
+	return Context;
+}
 }
 
 
@@ -76,6 +87,10 @@ void ULFPSkillBase::InitSkill(ALFPTacticsUnit* InOwner)
 
 void ULFPSkillBase::Execute_Implementation(ALFPHexTile* TargetTile)
 {
+	if (HasConfiguredEffects() && CanExecuteConfiguredEffects(TargetTile))
+	{
+		ExecuteConfiguredEffects(TargetTile);
+	}
 }
 
 void ULFPSkillBase::RegisterPassiveBuffs_Implementation(ALFPTacticsUnit* InOwner)
@@ -146,6 +161,42 @@ int32 ULFPSkillBase::DealOwnerSkillDamage(ALFPTacticsUnit* Target) const
 	return Owner->ApplySkillDamage(Target, this);
 }
 
+void ULFPSkillBase::ExecuteConfiguredEffects(ALFPHexTile* TargetTile)
+{
+	if (!HasConfiguredEffects())
+	{
+		return;
+	}
+
+	const FLFPSkillEffectContext Context = MakeSkillEffectContext(this, TargetTile);
+	for (const ULFPSkillEffect* Effect : ConfiguredEffects)
+	{
+		if (Effect && Effect->CanApply(Context))
+		{
+			Effect->Apply(Context);
+		}
+	}
+}
+
+bool ULFPSkillBase::CanExecuteConfiguredEffects(ALFPHexTile* TargetTile) const
+{
+	if (!HasConfiguredEffects())
+	{
+		return true;
+	}
+
+	const FLFPSkillEffectContext Context = MakeSkillEffectContext(const_cast<ULFPSkillBase*>(this), TargetTile);
+	for (const ULFPSkillEffect* Effect : ConfiguredEffects)
+	{
+		if (Effect && !Effect->CanApply(Context))
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
 int32 ULFPSkillBase::GetHitCount_Implementation(ALFPTacticsUnit* Target) const
 {
 	return 1;
@@ -182,6 +233,7 @@ bool ULFPSkillBase::CanExecute_Implementation(ALFPHexTile* TargetTile)
 	// 检查行动力
 	if (!Owner->IsEnemy() && !Owner->HasEnoughActionPoints(ActionPointCost)) return false;
 	if (TargetTile && !IsValidReleaseTargetTile(TargetTile)) return false;
+	if (HasConfiguredEffects() && !CanExecuteConfiguredEffects(TargetTile)) return false;
 
 	return true;
 }
@@ -407,24 +459,24 @@ TArray<FLFPHexCoordinates> ULFPSkillBase::GetReleaseRangeInGrid_Implementation()
 
 TArray<FLFPHexCoordinates> ULFPSkillBase::GetEffectRangeInGrid_Implementation()
 {
-    EffectRangeInGridCoords.Empty();
-    if (!Owner)
-    {
-        return EffectRangeInGridCoords;
-    }
+	EffectRangeInGridCoords.Empty();
+	if (!Owner)
+	{
+		return EffectRangeInGridCoords;
+	}
 
-    RebuildEffectRangeCoords();
+	RebuildEffectRangeCoords();
 
-    for (FLFPHexCoordinates Coord : EffectRangeCoords)
-    {
-        FLFPHexCoordinates CoordInGrid = FLFPHexCoordinates();
-        FLFPHexCoordinates OwnerCoord = Owner->GetCurrentCoordinates();
-        CoordInGrid.Q = OwnerCoord.Q + Coord.Q;
-        CoordInGrid.R = OwnerCoord.R + Coord.R;
-        CoordInGrid.S = OwnerCoord.S + Coord.S;
-        EffectRangeInGridCoords.Add(CoordInGrid);
-    }
-    return EffectRangeInGridCoords;
+	for (FLFPHexCoordinates Coord : EffectRangeCoords)
+	{
+		FLFPHexCoordinates CoordInGrid = FLFPHexCoordinates();
+		FLFPHexCoordinates OwnerCoord = Owner->GetCurrentCoordinates();
+		CoordInGrid.Q = OwnerCoord.Q + Coord.Q;
+		CoordInGrid.R = OwnerCoord.R + Coord.R;
+		CoordInGrid.S = OwnerCoord.S + Coord.S;
+		EffectRangeInGridCoords.Add(CoordInGrid);
+	}
+	return EffectRangeInGridCoords;
 }
 
 float ULFPSkillBase::CalculateHatredValue_Implementation(ALFPTacticsUnit* Caster, ALFPTacticsUnit* Target) const

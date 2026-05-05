@@ -29,6 +29,12 @@ void ULFPSkill_LoneWolf::RegisterPassiveBuffs_Implementation(ALFPTacticsUnit* In
         return;
     }
 
+    if (PassiveBuffDefinition)
+    {
+        BuffComponent->ApplyBuff(PassiveBuffDefinition, InOwner);
+        return;
+    }
+
     FLFPBuffDefinition BuffDefinition;
     BuffDefinition.BuffType = ELFPBuffType::BT_StatModifier;
     BuffDefinition.LifetimeType = ELFPBuffLifetimeType::BLT_WhileConditionTrue;
