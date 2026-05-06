@@ -105,7 +105,7 @@ void ULFPSkillEffect_DamageByTargetBuffStack::Apply_Implementation(const FLFPSki
         return;
     }
 
-    EffectTarget->TakeTypedDamage(StackCount * DamagePerStack, ResolveDamageType(Context));
+    Context.OwnerUnit->ApplySkillTypedDamage(EffectTarget, StackCount * DamagePerStack, ResolveDamageType(Context), Context.Skill.Get());
 }
 
 int32 ULFPSkillEffect_DamageByTargetBuffStack::GetStackCount(const FLFPSkillEffectContext& Context) const

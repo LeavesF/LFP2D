@@ -12,6 +12,7 @@ ULFPSkill_BasicMeleeAttack::ULFPSkill_BasicMeleeAttack()
     ReleaseRangeType = ESkillRangeType::Coverage;
     MaxRange = 1;
     bIsDefaultAttack = true;
+    bTriggersEnemyMissBuffOnMiss = true;
 }
 
 bool ULFPSkill_BasicMeleeAttack::CanExecute_Implementation(ALFPHexTile* TargetTile)

@@ -362,6 +362,11 @@ FLFPBuffStatModifier ULFPBuffComponent::GetActiveStatModifier() const
     return CombinedModifier;
 }
 
+float ULFPBuffComponent::GetOutgoingDamageMultiplier() const
+{
+    return FMath::Max(0.0f, GetActiveStatModifier().OutgoingDamageMultiplier);
+}
+
 TArray<FLFPBuffDisplayEntry> ULFPBuffComponent::GetBuffDisplayEntries(bool bOnlyVisible, bool bOnlyActive) const
 {
     TArray<FLFPBuffDisplayEntry> Entries;

@@ -24,6 +24,17 @@
 #include "DrawDebugHelpers.h"
 #include "Templates/UnrealTemplate.h"
 
+namespace
+{
+constexpr const TCHAR* EnemyMissDamageBoostBuffIdName = TEXT("Buff.Status.EnemyMissDamageBoost");
+constexpr const TCHAR* EnemyMissSpeedBoostBuffIdName = TEXT("Buff.Status.EnemyMissSpeedBoost");
+
+FGameplayTag RequestBuffTag(const TCHAR* TagName)
+{
+    return FGameplayTag::RequestGameplayTag(FName(TagName), false);
+}
+}
+
 ALFPTacticsUnit::ALFPTacticsUnit()
 {
     PrimaryActorTick.bCanEverTick = true;
@@ -747,7 +758,7 @@ int32 ALFPTacticsUnit::TakeTrueDamage(int32 Damage)
 
 int32 ALFPTacticsUnit::ApplySkillDamage(ALFPTacticsUnit* Target, const ULFPSkillBase* SourceSkill)
 {
-    if (!Target || !SourceSkill || !SourceSkill->Owner)
+    if (!Target || !SourceSkill || !SourceSkill->Owner || !Target->IsAlive())
     {
         return 0;
     }
@@ -757,6 +768,10 @@ int32 ALFPTacticsUnit::ApplySkillDamage(ALFPTacticsUnit* Target, const ULFPSkill
     {
         return 0;
     }
+
+    ALFPTacticsUnit* DamageSource = SourceSkill->Owner;
+    // 进入这里代表技能已经找到有效受击目标；用于敌人计划判断“命中”，不依赖最终扣血量。
+    DamageSource->RecordOutgoingSkillDamageCalculation(SourceSkill, Target);
 
     int32 TotalDamage = 0;
     for (int32 HitIndex = 0; HitIndex < HitCount; ++HitIndex)
@@ -768,7 +783,7 @@ int32 ALFPTacticsUnit::ApplySkillDamage(ALFPTacticsUnit* Target, const ULFPSkill
 
         const float DamageScalePerHit = FMath::Max(0.0f, SourceSkill->GetDamageScalePerHit(Target));
         const ELFPAttackType DamageType = SourceSkill->GetDamageType(Target);
-        const int32 RawDamage = FMath::Max(0, FMath::RoundToInt(SourceSkill->Owner->GetCurrentAttack() * DamageScalePerHit));
+        const int32 RawDamage = FMath::Max(0, FMath::RoundToInt(DamageSource->GetCurrentAttack() * DamageScalePerHit));
         const int32 DefenseValue = (DamageType == ELFPAttackType::AT_Magical) ? Target->GetSpellDefense() : Target->GetPhysicalBlock();
         int32 ActualDamage = FMath::Max(RawDamage - DefenseValue, 1);
 
@@ -779,19 +794,49 @@ int32 ALFPTacticsUnit::ApplySkillDamage(ALFPTacticsUnit* Target, const ULFPSkill
             ActualDamage = FMath::Max(1, FMath::RoundToInt(ActualDamage * CriticalMultiplier));
         }
 
+        // Buff 的增伤按“防御、暴击之后的最终伤害”生效。
+        ActualDamage = DamageSource->ApplyOutgoingDamageMultiplierToResolvedDamage(ActualDamage);
         TotalDamage += Target->ApplyResolvedDamage(ActualDamage);
     }
 
     if (TotalDamage > 0)
     {
         UE_LOG(LogTemp, Log, TEXT("[SkillDamage] 释放者=%s, 技能=%s, 伤害=%d, 受击者=%s"),
-            *SourceSkill->Owner->GetName(),
+            *DamageSource->GetName(),
             *SourceSkill->GetName(),
             TotalDamage,
             *Target->GetName());
     }
 
     return TotalDamage;
+}
+
+int32 ALFPTacticsUnit::ApplySkillTypedDamage(ALFPTacticsUnit* Target, int32 Damage, ELFPAttackType DamageType, const ULFPSkillBase* SourceSkill)
+{
+    if (!Target || !SourceSkill || !SourceSkill->Owner || !Target->IsAlive() || Damage < 0)
+    {
+        return 0;
+    }
+
+    ALFPTacticsUnit* DamageSource = SourceSkill->Owner;
+    // 固定伤害类技能也走同一套“伤害结算尝试”统计，避免被敌人打空逻辑漏掉。
+    DamageSource->RecordOutgoingSkillDamageCalculation(SourceSkill, Target);
+
+    const int32 DefenseValue = (DamageType == ELFPAttackType::AT_Magical) ? Target->GetSpellDefense() : Target->GetPhysicalBlock();
+    int32 ActualDamage = FMath::Max(Damage - DefenseValue, 1);
+    ActualDamage = DamageSource->ApplyOutgoingDamageMultiplierToResolvedDamage(ActualDamage);
+    return Target->ApplyResolvedDamage(ActualDamage);
+}
+
+int32 ALFPTacticsUnit::ApplyOutgoingDamageMultiplierToResolvedDamage(int32 Damage) const
+{
+    const float DamageMultiplier = GetOutgoingDamageMultiplier();
+    if (FMath::IsNearlyEqual(DamageMultiplier, 1.0f))
+    {
+        return Damage;
+    }
+
+    return FMath::Max(0, FMath::RoundToInt(Damage * DamageMultiplier));
 }
 
 int32 ALFPTacticsUnit::ApplyResolvedDamage(int32 Damage)
@@ -856,6 +901,47 @@ int32 ALFPTacticsUnit::GetBuffStack(FGameplayTag BuffId) const
 int32 ALFPTacticsUnit::GetTotalBuffCount() const
 {
     return BuffComponent ? BuffComponent->GetTotalBuffCount() : 0;
+}
+
+void ALFPTacticsUnit::RecordOutgoingSkillDamageCalculation(const ULFPSkillBase* SourceSkill, ALFPTacticsUnit* Target)
+{
+    if (!SourceSkill || !Target || !Target->IsAlive())
+    {
+        return;
+    }
+
+    // 这里统计的是“进入伤害公式计算”，不是“造成了正数伤害”。
+    OutgoingSkillDamageCalculationCount++;
+}
+
+bool ALFPTacticsUnit::ConsumeEnemyMissCompensationBuffs()
+{
+    if (!BuffComponent)
+    {
+        return false;
+    }
+
+    int32 RemovedCount = 0;
+
+    // 命中后两个补偿 Buff 一起消耗；如果只存在其中一个，也允许清理掉。
+    const FGameplayTag DamageBoostTag = RequestBuffTag(EnemyMissDamageBoostBuffIdName);
+    if (DamageBoostTag.IsValid())
+    {
+        RemovedCount += BuffComponent->RemoveBuffById(DamageBoostTag);
+    }
+
+    const FGameplayTag SpeedBoostTag = RequestBuffTag(EnemyMissSpeedBoostBuffIdName);
+    if (SpeedBoostTag.IsValid())
+    {
+        RemovedCount += BuffComponent->RemoveBuffById(SpeedBoostTag);
+    }
+
+    return RemovedCount > 0;
+}
+
+float ALFPTacticsUnit::GetOutgoingDamageMultiplier() const
+{
+    return BuffComponent ? BuffComponent->GetOutgoingDamageMultiplier() : 1.0f;
 }
 
 void ALFPTacticsUnit::Heal(int32 Amount)

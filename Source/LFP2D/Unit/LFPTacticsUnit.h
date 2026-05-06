@@ -542,6 +542,8 @@ public:
     // 并按“每段独立判暴击”的规则完成整次技能结算。
     int32 ApplySkillDamage(ALFPTacticsUnit* Target, const ULFPSkillBase* SourceSkill);
 
+    int32 ApplySkillTypedDamage(ALFPTacticsUnit* Target, int32 Damage, ELFPAttackType DamageType, const ULFPSkillBase* SourceSkill);
+
     // 旧接口兼容路径：直接按显式参数重复出伤，不读取技能规格。
     UFUNCTION(BlueprintCallable, Category = "Unit Combat")
     int32 ApplyRepeatedHitDamage(ALFPTacticsUnit* Target, int32 HitCount, int32 RawDamagePerHit, ELFPAttackType DamageType);
@@ -560,6 +562,11 @@ public:
 
     UFUNCTION(BlueprintPure, Category = "Unit Buff")
     int32 GetTotalBuffCount() const;
+
+    int32 GetOutgoingSkillDamageCalculationCount() const { return OutgoingSkillDamageCalculationCount; }
+    void RecordOutgoingSkillDamageCalculation(const ULFPSkillBase* SourceSkill, ALFPTacticsUnit* Target);
+    bool ConsumeEnemyMissCompensationBuffs();
+    float GetOutgoingDamageMultiplier() const;
 
     // 治疗单位
     UFUNCTION(BlueprintCallable, Category = "Unit Combat")
@@ -621,6 +628,8 @@ private:
     // 纯扣血入口；传入值视为已经完成防御、暴击等结算后的最终伤害。
     int32 ApplyResolvedDamage(int32 Damage);
 
+    int32 ApplyOutgoingDamageMultiplierToResolvedDamage(int32 Damage) const;
+
     // 单段属性伤害入口：只负责防御减伤，不处理技能暴击规则。
     int32 TakeTypedDamageInternal(int32 Damage, ELFPAttackType DamageType);
 
@@ -641,6 +650,9 @@ protected:
     bool bIsDead = false;
 
     bool bIsRebuildingRuntimeStats = false;
+
+    UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Unit State|Combat", meta = (AllowPrivateAccess = "true"))
+    int32 OutgoingSkillDamageCalculationCount = 0;
 
 public:
     UFUNCTION(BlueprintCallable, Category = "Betrayal")

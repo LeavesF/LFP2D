@@ -14,6 +14,7 @@ ULFPSkill_LockRemoteAttack::ULFPSkill_LockRemoteAttack()
     MaxRange = 5;
     EffectRangeType = ESkillRangeType::Origin;
     bTrackTargetUnitForAIExecution = true;
+    bTriggersEnemyMissBuffOnMiss = true;
 }
 
 bool ULFPSkill_LockRemoteAttack::CanExecute_Implementation(ALFPHexTile* TargetTile)

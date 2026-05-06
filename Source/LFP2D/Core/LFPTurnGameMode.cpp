@@ -58,8 +58,14 @@ void ALFPTurnGameMode::StartPlay()
     }
 
 	// 生成回合管理器
+	// 优先生成蓝图配置的 TurnManager，让 BP_TurnManager 上的资产引用参与运行。
+	TSubclassOf<ALFPTurnManager> EffectiveTurnManagerClass = TurnManagerClass;
+	if (!EffectiveTurnManagerClass)
+	{
+		EffectiveTurnManagerClass = ALFPTurnManager::StaticClass();
+	}
 	TurnManager = GetWorld()->SpawnActor<ALFPTurnManager>(
-		ALFPTurnManager::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
+		EffectiveTurnManagerClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
 
 	// 生成战斗遗物运行时管理器
 	BattleRelicRuntimeManager = GetWorld()->SpawnActor<ALFPBattleRelicRuntimeManager>(

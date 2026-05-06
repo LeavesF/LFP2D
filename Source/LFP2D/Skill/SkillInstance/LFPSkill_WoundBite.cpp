@@ -28,6 +28,7 @@ ULFPSkill_WoundBite::ULFPSkill_WoundBite()
     TargetType = ESkillTargetType::SingleEnemy;
     ReleaseRangeType = ESkillRangeType::Coverage;
     MaxRange = 1;
+    bTriggersEnemyMissBuffOnMiss = true;
 }
 
 bool ULFPSkill_WoundBite::CanPlanFrom_Implementation(ALFPHexTile* CasterTile, ALFPHexTile* TargetTile)
@@ -117,5 +118,5 @@ void ULFPSkill_WoundBite::Execute_Implementation(ALFPHexTile* TargetTile)
     }
 
     const int32 Damage = BleedStacks * DamagePerBleedStack;
-    TargetUnit->TakeTypedDamage(Damage, Owner->GetAttackType());
+    Owner->ApplySkillTypedDamage(TargetUnit, Damage, Owner->GetAttackType(), this);
 }

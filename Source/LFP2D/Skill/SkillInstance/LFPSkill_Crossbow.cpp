@@ -15,6 +15,7 @@ ULFPSkill_Crossbow::ULFPSkill_Crossbow()
 	bRequireLineOfSight = true;
 	bStopOnBlocker = true;
 	bTrackTargetUnitForAIExecution = true;
+	bTriggersEnemyMissBuffOnMiss = true;
 }
 
 bool ULFPSkill_Crossbow::CanExecute_Implementation(ALFPHexTile* TargetTile)

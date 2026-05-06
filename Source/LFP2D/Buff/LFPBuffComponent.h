@@ -58,6 +58,9 @@ public:
     UFUNCTION(BlueprintPure, Category = "Buff")
     FLFPBuffStatModifier GetActiveStatModifier() const;
 
+    UFUNCTION(BlueprintPure, Category = "Buff")
+    float GetOutgoingDamageMultiplier() const;
+
     UFUNCTION(BlueprintPure, Category = "Buff|Display")
     TArray<FLFPBuffDisplayEntry> GetBuffDisplayEntries(bool bOnlyVisible = false, bool bOnlyActive = false) const;
 

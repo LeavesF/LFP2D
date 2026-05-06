@@ -41,6 +41,7 @@ FLFPBuffStatModifier ULFPBuffEffect_ModifyStat::GetStatModifier_Implementation(c
         Result.AttackDelta *= StackCount;
         Result.PhysicalBlockDelta *= StackCount;
         Result.SpeedDelta *= StackCount;
+        Result.OutgoingDamageMultiplier = FMath::Pow(FMath::Max(Result.OutgoingDamageMultiplier, 0.0f), StackCount);
     }
 
     return Result;

@@ -12,6 +12,7 @@ ULFPSkill_Claw::ULFPSkill_Claw()
     TargetType = ESkillTargetType::SingleEnemy;
     ReleaseRangeType = ESkillRangeType::Coverage;
     MaxRange = 1;
+    bTriggersEnemyMissBuffOnMiss = true;
 }
 
 bool ULFPSkill_Claw::CanExecute_Implementation(ALFPHexTile* TargetTile)

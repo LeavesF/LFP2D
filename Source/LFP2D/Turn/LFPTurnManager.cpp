@@ -6,6 +6,8 @@
 #include "LFP2D/Player/LFPTacticsPlayerController.h"
 #include "LFP2D/AI/LFPAIController.h"
 #include "LFP2D/Buff/LFPBuffComponent.h"
+#include "LFP2D/Buff/LFPBuffDefinitionDataAsset.h"
+#include "LFP2D/Buff/LFPBuffEffect.h"
 #include "LFP2D/Skill/LFPSkillBase.h"
 #include "LFP2D/Skill/LFPSkillComponent.h"
 #include "LFP2D/Core/LFPTurnGameMode.h"
@@ -16,6 +18,14 @@ FEnemyActionPlan ALFPTurnManager::EmptyPlan;
 
 namespace
 {
+constexpr const TCHAR* EnemyMissDamageBoostBuffIdName = TEXT("Buff.Status.EnemyMissDamageBoost");
+constexpr const TCHAR* EnemyMissSpeedBoostBuffIdName = TEXT("Buff.Status.EnemyMissSpeedBoost");
+
+FGameplayTag RequestBuffTag(const TCHAR* TagName)
+{
+    return FGameplayTag::RequestGameplayTag(FName(TagName), false);
+}
+
 void SortUnitsBySpeedStable(TArray<ALFPTacticsUnit*>& Units)
 {
     struct FSortableTurnUnit
@@ -595,7 +605,23 @@ void ALFPTurnManager::ExecuteEnemyPlan(ALFPTacticsUnit* Unit)
         {
             UE_LOG(LogTemp, Log, TEXT("敌方计划执行: 单位[%s] 技能[%s]"), *Unit->GetName(), *SkillLogName);
 
+            // 命中判定看技能是否进入过伤害结算，避免“被格挡/吸收导致 0 伤害”被误判为打空。
+            const int32 DamageCalculationCountBefore = Unit->GetOutgoingSkillDamageCalculationCount();
             const bool bExecuted = Unit->ExecuteSkill(Plan.PlannedSkill, ExecutionTargetTile);
+            const bool bDidDamageCalculation = Unit->GetOutgoingSkillDamageCalculationCount() > DamageCalculationCountBefore;
+            if (bDidDamageCalculation)
+            {
+                if (Unit->ConsumeEnemyMissCompensationBuffs())
+                {
+                    RefreshAllRuntimeUnitStates(true);
+                }
+            }
+            else if (Plan.PlannedSkill->bTriggersEnemyMissBuffOnMiss)
+            {
+                // 计划技能有效但没有进入伤害结算，视为本次攻击打空。
+                ApplyEnemyMissCompensationBuffs(Unit);
+            }
+
             UE_LOG(
                 LogTemp,
                 Log,
@@ -606,6 +632,12 @@ void ALFPTurnManager::ExecuteEnemyPlan(ALFPTacticsUnit* Unit)
         }
         else
         {
+            if (Plan.PlannedSkill->bTriggersEnemyMissBuffOnMiss)
+            {
+                // 追踪目标类技能可能因为目标移动/死亡而找不到合法目标格，同样算打空。
+                ApplyEnemyMissCompensationBuffs(Unit);
+            }
+
             UE_LOG(
                 LogTemp,
                 Warning,
@@ -625,6 +657,81 @@ void ALFPTurnManager::ExecuteEnemyPlan(ALFPTacticsUnit* Unit)
         Unit->SetHasActed(true);
         PassTurn();
     }, 0.5f, false);
+}
+
+void ALFPTurnManager::ApplyEnemyMissCompensationBuffs(ALFPTacticsUnit* Unit)
+{
+    if (!Unit || !Unit->IsAlive() || !Unit->IsEnemy())
+    {
+        return;
+    }
+
+    ULFPBuffComponent* BuffComponent = Unit->GetBuffComponent();
+    if (!BuffComponent)
+    {
+        return;
+    }
+
+    BuffComponent->ApplyBuff(GetEnemyMissDamageBoostBuffDefinition(), Unit);
+    BuffComponent->ApplyBuff(GetEnemyMissSpeedBoostBuffDefinition(), Unit);
+    // 速度 Buff 需要立刻重建属性并刷新剩余速度表排序。
+    RefreshAllRuntimeUnitStates(true);
+}
+
+ULFPBuffDefinitionDataAsset* ALFPTurnManager::GetEnemyMissDamageBoostBuffDefinition()
+{
+    if (EnemyMissDamageBoostBuffAsset)
+    {
+        return EnemyMissDamageBoostBuffAsset;
+    }
+
+    if (!RuntimeEnemyMissDamageBoostBuffDefinition)
+    {
+        // 未配置资产时创建内置兜底 Buff，避免空引用导致规则失效。
+        RuntimeEnemyMissDamageBoostBuffDefinition = NewObject<ULFPBuffDefinitionDataAsset>(this, TEXT("RuntimeEnemyMissDamageBoostBuffDefinition"));
+        RuntimeEnemyMissDamageBoostBuffDefinition->BuffId = RequestBuffTag(EnemyMissDamageBoostBuffIdName);
+        RuntimeEnemyMissDamageBoostBuffDefinition->DisplayName = FText::FromString(TEXT("Enemy Miss Damage Boost"));
+        RuntimeEnemyMissDamageBoostBuffDefinition->Description = FText::FromString(TEXT("Next hit deals 150% final damage."));
+        RuntimeEnemyMissDamageBoostBuffDefinition->Category = ELFPBuffCategory::Buff;
+        RuntimeEnemyMissDamageBoostBuffDefinition->DurationPolicy.DurationType = ELFPBuffDurationType::Infinite;
+        RuntimeEnemyMissDamageBoostBuffDefinition->StackingPolicy.StackingMode = ELFPBuffStackingMode::RefreshDuration;
+        RuntimeEnemyMissDamageBoostBuffDefinition->StackingPolicy.MaxStacks = 1;
+
+        ULFPBuffEffect_ModifyStat* DamageEffect = NewObject<ULFPBuffEffect_ModifyStat>(RuntimeEnemyMissDamageBoostBuffDefinition);
+        DamageEffect->StatModifier.OutgoingDamageMultiplier = 1.5f;
+        DamageEffect->bScaleByStack = false;
+        RuntimeEnemyMissDamageBoostBuffDefinition->Effects.Add(DamageEffect);
+    }
+
+    return RuntimeEnemyMissDamageBoostBuffDefinition;
+}
+
+ULFPBuffDefinitionDataAsset* ALFPTurnManager::GetEnemyMissSpeedBoostBuffDefinition()
+{
+    if (EnemyMissSpeedBoostBuffAsset)
+    {
+        return EnemyMissSpeedBoostBuffAsset;
+    }
+
+    if (!RuntimeEnemyMissSpeedBoostBuffDefinition)
+    {
+        // 未配置资产时创建内置兜底 Buff；速度补偿可叠层，连续打空会提高后续行动顺序。
+        RuntimeEnemyMissSpeedBoostBuffDefinition = NewObject<ULFPBuffDefinitionDataAsset>(this, TEXT("RuntimeEnemyMissSpeedBoostBuffDefinition"));
+        RuntimeEnemyMissSpeedBoostBuffDefinition->BuffId = RequestBuffTag(EnemyMissSpeedBoostBuffIdName);
+        RuntimeEnemyMissSpeedBoostBuffDefinition->DisplayName = FText::FromString(TEXT("Enemy Miss Speed Boost"));
+        RuntimeEnemyMissSpeedBoostBuffDefinition->Description = FText::FromString(TEXT("Speed +2 until the next hit."));
+        RuntimeEnemyMissSpeedBoostBuffDefinition->Category = ELFPBuffCategory::Buff;
+        RuntimeEnemyMissSpeedBoostBuffDefinition->DurationPolicy.DurationType = ELFPBuffDurationType::Infinite;
+        RuntimeEnemyMissSpeedBoostBuffDefinition->StackingPolicy.StackingMode = ELFPBuffStackingMode::AddStackAndRefreshDuration;
+        RuntimeEnemyMissSpeedBoostBuffDefinition->StackingPolicy.MaxStacks = 99;
+
+        ULFPBuffEffect_ModifyStat* SpeedEffect = NewObject<ULFPBuffEffect_ModifyStat>(RuntimeEnemyMissSpeedBoostBuffDefinition);
+        SpeedEffect->StatModifier.SpeedDelta = 2;
+        SpeedEffect->bScaleByStack = true;
+        RuntimeEnemyMissSpeedBoostBuffDefinition->Effects.Add(SpeedEffect);
+    }
+
+    return RuntimeEnemyMissSpeedBoostBuffDefinition;
 }
 
 void ALFPTurnManager::EndUnitTurn(ALFPTacticsUnit* Unit)

@@ -14,6 +14,7 @@ ULFPSkill_Sharpshooter::ULFPSkill_Sharpshooter()
     MaxRange = 7;
     EffectRangeType = ESkillRangeType::Origin;
     bTrackTargetUnitForAIExecution = true;
+    bTriggersEnemyMissBuffOnMiss = true;
 }
 
 bool ULFPSkill_Sharpshooter::CanExecute_Implementation(ALFPHexTile* TargetTile)

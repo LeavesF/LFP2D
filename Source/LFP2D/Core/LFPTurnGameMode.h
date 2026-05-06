@@ -97,6 +97,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Battle")
 	TSubclassOf<ALFPHexGridManager> GridManagerClass;
 
+	// 回合管理器类（可在 BP_TurnGameMode 中配置为 Content/Battle/BP_TurnManager）
+	UPROPERTY(EditDefaultsOnly, Category = "Battle")
+	TSubclassOf<ALFPTurnManager> TurnManagerClass;
+
 	// 网格管理器实例
 	UPROPERTY()
 	TObjectPtr<ALFPHexGridManager> GridManager;

@@ -8,6 +8,7 @@
 #include "LFPTurnManager.generated.h"
 
 class ALFPTacticsUnit;
+class ULFPBuffDefinitionDataAsset;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnTurnChangedSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPhaseChangedSignature, EBattlePhase, NewPhase);
@@ -161,6 +162,10 @@ protected:
     // 执行敌人的预定计划
     void ExecuteEnemyPlan(ALFPTacticsUnit* Unit);
 
+    void ApplyEnemyMissCompensationBuffs(ALFPTacticsUnit* Unit);
+    ULFPBuffDefinitionDataAsset* GetEnemyMissDamageBoostBuffDefinition();
+    ULFPBuffDefinitionDataAsset* GetEnemyMissSpeedBoostBuffDefinition();
+
 protected:
     // 单位列表
     UPROPERTY(VisibleAnywhere, Category = "Turn System")
@@ -222,12 +227,26 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy Planning")
     float EnemyPlanPostMoveDelay = 0.3f;
 
+    // 敌人打空后获得的增伤 Buff。建议配置为：不叠层、最终伤害倍率 1.5。
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy Planning|Miss Compensation")
+    TObjectPtr<ULFPBuffDefinitionDataAsset> EnemyMissDamageBoostBuffAsset = nullptr;
+
+    // 敌人打空后获得的速度 Buff。建议配置为：可叠层、每层速度 +2。
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy Planning|Miss Compensation")
+    TObjectPtr<ULFPBuffDefinitionDataAsset> EnemyMissSpeedBoostBuffAsset = nullptr;
+
     // 当前阵营 AP
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Action Points")
     TMap<EUnitAffiliation, int32> FactionCurrentAP;
 
     // 空计划（用于查询未找到时返回）
     static FEnemyActionPlan EmptyPlan;
+
+    UPROPERTY(Transient)
+    TObjectPtr<ULFPBuffDefinitionDataAsset> RuntimeEnemyMissDamageBoostBuffDefinition;
+
+    UPROPERTY(Transient)
+    TObjectPtr<ULFPBuffDefinitionDataAsset> RuntimeEnemyMissSpeedBoostBuffDefinition;
 
     // 战斗是否已结束（防止重复触发）
     bool bBattleEnded = false;

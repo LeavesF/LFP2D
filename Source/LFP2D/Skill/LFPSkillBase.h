@@ -270,6 +270,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill|AI")
 	bool bTrackTargetUnitForAIExecution = false;
 
+	// 敌方计划技能未进入伤害结算时，是否触发“打空补偿”Buff。
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill|AI")
+	bool bTriggersEnemyMissBuffOnMiss = false;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill|Passive")
 	bool bIsPassiveSkill = false;
 

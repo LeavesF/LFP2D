@@ -10,6 +10,7 @@ ULFPSkill_MultipleAttacks::ULFPSkill_MultipleAttacks()
     TargetType = ESkillTargetType::SingleEnemy;
     ReleaseRangeType = ESkillRangeType::Coverage;
     MaxRange = 1;
+    bTriggersEnemyMissBuffOnMiss = true;
 }
 
 bool ULFPSkill_MultipleAttacks::CanExecute_Implementation(ALFPHexTile* TargetTile)
