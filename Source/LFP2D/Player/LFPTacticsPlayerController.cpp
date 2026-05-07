@@ -81,6 +81,8 @@ void ALFPTacticsPlayerController::BeginPlay()
 			{
 				TurnSpeedList->InitializeTurnOrder();
 			}
+
+			BattleHUDWidget->InitializeCurrentUnitInfo(GetTurnManager());
 		}
 	}
 
@@ -842,6 +844,16 @@ void ALFPTacticsPlayerController::HideSkillSelection()
 	{
 		BattleHUDWidget->HideSkillSelection();
 	}
+}
+
+void ALFPTacticsPlayerController::ClearMovementAndRange()
+{
+	if (GridManager)
+	{
+		GridManager->ClearRangeHighlight(EUnitRange::UR_Move);
+	}
+	HidePathToRange();
+	MovementRangeTiles.Empty();
 }
 
 void ALFPTacticsPlayerController::HandleSkillTargetSelecting(ULFPSkillBase* Skill)

@@ -9,6 +9,9 @@ class ULFPTurnSpeedListWidget;
 class ULFPSkillSelectionWidget;
 class ULFPDeploymentWidget;
 class ULFPBattleResultWidget;
+class ULFPCurrentUnitInfoWidget;
+class ALFPTacticsUnit;
+class ALFPTurnManager;
 
 /**
  * 战斗 HUD Widget：统一管理所有战斗 UI 子面板的显示和隐藏
@@ -42,6 +45,13 @@ public:
 	void HideBattleResultWidget();
 	ULFPBattleResultWidget* GetBattleResultWidget() const { return BattleResultWidget; }
 
+	// === CurrentUnitInfo ===
+	void InitializeCurrentUnitInfo(ALFPTurnManager* TurnManager = nullptr);
+	void ShowCurrentUnitInfo();
+	void HideCurrentUnitInfo();
+	void SetCurrentUnitInfoUnit(ALFPTacticsUnit* Unit);
+	ULFPCurrentUnitInfoWidget* GetCurrentUnitInfoWidget() const { return CurrentUnitInfoWidget; }
+
 protected:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UCanvasPanel> RootCanvas;
@@ -57,4 +67,7 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<ULFPBattleResultWidget> BattleResultWidget;
+
+	UPROPERTY(meta = (BindWidgetOptional))
+	TObjectPtr<ULFPCurrentUnitInfoWidget> CurrentUnitInfoWidget;
 };

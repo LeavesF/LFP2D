@@ -211,6 +211,9 @@ public:
     void HideSkillSelection();
 
     UFUNCTION(BlueprintCallable, Category = "Skill")
+    void ClearMovementAndRange();
+
+    UFUNCTION(BlueprintCallable, Category = "Skill")
     void HandleSkillSelection();
 
     UFUNCTION(BlueprintCallable, Category = "Skill")

@@ -3,6 +3,7 @@
 #include "LFP2D/UI/Fighting/LFPSkillSelectionWidget.h"
 #include "LFP2D/UI/Fighting/LFPDeploymentWidget.h"
 #include "LFP2D/UI/Fighting/LFPBattleResultWidget.h"
+#include "LFP2D/UI/Fighting/LFPCurrentUnitInfoWidget.h"
 #include "Components/CanvasPanel.h"
 
 void ULFPBattleHUDWidget::NativeConstruct()
@@ -21,6 +22,10 @@ void ULFPBattleHUDWidget::NativeConstruct()
 	if (BattleResultWidget)
 	{
 		BattleResultWidget->SetVisibility(ESlateVisibility::Collapsed);
+	}
+	if (CurrentUnitInfoWidget)
+	{
+		CurrentUnitInfoWidget->SetVisibility(ESlateVisibility::Collapsed);
 	}
 }
 
@@ -85,5 +90,37 @@ void ULFPBattleHUDWidget::HideBattleResultWidget()
 	if (BattleResultWidget)
 	{
 		BattleResultWidget->SetVisibility(ESlateVisibility::Collapsed);
+	}
+}
+
+void ULFPBattleHUDWidget::InitializeCurrentUnitInfo(ALFPTurnManager* TurnManager)
+{
+	if (CurrentUnitInfoWidget)
+	{
+		CurrentUnitInfoWidget->InitializeCurrentUnitInfo(TurnManager);
+	}
+}
+
+void ULFPBattleHUDWidget::ShowCurrentUnitInfo()
+{
+	if (CurrentUnitInfoWidget)
+	{
+		CurrentUnitInfoWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	}
+}
+
+void ULFPBattleHUDWidget::HideCurrentUnitInfo()
+{
+	if (CurrentUnitInfoWidget)
+	{
+		CurrentUnitInfoWidget->SetVisibility(ESlateVisibility::Collapsed);
+	}
+}
+
+void ULFPBattleHUDWidget::SetCurrentUnitInfoUnit(ALFPTacticsUnit* Unit)
+{
+	if (CurrentUnitInfoWidget)
+	{
+		CurrentUnitInfoWidget->BindToUnit(Unit);
 	}
 }

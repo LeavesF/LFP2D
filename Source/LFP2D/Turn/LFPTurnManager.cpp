@@ -544,6 +544,7 @@ void ALFPTurnManager::BeginUnitTurn(ALFPTacticsUnit* Unit)
         if (PC)
         {
             PC->HideSkillSelection();
+            PC->ClearMovementAndRange();
         }
 
         Unit->OnTurnStarted();

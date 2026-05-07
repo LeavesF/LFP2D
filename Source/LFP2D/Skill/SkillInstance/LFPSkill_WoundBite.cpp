@@ -5,7 +5,7 @@
 
 namespace
 {
-constexpr const TCHAR* BleedBuffIdName = TEXT("Buff.Status.Bleed");
+constexpr const TCHAR* WoundBiteBleedBuffIdName = TEXT("Buff.Status.Bleed");
 
 int32 GetBleedStackCount(const ULFPBuffComponent* BuffComponent)
 {
@@ -14,7 +14,7 @@ int32 GetBleedStackCount(const ULFPBuffComponent* BuffComponent)
         return 0;
     }
 
-    const FGameplayTag BleedBuffId = FGameplayTag::RequestGameplayTag(FName(BleedBuffIdName), false);
+    const FGameplayTag BleedBuffId = FGameplayTag::RequestGameplayTag(FName(WoundBiteBleedBuffIdName), false);
     return BleedBuffId.IsValid() ? BuffComponent->GetBuffStack(BleedBuffId) : 0;
 }
 }
