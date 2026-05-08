@@ -8,6 +8,7 @@
 #include "Components/CanvasPanel.h"
 #include "Components/Image.h"
 #include "Components/ProgressBar.h"
+#include "Components/TextBlock.h"
 
 void ULFPBattleHUDWidget::NativeConstruct()
 {
@@ -36,29 +37,21 @@ void ULFPBattleHUDWidget::NativeConstruct()
 
 void ULFPBattleHUDWidget::NativeDestruct()
 {
-	if (TurnManagerRef)
-	{
-		TurnManagerRef->OnFactionAPChanged.RemoveDynamic(this, &ULFPBattleHUDWidget::OnFactionAPChanged);
-		TurnManagerRef = nullptr;
-	}
+	SetTurnManager(nullptr);
 
 	Super::NativeDestruct();
 }
 
 void ULFPBattleHUDWidget::InitializeEnergyBar(ALFPTurnManager* TurnManager)
 {
-	if (TurnManagerRef)
-	{
-		TurnManagerRef->OnFactionAPChanged.RemoveDynamic(this, &ULFPBattleHUDWidget::OnFactionAPChanged);
-	}
-
-	TurnManagerRef = TurnManager;
-	if (TurnManagerRef)
-	{
-		TurnManagerRef->OnFactionAPChanged.AddDynamic(this, &ULFPBattleHUDWidget::OnFactionAPChanged);
-	}
-
+	SetTurnManager(TurnManager);
 	UpdateEnergyBar();
+}
+
+void ULFPBattleHUDWidget::InitializeTurnInfo(ALFPTurnManager* TurnManager)
+{
+	SetTurnManager(TurnManager);
+	UpdateTurnInfo();
 }
 
 void ULFPBattleHUDWidget::UpdateEnergyBar()
@@ -84,6 +77,90 @@ void ULFPBattleHUDWidget::OnFactionAPChanged(EUnitAffiliation Faction, int32 New
 
 	const int32 ClampedAP = FMath::Clamp(NewAP, 0, 3);
 	EnergyProgressBar->SetPercent(static_cast<float>(ClampedAP) / 3.0f);
+}
+
+void ULFPBattleHUDWidget::OnTurnChanged()
+{
+	UpdateTurnInfo();
+}
+
+void ULFPBattleHUDWidget::OnPhaseChanged(EBattlePhase NewPhase)
+{
+	UpdateRoundText();
+	UpdatePhaseText(NewPhase);
+}
+
+void ULFPBattleHUDWidget::SetTurnManager(ALFPTurnManager* TurnManager)
+{
+	if (TurnManagerRef == TurnManager)
+	{
+		return;
+	}
+
+	if (TurnManagerRef)
+	{
+		TurnManagerRef->OnFactionAPChanged.RemoveDynamic(this, &ULFPBattleHUDWidget::OnFactionAPChanged);
+		TurnManagerRef->OnTurnChanged.RemoveDynamic(this, &ULFPBattleHUDWidget::OnTurnChanged);
+		TurnManagerRef->OnPhaseChanged.RemoveDynamic(this, &ULFPBattleHUDWidget::OnPhaseChanged);
+	}
+
+	TurnManagerRef = TurnManager;
+
+	if (TurnManagerRef)
+	{
+		TurnManagerRef->OnFactionAPChanged.AddUniqueDynamic(this, &ULFPBattleHUDWidget::OnFactionAPChanged);
+		TurnManagerRef->OnTurnChanged.AddUniqueDynamic(this, &ULFPBattleHUDWidget::OnTurnChanged);
+		TurnManagerRef->OnPhaseChanged.AddUniqueDynamic(this, &ULFPBattleHUDWidget::OnPhaseChanged);
+	}
+}
+
+void ULFPBattleHUDWidget::UpdateTurnInfo()
+{
+	UpdateRoundText();
+
+	if (TurnManagerRef)
+	{
+		UpdatePhaseText(TurnManagerRef->GetCurrentPhase());
+	}
+	else if (PhaseText)
+	{
+		PhaseText->SetText(FText::GetEmpty());
+	}
+}
+
+void ULFPBattleHUDWidget::UpdateRoundText()
+{
+	if (!RoundText)
+	{
+		return;
+	}
+
+	if (!TurnManagerRef ||
+		TurnManagerRef->GetCurrentPhase() == EBattlePhase::BP_Deployment ||
+		TurnManagerRef->GetCurrentRound() <= 0)
+	{
+		RoundText->SetText(FText::GetEmpty());
+		return;
+	}
+
+	RoundText->SetText(FText::FromString(FString::Printf(TEXT("%d"), TurnManagerRef->GetCurrentRound())));
+}
+
+void ULFPBattleHUDWidget::UpdatePhaseText(EBattlePhase NewPhase)
+{
+	if (!PhaseText)
+	{
+		return;
+	}
+
+	if (const UEnum* PhaseEnum = StaticEnum<EBattlePhase>())
+	{
+		PhaseText->SetText(PhaseEnum->GetDisplayNameTextByValue(static_cast<int64>(NewPhase)));
+	}
+	else
+	{
+		PhaseText->SetText(FText::GetEmpty());
+	}
 }
 
 void ULFPBattleHUDWidget::ShowTurnSpeedList()

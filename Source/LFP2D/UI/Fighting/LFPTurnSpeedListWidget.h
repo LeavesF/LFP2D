@@ -9,7 +9,6 @@
 #include "LFPTurnSpeedListWidget.generated.h"
 
 class UHorizontalBox;
-class UTextBlock;
 class UImage;
 
 /**
@@ -25,8 +24,6 @@ public:
 	void InitializeTurnOrder();
 
 	// ���ûغ���
-	UFUNCTION(BlueprintCallable, Category = "Turn UI")
-	void SetRoundNumber(int32 Round);
 
 	// �����ж���λ�б�
 	UFUNCTION(BlueprintCallable, Category = "Turn UI")
@@ -41,12 +38,8 @@ public:
 
 protected:
 	// 显示回合数的文本
-	UPROPERTY(meta = (BindWidget))
-	UTextBlock* RoundText;
 
 	// 阶段文本（可选绑定）
-	UPROPERTY(meta = (BindWidgetOptional))
-	UTextBlock* PhaseText;
 	// ���ڷ��õ�λͷ���ˮƽ��
 	UPROPERTY(meta = (BindWidget))
 	UHorizontalBox* UnitIconsContainer;

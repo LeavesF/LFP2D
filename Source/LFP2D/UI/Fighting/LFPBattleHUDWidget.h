@@ -13,6 +13,7 @@ class ULFPBattleResultWidget;
 class ULFPCurrentUnitInfoWidget;
 class UImage;
 class UProgressBar;
+class UTextBlock;
 class ALFPTacticsUnit;
 class ALFPTurnManager;
 
@@ -29,6 +30,7 @@ public:
 	virtual void NativeConstruct() override;
 
 	void InitializeEnergyBar(ALFPTurnManager* TurnManager = nullptr);
+	void InitializeTurnInfo(ALFPTurnManager* TurnManager = nullptr);
 	void UpdateEnergyBar();
 
 	// === TurnSpeedList ===
@@ -63,12 +65,22 @@ protected:
 
 	UFUNCTION()
 	void OnFactionAPChanged(EUnitAffiliation Faction, int32 NewAP);
+	UFUNCTION()
+	void OnTurnChanged();
+	UFUNCTION()
+	void OnPhaseChanged(EBattlePhase NewPhase);
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UCanvasPanel> RootCanvas;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<ULFPTurnSpeedListWidget> TurnSpeedListWidget;
+
+	UPROPERTY(meta = (BindWidgetOptional))
+	TObjectPtr<UTextBlock> RoundText;
+
+	UPROPERTY(meta = (BindWidgetOptional))
+	TObjectPtr<UTextBlock> PhaseText;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<ULFPSkillSelectionWidget> SkillSelectionWidget;
@@ -90,4 +102,10 @@ protected:
 
 	UPROPERTY(Transient)
 	TObjectPtr<ALFPTurnManager> TurnManagerRef;
+
+private:
+	void SetTurnManager(ALFPTurnManager* TurnManager);
+	void UpdateTurnInfo();
+	void UpdateRoundText();
+	void UpdatePhaseText(EBattlePhase NewPhase);
 };

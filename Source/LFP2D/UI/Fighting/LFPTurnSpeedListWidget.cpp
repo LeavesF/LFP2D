@@ -1,7 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "LFP2D/UI/Fighting/LFPTurnSpeedListWidget.h"
-#include "Components/TextBlock.h"
 #include "Components/HorizontalBox.h"
 #include "Components/HorizontalBoxSlot.h"
 #include "Kismet/GameplayStatics.h"
@@ -35,23 +34,13 @@ void ULFPTurnSpeedListWidget::InitializeTurnOrder()
 	}
 }
 
-void ULFPTurnSpeedListWidget::SetRoundNumber(int32 Round)
-{
-	if (RoundText)
-	{
-		RoundText->SetText(FText::AsNumber(Round));
-	}
-}
 void ULFPTurnSpeedListWidget::UpdateTurnOrder()
 {
 	if (!TurnManagerRef)
 	{
 		return;
 	}
-	// ���ûغ��ı�
-	RoundText->SetText(FText::FromString(FString::Printf(TEXT("Round %d"), TurnManagerRef->GetCurrentRound())));
 
-	// ��������ͼ������������ؽ�
 	TArray<UWidget*> ExistingIcons = UnitIconsContainer->GetAllChildren();
 
 	TArray<ALFPTacticsUnit*> TurnOrderUnits = TurnManagerRef->GetTurnOrderUnits();
@@ -138,25 +127,4 @@ void ULFPTurnSpeedListWidget::OnPhaseChanged(EBattlePhase NewPhase)
 	SetVisibility(NewPhase == EBattlePhase::BP_Deployment
 		? ESlateVisibility::Collapsed
 		: ESlateVisibility::SelfHitTestInvisible);
-
-	if (!PhaseText) return;
-
-	FString PhaseString;
-	switch (NewPhase)
-	{
-	case EBattlePhase::BP_EnemyPlanning:
-		PhaseString = TEXT("Enemy Planning");
-		break;
-	case EBattlePhase::BP_ActionPhase:
-		PhaseString = TEXT("Action Phase");
-		break;
-	case EBattlePhase::BP_RoundEnd:
-		PhaseString = TEXT("Round End");
-		break;
-	default:
-		PhaseString = TEXT("");
-		break;
-	}
-
-	PhaseText->SetText(FText::FromString(PhaseString));
 }
