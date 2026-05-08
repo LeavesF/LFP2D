@@ -82,7 +82,9 @@ void ALFPTacticsPlayerController::BeginPlay()
 				TurnSpeedList->InitializeTurnOrder();
 			}
 
-			BattleHUDWidget->InitializeCurrentUnitInfo(GetTurnManager());
+			ALFPTurnManager* TurnManager = GetTurnManager();
+			BattleHUDWidget->InitializeEnergyBar(TurnManager);
+			BattleHUDWidget->InitializeCurrentUnitInfo(TurnManager);
 		}
 	}
 
@@ -843,6 +845,15 @@ void ALFPTacticsPlayerController::HideSkillSelection()
 	if (BattleHUDWidget)
 	{
 		BattleHUDWidget->HideSkillSelection();
+	}
+}
+
+void ALFPTacticsPlayerController::HideCurrentUnitActionWidgets()
+{
+	if (BattleHUDWidget)
+	{
+		BattleHUDWidget->HideSkillSelection();
+		BattleHUDWidget->HideCurrentUnitInfo();
 	}
 }
 

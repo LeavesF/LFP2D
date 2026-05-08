@@ -486,7 +486,13 @@ void ALFPTacticsUnit::CommitMovePosition()
     ALFPHexTile* OrigTile = GM->GetTileAtCoordinates(OriginalTurnCoordinates);
     ALFPHexTile* CurrTile = GetCurrentTile();
     if (!OrigTile || !CurrTile) return;
-    if (OriginalTurnCoordinates == CurrentCoordinates) return; // 未移动
+    if (OriginalTurnCoordinates == CurrentCoordinates)
+    {
+        CurrTile->SetIsOccupied(true);
+        CurrTile->SetUnitOnTile(this);
+        bHasPreviewMoved = false;
+        return;
+    }
 
     TArray<ALFPHexTile*> Path = GM->FindPath(OrigTile, CurrTile, nullptr, GetAffiliation());
 

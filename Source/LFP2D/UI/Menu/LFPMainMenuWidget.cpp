@@ -5,6 +5,7 @@
 #include "Components/Button.h"
 #include "Components/ListView.h"
 #include "Components/CanvasPanel.h"
+#include "GameFramework/PlayerController.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Engine/World.h"
@@ -12,6 +13,23 @@
 void ULFPMainMenuWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+
+	APlayerController* PC = GetOwningPlayer();
+	if (!PC && GetWorld())
+	{
+		PC = GetWorld()->GetFirstPlayerController();
+	}
+
+	if (PC)
+	{
+		FInputModeUIOnly InputMode;
+		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+		InputMode.SetWidgetToFocus(TakeWidget());
+		PC->SetInputMode(InputMode);
+		PC->bShowMouseCursor = true;
+		PC->bEnableClickEvents = true;
+		PC->bEnableMouseOverEvents = true;
+	}
 
 	// Bind main menu buttons
 	if (Btn_StartGame) Btn_StartGame->OnClicked.AddDynamic(this, &ULFPMainMenuWidget::OnStartGameClicked);

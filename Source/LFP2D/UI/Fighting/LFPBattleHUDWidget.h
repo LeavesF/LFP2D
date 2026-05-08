@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "LFP2D/Turn/LFPBattleTypes.h"
 #include "LFPBattleHUDWidget.generated.h"
 
 class UCanvasPanel;
@@ -10,6 +11,8 @@ class ULFPSkillSelectionWidget;
 class ULFPDeploymentWidget;
 class ULFPBattleResultWidget;
 class ULFPCurrentUnitInfoWidget;
+class UImage;
+class UProgressBar;
 class ALFPTacticsUnit;
 class ALFPTurnManager;
 
@@ -24,6 +27,9 @@ class LFP2D_API ULFPBattleHUDWidget : public UUserWidget
 
 public:
 	virtual void NativeConstruct() override;
+
+	void InitializeEnergyBar(ALFPTurnManager* TurnManager = nullptr);
+	void UpdateEnergyBar();
 
 	// === TurnSpeedList ===
 	void ShowTurnSpeedList();
@@ -53,6 +59,11 @@ public:
 	ULFPCurrentUnitInfoWidget* GetCurrentUnitInfoWidget() const { return CurrentUnitInfoWidget; }
 
 protected:
+	virtual void NativeDestruct() override;
+
+	UFUNCTION()
+	void OnFactionAPChanged(EUnitAffiliation Faction, int32 NewAP);
+
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UCanvasPanel> RootCanvas;
 
@@ -70,4 +81,13 @@ protected:
 
 	UPROPERTY(meta = (BindWidgetOptional))
 	TObjectPtr<ULFPCurrentUnitInfoWidget> CurrentUnitInfoWidget;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UImage> EnergyBarBackground;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UProgressBar> EnergyProgressBar;
+
+	UPROPERTY(Transient)
+	TObjectPtr<ALFPTurnManager> TurnManagerRef;
 };

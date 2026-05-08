@@ -532,9 +532,8 @@ void ALFPTurnManager::BeginUnitTurn(ALFPTacticsUnit* Unit)
         return;
     }
 
-    OnTurnChanged.Broadcast();
-
     CurrentUnit = Unit;
+    OnTurnChanged.Broadcast();
 
     ALFPTacticsPlayerController* PC = GetWorld()->GetFirstPlayerController<ALFPTacticsPlayerController>();
 
@@ -745,6 +744,7 @@ void ALFPTurnManager::EndUnitTurn(ALFPTacticsUnit* Unit)
     // 通知玩家控制器
     if (ALFPTacticsPlayerController* PC = GetWorld()->GetFirstPlayerController<ALFPTacticsPlayerController>())
     {
+        PC->HideCurrentUnitActionWidgets();
         PC->OnTurnEnded(Unit);
     }
 }

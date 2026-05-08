@@ -30,6 +30,7 @@ void ULFPTurnSpeedListWidget::InitializeTurnOrder()
 		TurnManagerRef->OnPhaseChanged.AddDynamic(this, &ULFPTurnSpeedListWidget::OnPhaseChanged);
 
 		// 初始更新UI
+		OnPhaseChanged(TurnManagerRef->GetCurrentPhase());
 		UpdateTurnOrder();
 	}
 }
@@ -134,6 +135,10 @@ void ULFPTurnSpeedListWidget::OnTurnChanged()
 
 void ULFPTurnSpeedListWidget::OnPhaseChanged(EBattlePhase NewPhase)
 {
+	SetVisibility(NewPhase == EBattlePhase::BP_Deployment
+		? ESlateVisibility::Collapsed
+		: ESlateVisibility::SelfHitTestInvisible);
+
 	if (!PhaseText) return;
 
 	FString PhaseString;

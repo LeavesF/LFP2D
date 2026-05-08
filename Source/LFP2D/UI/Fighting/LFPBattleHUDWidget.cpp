@@ -4,7 +4,10 @@
 #include "LFP2D/UI/Fighting/LFPDeploymentWidget.h"
 #include "LFP2D/UI/Fighting/LFPBattleResultWidget.h"
 #include "LFP2D/UI/Fighting/LFPCurrentUnitInfoWidget.h"
+#include "LFP2D/Turn/LFPTurnManager.h"
 #include "Components/CanvasPanel.h"
+#include "Components/Image.h"
+#include "Components/ProgressBar.h"
 
 void ULFPBattleHUDWidget::NativeConstruct()
 {
@@ -27,6 +30,60 @@ void ULFPBattleHUDWidget::NativeConstruct()
 	{
 		CurrentUnitInfoWidget->SetVisibility(ESlateVisibility::Collapsed);
 	}
+
+	UpdateEnergyBar();
+}
+
+void ULFPBattleHUDWidget::NativeDestruct()
+{
+	if (TurnManagerRef)
+	{
+		TurnManagerRef->OnFactionAPChanged.RemoveDynamic(this, &ULFPBattleHUDWidget::OnFactionAPChanged);
+		TurnManagerRef = nullptr;
+	}
+
+	Super::NativeDestruct();
+}
+
+void ULFPBattleHUDWidget::InitializeEnergyBar(ALFPTurnManager* TurnManager)
+{
+	if (TurnManagerRef)
+	{
+		TurnManagerRef->OnFactionAPChanged.RemoveDynamic(this, &ULFPBattleHUDWidget::OnFactionAPChanged);
+	}
+
+	TurnManagerRef = TurnManager;
+	if (TurnManagerRef)
+	{
+		TurnManagerRef->OnFactionAPChanged.AddDynamic(this, &ULFPBattleHUDWidget::OnFactionAPChanged);
+	}
+
+	UpdateEnergyBar();
+}
+
+void ULFPBattleHUDWidget::UpdateEnergyBar()
+{
+	if (!EnergyProgressBar)
+	{
+		return;
+	}
+
+	const int32 CurrentAP = TurnManagerRef
+		? TurnManagerRef->GetFactionAP(EUnitAffiliation::UA_Player)
+		: 0;
+	const int32 ClampedAP = FMath::Clamp(CurrentAP, 0, 3);
+	EnergyProgressBar->SetPercent(static_cast<float>(ClampedAP) / 3.0f);
+}
+
+void ULFPBattleHUDWidget::OnFactionAPChanged(EUnitAffiliation Faction, int32 NewAP)
+{
+	if (Faction != EUnitAffiliation::UA_Player || !EnergyProgressBar)
+	{
+		return;
+	}
+
+	const int32 ClampedAP = FMath::Clamp(NewAP, 0, 3);
+	EnergyProgressBar->SetPercent(static_cast<float>(ClampedAP) / 3.0f);
 }
 
 void ULFPBattleHUDWidget::ShowTurnSpeedList()

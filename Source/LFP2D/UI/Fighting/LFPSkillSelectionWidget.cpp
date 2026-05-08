@@ -36,6 +36,7 @@ void ULFPSkillSelectionWidget::NativeConstruct()
     {
         SkillDetailsPanel->SetVisibility(ESlateVisibility::Collapsed);
     }
+
 }
 
 void ULFPSkillSelectionWidget::InitializeSkillsInfo(ALFPTacticsUnit* Unit, ALFPTacticsPlayerController* PC)
@@ -226,6 +227,7 @@ void ULFPSkillSelectionWidget::UpdateUnitInfo()
             ActionPointsText->SetText(FText::FromString(APText));
         }
     }
+
 }
 
 void ULFPSkillSelectionWidget::UpdateConfirmButtonState()

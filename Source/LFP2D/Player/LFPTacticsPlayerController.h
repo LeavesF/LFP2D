@@ -210,6 +210,9 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Skill")
     void HideSkillSelection();
 
+    UFUNCTION(BlueprintCallable, Category = "UI")
+    void HideCurrentUnitActionWidgets();
+
     UFUNCTION(BlueprintCallable, Category = "Skill")
     void ClearMovementAndRange();
 
