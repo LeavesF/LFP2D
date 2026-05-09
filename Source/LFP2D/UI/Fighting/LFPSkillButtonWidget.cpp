@@ -3,6 +3,7 @@
 
 #include "LFP2D/UI/Fighting/LFPSkillButtonWidget.h"
 #include "LFP2D/Skill/LFPSkillBase.h"
+#include "LFP2D/UI/Fighting/MessageBox/LFPMessageBoxWidget.h"
 #include "Sound/SoundBase.h"
 #include "LFP2D/Unit/LFPTacticsUnit.h"
 #include "LFP2D/Player/LFPTacticsPlayerController.h"
@@ -14,6 +15,7 @@ ULFPSkillButtonWidget::ULFPSkillButtonWidget(const FObjectInitializer& ObjectIni
     AssociatedSkill = nullptr;
     bIsSelected = false;
     bNormalBrushCached = false;
+    MessageBoxWidget = nullptr;
 
     // 默认颜色设置
     CooldownTextColor = FSlateColor(FLinearColor(0.8f, 0.2f, 0.2f)); // 红色
@@ -30,17 +32,24 @@ void ULFPSkillButtonWidget::NativeConstruct()
         // 绑定点击事件
         SkillButton->OnClicked.AddDynamic(this, &ULFPSkillButtonWidget::OnButtonClicked);
     }
+}
 
-    //// 初始化：隐藏选中边框和禁用遮罩
-    //if (SelectionBorder)
-    //{
-    //    SelectionBorder->SetVisibility(ESlateVisibility::Hidden);
-    //}
+void ULFPSkillButtonWidget::NativeDestruct()
+{
+    // 清理计时器
+    if (GetWorld())
+    {
+        GetWorld()->GetTimerManager().ClearTimer(HoverTimerHandle);
+    }
 
-    //if (DisabledOverlay)
-    //{
-    //    DisabledOverlay->SetVisibility(ESlateVisibility::Hidden);
-    //}
+    // 清理消息框
+    if (MessageBoxWidget)
+    {
+        MessageBoxWidget->RemoveFromParent();
+        MessageBoxWidget = nullptr;
+    }
+
+    Super::NativeDestruct();
 }
 
 void ULFPSkillButtonWidget::InitializeSkillButton(ULFPSkillBase* Skill)
@@ -159,6 +168,19 @@ void ULFPSkillButtonWidget::NativeOnMouseEnter(const FGeometry& InGeometry, cons
     {
         OnButtonHoveredDelegate.Broadcast(AssociatedSkill);
     }
+
+    // 启动1秒悬停计时器，用于显示技能描述
+    if (AssociatedSkill && !AssociatedSkill->SkillDescription.IsEmpty())
+    {
+        GetWorld()->GetTimerManager().ClearTimer(HoverTimerHandle);
+        GetWorld()->GetTimerManager().SetTimer(
+            HoverTimerHandle,
+            this,
+            &ULFPSkillButtonWidget::ShowSkillDescription,
+            1.0f,
+            false
+        );
+    }
 }
 
 void ULFPSkillButtonWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
@@ -169,6 +191,13 @@ void ULFPSkillButtonWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent
     if (OnButtonUnhoveredDelegate.IsBound())
     {
         OnButtonUnhoveredDelegate.Broadcast();
+    }
+
+    // 取消悬停计时器并隐藏消息框
+    GetWorld()->GetTimerManager().ClearTimer(HoverTimerHandle);
+    if (MessageBoxWidget)
+    {
+        MessageBoxWidget->Hide();
     }
 }
 
@@ -259,5 +288,26 @@ void ULFPSkillButtonWidget::UpdateCooldownDisplay()
     {
         // 无冷却，隐藏冷却文本
         CooldownText->SetVisibility(ESlateVisibility::Collapsed);
+    }
+}
+
+void ULFPSkillButtonWidget::ShowSkillDescription()
+{
+    if (!AssociatedSkill || AssociatedSkill->SkillDescription.IsEmpty()) return;
+
+    // 延迟创建消息框
+    if (!MessageBoxWidget && MessageBoxClass)
+    {
+        MessageBoxWidget = CreateWidget<ULFPMessageBoxWidget>(GetOwningPlayer(), MessageBoxClass);
+    }
+
+    if (!MessageBoxWidget) return;
+
+    // 获取当前鼠标屏幕位置
+    float MouseX, MouseY;
+    if (GetOwningPlayer())
+    {
+        GetOwningPlayer()->GetMousePosition(MouseX, MouseY);
+        MessageBoxWidget->ShowAt(FVector2D(MouseX, MouseY), AssociatedSkill->SkillDescription);
     }
 }

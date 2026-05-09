@@ -13,6 +13,7 @@
 class ULFPSkillBase;
 class ALFPTacticsUnit;
 class ALFPTacticsPlayerController;
+class ULFPMessageBoxWidget;
 
 // 技能按钮委托
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSkillButtonClickedSignature, ULFPSkillBase*, Skill);
@@ -52,6 +53,7 @@ public:
 
 protected:
     virtual void NativeConstruct() override;
+    virtual void NativeDestruct() override;
     virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
     virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
 
@@ -67,6 +69,10 @@ private:
     // 更新冷却显示
     UFUNCTION()
     void UpdateCooldownDisplay();
+
+    // 悬停1秒后显示技能描述
+    UFUNCTION()
+    void ShowSkillDescription();
 
 public:
     // 委托：按钮被点击
@@ -143,4 +149,15 @@ public:
     // 缓存按钮原始Normal画刷（用于选中状态恢复）
     FSlateBrush CachedNormalBrush;
     bool bNormalBrushCached;
+
+    // 悬停计时器句柄
+    FTimerHandle HoverTimerHandle;
+
+    // 消息框控件（动态创建，延迟初始化）
+    UPROPERTY()
+    TObjectPtr<ULFPMessageBoxWidget> MessageBoxWidget;
+
+    // 消息框控件类（蓝图中配置）
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill Button")
+    TSubclassOf<ULFPMessageBoxWidget> MessageBoxClass;
 };
