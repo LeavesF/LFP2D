@@ -64,6 +64,10 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Skill Selection")
     void ClearSkillFilter();
 
+    // 清除当前技能选中状态
+    UFUNCTION(BlueprintCallable, Category = "Skill Selection")
+    void ClearSelectedSkill();
+
     // 排序功能
     UFUNCTION(BlueprintCallable, Category = "Skill Selection")
     void SortSkills(ESkillSortMethod SortMethod);

@@ -5,7 +5,7 @@
 #include "LFP2D/Unit/LFPTacticsUnit.h"
 #include "LFP2D/Skill/LFPSkillComponent.h"
 #include "LFP2D/Skill/LFPSkillBase.h"
-#include "LFP2D/Skill/LFPSkillButtonWidget.h"
+#include "LFP2D/UI/Fighting/LFPSkillButtonWidget.h"
 #include "LFP2D/Turn/LFPTurnManager.h"
 #include "GameplayTagContainer.h"
 #include "Components/UniformGridPanel.h"
@@ -82,7 +82,7 @@ void ULFPSkillSelectionWidget::InitializeSkillsInfo(ALFPTacticsUnit* Unit, ALFPT
                 SkillButton->OwnerUnit = OwnerUnit;
                 SkillButton->TacticsPC = TacticsPC;
                 // 绑定点击事件
-                //SkillButton->OnSkillSelected.AddDynamic(this, &ULFPSkillSelectionWidget::OnSkillSelected);
+                SkillButton->OnButtonClickedDelegate.AddDynamic(this, &ULFPSkillSelectionWidget::OnSkillSelected);
 
                 // 添加到网格
                 SkillGrid->AddChildToUniformGrid(SkillButton, Row, Column);
@@ -122,6 +122,14 @@ void ULFPSkillSelectionWidget::OnSkillSelected(ULFPSkillBase* Skill)
     if (!Skill || !OwnerUnit) return;
 
     SelectedSkill = Skill;
+
+    for (ULFPSkillButtonWidget* Button : SkillButtons)
+    {
+        if (Button)
+        {
+            Button->SetSelected(Button->GetSkill() == Skill);
+        }
+    }
 
     // 更新技能详情
     UpdateSkillDetails(Skill);
@@ -319,6 +327,7 @@ void ULFPSkillSelectionWidget::RefreshSkillButtons()
         if (Button)
         {
             Button->RefreshState();
+            Button->SetSelected(Button->GetSkill() == SelectedSkill);
         }
     }
 
@@ -417,6 +426,24 @@ void ULFPSkillSelectionWidget::ClearSkillFilter()
     if (OwnerUnit)
     {
         //InitializeSkillsInfo(OwnerUnit, this);
+    }
+}
+
+void ULFPSkillSelectionWidget::ClearSelectedSkill()
+{
+    SelectedSkill = nullptr;
+
+    for (ULFPSkillButtonWidget* Button : SkillButtons)
+    {
+        if (Button)
+        {
+            Button->SetSelected(false);
+        }
+    }
+
+    if (SkillDetailsPanel)
+    {
+        SkillDetailsPanel->SetVisibility(ESlateVisibility::Collapsed);
     }
 }
 

@@ -41,6 +41,7 @@ public:
 	// === SkillSelection ===
 	void ShowSkillSelection();
 	void HideSkillSelection();
+	void ClearSelectedSkill();
 	ULFPSkillSelectionWidget* GetSkillSelectionWidget() const { return SkillSelectionWidget; }
 
 	// === Deployment ===

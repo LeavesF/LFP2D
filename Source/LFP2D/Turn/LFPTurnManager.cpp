@@ -218,6 +218,7 @@ void ALFPTurnManager::EndCurrentRound()
     if (bBattleEnded) return;
 
     bIsInRound = false;
+    CurrentUnit = nullptr;
 
 	SetPhase(EBattlePhase::BP_RoundEnd);
 

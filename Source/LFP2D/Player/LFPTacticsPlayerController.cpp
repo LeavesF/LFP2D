@@ -424,6 +424,10 @@ void ALFPTacticsPlayerController::OnCancelAction(const FInputActionValue& Value)
 		bIsReleaseSkill = false;
 		CurrentControlState = EPlayControlState::MoveState;
 		CurrentSelectedSkill = nullptr;
+		if (BattleHUDWidget)
+		{
+			BattleHUDWidget->ClearSelectedSkill();
+		}
 		if (GridManager)
 		{
 			GridManager->ClearRangeHighlight(EUnitRange::UR_SkillRelease);

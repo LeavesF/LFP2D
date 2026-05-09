@@ -195,6 +195,14 @@ void ULFPBattleHUDWidget::HideSkillSelection()
 	}
 }
 
+void ULFPBattleHUDWidget::ClearSelectedSkill()
+{
+	if (SkillSelectionWidget)
+	{
+		SkillSelectionWidget->ClearSelectedSkill();
+	}
+}
+
 void ULFPBattleHUDWidget::ShowDeploymentWidget()
 {
 	if (DeploymentWidget)
