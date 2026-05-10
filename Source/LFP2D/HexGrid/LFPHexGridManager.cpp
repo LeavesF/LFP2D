@@ -32,7 +32,7 @@ const TArray<EUnitRange>& GetRangeHighlightPriorityOrder()
 		EUnitRange::UR_SkillRelease,
 		EUnitRange::UR_Enemy_SkillRelease,
 		EUnitRange::UR_SkillEffect,
-        EUnitRange::UR_Enemy_SkillEffect
+		EUnitRange::UR_Enemy_SkillEffect
 	};
 
 	return PriorityOrder;
@@ -42,7 +42,7 @@ const TArray<EUnitRange>& GetRangeHighlightPriorityOrder()
 // Sets default values
 ALFPHexGridManager::ALFPHexGridManager()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	HexSize = 100.0f;
@@ -623,7 +623,7 @@ TArray<ALFPHexTile*> ALFPHexGridManager::FindPath(ALFPHexTile* Start, ALFPHexTil
 	// 如果起点和终点相同
 	if (Start == End) {
 		Path.Add(Start);
-        //UE_LOG(LogTemp, Log, TEXT("FindPath: Start and end are the same tile"));
+		//UE_LOG(LogTemp, Log, TEXT("FindPath: Start and end are the same tile"));
 		return Path;
 	}
 
@@ -928,16 +928,16 @@ FVector2D ALFPHexGridManager::WorldToHexGridPosition(const FVector& WorldPositio
 // 像素位置转换为六边形坐标
 FLFPHexCoordinates ALFPHexGridManager::PixelToHexCoordinates(const FVector2D& PixelPosition, float InHexSize)
 {
-    // 获取像素值
-    float x = PixelPosition.X;
-    float y = PixelPosition.Y;
+	// 获取像素值
+	float x = PixelPosition.X;
+	float y = PixelPosition.Y;
 
-    // 转换为立方坐标 - 尖顶六边形公式
-    float q = (2.0f / 3.0f) * x;
-    float r = (-1.0f / 3.0f) * x + (FMath::Sqrt(3.0f) / 3.0f) * y;
+	// 转换为立方坐标 - 尖顶六边形公式
+	float q = (2.0f / 3.0f) * x;
+	float r = (-1.0f / 3.0f) * x + (FMath::Sqrt(3.0f) / 3.0f) * y;
 
-    // 使用优化后的四舍五入到最近坐标
-    return RoundToHex(q, r);
+	// 使用优化后的四舍五入到最近坐标
+	return RoundToHex(q, r);
 }
 
 // 判断点是否在六边形内
@@ -987,7 +987,7 @@ void ALFPHexGridManager::ShowRangeHighlight(const TArray<ALFPHexTile*>& RangeTil
 		return;
 	}
 
-    ClearRangeHighlightVisuals();
+	ClearRangeHighlightVisuals();
 
 	TArray<ALFPHexTile*>& CachedTiles = HighlightedTilesByRange.FindOrAdd(HexRangeType);
 	CachedTiles.Empty();
@@ -1002,7 +1002,7 @@ void ALFPHexGridManager::ShowRangeHighlight(const TArray<ALFPHexTile*>& RangeTil
 
 	if (CachedTiles.IsEmpty())
 	{
-        HighlightedTilesByRange.Remove(HexRangeType);
+		HighlightedTilesByRange.Remove(HexRangeType);
 	}
 
 	RebuildRangeHighlights();
@@ -1075,14 +1075,14 @@ void ALFPHexGridManager::ClearRangeHighlight(EUnitRange HexRangeType)
 		return;
 	}
 
-    ClearRangeHighlightVisuals();
-    HighlightedTilesByRange.Remove(HexRangeType);
+	ClearRangeHighlightVisuals();
+	HighlightedTilesByRange.Remove(HexRangeType);
 	RebuildRangeHighlights();
 }
 
 void ALFPHexGridManager::ShowPathHighlight(const TArray<ALFPHexTile*>& PathTiles)
 {
-    ClearRangeHighlightVisuals();
+	ClearRangeHighlightVisuals();
 
 	CurrentPathTiles.Empty();
 
@@ -1112,7 +1112,7 @@ void ALFPHexGridManager::ShowPathHighlight(const TArray<ALFPHexTile*>& PathTiles
 
 void ALFPHexGridManager::ClearPathHighlight()
 {
-    ClearRangeHighlightVisuals();
+	ClearRangeHighlightVisuals();
 	CurrentPathTiles.Empty();
 	RebuildRangeHighlights();
 	return;
@@ -1310,11 +1310,11 @@ FLinearColor ALFPHexGridManager::GetEdgeColorForRange(EUnitRange HexRangeType) c
 	switch (HexRangeType)
 	{
 	case EUnitRange::UR_Move:        return MoveEdgeColor;
-    case EUnitRange::UR_SkillRelease: return SkillReleaseEdgeColor;
+	case EUnitRange::UR_SkillRelease: return SkillReleaseEdgeColor;
 	case EUnitRange::UR_SkillEffect: return SkillEffectEdgeColor;
-    case EUnitRange::UR_Enemy_Move:        return EnemyMoveEdgeColor;
-    case EUnitRange::UR_Enemy_SkillRelease: return EnemySkillReleaseEdgeColor;
-    case EUnitRange::UR_Enemy_SkillEffect: return EnemySkillEffectEdgeColor;
+	case EUnitRange::UR_Enemy_Move:        return EnemyMoveEdgeColor;
+	case EUnitRange::UR_Enemy_SkillRelease: return EnemySkillReleaseEdgeColor;
+	case EUnitRange::UR_Enemy_SkillEffect: return EnemySkillEffectEdgeColor;
 	default:                         return FLinearColor::Transparent;
 	}
 }
@@ -1324,11 +1324,11 @@ FLinearColor ALFPHexGridManager::GetOverlayColorForRange(EUnitRange HexRangeType
 	switch (HexRangeType)
 	{
 	case EUnitRange::UR_Move:        return MoveOverlayColor;
-    case EUnitRange::UR_SkillRelease: return SkillReleaseOverlayColor;
+	case EUnitRange::UR_SkillRelease: return SkillReleaseOverlayColor;
 	case EUnitRange::UR_SkillEffect: return SkillEffectOverlayColor;
-    case EUnitRange::UR_Enemy_Move:        return EnemyMoveOverlayColor;
-    case EUnitRange::UR_Enemy_SkillRelease: return EnemySkillReleaseOverlayColor;
-    case EUnitRange::UR_Enemy_SkillEffect: return EnemySkillEffectOverlayColor;
+	case EUnitRange::UR_Enemy_Move:        return EnemyMoveOverlayColor;
+	case EUnitRange::UR_Enemy_SkillRelease: return EnemySkillReleaseOverlayColor;
+	case EUnitRange::UR_Enemy_SkillEffect: return EnemySkillEffectOverlayColor;
 	default:                         return FLinearColor::Transparent;
 	}
 }

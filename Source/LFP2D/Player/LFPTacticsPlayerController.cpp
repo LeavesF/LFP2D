@@ -12,6 +12,7 @@
 #include "LFP2D/UI/Fighting/LFPTurnSpeedListWidget.h"
 #include "LFP2D/UI/Fighting/LFPSkillSelectionWidget.h"
 #include "LFP2D/UI/Fighting/LFPDeploymentWidget.h"
+#include "LFP2D/UI/Fighting/LFPBattleResultWidget.h"
 #include "LFP2D/HexGrid/LFPMapEditorComponent.h"
 #include "LFP2D/UI/MapEditor/LFPMapEditorWidget.h"
 #include "LFP2D/Core/LFPGameInstance.h"
@@ -19,9 +20,26 @@
 #include "Kismet/GameplayStatics.h"
 #include "Camera/PlayerCameraManager.h"
 //#include "Blueprint/AIBlueprintHelperLibrary.h"
+#include "Components/Widget.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+
+namespace
+{
+	bool IsVisibleAndHovered(const UWidget* Widget)
+	{
+		if (!Widget)
+		{
+			return false;
+		}
+
+		const ESlateVisibility Visibility = Widget->GetVisibility();
+		return Visibility != ESlateVisibility::Collapsed &&
+			Visibility != ESlateVisibility::Hidden &&
+			Widget->IsHovered();
+	}
+}
 
 ALFPTacticsPlayerController::ALFPTacticsPlayerController()
 {
@@ -121,12 +139,11 @@ void ALFPTacticsPlayerController::SetupInputComponent()
 	// 绑定Enhanced Input组件
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
 	{
-		// 选择操作
-		EnhancedInputComponent->BindAction(SelectAction, ETriggerEvent::Started, this, &ALFPTacticsPlayerController::OnSelectStarted);
-		EnhancedInputComponent->BindAction(SelectAction, ETriggerEvent::Completed, this, &ALFPTacticsPlayerController::OnSelectCompleted);
+		// 左键主操作：选择 + 即时确认
+		EnhancedInputComponent->BindAction(SelectAction, ETriggerEvent::Started, this, &ALFPTacticsPlayerController::OnPrimaryActionStarted);
+		EnhancedInputComponent->BindAction(SelectAction, ETriggerEvent::Completed, this, &ALFPTacticsPlayerController::OnPrimaryActionCompleted);
 
 		// 其他操作
-		EnhancedInputComponent->BindAction(ConfirmAction, ETriggerEvent::Completed, this, &ALFPTacticsPlayerController::OnConfirmAction);
 		EnhancedInputComponent->BindAction(CancelAction, ETriggerEvent::Completed, this, &ALFPTacticsPlayerController::OnCancelAction);
 		//EnhancedInputComponent->BindAction(RotateCameraAction, ETriggerEvent::Triggered, this, &ALFPTacticsPlayerController::OnRotateCamera);
 		EnhancedInputComponent->BindAction(DebugToggleAction, ETriggerEvent::Started, this, &ALFPTacticsPlayerController::OnToggleDebug);
@@ -214,23 +231,33 @@ void ALFPTacticsPlayerController::Tick(float DeltaTime)
 			// 敌人计划预览：检测悬停的格子上是否有带行动计划的敌人
 			if (CachedBattlePhase == EBattlePhase::BP_EnemyPlanning || CachedBattlePhase == EBattlePhase::BP_ActionPhase)
 			{
-				ALFPTacticsUnit* HoveredEnemy = nullptr;
-				if (LastHoveredTile)
+				if (IsInInspectionMode())
 				{
-					ALFPTacticsUnit* UnitOnTile = LastHoveredTile->GetUnitOnTile();
-					if (UnitOnTile && UnitOnTile->IsEnemy() && UnitOnTile->HasActionPlan())
+					if (PreviewedEnemy)
 					{
-						HoveredEnemy = UnitOnTile;
+						HideEnemyPlanPreview();
 					}
 				}
+				else
+				{
+					ALFPTacticsUnit* HoveredEnemy = nullptr;
+					if (LastHoveredTile)
+					{
+						ALFPTacticsUnit* UnitOnTile = LastHoveredTile->GetUnitOnTile();
+						if (UnitOnTile && UnitOnTile->IsEnemy() && UnitOnTile->HasActionPlan())
+						{
+							HoveredEnemy = UnitOnTile;
+						}
+					}
 
-				if (HoveredEnemy && HoveredEnemy != PreviewedEnemy && CurrentControlState == EPlayControlState::MoveState)
-				{
-					ShowEnemyPlanPreview(HoveredEnemy);
-				}
-				else if (!HoveredEnemy && PreviewedEnemy)
-				{
-					HideEnemyPlanPreview();
+					if (HoveredEnemy && HoveredEnemy != PreviewedEnemy && CurrentControlState == EPlayControlState::MoveState)
+					{
+						ShowEnemyPlanPreview(HoveredEnemy);
+					}
+					else if (!HoveredEnemy && PreviewedEnemy)
+					{
+						HideEnemyPlanPreview();
+					}
 				}
 			}
 		}
@@ -251,13 +278,13 @@ void ALFPTacticsPlayerController::Tick(float DeltaTime)
 	}
 }
 
-// 选择开始
-void ALFPTacticsPlayerController::OnSelectStarted(const FInputActionValue& Value)
+// 左键主操作开始
+void ALFPTacticsPlayerController::OnPrimaryActionStarted(const FInputActionValue& Value)
 {
 	if (bWaitingForMove) return;
-	if (bIsInDeployment) return;
 
 	bIsSelecting = true;
+	bPrimaryActionStartedOverUI = IsPrimaryActionOverUI();
 
 	// 获取鼠标位置
 	float MouseX, MouseY;
@@ -267,63 +294,174 @@ void ALFPTacticsPlayerController::OnSelectStarted(const FInputActionValue& Value
 	}
 }
 
-// 选择完成
-void ALFPTacticsPlayerController::OnSelectCompleted(const FInputActionValue& Value)
+// 左键主操作完成：选择 + 即时确认
+void ALFPTacticsPlayerController::OnPrimaryActionCompleted(const FInputActionValue& Value)
 {
-	if (bWaitingForMove) return;
-	if (bIsInDeployment) return;
-	if (!bIsSelecting) return;
-	bIsSelecting = false;
-
-	// 获取鼠标位置
-	float MouseX, MouseY;
-	GetMousePosition(MouseX, MouseY);
-	FVector2D SelectionEnd = FVector2D(MouseX, MouseY);
-
-	// 简单的点击检测（非拖拽）
-	if (FVector2D::Distance(SelectionStart, SelectionEnd) < 10.0f)
+	if (bWaitingForMove)
 	{
-		FHitResult HitResult;
-		GetHitResultAtScreenPosition(SelectionEnd, ECC_Visibility, false, HitResult);
-
-		if (HitResult.bBlockingHit)
-		{
-			// 尝试选中单位
-			ALFPTacticsUnit* Unit = Cast<ALFPTacticsUnit>(HitResult.GetActor());
-			if (Unit)
-			{
-				SelectUnit(Unit);
-				return;
-			}
-
-			// 尝试选中格子
-			ALFPHexTile* Tile = Cast<ALFPHexTile>(HitResult.GetActor());
-			if (Tile)
-			{
-				SelectTile(Tile);
-				return;
-			}
-		}
+		bIsSelecting = false;
+		bPrimaryActionStartedOverUI = false;
+		return;
 	}
-}
 
-void ALFPTacticsPlayerController::OnConfirmAction(const FInputActionValue& Value)
-{
-	if (bWaitingForMove) return;
 	bIsDragging = false;
 	if (DragTime > DragThresholdTime)
 	{
 		DragTime = 0.f;
+		bIsSelecting = false;
+		bPrimaryActionStartedOverUI = false;
 		return;
 	}
 	DragTime = 0.f;
 
+	if (!bIsSelecting)
+	{
+		bPrimaryActionStartedOverUI = false;
+		return;
+	}
+	bIsSelecting = false;
+
+	// 获取鼠标位置
+	float MouseX, MouseY;
+	if (!GetMousePosition(MouseX, MouseY))
+	{
+		bPrimaryActionStartedOverUI = false;
+		return;
+	}
+
+	const FVector2D SelectionEnd(MouseX, MouseY);
+	const bool bStartedOverUI = bPrimaryActionStartedOverUI;
+	bPrimaryActionStartedOverUI = false;
+
+	if (bStartedOverUI || IsPrimaryActionOverUI())
+	{
+		return;
+	}
+
+	// 简单的点击检测（非拖拽）
+	if (FVector2D::Distance(SelectionStart, SelectionEnd) >= 10.0f)
+	{
+		return;
+	}
+
+	FHitResult HitResult;
+	GetHitResultAtScreenPosition(SelectionEnd, ECC_Visibility, false, HitResult);
+	HandlePrimaryActionAtHit(HitResult);
+}
+
+void ALFPTacticsPlayerController::OnSelectStarted(const FInputActionValue& Value)
+{
+	OnPrimaryActionStarted(Value);
+}
+
+void ALFPTacticsPlayerController::OnSelectCompleted(const FInputActionValue& Value)
+{
+	OnPrimaryActionCompleted(Value);
+}
+
+void ALFPTacticsPlayerController::OnConfirmAction(const FInputActionValue& Value)
+{
+	if (!bIsSelecting)
+	{
+		bIsSelecting = true;
+		bPrimaryActionStartedOverUI = false;
+		float MouseX, MouseY;
+		if (GetMousePosition(MouseX, MouseY))
+		{
+			SelectionStart = FVector2D(MouseX, MouseY);
+		}
+	}
+
+	OnPrimaryActionCompleted(Value);
+}
+
+bool ALFPTacticsPlayerController::IsPrimaryActionOverUI() const
+{
+	if (!BattleHUDWidget)
+	{
+		return false;
+	}
+
+	return IsVisibleAndHovered(BattleHUDWidget->GetSkillSelectionWidget()) ||
+		IsVisibleAndHovered(BattleHUDWidget->GetDeploymentWidget()) ||
+		IsVisibleAndHovered(BattleHUDWidget->GetBattleResultWidget()) ||
+		IsVisibleAndHovered(BattleHUDWidget->GetCurrentUnitInfoWidget()) ||
+		IsVisibleAndHovered(BattleHUDWidget->GetTurnSpeedListWidget());
+}
+
+bool ALFPTacticsPlayerController::IsInInspectionMode() const
+{
+	return bIsInspectingUnit;
+}
+
+bool ALFPTacticsPlayerController::ExitInspectionMode()
+{
+	ALFPTurnManager* TM = GetTurnManager();
+	ALFPTacticsUnit* CurrentTMUnit = TM ? TM->GetCurrentUnit() : nullptr;
+	if (!bIsInspectingUnit || !SelectedUnit || !CurrentTMUnit || SelectedUnit == CurrentTMUnit || CurrentTMUnit->IsEnemy())
+	{
+		bIsInspectingUnit = false;
+		return false;
+	}
+
+	if (BattleHUDWidget)
+	{
+		BattleHUDWidget->ExitInspectionMode(this);
+
+		// 还原 UnitInfo 面板显示为回合单位
+		if (ULFPCurrentUnitInfoWidget* UnitInfoWidget = BattleHUDWidget->GetCurrentUnitInfoWidget())
+		{
+			UnitInfoWidget->RefreshFromTurnManager();
+		}
+	}
+
+	bIsInspectingUnit = false;
+	SelectUnit(CurrentTMUnit);
+	HandleSkillSelection();
+	return true;
+}
+
+bool ALFPTacticsPlayerController::HandleInspectionPrimaryAction(const FHitResult& HitResult)
+{
+	if (!IsInInspectionMode())
+	{
+		return false;
+	}
+
+	ALFPTurnManager* TM = GetTurnManager();
+	ALFPTacticsUnit* CurrentTMUnit = TM ? TM->GetCurrentUnit() : nullptr;
+	if (!CurrentTMUnit)
+	{
+		bIsInspectingUnit = false;
+		return false;
+	}
+
+	ALFPTacticsUnit* ClickedUnit = Cast<ALFPTacticsUnit>(HitResult.GetActor());
+	if (!ClickedUnit && LastHoveredTile)
+	{
+		ClickedUnit = LastHoveredTile->GetUnitOnTile();
+	}
+
+	if (ClickedUnit && ClickedUnit != CurrentTMUnit && ClickedUnit != SelectedUnit)
+	{
+		SelectUnit(ClickedUnit);
+		return true;
+	}
+
+	ExitInspectionMode();
+	return true;
+}
+
+void ALFPTacticsPlayerController::HandlePrimaryActionAtHit(const FHitResult& HitResult)
+{
+	if (HandleInspectionPrimaryAction(HitResult))
+	{
+		return;
+	}
+
 	// 布置阶段优先处理
 	if (bIsInDeployment)
 	{
-		FHitResult HitResult;
-		GetHitResultUnderCursor(ECC_Visibility, false, HitResult);
-
 		// 检测是否点击了已部署的单位
 		ALFPTacticsUnit* ClickedUnit = Cast<ALFPTacticsUnit>(HitResult.GetActor());
 		if (ClickedUnit && UnitToPartyIndex.Contains(ClickedUnit))
@@ -343,10 +481,9 @@ void ALFPTacticsPlayerController::OnConfirmAction(const FInputActionValue& Value
 		}
 
 		// 检测是否点击了部署格子
-		ALFPHexTile* ClickedTile = Cast<ALFPHexTile>(HitResult.GetActor());
-		if (ClickedTile)
+		if (LastHoveredTile)
 		{
-			OnDeploymentTileClicked(ClickedTile);
+			OnDeploymentTileClicked(LastHoveredTile);
 			return;
 		}
 
@@ -383,22 +520,78 @@ void ALFPTacticsPlayerController::OnConfirmAction(const FInputActionValue& Value
 		return;
 	}
 
-	if (SelectedUnit && SelectedTile)
+	if (ALFPTacticsUnit* ClickedUnit = Cast<ALFPTacticsUnit>(HitResult.GetActor()))
 	{
-		if (bIsReleaseSkill && CurrentSelectedSkill)
+		if (CurrentControlState == EPlayControlState::SkillReleaseState && bIsReleaseSkill && CurrentSelectedSkill)
 		{
-			ExecuteSkill(CurrentSelectedSkill);
+			HandlePrimaryTileClicked(ClickedUnit->GetCurrentTile());
+			return;
 		}
-		else
+
+		SelectUnit(ClickedUnit);
+		return;
+	}
+
+	if (LastHoveredTile)
+	{
+		HandlePrimaryTileClicked(LastHoveredTile);
+	}
+}
+
+void ALFPTacticsPlayerController::HandlePrimaryTileClicked(ALFPHexTile* Tile)
+{
+	if (!Tile)
+	{
+		return;
+	}
+
+	if (!SelectedUnit || !GridManager)
+	{
+		if (ALFPTacticsUnit* UnitOnTile = Tile->GetUnitOnTile())
+		{
+			SelectUnit(UnitOnTile);
+		}
+		return;
+	}
+
+	switch (CurrentControlState)
+	{
+	case EPlayControlState::MoveState:
+		if (ALFPTacticsUnit* UnitOnTile = Tile->GetUnitOnTile())
+		{
+			SelectUnit(UnitOnTile);
+			return;
+		}
+
+		if (SelectedTile == Tile && MovementRangeTiles.Contains(Tile) && Tile->IsWalkable() && !Tile->IsOccupied())
 		{
 			ConfirmMove();
 		}
+		break;
+
+	case EPlayControlState::SkillReleaseState:
+		if (SelectedTile == Tile && IsCurrentSkillTargetTileValid(Tile))
+		{
+			ExecuteSkill(CurrentSelectedSkill);
+		}
+		break;
+
+	default:
+		break;
 	}
-	else if (SelectedUnit)
+}
+
+bool ALFPTacticsPlayerController::IsCurrentSkillTargetTileValid(ALFPHexTile* Tile) const
+{
+	if (!Tile || !CurrentSelectedSkill)
 	{
-		// 如果没有选中目标格子，显示可移动范围
-		//ShowMovementRange(true);
+		return false;
 	}
+
+	const FLFPHexCoordinates SelectedCoord = Tile->GetCoordinates();
+	const TArray<FLFPHexCoordinates> ReleaseRangeCoords = CurrentSelectedSkill->GetReleaseRangeInGrid();
+	return ReleaseRangeCoords.Contains(SelectedCoord) &&
+		CurrentSelectedSkill->IsValidReleaseTargetTile(Tile);
 }
 
 void ALFPTacticsPlayerController::OnCancelAction(const FInputActionValue& Value)
@@ -413,28 +606,9 @@ void ALFPTacticsPlayerController::OnCancelAction(const FInputActionValue& Value)
 	DragTime = 0.f;
 
 	// 检查模式优先取消：如果正在检查其他单位，右键还原到回合单位
-	if (SelectedUnit)
+	if (ExitInspectionMode())
 	{
-		ALFPTurnManager* TM = GetTurnManager();
-		if (TM)
-		{
-			ALFPTacticsUnit* CurrentTMUnit = TM->GetCurrentUnit();
-			if (SelectedUnit != CurrentTMUnit && CurrentTMUnit && !CurrentTMUnit->IsEnemy())
-			{
-				if (BattleHUDWidget)
-				{
-					BattleHUDWidget->ExitInspectionMode(this);
-					// 还原 UnitInfo 面板显示为回合单位
-					if (ULFPCurrentUnitInfoWidget* UnitInfoWidget = BattleHUDWidget->GetCurrentUnitInfoWidget())
-					{
-						UnitInfoWidget->RefreshFromTurnManager();
-					}
-				}
-				SelectUnit(CurrentTMUnit);
-				HandleSkillSelection();
-				return;
-			}
-		}
+		return;
 	}
 
 	// 布置阶段：清除选中
@@ -585,9 +759,15 @@ void ALFPTacticsPlayerController::SelectUnit(ALFPTacticsUnit* Unit)
 	// ==== 检查模式触发 ====
 	ALFPTurnManager* TM = GetTurnManager();
 	ALFPTacticsUnit* CurrentTMUnit = TM ? TM->GetCurrentUnit() : nullptr;
+	bIsInspectingUnit = TM && SelectedUnit && CurrentTMUnit && SelectedUnit != CurrentTMUnit && !CurrentTMUnit->IsEnemy();
 
-	if (TM && SelectedUnit && CurrentTMUnit && SelectedUnit != CurrentTMUnit && !CurrentTMUnit->IsEnemy())
+	if (bIsInspectingUnit)
 	{
+		if (PreviewedEnemy)
+		{
+			HideEnemyPlanPreview();
+		}
+
 		if (BattleHUDWidget)
 		{
 			BattleHUDWidget->EnterInspectionMode(SelectedUnit, this);
@@ -832,6 +1012,12 @@ void ALFPTacticsPlayerController::ExecuteSkill(ULFPSkillBase* CurrentSkill)
 {
 	if (SelectedUnit && CurrentSkill)
 	{
+		if (CurrentSkill->TargetType == ESkillTargetType::Self)
+		{
+			bIsSelecting = false;
+			bPrimaryActionStartedOverUI = true;
+		}
+
 		// 提交预览移动（消耗移动力）
 		SelectedUnit->CommitMovePosition();
 		ALFPHexTile* TargetTile = SelectedTile;
@@ -914,6 +1100,9 @@ void ALFPTacticsPlayerController::HandleSkillTargetSelecting(ULFPSkillBase* Skil
 	if (!SelectedUnit || !Skill) return;
 	if (Skill->IsPassiveSkill()) return;
 
+	bIsSelecting = false;
+	bPrimaryActionStartedOverUI = true;
+
 	// 获取技能范围内的目标格子
 	TArray<FLFPHexCoordinates> TargetTilesCoord = Skill->GetReleaseRangeInGrid();
 	if (GridManager)
@@ -951,32 +1140,33 @@ void ALFPTacticsPlayerController::HandleSkillTargetSelecting(ULFPSkillBase* Skil
 void ALFPTacticsPlayerController::ShowEnemyPlanPreview(ALFPTacticsUnit* EnemyUnit)
 {
 	if (!EnemyUnit || !EnemyUnit->HasActionPlan() || !GridManager) return;
+	if (IsInInspectionMode()) return;
 
 	PreviewedEnemy = EnemyUnit;
 	const FEnemyActionPlan& Plan = EnemyUnit->CurrentActionPlan;
-    PreviewReleaseTiles.Empty();
-    PreviewEffectTiles.Empty();
+	PreviewReleaseTiles.Empty();
+	PreviewEffectTiles.Empty();
 
-    GridManager->ClearRangeHighlight(EUnitRange::UR_Enemy_SkillRelease);
-    GridManager->ClearRangeHighlight(EUnitRange::UR_Enemy_SkillEffect);
+	GridManager->ClearRangeHighlight(EUnitRange::UR_Enemy_SkillRelease);
+	GridManager->ClearRangeHighlight(EUnitRange::UR_Enemy_SkillEffect);
 
-    if (!Plan.PlannedSkill)
-    {
-        return;
-    }
+	if (!Plan.PlannedSkill)
+	{
+		return;
+	}
 
-    TArray<FLFPHexCoordinates> PreviewReleaseCoords = Plan.PlannedSkill->GetReleaseRangeInGrid();
-    for (FLFPHexCoordinates ReleaseCoord : PreviewReleaseCoords)
-    {
-        if (ALFPHexTile* ReleaseTile = GridManager->GetTileAtCoordinates(ReleaseCoord))
-        {
-            PreviewReleaseTiles.AddUnique(ReleaseTile);
-        }
-    }
+	TArray<FLFPHexCoordinates> PreviewReleaseCoords = Plan.PlannedSkill->GetReleaseRangeInGrid();
+	for (FLFPHexCoordinates ReleaseCoord : PreviewReleaseCoords)
+	{
+		if (ALFPHexTile* ReleaseTile = GridManager->GetTileAtCoordinates(ReleaseCoord))
+		{
+			PreviewReleaseTiles.AddUnique(ReleaseTile);
+		}
+	}
 	// 高亮技能效果范围格子
 	PreviewEffectTiles = Plan.EffectAreaTiles;
 	GridManager->ClearRangeHighlight(EUnitRange::UR_Move);
-    GridManager->ShowRangeHighlight(PreviewReleaseTiles, EUnitRange::UR_Enemy_SkillRelease);
+	GridManager->ShowRangeHighlight(PreviewReleaseTiles, EUnitRange::UR_Enemy_SkillRelease);
 	GridManager->ShowRangeHighlight(PreviewEffectTiles, EUnitRange::UR_Enemy_SkillEffect);
 }
 
@@ -988,7 +1178,7 @@ void ALFPTacticsPlayerController::HideEnemyPlanPreview()
 		PreviewReleaseTiles.Empty();
 		PreviewEffectTiles.Empty();
 		PreviewedEnemy = nullptr;
-        GridManager->ClearRangeHighlight(EUnitRange::UR_Enemy_SkillRelease);
+		GridManager->ClearRangeHighlight(EUnitRange::UR_Enemy_SkillRelease);
 		GridManager->ClearRangeHighlight(EUnitRange::UR_Enemy_SkillEffect);
 		ShowUnitRange(EUnitRange::UR_Move);
 	}
