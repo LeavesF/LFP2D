@@ -15,6 +15,7 @@ class UImage;
 class UProgressBar;
 class UTextBlock;
 class ALFPTacticsUnit;
+class ALFPTacticsPlayerController;
 class ALFPTurnManager;
 
 /**
@@ -60,6 +61,10 @@ public:
 	void HideCurrentUnitInfo();
 	void SetCurrentUnitInfoUnit(ALFPTacticsUnit* Unit);
 	ULFPCurrentUnitInfoWidget* GetCurrentUnitInfoWidget() const { return CurrentUnitInfoWidget; }
+
+	// ==== 检查模式 ====
+	void EnterInspectionMode(ALFPTacticsUnit* InspectedUnit, ALFPTacticsPlayerController* PC);
+	void ExitInspectionMode(ALFPTacticsPlayerController* PC);
 
 protected:
 	virtual void NativeDestruct() override;

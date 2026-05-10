@@ -142,6 +142,9 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill Attributes")
     bool bIsSelected;
 
+    // 是否允许点击执行技能。控件本身保持启用，以便禁用状态仍能响应悬停。
+    bool bCanClickSkillButton;
+
     // 缓存按钮原始Normal画刷（用于选中状态恢复）
     FSlateBrush CachedNormalBrush;
     bool bNormalBrushCached;

@@ -14,6 +14,7 @@ ULFPSkillButtonWidget::ULFPSkillButtonWidget(const FObjectInitializer& ObjectIni
 {
     AssociatedSkill = nullptr;
     bIsSelected = false;
+    bCanClickSkillButton = false;
     bNormalBrushCached = false;
     MessageBoxWidget = nullptr;
 
@@ -64,17 +65,21 @@ void ULFPSkillButtonWidget::RefreshState()
 
 void ULFPSkillButtonWidget::SetButtonEnabled(bool bEnabled)
 {
-    SetIsEnabled(bEnabled);
+    bCanClickSkillButton = bEnabled;
+
+    // 控件和内部按钮保持启用，避免 UE disabled 状态影响图标渲染；
+    // 点击是否生效由 bCanClickSkillButton 控制。
+    SetIsEnabled(true);
 
     if (SkillButton)
     {
-        SkillButton->SetIsEnabled(bEnabled);
+        SkillButton->SetIsEnabled(true);
     }
 
     // 更新禁用遮罩显示
     if (DisabledOverlay)
     {
-        DisabledOverlay->SetVisibility(bEnabled ? ESlateVisibility::Hidden : ESlateVisibility::Visible);
+        DisabledOverlay->SetVisibility(bEnabled ? ESlateVisibility::Hidden : ESlateVisibility::HitTestInvisible);
     }
 
     // 重新启用时恢复选中外观
@@ -123,7 +128,7 @@ void ULFPSkillButtonWidget::SetSelected(bool bSelected)
 
 void ULFPSkillButtonWidget::OnButtonClicked()
 {
-    if (!AssociatedSkill || !OwnerUnit || !GetIsEnabled()) return;
+    if (!AssociatedSkill || !OwnerUnit || !bCanClickSkillButton) return;
     if (AssociatedSkill->IsPassiveSkill()) return;
 
     if (OnButtonClickedDelegate.IsBound())
@@ -149,10 +154,8 @@ void ULFPSkillButtonWidget::NativeOnMouseEnter(const FGeometry& InGeometry, cons
 {
     Super::NativeOnMouseEnter(InGeometry, InMouseEvent);
 
-    if (!GetIsEnabled()) return;
-
     // 播放悬停音效
-    if (HoverSound)
+    if (HoverSound && bCanClickSkillButton)
     {
         UGameplayStatics::PlaySound2D(this, HoverSound);
     }
@@ -239,8 +242,7 @@ void ULFPSkillButtonWidget::UpdateAppearance()
     //SetButtonEnabled(bCanExecute);
     if (AssociatedSkill->IsPassiveSkill() && AssociatedSkill->ShouldShowDisabledInSkillBar())
     {
-        SetButtonEnabled(true);
-        SkillButton->SetIsEnabled(false);
+        SetButtonEnabled(false);
     }
     else
     {

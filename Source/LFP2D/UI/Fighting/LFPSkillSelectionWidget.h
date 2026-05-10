@@ -76,6 +76,13 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Skill Selection")
     void RefreshSkillButtons();
 
+    // ==== 检查模式 ====
+    UFUNCTION(BlueprintCallable, Category = "Skill Selection")
+    void SetInspectionMode(bool bInspection);
+
+    UFUNCTION(BlueprintPure, Category = "Skill Selection")
+    bool IsInInspectionMode() const { return bInspectionMode; }
+
 protected:
     virtual void NativeConstruct() override;
     virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
@@ -235,4 +242,11 @@ protected:
     // 最大列数
     UPROPERTY(EditAnywhere, Category = "Skill Selection")
     int32 MaxColumns;
+
+    // 检查模式标志
+    bool bInspectionMode = false;
+
+    // 检查模式遮罩层（BindWidgetOptional）
+    UPROPERTY(BlueprintReadOnly, Category = "Skill Selection", meta = (BindWidgetOptional))
+    TObjectPtr<UImage> InspectionOverlay;
 };

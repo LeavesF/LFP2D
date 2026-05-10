@@ -4,6 +4,7 @@
 #include "LFP2D/UI/Fighting/LFPDeploymentWidget.h"
 #include "LFP2D/UI/Fighting/LFPBattleResultWidget.h"
 #include "LFP2D/UI/Fighting/LFPCurrentUnitInfoWidget.h"
+#include "LFP2D/Player/LFPTacticsPlayerController.h"
 #include "LFP2D/Turn/LFPTurnManager.h"
 #include "Components/CanvasPanel.h"
 #include "Components/Image.h"
@@ -255,6 +256,7 @@ void ULFPBattleHUDWidget::HideCurrentUnitInfo()
 {
 	if (CurrentUnitInfoWidget)
 	{
+		CurrentUnitInfoWidget->SetInspectionMode(false);
 		CurrentUnitInfoWidget->SetVisibility(ESlateVisibility::Collapsed);
 	}
 }
@@ -264,5 +266,35 @@ void ULFPBattleHUDWidget::SetCurrentUnitInfoUnit(ALFPTacticsUnit* Unit)
 	if (CurrentUnitInfoWidget)
 	{
 		CurrentUnitInfoWidget->BindToUnit(Unit);
+	}
+}
+
+void ULFPBattleHUDWidget::EnterInspectionMode(ALFPTacticsUnit* InspectedUnit, ALFPTacticsPlayerController* PC)
+{
+	if (!InspectedUnit || !PC) return;
+
+	if (CurrentUnitInfoWidget)
+	{
+		CurrentUnitInfoWidget->BindToUnit(InspectedUnit);
+		CurrentUnitInfoWidget->SetInspectionMode(true);
+	}
+
+	if (SkillSelectionWidget)
+	{
+		ShowSkillSelection();
+		SkillSelectionWidget->InitializeSkillsInfo(InspectedUnit, PC);
+		SkillSelectionWidget->SetInspectionMode(true);
+	}
+}
+
+void ULFPBattleHUDWidget::ExitInspectionMode(ALFPTacticsPlayerController* PC)
+{
+	if (CurrentUnitInfoWidget)
+	{
+		CurrentUnitInfoWidget->SetInspectionMode(false);
+	}
+	if (SkillSelectionWidget)
+	{
+		SkillSelectionWidget->SetInspectionMode(false);
 	}
 }

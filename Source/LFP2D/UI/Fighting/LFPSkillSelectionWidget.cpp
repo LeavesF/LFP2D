@@ -45,6 +45,7 @@ void ULFPSkillSelectionWidget::InitializeSkillsInfo(ALFPTacticsUnit* Unit, ALFPT
 
     OwnerUnit = Unit;
     TacticsPC = PC;
+    bInspectionMode = false;
 
     // 绑定阵营 AP 变化委托（先移除旧绑定，避免重复添加触发断言）
     if (ALFPTurnManager* TurnManager = Unit->GetTurnManager())
@@ -120,6 +121,7 @@ void ULFPSkillSelectionWidget::InitializeSkillsInfo(ALFPTacticsUnit* Unit, ALFPT
 void ULFPSkillSelectionWidget::OnSkillSelected(ULFPSkillBase* Skill)
 {
     if (!Skill || !OwnerUnit) return;
+    if (bInspectionMode) return;
 
     SelectedSkill = Skill;
 
@@ -282,6 +284,7 @@ void ULFPSkillSelectionWidget::UpdateConfirmButtonState()
 
 void ULFPSkillSelectionWidget::OnConfirmClicked()
 {
+    if (bInspectionMode) return;
     if (!SelectedSkill || !OwnerUnit) return;
 
     // 检查技能是否可用
@@ -335,6 +338,30 @@ void ULFPSkillSelectionWidget::RefreshSkillButtons()
     if (SelectedSkill)
     {
         UpdateSkillDetails(SelectedSkill);
+    }
+
+    // 检查模式下强制禁用所有按钮（RefreshState 可能重置了可用状态）
+    if (bInspectionMode)
+    {
+        for (ULFPSkillButtonWidget* Button : SkillButtons)
+        {
+            if (Button) Button->SetButtonEnabled(false);
+        }
+    }
+}
+
+void ULFPSkillSelectionWidget::SetInspectionMode(bool bInspection)
+{
+    bInspectionMode = bInspection;
+    if (InspectionOverlay)
+    {
+        InspectionOverlay->SetVisibility(bInspection
+            ? ESlateVisibility::SelfHitTestInvisible
+            : ESlateVisibility::Hidden);
+    }
+    for (ULFPSkillButtonWidget* Button : SkillButtons)
+    {
+        if (Button) Button->SetButtonEnabled(!bInspection);
     }
 }
 

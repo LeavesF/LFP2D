@@ -8,6 +8,7 @@
 #include "LFP2D/Unit/LFPTacticsUnit.h"
 #include "LFP2D/Turn/LFPTurnManager.h"
 #include "LFP2D/UI/Fighting/LFPBattleHUDWidget.h"
+#include "LFP2D/UI/Fighting/LFPCurrentUnitInfoWidget.h"
 #include "LFP2D/UI/Fighting/LFPTurnSpeedListWidget.h"
 #include "LFP2D/UI/Fighting/LFPSkillSelectionWidget.h"
 #include "LFP2D/UI/Fighting/LFPDeploymentWidget.h"
@@ -411,6 +412,31 @@ void ALFPTacticsPlayerController::OnCancelAction(const FInputActionValue& Value)
 	}
 	DragTime = 0.f;
 
+	// 检查模式优先取消：如果正在检查其他单位，右键还原到回合单位
+	if (SelectedUnit)
+	{
+		ALFPTurnManager* TM = GetTurnManager();
+		if (TM)
+		{
+			ALFPTacticsUnit* CurrentTMUnit = TM->GetCurrentUnit();
+			if (SelectedUnit != CurrentTMUnit && CurrentTMUnit && !CurrentTMUnit->IsEnemy())
+			{
+				if (BattleHUDWidget)
+				{
+					BattleHUDWidget->ExitInspectionMode(this);
+					// 还原 UnitInfo 面板显示为回合单位
+					if (ULFPCurrentUnitInfoWidget* UnitInfoWidget = BattleHUDWidget->GetCurrentUnitInfoWidget())
+					{
+						UnitInfoWidget->RefreshFromTurnManager();
+					}
+				}
+				SelectUnit(CurrentTMUnit);
+				HandleSkillSelection();
+				return;
+			}
+		}
+	}
+
 	// 布置阶段：清除选中
 	if (bIsInDeployment)
 	{
@@ -554,6 +580,18 @@ void ALFPTacticsPlayerController::SelectUnit(ALFPTacticsUnit* Unit)
 	{
 		SelectedUnit->SetSelected(true);
 		ShowUnitRange(EUnitRange::UR_Move);
+	}
+
+	// ==== 检查模式触发 ====
+	ALFPTurnManager* TM = GetTurnManager();
+	ALFPTacticsUnit* CurrentTMUnit = TM ? TM->GetCurrentUnit() : nullptr;
+
+	if (TM && SelectedUnit && CurrentTMUnit && SelectedUnit != CurrentTMUnit && !CurrentTMUnit->IsEnemy())
+	{
+		if (BattleHUDWidget)
+		{
+			BattleHUDWidget->EnterInspectionMode(SelectedUnit, this);
+		}
 	}
 }
 

@@ -67,6 +67,8 @@ void ULFPCurrentUnitInfoWidget::SetTurnManager(ALFPTurnManager* InTurnManager)
 
 void ULFPCurrentUnitInfoWidget::RefreshFromTurnManager()
 {
+	if (bIsInspectionMode) return;
+
 	if (!TurnManagerRef)
 	{
 		FindTurnManager();
@@ -136,6 +138,17 @@ void ULFPCurrentUnitInfoWidget::UnbindFromUnit()
 			BuffComponent->OnBuffListChanged.RemoveDynamic(this, &ULFPCurrentUnitInfoWidget::OnBuffListChanged);
 		}
 		BoundUnit = nullptr;
+	}
+}
+
+void ULFPCurrentUnitInfoWidget::SetInspectionMode(bool bInspection)
+{
+	bIsInspectionMode = bInspection;
+	if (InspectionOverlay)
+	{
+		InspectionOverlay->SetVisibility(bInspection
+			? ESlateVisibility::SelfHitTestInvisible
+			: ESlateVisibility::Hidden);
 	}
 }
 

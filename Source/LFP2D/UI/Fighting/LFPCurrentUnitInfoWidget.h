@@ -56,6 +56,13 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Current Unit")
 	ALFPTurnManager* GetTurnManager() const { return TurnManagerRef; }
 
+	// ==== 检查模式 ====
+	UFUNCTION(BlueprintCallable, Category = "Current Unit|Inspection")
+	void SetInspectionMode(bool bInspection);
+
+	UFUNCTION(BlueprintPure, Category = "Current Unit|Inspection")
+	bool IsInInspectionMode() const { return bIsInspectionMode; }
+
 protected:
 	UFUNCTION()
 	void OnTurnChanged();
@@ -137,6 +144,12 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Current Unit")
 	bool bHideDuringEnemyTurn = true;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Current Unit|Inspection")
+	bool bIsInspectionMode = false;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Current Unit|Inspection", meta = (BindWidgetOptional))
+	TObjectPtr<UImage> InspectionOverlay;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Current Unit")
 	TObjectPtr<ALFPTacticsUnit> BoundUnit;
