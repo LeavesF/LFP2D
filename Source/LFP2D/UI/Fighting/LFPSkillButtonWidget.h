@@ -70,10 +70,6 @@ private:
     UFUNCTION()
     void UpdateCooldownDisplay();
 
-    // 悬停1秒后显示技能描述
-    UFUNCTION()
-    void ShowSkillDescription();
-
 public:
     // 委托：按钮被点击
     UPROPERTY(BlueprintAssignable, Category = "Skill Button")
@@ -149,9 +145,6 @@ public:
     // 缓存按钮原始Normal画刷（用于选中状态恢复）
     FSlateBrush CachedNormalBrush;
     bool bNormalBrushCached;
-
-    // 悬停计时器句柄
-    FTimerHandle HoverTimerHandle;
 
     // 消息框控件（动态创建，延迟初始化）
     UPROPERTY()

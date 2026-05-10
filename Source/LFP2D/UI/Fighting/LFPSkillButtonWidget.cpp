@@ -36,12 +36,6 @@ void ULFPSkillButtonWidget::NativeConstruct()
 
 void ULFPSkillButtonWidget::NativeDestruct()
 {
-    // 清理计时器
-    if (GetWorld())
-    {
-        GetWorld()->GetTimerManager().ClearTimer(HoverTimerHandle);
-    }
-
     // 清理消息框
     if (MessageBoxWidget)
     {
@@ -169,17 +163,17 @@ void ULFPSkillButtonWidget::NativeOnMouseEnter(const FGeometry& InGeometry, cons
         OnButtonHoveredDelegate.Broadcast(AssociatedSkill);
     }
 
-    // 启动1秒悬停计时器，用于显示技能描述
+    // 悬停延迟后显示技能描述（延迟时间在 MessageBox 蓝图中配置）
     if (AssociatedSkill && !AssociatedSkill->SkillDescription.IsEmpty())
     {
-        GetWorld()->GetTimerManager().ClearTimer(HoverTimerHandle);
-        GetWorld()->GetTimerManager().SetTimer(
-            HoverTimerHandle,
-            this,
-            &ULFPSkillButtonWidget::ShowSkillDescription,
-            1.0f,
-            false
-        );
+        if (!MessageBoxWidget && MessageBoxClass)
+        {
+            MessageBoxWidget = CreateWidget<ULFPMessageBoxWidget>(GetOwningPlayer(), MessageBoxClass);
+        }
+        if (MessageBoxWidget)
+        {
+            MessageBoxWidget->RequestShow(AssociatedSkill->SkillDescription);
+        }
     }
 }
 
@@ -193,11 +187,10 @@ void ULFPSkillButtonWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent
         OnButtonUnhoveredDelegate.Broadcast();
     }
 
-    // 取消悬停计时器并隐藏消息框
-    GetWorld()->GetTimerManager().ClearTimer(HoverTimerHandle);
+    // 取消悬停并隐藏消息框
     if (MessageBoxWidget)
     {
-        MessageBoxWidget->Hide();
+        MessageBoxWidget->CancelRequest();
     }
 }
 
@@ -291,23 +284,3 @@ void ULFPSkillButtonWidget::UpdateCooldownDisplay()
     }
 }
 
-void ULFPSkillButtonWidget::ShowSkillDescription()
-{
-    if (!AssociatedSkill || AssociatedSkill->SkillDescription.IsEmpty()) return;
-
-    // 延迟创建消息框
-    if (!MessageBoxWidget && MessageBoxClass)
-    {
-        MessageBoxWidget = CreateWidget<ULFPMessageBoxWidget>(GetOwningPlayer(), MessageBoxClass);
-    }
-
-    if (!MessageBoxWidget) return;
-
-    // 获取当前鼠标屏幕位置
-    float MouseX, MouseY;
-    if (GetOwningPlayer())
-    {
-        GetOwningPlayer()->GetMousePosition(MouseX, MouseY);
-        MessageBoxWidget->ShowAt(FVector2D(MouseX, MouseY), AssociatedSkill->SkillDescription);
-    }
-}
