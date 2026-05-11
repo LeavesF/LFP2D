@@ -11,6 +11,7 @@ class ULFPSkillSelectionWidget;
 class ULFPDeploymentWidget;
 class ULFPBattleResultWidget;
 class ULFPCurrentUnitInfoWidget;
+class UButton;
 class UImage;
 class UProgressBar;
 class UTextBlock;
@@ -66,6 +67,11 @@ public:
 	void EnterInspectionMode(ALFPTacticsUnit* InspectedUnit, ALFPTacticsPlayerController* PC);
 	void ExitInspectionMode(ALFPTacticsPlayerController* PC);
 
+	// ==== End Turn Button ====
+	UFUNCTION()
+	void OnEndTurnClicked();
+	void SetEndTurnButtonVisible(bool bVisible);
+
 protected:
 	virtual void NativeDestruct() override;
 
@@ -99,6 +105,9 @@ protected:
 
 	UPROPERTY(meta = (BindWidgetOptional))
 	TObjectPtr<ULFPCurrentUnitInfoWidget> CurrentUnitInfoWidget;
+
+	UPROPERTY(meta = (BindWidgetOptional))
+	TObjectPtr<UButton> EndTurnButton;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> EnergyBarBackground;

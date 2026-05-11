@@ -22,10 +22,14 @@ enum class EUnitAffiliation : uint8
 UENUM(BlueprintType)
 enum class EBattlePhase : uint8
 {
-	BP_Deployment      UMETA(DisplayName = "Deployment"),
-	BP_EnemyPlanning   UMETA(DisplayName = "Enemy Planning"),
-	BP_ActionPhase     UMETA(DisplayName = "Action Phase"),
-	BP_RoundEnd        UMETA(DisplayName = "Round End")
+	BP_Deployment         UMETA(DisplayName = "Deployment"),
+	BP_EnemyPlanning      UMETA(DisplayName = "Enemy Planning"),
+	BP_PlayerActionPhase  UMETA(DisplayName = "Player Action Phase"),
+	BP_EnemyActionPhase   UMETA(DisplayName = "Enemy Action Phase"),
+	BP_RoundEnd           UMETA(DisplayName = "Round End"),
+
+	// 保留以兼容旧蓝图，后续清理
+	BP_ActionPhase        UMETA(Hidden, DisplayName = "Action Phase (Legacy)")
 };
 
 // 地形类型枚举

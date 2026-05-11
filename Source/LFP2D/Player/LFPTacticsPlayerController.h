@@ -60,6 +60,10 @@ public:
 
 	// 游戏流程函数
 	void SelectUnit(ALFPTacticsUnit* Unit);
+
+	UFUNCTION(BlueprintPure, Category = "Selection")
+	ALFPTacticsUnit* GetSelectedUnit() const { return SelectedUnit; }
+
 	void SelectTile(ALFPHexTile* Tile);
 	void ConfirmMove();
 	void ShowUnitRange(EUnitRange UnitRange = EUnitRange::UR_Default);
@@ -132,7 +136,7 @@ protected:
 	UPROPERTY()
 	ALFPHexTile* LastHoveredTile;
 
-	// 当前显示的可移动范围（缓存的原始位置范围，用于预览移动时判断合法目标）
+	// 当前显示的可移动范围（用于约束路径预览和移动目标确认）
 	TArray<ALFPHexTile*> MovementRangeTiles;
 
 	TArray<ALFPHexTile*> CacheRangeTiles;
@@ -244,6 +248,14 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Turn Events")
 	void OnRoundEnded(int32 RoundNumber);
+
+	// 玩家行动阶段开始（蓝图可实现事件，用于显示 End Turn 按钮等UI）
+	UFUNCTION(BlueprintImplementableEvent, Category = "Turn Events")
+	void OnPlayerActionPhaseStarted();
+
+	// 手动结束玩家回合（End Turn 按钮或快捷键）
+	UFUNCTION(BlueprintCallable, Category = "Turn System")
+	void EndPlayerTurn();
 
 	// 单位行动
 	UFUNCTION(BlueprintCallable, Category = "Unit Actions")

@@ -80,17 +80,20 @@ void ULFPCurrentUnitInfoWidget::RefreshFromTurnManager()
 		return;
 	}
 
-	ALFPTacticsUnit* CurrentUnit = TurnManagerRef->GetCurrentUnit();
-	if (bHideOutsideActionPhase && TurnManagerRef->GetCurrentPhase() != EBattlePhase::BP_ActionPhase)
+	if (bHideOutsideActionPhase &&
+		TurnManagerRef->GetCurrentPhase() != EBattlePhase::BP_PlayerActionPhase &&
+		TurnManagerRef->GetCurrentPhase() != EBattlePhase::BP_EnemyActionPhase)
 	{
-		CurrentUnit = nullptr;
+		BindToUnit(nullptr);
+		return;
 	}
-	if (bHideDuringEnemyTurn && CurrentUnit && CurrentUnit->IsEnemy())
+	if (bHideDuringEnemyTurn && TurnManagerRef->GetCurrentPhase() == EBattlePhase::BP_EnemyActionPhase)
 	{
-		CurrentUnit = nullptr;
+		BindToUnit(nullptr);
+		return;
 	}
 
-	BindToUnit(CurrentUnit);
+	BindToUnit(BoundUnit);
 }
 
 void ULFPCurrentUnitInfoWidget::BindToUnit(ALFPTacticsUnit* Unit)

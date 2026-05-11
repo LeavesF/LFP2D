@@ -66,11 +66,13 @@ TurnManager 每回合:
   1. 敌方规划阶段 (EnemyPlanning)
      AllocateEnemySkills()  — 全局按技能优先级分配阵营 AP
      ProcessNextEnemyPlan() — 按速度顺序：选目标 → 移动到施法位 → 显示头顶图标
-  2. 行动阶段 (ActionPhase)
-     按速度排序轮流行动:
-       玩家单位 → PlayerController 输入控制
-       敌方单位 → 执行预规划的技能
-  3. 回合结束 (RoundEnd)
+  2. 玩家行动阶段 (PlayerActionPhase)
+     玩家自由点击任意未行动单位操作（移动 + 技能）
+     每个单位行动一次后标记为已行动
+     全部行动完毕或点击 End Turn → 进入敌方行动阶段
+  3. 敌方行动阶段 (EnemyActionPhase)
+     敌方按速度顺序依次执行预规划的技能
+  4. 回合结束 (RoundEnd)
      回复阵营 AP、重置单位状态
 ```
 

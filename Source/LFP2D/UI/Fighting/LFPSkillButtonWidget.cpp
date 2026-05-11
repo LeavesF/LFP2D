@@ -102,7 +102,7 @@ void ULFPSkillButtonWidget::SetSelected(bool bSelected)
     // 选中时让按钮保持Hovered外观
     if (SkillButton && GetIsEnabled())
     {
-        FButtonStyle CurrentStyle = SkillButton->WidgetStyle;
+        FButtonStyle CurrentStyle = SkillButton->GetStyle();
         if (bSelected)
         {
             // 缓存原始Normal画刷，然后替换为Hovered画刷

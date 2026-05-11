@@ -6,6 +6,7 @@
 #include "LFP2D/UI/Fighting/LFPCurrentUnitInfoWidget.h"
 #include "LFP2D/Player/LFPTacticsPlayerController.h"
 #include "LFP2D/Turn/LFPTurnManager.h"
+#include "Components/Button.h"
 #include "Components/CanvasPanel.h"
 #include "Components/Image.h"
 #include "Components/ProgressBar.h"
@@ -31,6 +32,12 @@ void ULFPBattleHUDWidget::NativeConstruct()
 	if (CurrentUnitInfoWidget)
 	{
 		CurrentUnitInfoWidget->SetVisibility(ESlateVisibility::Collapsed);
+	}
+
+	if (EndTurnButton)
+	{
+		EndTurnButton->OnClicked.AddDynamic(this, &ULFPBattleHUDWidget::OnEndTurnClicked);
+		EndTurnButton->SetVisibility(ESlateVisibility::Collapsed);
 	}
 
 	UpdateEnergyBar();
@@ -89,6 +96,9 @@ void ULFPBattleHUDWidget::OnPhaseChanged(EBattlePhase NewPhase)
 {
 	UpdateRoundText();
 	UpdatePhaseText(NewPhase);
+
+	// 仅在玩家行动阶段显示 End Turn 按钮
+	SetEndTurnButtonVisible(NewPhase == EBattlePhase::BP_PlayerActionPhase);
 }
 
 void ULFPBattleHUDWidget::SetTurnManager(ALFPTurnManager* TurnManager)
@@ -296,5 +306,26 @@ void ULFPBattleHUDWidget::ExitInspectionMode(ALFPTacticsPlayerController* PC)
 	if (SkillSelectionWidget)
 	{
 		SkillSelectionWidget->SetInspectionMode(false);
+	}
+}
+
+void ULFPBattleHUDWidget::OnEndTurnClicked()
+{
+	if (APlayerController* PC = GetOwningPlayer())
+	{
+		if (ALFPTacticsPlayerController* TacticsPC = Cast<ALFPTacticsPlayerController>(PC))
+		{
+			TacticsPC->EndPlayerTurn();
+		}
+	}
+}
+
+void ULFPBattleHUDWidget::SetEndTurnButtonVisible(bool bVisible)
+{
+	if (EndTurnButton)
+	{
+		EndTurnButton->SetVisibility(bVisible
+			? ESlateVisibility::Visible
+			: ESlateVisibility::Collapsed);
 	}
 }

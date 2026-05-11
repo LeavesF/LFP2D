@@ -202,10 +202,10 @@ void ALFPTurnManager::BeginNewRound()
     EnemyActionPlans.Empty();
     AllocatedPlans.Empty();
 
-    // 恢复阵营 AP
+    // 每回合开始时阵营 AP 直接恢复到上限。
     for (auto& Pair : FactionCurrentAP)
     {
-        Pair.Value = FMath::Min(Pair.Value + FactionAPRecovery, FactionMaxAP);
+        Pair.Value = FactionMaxAP;
         OnFactionAPChanged.Broadcast(Pair.Key, Pair.Value);
     }
 
@@ -327,7 +327,7 @@ void ALFPTurnManager::RefreshAllRuntimeUnitStates(bool bAllowReorder)
 
     if (bAllowReorder)
     {
-        if (bIsInRound && CurrentPhase == EBattlePhase::BP_ActionPhase)
+        if (bIsInRound && (CurrentPhase == EBattlePhase::BP_PlayerActionPhase || CurrentPhase == EBattlePhase::BP_EnemyActionPhase))
         {
             ReorderRemainingUnitsBySpeed();
         }
@@ -508,20 +508,161 @@ void ALFPTurnManager::OnEnemyPlanMoveComplete()
 
 void ALFPTurnManager::EndEnemyPlanningPhase()
 {
-    BeginActionPhase();
+    BeginPlayerActionPhase();
 }
 
-// ==== 行动阶段 ====
+// ==== 玩家行动阶段 ====
 
-void ALFPTurnManager::BeginActionPhase()
+void ALFPTurnManager::BeginPlayerActionPhase()
 {
-    SetPhase(EBattlePhase::BP_ActionPhase);
+    SetPhase(EBattlePhase::BP_PlayerActionPhase);
 
-    // 开始第一个单位的回合
-    if (TurnOrderUnits.Num() > 0)
+    // 检查是否有存活的玩家单位
+    bool bHasAlivePlayer = false;
+    for (ALFPTacticsUnit* Unit : TurnOrderUnits)
     {
-        BeginUnitTurn(TurnOrderUnits[0]);
+        if (Unit && Unit->IsAlive() && Unit->GetAffiliation() == EUnitAffiliation::UA_Player)
+        {
+            bHasAlivePlayer = true;
+            if (!Unit->HasActed())
+            {
+                Unit->OnTurnStarted();
+            }
+        }
     }
+
+    if (!bHasAlivePlayer)
+    {
+        EndPlayerPhase();
+        return;
+    }
+
+    OnTurnChanged.Broadcast();
+
+    // 通知 PC 进入自由选择模式
+    if (ALFPTacticsPlayerController* PC = GetWorld()->GetFirstPlayerController<ALFPTacticsPlayerController>())
+    {
+        PC->OnPlayerActionPhaseStarted();
+    }
+}
+
+void ALFPTurnManager::EndPlayerPhase()
+{
+    if (bBattleEnded) return;
+    if (CurrentPhase != EBattlePhase::BP_PlayerActionPhase) return;
+
+    // 将所有未行动的存活玩家单位标记为已行动（跳过）
+    for (ALFPTacticsUnit* Unit : TurnOrderUnits)
+    {
+        if (Unit && Unit->IsAlive() && Unit->GetAffiliation() == EUnitAffiliation::UA_Player && !Unit->HasActed())
+        {
+            Unit->CommitMovePosition();
+            Unit->SetHasActed(true);
+            EndUnitTurn(Unit);
+        }
+    }
+
+    CurrentUnit = nullptr;
+    OnTurnChanged.Broadcast();
+    EndPlayerActionPhase();
+}
+
+void ALFPTurnManager::EndPlayerActionPhase()
+{
+    // 清理当前单位状态
+    if (CurrentUnit)
+    {
+        EndUnitTurn(CurrentUnit);
+    }
+
+    CurrentUnit = nullptr;
+    BeginEnemyActionPhase();
+}
+
+// ==== 敌人行动阶段 ====
+
+void ALFPTurnManager::BeginEnemyActionPhase()
+{
+    SetPhase(EBattlePhase::BP_EnemyActionPhase);
+
+    // 隐藏玩家的技能选择UI
+    if (ALFPTacticsPlayerController* PC = GetWorld()->GetFirstPlayerController<ALFPTacticsPlayerController>())
+    {
+        PC->HideSkillSelection();
+        PC->ClearMovementAndRange();
+    }
+
+    // 收集存活的敌方单位，按速度排序
+    EnemyActionOrder.Empty();
+    for (ALFPTacticsUnit* Unit : TurnOrderUnits)
+    {
+        if (Unit && Unit->IsAlive() && Unit->GetAffiliation() == EUnitAffiliation::UA_Enemy)
+        {
+            EnemyActionOrder.Add(Unit);
+        }
+    }
+
+    SortUnitsBySpeedStable(EnemyActionOrder);
+
+    CurrentEnemyActionIndex = 0;
+    ExecuteNextEnemyAction();
+}
+
+void ALFPTurnManager::ExecuteNextEnemyAction()
+{
+    if (bBattleEnded) return;
+
+    // 跳过已死亡的敌人
+    while (CurrentEnemyActionIndex < EnemyActionOrder.Num())
+    {
+        ALFPTacticsUnit* Enemy = EnemyActionOrder[CurrentEnemyActionIndex];
+        if (Enemy && Enemy->IsAlive())
+        {
+            break;
+        }
+        CurrentEnemyActionIndex++;
+    }
+
+    if (CurrentEnemyActionIndex >= EnemyActionOrder.Num())
+    {
+        EndEnemyActionPhase();
+        return;
+    }
+
+    ALFPTacticsUnit* Enemy = EnemyActionOrder[CurrentEnemyActionIndex];
+    CurrentUnit = Enemy;
+    OnTurnChanged.Broadcast();
+
+    Enemy->OnTurnStarted();
+    if (!Enemy->IsAlive())
+    {
+        CurrentEnemyActionIndex++;
+        ExecuteNextEnemyAction();
+        return;
+    }
+
+    ExecuteEnemyPlan(Enemy);
+}
+
+void ALFPTurnManager::OnEnemyActionComplete()
+{
+    if (bBattleEnded) return;
+
+    // 结束当前敌人回合
+    if (CurrentUnit)
+    {
+        EndUnitTurn(CurrentUnit);
+    }
+
+    CurrentEnemyActionIndex++;
+    ExecuteNextEnemyAction();
+}
+
+void ALFPTurnManager::EndEnemyActionPhase()
+{
+    CurrentUnit = nullptr;
+    EnemyActionOrder.Empty();
+    EndCurrentRound();
 }
 
 void ALFPTurnManager::BeginUnitTurn(ALFPTacticsUnit* Unit)
@@ -529,44 +670,22 @@ void ALFPTurnManager::BeginUnitTurn(ALFPTacticsUnit* Unit)
     if (bBattleEnded) return;
     if (!Unit || !Unit->IsAlive())
     {
-        PassTurn();
         return;
     }
 
     CurrentUnit = Unit;
     OnTurnChanged.Broadcast();
 
-    ALFPTacticsPlayerController* PC = GetWorld()->GetFirstPlayerController<ALFPTacticsPlayerController>();
-
-    // 敌方单位在行动阶段：执行预定计划
-    if (Unit->IsEnemy() && CurrentPhase == EBattlePhase::BP_ActionPhase)
-    {
-        if (PC)
-        {
-            PC->HideSkillSelection();
-            PC->ClearMovementAndRange();
-        }
-
-        Unit->OnTurnStarted();
-        if (!Unit->IsAlive())
-        {
-            PassTurn();
-            return;
-        }
-
-        ExecuteEnemyPlan(Unit);
-        return;
-    }
-
-    // 玩家单位：保持原有逻辑
+    // 仅处理玩家单位（敌人行动通过 ExecuteNextEnemyAction 独立流程）
     Unit->OnTurnStarted();
     if (!Unit->IsAlive())
     {
-        PassTurn();
+        CurrentUnit = nullptr;
+        OnTurnChanged.Broadcast();
         return;
     }
 
-    if (PC)
+    if (ALFPTacticsPlayerController* PC = GetWorld()->GetFirstPlayerController<ALFPTacticsPlayerController>())
     {
         PC->OnTurnStarted(Unit);
         PC->SelectUnit(Unit);
@@ -656,7 +775,7 @@ void ALFPTurnManager::ExecuteEnemyPlan(ALFPTacticsUnit* Unit)
     GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this, Unit]()
     {
         Unit->SetHasActed(true);
-        PassTurn();
+        OnEnemyActionComplete();
     }, 0.5f, false);
 }
 
@@ -807,13 +926,49 @@ void ALFPTurnManager::PassTurn()
 
 void ALFPTurnManager::OnUnitFinishedAction(ALFPTacticsUnit* Unit)
 {
-    if (Unit == CurrentUnit)
-    {
-        Unit->SetHasActed(true);
+    if (!Unit) return;
 
-        // 自动传递回合
-        PassTurn();
+    if (CurrentPhase == EBattlePhase::BP_PlayerActionPhase)
+    {
+        if (!Unit->IsAlive() || Unit->GetAffiliation() != EUnitAffiliation::UA_Player || Unit->HasActed())
+        {
+            return;
+        }
+
+        Unit->CommitMovePosition();
+
+        // 玩家单位行动完毕：标记已行动，结束单位回合
+        Unit->SetHasActed(true);
+        EndUnitTurn(Unit);
+        if (CurrentUnit == Unit)
+        {
+            CurrentUnit = nullptr;
+        }
+        OnTurnChanged.Broadcast();
+
+        // 检查是否所有玩家单位已行动完毕
+        bool bAllPlayerActed = true;
+        for (ALFPTacticsUnit* U : TurnOrderUnits)
+        {
+            if (U && U->IsAlive() && U->GetAffiliation() == EUnitAffiliation::UA_Player && !U->HasActed())
+            {
+                bAllPlayerActed = false;
+                break;
+            }
+        }
+
+        if (bAllPlayerActed)
+        {
+            EndPlayerPhase();
+        }
+        return;
     }
+
+    if (Unit != CurrentUnit) return;
+
+    // 其他阶段：保持原有逻辑
+    Unit->SetHasActed(true);
+    PassTurn();
 }
 
 void ALFPTurnManager::RegisterUnit(ALFPTacticsUnit* Unit)
@@ -830,17 +985,50 @@ void ALFPTurnManager::UnregisterUnit(ALFPTacticsUnit* Unit)
 {
     if (Unit)
     {
-        bool bWasCurrentUnit = (Unit == CurrentUnit);
+        const bool bWasCurrentUnit = (Unit == CurrentUnit);
         TurnOrderUnits.Remove(Unit);
+
+        // 如果当前单位是敌人行动队列中的，也需要移除
+        EnemyActionOrder.Remove(Unit);
+
         RefreshAllRuntimeUnitStates(!bBattleEnded);
 
         // 先检查战斗结束条件
         CheckBattleEnd();
 
-        // 如果战斗未结束且当前单位被移除，传递回合
+        // 如果战斗未结束且当前单位被移除，按阶段处理
         if (!bBattleEnded && bWasCurrentUnit)
         {
-            PassTurn();
+            if (CurrentPhase == EBattlePhase::BP_EnemyActionPhase)
+            {
+                // EnemyActionOrder 已移除该单位，直接推进到下一个
+                OnEnemyActionComplete();
+            }
+            else if (CurrentPhase == EBattlePhase::BP_PlayerActionPhase)
+            {
+                CurrentUnit = nullptr;
+                OnTurnChanged.Broadcast();
+
+                // 检查是否所有玩家单位已行动完毕
+                bool bAllPlayerActed = true;
+                for (ALFPTacticsUnit* U : TurnOrderUnits)
+                {
+                    if (U && U->IsAlive() && U->GetAffiliation() == EUnitAffiliation::UA_Player && !U->HasActed())
+                    {
+                        bAllPlayerActed = false;
+                        break;
+                    }
+                }
+
+                if (bAllPlayerActed)
+                {
+                    EndPlayerPhase();
+                }
+            }
+            else
+            {
+                PassTurn();
+            }
         }
     }
 }

@@ -27,6 +27,8 @@
 
 namespace
 {
+	constexpr int32 MovementActionPointCost = 1;
+
 	bool IsVisibleAndHovered(const UWidget* Widget)
 	{
 		if (!Widget)
@@ -38,6 +40,23 @@ namespace
 		return Visibility != ESlateVisibility::Collapsed &&
 			Visibility != ESlateVisibility::Hidden &&
 			Widget->IsHovered();
+	}
+
+	bool CanControlPlayerUnit(const ALFPTacticsUnit* Unit, const ALFPTurnManager* TurnManager)
+	{
+		return Unit &&
+			TurnManager &&
+			TurnManager->GetCurrentPhase() == EBattlePhase::BP_PlayerActionPhase &&
+			Unit->IsAlive() &&
+			Unit->GetAffiliation() == EUnitAffiliation::UA_Player &&
+			!Unit->HasActed();
+	}
+
+	bool CanMovePlayerUnit(const ALFPTacticsUnit* Unit, const ALFPTurnManager* TurnManager)
+	{
+		return CanControlPlayerUnit(Unit, TurnManager) &&
+			Unit->GetCurrentMovePoints() > 0 &&
+			TurnManager->HasEnoughFactionAP(Unit->GetAffiliation(), MovementActionPointCost);
 	}
 }
 
@@ -229,7 +248,7 @@ void ALFPTacticsPlayerController::Tick(float DeltaTime)
 			}
 
 			// 敌人计划预览：检测悬停的格子上是否有带行动计划的敌人
-			if (CachedBattlePhase == EBattlePhase::BP_EnemyPlanning || CachedBattlePhase == EBattlePhase::BP_ActionPhase)
+			if (CachedBattlePhase == EBattlePhase::BP_EnemyPlanning || CachedBattlePhase == EBattlePhase::BP_PlayerActionPhase || CachedBattlePhase == EBattlePhase::BP_EnemyActionPhase)
 			{
 				if (IsInInspectionMode())
 				{
@@ -396,28 +415,27 @@ bool ALFPTacticsPlayerController::IsInInspectionMode() const
 
 bool ALFPTacticsPlayerController::ExitInspectionMode()
 {
-	ALFPTurnManager* TM = GetTurnManager();
-	ALFPTacticsUnit* CurrentTMUnit = TM ? TM->GetCurrentUnit() : nullptr;
-	if (!bIsInspectingUnit || !SelectedUnit || !CurrentTMUnit || SelectedUnit == CurrentTMUnit || CurrentTMUnit->IsEnemy())
+	if (!bIsInspectingUnit)
 	{
-		bIsInspectingUnit = false;
 		return false;
+	}
+
+	bIsInspectingUnit = false;
+
+	if (SelectedUnit)
+	{
+		SelectedUnit->SetSelected(false);
+		SelectedUnit = nullptr;
 	}
 
 	if (BattleHUDWidget)
 	{
 		BattleHUDWidget->ExitInspectionMode(this);
-
-		// 还原 UnitInfo 面板显示为回合单位
-		if (ULFPCurrentUnitInfoWidget* UnitInfoWidget = BattleHUDWidget->GetCurrentUnitInfoWidget())
-		{
-			UnitInfoWidget->RefreshFromTurnManager();
-		}
+		BattleHUDWidget->HideSkillSelection();
+		BattleHUDWidget->SetCurrentUnitInfoUnit(nullptr);
 	}
 
-	bIsInspectingUnit = false;
-	SelectUnit(CurrentTMUnit);
-	HandleSkillSelection();
+	ClearMovementAndRange();
 	return true;
 }
 
@@ -428,21 +446,13 @@ bool ALFPTacticsPlayerController::HandleInspectionPrimaryAction(const FHitResult
 		return false;
 	}
 
-	ALFPTurnManager* TM = GetTurnManager();
-	ALFPTacticsUnit* CurrentTMUnit = TM ? TM->GetCurrentUnit() : nullptr;
-	if (!CurrentTMUnit)
-	{
-		bIsInspectingUnit = false;
-		return false;
-	}
-
 	ALFPTacticsUnit* ClickedUnit = Cast<ALFPTacticsUnit>(HitResult.GetActor());
 	if (!ClickedUnit && LastHoveredTile)
 	{
 		ClickedUnit = LastHoveredTile->GetUnitOnTile();
 	}
 
-	if (ClickedUnit && ClickedUnit != CurrentTMUnit && ClickedUnit != SelectedUnit)
+	if (ClickedUnit && ClickedUnit != SelectedUnit)
 	{
 		SelectUnit(ClickedUnit);
 		return true;
@@ -668,6 +678,18 @@ void ALFPTacticsPlayerController::OnToggleDebug(const FInputActionValue& Value)
 void ALFPTacticsPlayerController::OnSkipTurnAction(const FInputActionValue& Value)
 {
 	if (bWaitingForMove) return;
+
+	ALFPTurnManager* TM = GetTurnManager();
+	if (TM && TM->GetCurrentPhase() == EBattlePhase::BP_PlayerActionPhase)
+	{
+		// 玩家行动阶段：无选中单位或已行动单位时，触发 End Player Phase
+		if (!SelectedUnit || SelectedUnit->HasActed())
+		{
+			EndPlayerTurn();
+			return;
+		}
+	}
+
 	if (!SelectedUnit) return;
 	SkipTurn(SelectedUnit);
 }
@@ -744,22 +766,50 @@ void ALFPTacticsPlayerController::SelectUnit(ALFPTacticsUnit* Unit)
 	// 取消之前选中的单位
 	if (SelectedUnit && SelectedUnit != Unit)
 	{
+		if (SelectedUnit->bHasPreviewMoved)
+		{
+			SelectedUnit->RevertToOriginalPosition();
+		}
 		SelectedUnit->SetSelected(false);
-		ShowUnitRange(EUnitRange::UR_Default);
+		ClearMovementAndRange();
+	}
+
+	if (SelectedUnit != Unit)
+	{
+		SelectedTile = nullptr;
+		CurrentSelectedSkill = nullptr;
+		bIsReleaseSkill = false;
+		CurrentControlState = EPlayControlState::MoveState;
+		if (GridManager)
+		{
+			GridManager->ClearRangeHighlight(EUnitRange::UR_SkillRelease);
+			GridManager->ClearRangeHighlight(EUnitRange::UR_SkillEffect);
+		}
+		if (BattleHUDWidget)
+		{
+			BattleHUDWidget->ClearSelectedSkill();
+		}
 	}
 
 	// 选择新单位
 	SelectedUnit = Unit;
-	if (SelectedUnit)
+	if (!SelectedUnit)
 	{
-		SelectedUnit->SetSelected(true);
-		ShowUnitRange(EUnitRange::UR_Move);
+		bIsInspectingUnit = false;
+		ClearMovementAndRange();
+		if (BattleHUDWidget)
+		{
+			BattleHUDWidget->HideSkillSelection();
+			BattleHUDWidget->SetCurrentUnitInfoUnit(nullptr);
+		}
+		return;
 	}
 
-	// ==== 检查模式触发 ====
 	ALFPTurnManager* TM = GetTurnManager();
-	ALFPTacticsUnit* CurrentTMUnit = TM ? TM->GetCurrentUnit() : nullptr;
-	bIsInspectingUnit = TM && SelectedUnit && CurrentTMUnit && SelectedUnit != CurrentTMUnit && !CurrentTMUnit->IsEnemy();
+	const bool bCanControlSelectedUnit = CanControlPlayerUnit(SelectedUnit, TM);
+	bIsInspectingUnit = SelectedUnit->IsEnemy();
+
+	SelectedUnit->SetSelected(true);
 
 	if (bIsInspectingUnit)
 	{
@@ -772,6 +822,26 @@ void ALFPTacticsPlayerController::SelectUnit(ALFPTacticsUnit* Unit)
 		{
 			BattleHUDWidget->EnterInspectionMode(SelectedUnit, this);
 		}
+		ClearMovementAndRange();
+		return;
+	}
+
+	if (BattleHUDWidget)
+	{
+		BattleHUDWidget->ExitInspectionMode(this);
+		BattleHUDWidget->SetCurrentUnitInfoUnit(SelectedUnit);
+		BattleHUDWidget->ShowCurrentUnitInfo();
+	}
+
+	if (bCanControlSelectedUnit)
+	{
+		ShowUnitRange(EUnitRange::UR_Move);
+		HandleSkillSelection();
+	}
+	else
+	{
+		ClearMovementAndRange();
+		HideSkillSelection();
 	}
 }
 
@@ -835,16 +905,21 @@ void ALFPTacticsPlayerController::ConfirmMove()
 	{
 		return;
 	}
+	ALFPTurnManager* TM = GetTurnManager();
+	if (!CanMovePlayerUnit(SelectedUnit, TM))
+	{
+		return;
+	}
 	if (SelectedTile->IsOccupied() || !SelectedTile->IsWalkable())
 	{
 		return;
 	}
-	// 检查目标格是否在原始移动范围内
+	// 检查目标格是否在当前移动范围内
 	if (!MovementRangeTiles.Contains(SelectedTile))
 	{
 		return;
 	}
-	// 约束寻路验证：在原始范围内查找路径（找到不到合法路径则阻止移动）
+	// 约束寻路验证：在当前移动范围内查找路径（找不到合法路径则阻止移动）
 	if (GridManager)
 	{
 		ALFPHexTile* UnitTile = GridManager->GetTileAtCoordinates(SelectedUnit->GetCurrentCoordinates());
@@ -857,18 +932,15 @@ void ALFPTacticsPlayerController::ConfirmMove()
 			}
 		}
 	}
-	// 预览移动：只清除路径高亮，保留原始移动范围
+	// 移动开始后先清除路径高亮；移动完成时立即提交位置并扣除 AP。
 	HidePathToRange();
 
 	// 将移动范围约束写入单位，MoveToTile 将在此范围内寻路
 	SelectedUnit->MovementRangeTiles = MovementRangeTiles;
 
-	// 移动单位（预览移动，不消耗移动力）
 	MoveUnit(SelectedUnit, SelectedTile);
 
 	CurrentPath.Empty();
-	/*SelectedUnit->SetSelected(false);
-	SelectedUnit = nullptr;*/
 }
 
 void ALFPTacticsPlayerController::ShowUnitRange(EUnitRange UnitRange)
@@ -885,8 +957,12 @@ void ALFPTacticsPlayerController::ShowUnitRange(EUnitRange UnitRange)
 		break;
 	case EUnitRange::UR_Move:
 	{
-		// 使用回合原始位置计算移动范围（预览移动后仍显示原始范围）
-		ALFPHexTile* UnitTile = GridManager->GetTileAtCoordinates(SelectedUnit->OriginalTurnCoordinates);
+		if (!CanMovePlayerUnit(SelectedUnit, GetTurnManager()))
+		{
+			break;
+		}
+
+		ALFPHexTile* UnitTile = GridManager->GetTileAtCoordinates(SelectedUnit->GetCurrentCoordinates());
 		if (UnitTile)
 		{
 			CacheRangeTiles = MovementRangeTiles = GridManager->GetTilesInRange(UnitTile, SelectedUnit->GetMovementRange(), SelectedUnit->GetAffiliation());
@@ -959,6 +1035,7 @@ void ALFPTacticsPlayerController::ToggleDebugDisplay()
 void ALFPTacticsPlayerController::MoveUnit(ALFPTacticsUnit* Unit, ALFPHexTile* TargetTile)
 {
 	if (!Unit || !TargetTile || !Unit->CanAct()) return;
+	if (!CanMovePlayerUnit(Unit, GetTurnManager())) return;
 
 	// 执行移动（启动移动动画）
 	if (Unit->MoveToTile(TargetTile))
@@ -974,16 +1051,26 @@ void ALFPTacticsPlayerController::OnUnitMoveComplete()
 {
 	bWaitingForMove = false;
 
+	ALFPTacticsUnit* CompletedUnit = MovingUnit;
+
 	// 解绑委托
-	if (MovingUnit)
+	if (CompletedUnit)
 	{
-		MovingUnit->OnMoveFinished.RemoveDynamic(this, &ALFPTacticsPlayerController::OnUnitMoveComplete);
+		CompletedUnit->OnMoveFinished.RemoveDynamic(this, &ALFPTacticsPlayerController::OnUnitMoveComplete);
+		CompletedUnit->CommitMovePosition();
+		CompletedUnit->ConsumeActionPoints(MovementActionPointCost);
+		CompletedUnit->MovementRangeTiles.Empty();
 	}
 
-	// 预览移动完成后重新显示原始移动范围
-	if (SelectedUnit && SelectedUnit == MovingUnit)
+	if (SelectedUnit && SelectedUnit == CompletedUnit)
 	{
-		ShowUnitRange(EUnitRange::UR_Move);
+		SelectedTile = nullptr;
+		ClearMovementAndRange();
+		if (BattleHUDWidget)
+		{
+			BattleHUDWidget->SetCurrentUnitInfoUnit(SelectedUnit);
+		}
+		HandleSkillSelection();
 	}
 
 	MovingUnit = nullptr;
@@ -994,9 +1081,8 @@ void ALFPTacticsPlayerController::SkipTurn(ALFPTacticsUnit* Unit)
 
 	if (!Unit || !Unit->CanAct()) return;
 
-	// 提交预览移动（消耗移动力）
+	// 兜底提交遗留的未确认移动；正常移动会在移动动画完成时提交。
 	Unit->CommitMovePosition();
-	Unit->SetHasActed(true);
 
 	// 可选：消耗1个行动力作为跳过代价
 	// Unit->ConsumeMovePoints(1);
@@ -1018,7 +1104,7 @@ void ALFPTacticsPlayerController::ExecuteSkill(ULFPSkillBase* CurrentSkill)
 			bPrimaryActionStartedOverUI = true;
 		}
 
-		// 提交预览移动（消耗移动力）
+		// 兜底提交遗留的未确认移动；正常移动会在移动动画完成时提交。
 		SelectedUnit->CommitMovePosition();
 		ALFPHexTile* TargetTile = SelectedTile;
 		if (CurrentSkill->TargetType == ESkillTargetType::Self)
@@ -1043,6 +1129,38 @@ void ALFPTacticsPlayerController::ExecuteSkill(ULFPSkillBase* CurrentSkill)
 	}
 }
 
+void ALFPTacticsPlayerController::EndPlayerTurn()
+{
+	ALFPTurnManager* TM = GetTurnManager();
+	if (!TM || TM->GetCurrentPhase() != EBattlePhase::BP_PlayerActionPhase) return;
+
+	// 清除当前选择/状态
+	if (bIsReleaseSkill)
+	{
+		bIsReleaseSkill = false;
+		CurrentControlState = EPlayControlState::MoveState;
+		CurrentSelectedSkill = nullptr;
+		if (GridManager)
+		{
+			GridManager->ClearRangeHighlight(EUnitRange::UR_SkillRelease);
+			GridManager->ClearRangeHighlight(EUnitRange::UR_SkillEffect);
+		}
+	}
+	if (BattleHUDWidget)
+	{
+		BattleHUDWidget->HideSkillSelection();
+		BattleHUDWidget->ClearSelectedSkill();
+	}
+	ClearMovementAndRange();
+	if (SelectedUnit)
+	{
+		SelectedUnit->SetSelected(false);
+	}
+	SelectedUnit = nullptr;
+
+	TM->EndPlayerPhase();
+}
+
 ALFPTurnManager* ALFPTacticsPlayerController::GetTurnManager() const
 {
 	TArray<AActor*> FoundManagers;
@@ -1059,6 +1177,12 @@ void ALFPTacticsPlayerController::HandleSkillSelection()
 {
 	if (!SelectedUnit) return;
 	if (!BattleHUDWidget) return;
+
+	if (!CanControlPlayerUnit(SelectedUnit, GetTurnManager()))
+	{
+		BattleHUDWidget->HideSkillSelection();
+		return;
+	}
 
 	ULFPSkillSelectionWidget* SkillWidget = BattleHUDWidget->GetSkillSelectionWidget();
 	if (SkillWidget)
@@ -1083,6 +1207,7 @@ void ALFPTacticsPlayerController::HideCurrentUnitActionWidgets()
 		BattleHUDWidget->HideSkillSelection();
 		BattleHUDWidget->HideCurrentUnitInfo();
 	}
+	ClearMovementAndRange();
 }
 
 void ALFPTacticsPlayerController::ClearMovementAndRange()
@@ -1202,8 +1327,18 @@ void ALFPTacticsPlayerController::OnPhaseChanged(EBattlePhase NewPhase)
 		HideSkillSelection();
 		break;
 
-	case EBattlePhase::BP_ActionPhase:
-		// 行动阶段：恢复正常
+	case EBattlePhase::BP_PlayerActionPhase:
+		// 玩家行动阶段：BP 侧显示 End Turn 按钮等
+		break;
+
+	case EBattlePhase::BP_EnemyActionPhase:
+		// 敌人行动阶段：禁用玩家输入，隐藏技能UI
+		HideSkillSelection();
+		ClearMovementAndRange();
+		bIsReleaseSkill = false;
+		CurrentControlState = EPlayControlState::MoveState;
+		CurrentSelectedSkill = nullptr;
+		SelectedUnit = nullptr;
 		break;
 
 	case EBattlePhase::BP_RoundEnd:

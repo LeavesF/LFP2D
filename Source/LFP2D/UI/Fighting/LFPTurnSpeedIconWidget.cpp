@@ -14,3 +14,9 @@ void ULFPTurnSpeedIconWidget::SetIsCurrent(bool bCurrent)
     bIsCurrent = bCurrent;
     UpdateAppearance();
 }
+
+void ULFPTurnSpeedIconWidget::SetHasActed(bool bActed)
+{
+    bHasActed = bActed;
+    UpdateAppearance();
+}

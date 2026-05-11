@@ -193,6 +193,7 @@ void ALFPTacticsUnit::RebuildCurrentStatsFromRuntimeSources()
     }
 
     TGuardValue<bool> RebuildGuard(bIsRebuildingRuntimeStats, true);
+    const int32 SavedCurrentMovePoints = CurrentMovePoints;
 
     // 统一按 Base -> Relic -> Buff 的顺序重建运行时属性，避免不同系统互相覆盖。
     ResetCurrentStatsToBase(false);
@@ -214,6 +215,7 @@ void ALFPTacticsUnit::RebuildCurrentStatsFromRuntimeSources()
     }
 
     CurrentHealth = FMath::Clamp(CurrentHealth, 0, GetCurrentMaxHealth());
+    CurrentMovePoints = FMath::Clamp(SavedCurrentMovePoints, 0, CurrentMaxMovePoints);
 }
 
 bool ALFPTacticsUnit::HasAliveFriendlyWithinHexRange(int32 Range, bool bExcludeSelf) const

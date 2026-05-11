@@ -21,6 +21,9 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Unit Icon")
     void SetIsCurrent(bool bCurrent);
 
+    UFUNCTION(BlueprintCallable, Category = "Unit Icon")
+    void SetHasActed(bool bActed);
+
     //virtual void NativeConstruct() override;
     //virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
@@ -42,4 +45,7 @@ protected:
 
     UPROPERTY(BlueprintReadOnly, Category = "Unit Icon")
     bool bIsCurrent;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Unit Icon")
+    bool bHasActed = false;
 };

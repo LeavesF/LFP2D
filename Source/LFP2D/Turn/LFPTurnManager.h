@@ -69,6 +69,10 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Turn System")
     void EndDeploymentPhase();
 
+    // 玩家手动结束玩家行动阶段（End Turn 按钮/快捷键）
+    UFUNCTION(BlueprintCallable, Category = "Turn System")
+    void EndPlayerPhase();
+
     // ==== 阶段系统 ====
 
     // 获取当前战斗阶段
@@ -154,10 +158,17 @@ protected:
     // 结束敌人规划阶段
     void EndEnemyPlanningPhase();
 
-    // ==== 行动阶段 ====
+    // ==== 玩家行动阶段 ====
 
-    // 开始行动阶段
-    void BeginActionPhase();
+    void BeginPlayerActionPhase();
+    void EndPlayerActionPhase();
+
+    // ==== 敌人行动阶段 ====
+
+    void BeginEnemyActionPhase();
+    void ExecuteNextEnemyAction();
+    void OnEnemyActionComplete();
+    void EndEnemyActionPhase();
 
     // 执行敌人的预定计划
     void ExecuteEnemyPlan(ALFPTacticsUnit* Unit);
@@ -206,6 +217,13 @@ protected:
     UPROPERTY()
     TMap<ALFPTacticsUnit*, FEnemyActionPlan> AllocatedPlans;
 
+    // 敌人行动阶段的排序列表（仅敌方，按速度降序）
+    UPROPERTY()
+    TArray<ALFPTacticsUnit*> EnemyActionOrder;
+
+    // 当前正在执行的敌人索引
+    int32 CurrentEnemyActionIndex = 0;
+
     // ==== 阵营行动点配置 ====
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Action Points")
@@ -213,9 +231,6 @@ protected:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Action Points")
     int32 FactionInitialAP = 0;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Action Points")
-    int32 FactionAPRecovery = 1;
 
     // ==== 敌人规划阶段时间配置 ====
 

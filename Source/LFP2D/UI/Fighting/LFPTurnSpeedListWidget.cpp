@@ -67,6 +67,7 @@ void ULFPTurnSpeedListWidget::UpdateTurnOrder()
 		{
 			Icon->SetUnit(Unit);
 			Icon->SetIsCurrent(TurnManagerRef->GetCurrentUnit() == Unit);
+			Icon->SetHasActed(Unit->HasActed());
 		}
 	}
 
