@@ -177,6 +177,7 @@ FLFPSaveData ULFPGameInstance::PackSaveData(const FString& SaveName) const
 	Data.PartyUnits = PartyUnits;
 	Data.ReserveUnits = ReserveUnits;
 	Data.OwnedRelicIDs = OwnedRelicIDs.Array();
+	Data.PlayerDeckCardSkillClasses = PlayerDeckCardSkillClasses;
 
 	Data.PurchasedHireMarketEntries = PurchasedHireMarketEntries;
 
@@ -194,6 +195,7 @@ void ULFPGameInstance::UnpackSaveData(const FLFPSaveData& Data)
 
 	PartyUnits = Data.PartyUnits;
 	ReserveUnits = Data.ReserveUnits;
+	PlayerDeckCardSkillClasses = Data.PlayerDeckCardSkillClasses;
 
 	OwnedRelicIDs.Empty();
 	for (const FName& RelicID : Data.OwnedRelicIDs)
@@ -220,6 +222,7 @@ void ULFPGameInstance::ResetForNewGame()
 
 	PartyUnits.Empty();
 	ReserveUnits.Empty();
+	PlayerDeckCardSkillClasses.Empty();
 	OwnedRelicIDs.Empty();
 	OnOwnedRelicsChanged.Broadcast();
 	PurchasedHireMarketEntries.Empty();

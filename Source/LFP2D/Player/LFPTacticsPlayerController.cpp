@@ -4,6 +4,7 @@
 #include "LFP2D/Player/LFPTacticsPlayerController.h"
 #include "LFP2D/HexGrid/LFPHexGridManager.h"
 #include "LFP2D/HexGrid/LFPHexTile.h"
+#include "LFP2D/Card/LFPBattleCardComponent.h"
 #include "LFP2D/Skill/LFPSkillBase.h"
 #include "LFP2D/Unit/LFPTacticsUnit.h"
 #include "LFP2D/Turn/LFPTurnManager.h"
@@ -73,6 +74,7 @@ ALFPTacticsPlayerController::ALFPTacticsPlayerController()
 	bIsDragging = false;
 	CurrentControlState = EPlayControlState::MoveState;
 	LastControlState = CurrentControlState;
+	BattleCardComponent = CreateDefaultSubobject<ULFPBattleCardComponent>(TEXT("BattleCardComponent"));
 
 	// 创建地图编辑器组件
 	MapEditorComponent = CreateDefaultSubobject<ULFPMapEditorComponent>(TEXT("MapEditorComponent"));
@@ -1114,6 +1116,7 @@ void ALFPTacticsPlayerController::ExecuteSkill(ULFPSkillBase* CurrentSkill)
 
 		if (SelectedUnit->ExecuteSkill(CurrentSkill, TargetTile))
 		{
+			FinishCardForSkill(CurrentSkill);
 			bIsReleaseSkill = false;
 			SelectedUnit->ConsumeActionPoints(CurrentSkill->ActionPointCost);
 			CurrentSelectedSkill = nullptr;
@@ -1187,9 +1190,61 @@ void ALFPTacticsPlayerController::HandleSkillSelection()
 	ULFPSkillSelectionWidget* SkillWidget = BattleHUDWidget->GetSkillSelectionWidget();
 	if (SkillWidget)
 	{
+		TArray<ULFPSkillBase*> HandSkills;
+		BuildHandSkillListForUnit(SelectedUnit, HandSkills);
+
 		BattleHUDWidget->ShowSkillSelection();
-		SkillWidget->InitializeSkillsInfo(SelectedUnit, this);
+		SkillWidget->InitializeProvidedSkillsInfo(SelectedUnit, this, HandSkills);
 	}
+}
+
+void ALFPTacticsPlayerController::BuildHandSkillListForUnit(ALFPTacticsUnit* Unit, TArray<ULFPSkillBase*>& OutSkills)
+{
+	OutSkills.Empty();
+	HandSkillToCardInstanceID.Empty();
+
+	if (!Unit)
+	{
+		return;
+	}
+
+	if (!BattleCardComponent || !BattleCardComponent->IsInitialized())
+	{
+		OutSkills = Unit->GetAvailableSkills();
+		return;
+	}
+
+	// 当前 UI 只展示这名单位能打出的手牌技能；映射保存出牌后要移动的卡牌实例。
+	const TArray<FLFPCardInstance> PlayableCards = BattleCardComponent->GetPlayableHandCardsForUnit(Unit);
+	for (const FLFPCardInstance& Card : PlayableCards)
+	{
+		if (!Card.RuntimeSkill)
+		{
+			continue;
+		}
+
+		OutSkills.Add(Card.RuntimeSkill);
+		HandSkillToCardInstanceID.Add(Card.RuntimeSkill, Card.InstanceID);
+	}
+}
+
+bool ALFPTacticsPlayerController::FinishCardForSkill(ULFPSkillBase* Skill)
+{
+	if (!Skill || !BattleCardComponent)
+	{
+		return true;
+	}
+
+	const int32* CardInstanceID = HandSkillToCardInstanceID.Find(Skill);
+	if (!CardInstanceID)
+	{
+		return true;
+	}
+
+	// 技能释放成功后才结算卡牌去向；失败路径不会调用这里，卡仍留在手牌。
+	const bool bMoved = BattleCardComponent->FinishPlayingCard(*CardInstanceID);
+	HandSkillToCardInstanceID.Remove(Skill);
+	return bMoved;
 }
 
 void ALFPTacticsPlayerController::HideSkillSelection()
@@ -1328,6 +1383,11 @@ void ALFPTacticsPlayerController::OnPhaseChanged(EBattlePhase NewPhase)
 		break;
 
 	case EBattlePhase::BP_PlayerActionPhase:
+		// 玩家行动阶段开始时补到手牌上限；起始手牌已在部署确认后抽出。
+		if (BattleCardComponent && BattleCardComponent->IsInitialized())
+		{
+			BattleCardComponent->DrawUpToHandLimit();
+		}
 		// 玩家行动阶段：BP 侧显示 End Turn 按钮等
 		break;
 
@@ -1886,6 +1946,20 @@ void ALFPTacticsPlayerController::ConfirmDeployment()
 			DeploymentWidget->OnConfirmPressed.RemoveDynamic(this, &ALFPTacticsPlayerController::ConfirmDeployment);
 		}
 		BattleHUDWidget->HideDeploymentWidget();
+	}
+
+	if (BattleCardComponent)
+	{
+		TArray<ALFPTacticsUnit*> RuntimeDeployedUnits;
+		RuntimeDeployedUnits.Reserve(DeployedUnits.Num());
+		for (const TObjectPtr<ALFPTacticsUnit>& UnitPtr : DeployedUnits)
+		{
+			RuntimeDeployedUnits.Add(UnitPtr.Get());
+		}
+
+		ULFPGameInstance* GI = Cast<ULFPGameInstance>(GetGameInstance());
+		// 部署确认后出战单位已固定，此时组装“玩家牌库 + 单位携带卡 + 默认普攻卡”。
+		BattleCardComponent->InitializeBattleDeck(GI, RuntimeDeployedUnits);
 	}
 
 	bIsInDeployment = false;

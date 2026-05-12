@@ -48,6 +48,9 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Skill Selection")
     void InitializeSkillsInfo(ALFPTacticsUnit* Unit, ALFPTacticsPlayerController* PC);
 
+    // 用指定技能列表初始化按钮；卡牌系统会传入当前手牌可打出的技能。
+    void InitializeProvidedSkillsInfo(ALFPTacticsUnit* Unit, ALFPTacticsPlayerController* PC, const TArray<ULFPSkillBase*>& ProvidedSkills);
+
     // 显示技能选择窗口
     UFUNCTION(BlueprintCallable, Category = "Skill Selection")
     void Show();

@@ -23,6 +23,7 @@ class ULFPBattleHUDWidget;
 class ULFPMapEditorComponent;
 class ULFPMapEditorWidget;
 class ULFPUnitRegistryDataAsset;
+class ULFPBattleCardComponent;
 /**
  *
  */
@@ -122,6 +123,10 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Map Editor")
 	TObjectPtr<ULFPMapEditorComponent> MapEditorComponent;
 
+	// 玩家战斗牌堆组件：维护抽牌堆、手牌、弃牌堆和销毁牌堆。
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Cards")
+	TObjectPtr<ULFPBattleCardComponent> BattleCardComponent;
+
 	// 当前选中的单位
 	UPROPERTY()
 	ALFPTacticsUnit* SelectedUnit;
@@ -217,6 +222,9 @@ public:
 	// 获取战斗 HUD（供 GameMode 等外部访问）
 	UFUNCTION(BlueprintPure, Category = "UI")
 	ULFPBattleHUDWidget* GetBattleHUD() const { return BattleHUDWidget; }
+
+	UFUNCTION(BlueprintPure, Category = "Cards")
+	ULFPBattleCardComponent* GetBattleCardComponent() const { return BattleCardComponent; }
 
 	UFUNCTION(BlueprintCallable, Category = "Skill")
 	void HideSkillSelection();
@@ -360,6 +368,8 @@ protected:
 	void HandlePrimaryActionAtHit(const FHitResult& HitResult);
 	void HandlePrimaryTileClicked(ALFPHexTile* Tile);
 	bool IsCurrentSkillTargetTileValid(ALFPHexTile* Tile) const;
+	void BuildHandSkillListForUnit(ALFPTacticsUnit* Unit, TArray<ULFPSkillBase*>& OutSkills);
+	bool FinishCardForSkill(ULFPSkillBase* Skill);
 
 	// 移动已部署单位到空格子
 	void MoveDeployedUnitToTile(int32 PartyIndex, ALFPHexTile* TargetTile);
@@ -397,6 +407,9 @@ protected:
 
 	// 缓存的玩家出生点格子
 	TArray<ALFPHexTile*> PlayerSpawnTiles;
+
+	// 当前 UI 中每个技能按钮对应的手牌实例 ID；技能释放成功后用它移动到弃牌堆。
+	TMap<ULFPSkillBase*, int32> HandSkillToCardInstanceID;
 
 	// 当前选中高亮的格子（用于清除上一次高亮）
 	UPROPERTY()

@@ -5,6 +5,7 @@
 #include "LFP2D/Unit/LFPUnitTypes.h"
 #include "LFP2D/Shop/LFPRelicTypes.h"
 #include "LFP2D/Shop/LFPHireMarketTypes.h"
+#include "Templates/SubclassOf.h"
 #include "LFPGameInstance.generated.h"
 
 class ALFPTacticsUnit;
@@ -12,6 +13,7 @@ class ULFPUnitRegistryDataAsset;
 class ULFPRelicDataAsset;
 class ULFPShopDataAsset;
 class ULFPHireMarketDataAsset;
+class ULFPSkillBase;
 
 // 资源（金币/食物）变动委托
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnResourceChanged, int32, NewGold, int32, NewFood);
@@ -177,6 +179,10 @@ struct FLFPSaveData
 
 	UPROPERTY(BlueprintReadWrite, Category = "Save")
 	TArray<FName> OwnedRelicIDs;
+
+	// 存档中的玩家基础牌库技能类。
+	UPROPERTY(BlueprintReadWrite, Category = "Save")
+	TArray<TSubclassOf<ULFPSkillBase>> PlayerDeckCardSkillClasses;
 
 	// 雇佣市场已购买（扁平化存储，Key=Value 对）
 	UPROPERTY(BlueprintReadWrite, Category = "Save")
@@ -431,6 +437,10 @@ public:
 	// 备战营
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Party")
 	TArray<FLFPUnitEntry> ReserveUnits;
+
+	// 玩家基础牌库。战斗牌库 = 这里的卡 + 出战单位携带卡 + 每个出战单位的普通攻击卡。
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cards")
+	TArray<TSubclassOf<ULFPSkillBase>> PlayerDeckCardSkillClasses;
 
 	// 出战队伍上限
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Party")

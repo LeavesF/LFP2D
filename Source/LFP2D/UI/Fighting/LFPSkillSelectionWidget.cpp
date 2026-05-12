@@ -118,6 +118,56 @@ void ULFPSkillSelectionWidget::InitializeSkillsInfo(ALFPTacticsUnit* Unit, ALFPT
     //}
 }
 
+void ULFPSkillSelectionWidget::InitializeProvidedSkillsInfo(ALFPTacticsUnit* Unit, ALFPTacticsPlayerController* PC, const TArray<ULFPSkillBase*>& ProvidedSkills)
+{
+    if (!Unit || !PC || !SkillGrid) return;
+
+    OwnerUnit = Unit;
+    TacticsPC = PC;
+    bInspectionMode = false;
+    SelectedSkill = nullptr;
+
+    if (ALFPTurnManager* TurnManager = Unit->GetTurnManager())
+    {
+        TurnManager->OnFactionAPChanged.RemoveDynamic(this, &ULFPSkillSelectionWidget::OnFactionAPChanged);
+        TurnManager->OnFactionAPChanged.AddDynamic(this, &ULFPSkillSelectionWidget::OnFactionAPChanged);
+    }
+
+    SkillGrid->ClearChildren();
+    SkillButtons.Empty();
+    UpdateUnitInfo();
+
+    int32 Row = 0;
+    int32 Column = 0;
+
+    /* 卡牌系统传入的是当前手牌可打出的技能；这里继续复用原技能按钮蓝图。 */
+    for (ULFPSkillBase* Skill : ProvidedSkills)
+    {
+        if (!Skill || !SkillButtonClass) continue;
+
+        ULFPSkillButtonWidget* SkillButton = CreateWidget<ULFPSkillButtonWidget>(this, SkillButtonClass);
+        if (!SkillButton)
+        {
+            continue;
+        }
+
+        SkillButton->InitializeSkillButton(Skill);
+        SkillButton->OwnerUnit = OwnerUnit;
+        SkillButton->TacticsPC = TacticsPC;
+        SkillButton->OnButtonClickedDelegate.AddDynamic(this, &ULFPSkillSelectionWidget::OnSkillSelected);
+
+        SkillGrid->AddChildToUniformGrid(SkillButton, Row, Column);
+        SkillButtons.Add(SkillButton);
+
+        Column++;
+        if (Column >= MaxColumns)
+        {
+            Column = 0;
+            Row++;
+        }
+    }
+}
+
 void ULFPSkillSelectionWidget::OnSkillSelected(ULFPSkillBase* Skill)
 {
     if (!Skill || !OwnerUnit) return;
