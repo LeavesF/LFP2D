@@ -45,6 +45,9 @@ public:
 	bool IsInitialized() const { return bInitialized; }
 
 	UFUNCTION(BlueprintPure, Category = "Card")
+	int32 GetMaxHandSize() const { return MaxHandSize; }
+
+	UFUNCTION(BlueprintPure, Category = "Card")
 	TArray<FLFPCardInstance> GetDrawPile() const { return DrawPile; }
 
 	UFUNCTION(BlueprintPure, Category = "Card")

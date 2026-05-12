@@ -1117,6 +1117,10 @@ void ALFPTacticsPlayerController::ExecuteSkill(ULFPSkillBase* CurrentSkill)
 		if (SelectedUnit->ExecuteSkill(CurrentSkill, TargetTile))
 		{
 			FinishCardForSkill(CurrentSkill);
+			if (BattleHUDWidget)
+			{
+				BattleHUDWidget->RefreshCardHand();
+			}
 			bIsReleaseSkill = false;
 			SelectedUnit->ConsumeActionPoints(CurrentSkill->ActionPointCost);
 			CurrentSelectedSkill = nullptr;
@@ -1245,6 +1249,68 @@ bool ALFPTacticsPlayerController::FinishCardForSkill(ULFPSkillBase* Skill)
 	const bool bMoved = BattleCardComponent->FinishPlayingCard(*CardInstanceID);
 	HandSkillToCardInstanceID.Remove(Skill);
 	return bMoved;
+}
+
+
+void ALFPTacticsPlayerController::OnHandCardClicked(const FLFPCardInstance& CardInstance)
+{
+	if (!CardInstance.RuntimeSkill)
+	{
+		return;
+	}
+
+	ALFPTacticsUnit* CardUnit = (CardInstance.SourceUnit != nullptr)
+		? CardInstance.SourceUnit.Get()
+		: SelectedUnit;
+
+	if (!CardUnit)
+	{
+		return;
+	}
+
+	if (SelectedUnit != CardUnit)
+	{
+		SelectUnit(CardUnit);
+	}
+
+	HandleSkillTargetSelecting(CardInstance.RuntimeSkill);
+	HandSkillToCardInstanceID.Add(CardInstance.RuntimeSkill, CardInstance.InstanceID);
+}
+
+void ALFPTacticsPlayerController::PreviewCardSkillRange(const FLFPCardInstance& CardInstance)
+{
+	if (!CardInstance.RuntimeSkill || !GridManager)
+	{
+		return;
+	}
+
+	ALFPTacticsUnit* CardUnit = (CardInstance.SourceUnit != nullptr)
+		? CardInstance.SourceUnit.Get()
+		: SelectedUnit;
+
+	if (!CardUnit)
+	{
+		return;
+	}
+
+	CardInstance.RuntimeSkill->Owner = CardUnit;
+	CardInstance.RuntimeSkill->UpdateSkillRange();
+
+	TArray<FLFPHexCoordinates> ReleaseCoords = CardInstance.RuntimeSkill->GetReleaseRangeInGrid();
+	GridManager->ShowRangeHighlightByCoords(ReleaseCoords, EUnitRange::UR_SkillRelease);
+}
+
+void ALFPTacticsPlayerController::ClearCardSkillPreview()
+{
+	if (bIsReleaseSkill)
+	{
+		return;
+	}
+
+	if (GridManager)
+	{
+		GridManager->ClearRangeHighlight(EUnitRange::UR_SkillRelease);
+	}
 }
 
 void ALFPTacticsPlayerController::HideSkillSelection()
@@ -1387,6 +1453,10 @@ void ALFPTacticsPlayerController::OnPhaseChanged(EBattlePhase NewPhase)
 		if (BattleCardComponent && BattleCardComponent->IsInitialized())
 		{
 			BattleCardComponent->DrawUpToHandLimit();
+			if (BattleHUDWidget)
+			{
+				BattleHUDWidget->RefreshCardHand();
+			}
 		}
 		// 玩家行动阶段：BP 侧显示 End Turn 按钮等
 		break;

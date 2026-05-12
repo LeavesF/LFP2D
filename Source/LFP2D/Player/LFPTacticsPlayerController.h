@@ -24,6 +24,8 @@ class ULFPMapEditorComponent;
 class ULFPMapEditorWidget;
 class ULFPUnitRegistryDataAsset;
 class ULFPBattleCardComponent;
+
+struct FLFPCardInstance;
 /**
  *
  */
@@ -240,6 +242,11 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Skill")
 	void HandleSkillTargetSelecting(ULFPSkillBase* Skill);
+
+	// 手牌操作：点击出牌 / 悬停预览 / 取消预览
+	void OnHandCardClicked(const FLFPCardInstance& CardInstance);
+	void PreviewCardSkillRange(const FLFPCardInstance& CardInstance);
+	void ClearCardSkillPreview();
 
 	/*UFUNCTION(BlueprintCallable, Category = "Skill")
 	void HandleSkillTargetSelected(ALFPHexTile* TargetTile);*/

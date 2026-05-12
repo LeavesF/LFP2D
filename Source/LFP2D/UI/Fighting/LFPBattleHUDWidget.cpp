@@ -4,6 +4,8 @@
 #include "LFP2D/UI/Fighting/LFPDeploymentWidget.h"
 #include "LFP2D/UI/Fighting/LFPBattleResultWidget.h"
 #include "LFP2D/UI/Fighting/LFPCurrentUnitInfoWidget.h"
+#include "LFP2D/UI/Fighting/LFPCardHandWidget.h"
+#include "LFP2D/Card/LFPBattleCardComponent.h"
 #include "LFP2D/Player/LFPTacticsPlayerController.h"
 #include "LFP2D/Turn/LFPTurnManager.h"
 #include "Components/Button.h"
@@ -32,6 +34,10 @@ void ULFPBattleHUDWidget::NativeConstruct()
 	if (CurrentUnitInfoWidget)
 	{
 		CurrentUnitInfoWidget->SetVisibility(ESlateVisibility::Collapsed);
+	}
+	if (CardHandWidget)
+	{
+		CardHandWidget->SetVisibility(ESlateVisibility::Collapsed);
 	}
 
 	if (EndTurnButton)
@@ -97,8 +103,17 @@ void ULFPBattleHUDWidget::OnPhaseChanged(EBattlePhase NewPhase)
 	UpdateRoundText();
 	UpdatePhaseText(NewPhase);
 
-	// 仅在玩家行动阶段显示 End Turn 按钮
+	// 仅在玩家行动阶段显示 End Turn 按钮和手牌
 	SetEndTurnButtonVisible(NewPhase == EBattlePhase::BP_PlayerActionPhase);
+
+	if (NewPhase == EBattlePhase::BP_PlayerActionPhase)
+	{
+		ShowCardHand();
+	}
+	else
+	{
+		HideCardHand();
+	}
 }
 
 void ULFPBattleHUDWidget::SetTurnManager(ALFPTurnManager* TurnManager)
@@ -327,5 +342,43 @@ void ULFPBattleHUDWidget::SetEndTurnButtonVisible(bool bVisible)
 		EndTurnButton->SetVisibility(bVisible
 			? ESlateVisibility::Visible
 			: ESlateVisibility::Collapsed);
+	}
+}
+
+void ULFPBattleHUDWidget::ShowCardHand()
+{
+	if (!CardHandWidget)
+	{
+		return;
+	}
+
+	// 尝试从 PlayerController 获取 BattleCardComponent 并初始化手牌 UI。
+	if (APlayerController* PC = GetOwningPlayer())
+	{
+		if (ALFPTacticsPlayerController* TacticsPC = Cast<ALFPTacticsPlayerController>(PC))
+		{
+			if (ULFPBattleCardComponent* CardComp = TacticsPC->GetBattleCardComponent())
+			{
+				CardHandWidget->InitializeFromBattleCardComponent(CardComp, TacticsPC);
+			}
+		}
+	}
+
+	CardHandWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+}
+
+void ULFPBattleHUDWidget::HideCardHand()
+{
+	if (CardHandWidget)
+	{
+		CardHandWidget->SetVisibility(ESlateVisibility::Collapsed);
+	}
+}
+
+void ULFPBattleHUDWidget::RefreshCardHand()
+{
+	if (CardHandWidget && CardHandWidget->IsVisible())
+	{
+		CardHandWidget->RefreshHandDisplay();
 	}
 }

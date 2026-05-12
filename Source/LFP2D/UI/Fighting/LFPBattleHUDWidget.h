@@ -11,6 +11,7 @@ class ULFPSkillSelectionWidget;
 class ULFPDeploymentWidget;
 class ULFPBattleResultWidget;
 class ULFPCurrentUnitInfoWidget;
+class ULFPCardHandWidget;
 class UButton;
 class UImage;
 class UProgressBar;
@@ -63,6 +64,12 @@ public:
 	void SetCurrentUnitInfoUnit(ALFPTacticsUnit* Unit);
 	ULFPCurrentUnitInfoWidget* GetCurrentUnitInfoWidget() const { return CurrentUnitInfoWidget; }
 
+	// === CardHand ===
+	void ShowCardHand();
+	void HideCardHand();
+	void RefreshCardHand();
+	ULFPCardHandWidget* GetCardHandWidget() const { return CardHandWidget; }
+
 	// ==== 检查模式 ====
 	void EnterInspectionMode(ALFPTacticsUnit* InspectedUnit, ALFPTacticsPlayerController* PC);
 	void ExitInspectionMode(ALFPTacticsPlayerController* PC);
@@ -105,6 +112,9 @@ protected:
 
 	UPROPERTY(meta = (BindWidgetOptional))
 	TObjectPtr<ULFPCurrentUnitInfoWidget> CurrentUnitInfoWidget;
+
+	UPROPERTY(meta = (BindWidgetOptional))
+	TObjectPtr<ULFPCardHandWidget> CardHandWidget;
 
 	UPROPERTY(meta = (BindWidgetOptional))
 	TObjectPtr<UButton> EndTurnButton;
