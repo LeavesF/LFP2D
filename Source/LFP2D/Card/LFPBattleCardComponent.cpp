@@ -9,7 +9,6 @@
 ULFPBattleCardComponent::ULFPBattleCardComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
-	FallbackDefaultAttackSkillClass = ULFPSkill_BasicMeleeAttack::StaticClass();
 }
 
 void ULFPBattleCardComponent::InitializeBattleDeck(ULFPGameInstance* GameInstance, const TArray<ALFPTacticsUnit*>& DeployedUnits)
@@ -26,7 +25,6 @@ void ULFPBattleCardComponent::InitializeBattleDeck(ULFPGameInstance* GameInstanc
 	ShuffleDrawPile();
 	bInitialized = true;
 
-	/* 战斗刚开始先抽起始手牌，后续玩家行动阶段只负责补到手牌上限。 */
 	DrawCards(OpeningDrawCount);
 }
 
@@ -79,8 +77,7 @@ TArray<FLFPCardInstance> ULFPBattleCardComponent::GetPlayableHandCardsForUnit(AL
 			continue;
 		}
 
-		/* 单位携带卡只允许来源单位打出；公共牌库卡会在这里绑定到当前选中单位。 */
-		if (Card.SourceUnit && Card.SourceUnit != Unit)
+		if (!Unit->CanUseCard(Card))
 		{
 			continue;
 		}
@@ -94,18 +91,31 @@ TArray<FLFPCardInstance> ULFPBattleCardComponent::GetPlayableHandCardsForUnit(AL
 
 bool ULFPBattleCardComponent::FinishPlayingCard(int32 CardInstanceID)
 {
+	// 先从手牌查找。
 	const int32 HandIndex = Hand.IndexOfByPredicate([CardInstanceID](const FLFPCardInstance& Card)
 	{
 		return Card.InstanceID == CardInstanceID;
 	});
 
-	if (HandIndex == INDEX_NONE)
+	if (HandIndex != INDEX_NONE)
 	{
-		return false;
+		const ELFPCardPile Destination = Hand[HandIndex].Definition.DestinationAfterPlay;
+		return MoveHandCardToPile(CardInstanceID, Destination);
 	}
 
-	const ELFPCardPile Destination = Hand[HandIndex].Definition.DestinationAfterPlay;
-	return MoveHandCardToPile(CardInstanceID, Destination);
+	// 从待执行区查找。
+	const int32 PendingIndex = PendingPile.IndexOfByPredicate([CardInstanceID](const FLFPCardInstance& Card)
+	{
+		return Card.InstanceID == CardInstanceID;
+	});
+
+	if (PendingIndex != INDEX_NONE)
+	{
+		const ELFPCardPile Destination = PendingPile[PendingIndex].Definition.DestinationAfterPlay;
+		return MoveCardToPile(CardInstanceID, Destination);
+	}
+
+	return false;
 }
 
 bool ULFPBattleCardComponent::MoveHandCardToPile(int32 CardInstanceID, ELFPCardPile TargetPile)
@@ -138,7 +148,8 @@ bool ULFPBattleCardComponent::MoveHandCardToPile(int32 CardInstanceID, ELFPCardP
 	return true;
 }
 
-void ULFPBattleCardComponent::AddCardToDrawPile(TSubclassOf<ULFPSkillBase> SkillClass, ALFPTacticsUnit* SourceUnit)
+void ULFPBattleCardComponent::AddCardToDrawPile(TSubclassOf<ULFPSkillBase> SkillClass, ALFPTacticsUnit* SourceUnit,
+	ELFPCardCategory Category, FGameplayTag RequiredTag)
 {
 	if (!SkillClass)
 	{
@@ -165,6 +176,8 @@ void ULFPBattleCardComponent::AddCardToDrawPile(TSubclassOf<ULFPSkillBase> Skill
 	Card.Definition.Icon = RuntimeSkill->SkillIcon;
 	Card.Definition.SkillClass = SkillClass;
 	Card.Definition.DestinationAfterPlay = ELFPCardPile::DiscardPile;
+	Card.Definition.CardCategory = Category;
+	Card.Definition.RequiredTag = RequiredTag;
 
 	DrawPile.Add(Card);
 }
@@ -178,7 +191,8 @@ void ULFPBattleCardComponent::AddPlayerDeckCards(ULFPGameInstance* GameInstance)
 
 	for (TSubclassOf<ULFPSkillBase> SkillClass : GameInstance->PlayerDeckCardSkillClasses)
 	{
-		AddCardToDrawPile(SkillClass, nullptr);
+		// 玩家牌库卡默认为完全通用型；无目标型由蓝图测 Skill.TargetType 决定。
+		AddCardToDrawPile(SkillClass, nullptr, ELFPCardCategory::FullyGeneric);
 	}
 }
 
@@ -192,58 +206,140 @@ void ULFPBattleCardComponent::AddUnitCards(ULFPGameInstance* GameInstance, const
 			continue;
 		}
 
+		// 单位注册表中的 DefaultCarriedCardSkillClasses 视为种族专属型。
 		if (GameInstance && GameInstance->UnitRegistry)
 		{
 			FLFPUnitRegistryEntry Entry;
 			if (GameInstance->UnitRegistry->FindEntry(Unit->UnitTypeID, Entry))
 			{
-				AddConfiguredUnitCards(Unit, Entry.DefaultCarriedCardSkillClasses);
+				AddConfiguredUnitCards(Unit, Entry.DefaultCarriedCardSkillClasses,
+					ELFPCardCategory::RaceSpecific);
 			}
 		}
-
-		AddDefaultAttackCard(Unit);
 	}
+
+	// 普攻卡按攻击Tag分组共享生成，不再按单位独立创建。
+	AddSharedAttackCards(DeployedUnits);
 }
 
-void ULFPBattleCardComponent::AddConfiguredUnitCards(ALFPTacticsUnit* Unit, const TArray<TSubclassOf<ULFPSkillBase>>& CardSkillClasses)
+void ULFPBattleCardComponent::AddConfiguredUnitCards(ALFPTacticsUnit* Unit,
+	const TArray<TSubclassOf<ULFPSkillBase>>& CardSkillClasses, ELFPCardCategory Category)
 {
 	for (TSubclassOf<ULFPSkillBase> SkillClass : CardSkillClasses)
 	{
-		AddCardToDrawPile(SkillClass, Unit);
+		// 种族专属型使用单位的种族Tag；通用型后续可额外指定Tag。
+		FGameplayTag Tag;
+		if (Category == ELFPCardCategory::RaceSpecific)
+		{
+			// 从单位SpecialTags中取第一个种族Tag（如 Unit.Race.Dragon）
+			const FGameplayTagContainer& Tags = Unit->GetSpecialTags();
+			for (const FGameplayTag& T : Tags)
+			{
+				if (T.GetTagName().ToString().StartsWith(TEXT("Unit.Race.")))
+				{
+					Tag = T;
+					break;
+				}
+			}
+		}
+
+		AddCardToDrawPile(SkillClass, Unit, Category, Tag);
 	}
 }
 
-void ULFPBattleCardComponent::AddDefaultAttackCard(ALFPTacticsUnit* Unit)
+void ULFPBattleCardComponent::AddSharedAttackCards(const TArray<ALFPTacticsUnit*>& DeployedUnits)
 {
-	if (!Unit)
+	// 按攻击Tag分组，每种Tag生成等于该Tag单位数量的普攻卡。
+	TMap<FGameplayTag, int32> AttackTagCounts;
+
+	for (ALFPTacticsUnit* Unit : DeployedUnits)
 	{
+		if (!Unit)
+		{
+			continue;
+		}
+
+		const FGameplayTagContainer& Tags = Unit->GetSpecialTags();
+		for (const FGameplayTag& Tag : Tags)
+		{
+			if (Tag.GetTagName().ToString().StartsWith(TEXT("Unit.Attack.")))
+			{
+				AttackTagCounts.FindOrAdd(Tag)++;
+				break;
+			}
+		}
+	}
+
+	// 如果单位都没有攻击Tag，为每个单位创建无Tag限制的普攻卡（用近战兜底）。
+	if (AttackTagCounts.IsEmpty())
+	{
+		for (ALFPTacticsUnit* Unit : DeployedUnits)
+		{
+			if (!Unit)
+			{
+				continue;
+			}
+
+			TSubclassOf<ULFPSkillBase> AttackClass = FallbackMeleeAttackClass;
+			if (ULFPSkillBase* DefaultAttackSkill = Unit->GetDefaultAttackSkill())
+			{
+				AttackClass = DefaultAttackSkill->GetClass();
+			}
+
+			AddCardToDrawPile(AttackClass, nullptr, ELFPCardCategory::GeneralAttack);
+		}
 		return;
 	}
 
-	TSubclassOf<ULFPSkillBase> DefaultAttackClass = FallbackDefaultAttackSkillClass;
-	if (ULFPSkillBase* DefaultAttackSkill = Unit->GetDefaultAttackSkill())
+	// 按攻击Tag生成共享普攻卡。
+	for (const auto& Pair : AttackTagCounts)
 	{
-		DefaultAttackClass = DefaultAttackSkill->GetClass();
-	}
+		const FGameplayTag& AttackTag = Pair.Key;
+		const int32 Count = Pair.Value;
+		const FString TagName = AttackTag.GetTagName().ToString();
 
-	AddCardToDrawPile(DefaultAttackClass, Unit);
+		// 根据攻击Tag选择对应的兜底技能类。
+		TSubclassOf<ULFPSkillBase> AttackClass;
+		if (TagName.EndsWith(TEXT(".Melee")))
+		{
+			AttackClass = FallbackMeleeAttackClass;
+		}
+		else if (TagName.EndsWith(TEXT(".Ranged")))
+		{
+			AttackClass = FallbackRangedAttackClass;
+		}
+		else if (TagName.EndsWith(TEXT(".Magic")))
+		{
+			AttackClass = FallbackMagicAttackClass;
+		}
+		else
+		{
+			AttackClass = FallbackMeleeAttackClass;
+		}
+
+		for (int32 i = 0; i < Count; ++i)
+		{
+			AddCardToDrawPile(AttackClass, nullptr,
+				ELFPCardCategory::GeneralAttack, AttackTag);
+		}
+	}
 }
 
 void ULFPBattleCardComponent::PrepareCardForUnit(FLFPCardInstance& Card, ALFPTacticsUnit* Unit)
 {
-	if (!Card.RuntimeSkill)
+	if (!Card.RuntimeSkill || !Unit)
 	{
 		return;
 	}
 
-	ALFPTacticsUnit* DesiredOwner = Card.SourceUnit ? Card.SourceUnit.Get() : Unit;
-	if (!DesiredOwner || Card.RuntimeSkill->Owner == DesiredOwner)
+	if (Card.RuntimeSkill->Owner == Unit)
 	{
 		return;
 	}
 
-	/* 公共牌库卡没有固定来源，展示和使用前绑定到当前选中单位。 */
-	Card.RuntimeSkill->Owner = DesiredOwner;
+	// 非单位专属卡（SourceUnit==nullptr）绑定到当前选中单位。
+	// 单位专属卡保留源单位作为Owner。
+	Card.RuntimeSkill->Owner = Unit;
 	Card.RuntimeSkill->UpdateSkillRange();
 }
 
@@ -263,7 +359,6 @@ void ULFPBattleCardComponent::ShuffleDiscardIntoDrawPile()
 		return;
 	}
 
-	/* 抽牌堆耗尽时，弃牌堆洗回抽牌堆，销毁牌堆不参与循环。 */
 	for (FLFPCardInstance& Card : DiscardPile)
 	{
 		Card.CurrentPile = ELFPCardPile::DrawPile;
@@ -282,6 +377,8 @@ TArray<FLFPCardInstance>* ULFPBattleCardComponent::GetPileMutable(ELFPCardPile P
 		return &DrawPile;
 	case ELFPCardPile::Hand:
 		return &Hand;
+	case ELFPCardPile::Pending:
+		return &PendingPile;
 	case ELFPCardPile::DiscardPile:
 		return &DiscardPile;
 	case ELFPCardPile::ExhaustPile:
@@ -289,4 +386,79 @@ TArray<FLFPCardInstance>* ULFPBattleCardComponent::GetPileMutable(ELFPCardPile P
 	default:
 		return nullptr;
 	}
+}
+
+bool ULFPBattleCardComponent::MoveCardToPile(int32 CardInstanceID, ELFPCardPile TargetPile)
+{
+	if (TargetPile == ELFPCardPile::Hand)
+	{
+		return false;
+	}
+
+	// 在所有牌堆中查找该卡牌。
+	static const TArray<ELFPCardPile> AllPiles = {
+		ELFPCardPile::DrawPile, ELFPCardPile::Hand, ELFPCardPile::Pending,
+		ELFPCardPile::DiscardPile, ELFPCardPile::ExhaustPile
+	};
+
+	ELFPCardPile SourcePile = ELFPCardPile::DrawPile;
+	int32 SourceIndex = INDEX_NONE;
+	FLFPCardInstance FoundCard;
+
+	for (const ELFPCardPile Pile : AllPiles)
+	{
+		TArray<FLFPCardInstance>* Cards = GetPileMutable(Pile);
+		if (!Cards) continue;
+
+		const int32 Idx = Cards->IndexOfByPredicate([CardInstanceID](const FLFPCardInstance& C)
+		{
+			return C.InstanceID == CardInstanceID;
+		});
+
+		if (Idx != INDEX_NONE)
+		{
+			SourcePile = Pile;
+			SourceIndex = Idx;
+			FoundCard = (*Cards)[Idx];
+			Cards->RemoveAt(Idx);
+			break;
+		}
+	}
+
+	if (SourceIndex == INDEX_NONE)
+	{
+		return false;
+	}
+
+	TArray<FLFPCardInstance>* TargetCards = GetPileMutable(TargetPile);
+	if (!TargetCards)
+	{
+		// 失败的移动放回原牌堆。
+		TArray<FLFPCardInstance>* SourceCards = GetPileMutable(SourcePile);
+		if (SourceCards) SourceCards->Add(FoundCard);
+		return false;
+	}
+
+	FoundCard.CurrentPile = TargetPile;
+	TargetCards->Add(FoundCard);
+	return true;
+}
+
+bool ULFPBattleCardComponent::ReturnPendingCardToHand(int32 CardInstanceID)
+{
+	const int32 PendingIndex = PendingPile.IndexOfByPredicate([CardInstanceID](const FLFPCardInstance& Card)
+	{
+		return Card.InstanceID == CardInstanceID;
+	});
+
+	if (PendingIndex == INDEX_NONE)
+	{
+		return false;
+	}
+
+	FLFPCardInstance Card = PendingPile[PendingIndex];
+	PendingPile.RemoveAt(PendingIndex);
+	Card.CurrentPile = ELFPCardPile::Hand;
+	Hand.Add(Card);
+	return true;
 }

@@ -48,6 +48,12 @@ protected:
 	UFUNCTION()
 	void OnCardUnhoveredInHand();
 
+	UFUNCTION()
+	void OnCardDragStartedInHand(const FLFPCardInstance& CardInstance);
+
+	UFUNCTION()
+	void OnCardDragEndedInHand();
+
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card Hand")
 	TSubclassOf<ULFPCardItemWidget> CardItemWidgetClass;

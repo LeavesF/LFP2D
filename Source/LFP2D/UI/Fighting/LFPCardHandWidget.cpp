@@ -62,6 +62,8 @@ void ULFPCardHandWidget::RefreshHandDisplay()
 		CardItem->OnCardClicked.AddDynamic(this, &ULFPCardHandWidget::OnCardClickedInHand);
 		CardItem->OnCardHovered.AddDynamic(this, &ULFPCardHandWidget::OnCardHoveredInHand);
 		CardItem->OnCardUnhovered.AddDynamic(this, &ULFPCardHandWidget::OnCardUnhoveredInHand);
+		CardItem->OnCardDragStarted.AddDynamic(this, &ULFPCardHandWidget::OnCardDragStartedInHand);
+		CardItem->OnCardDragEnded.AddDynamic(this, &ULFPCardHandWidget::OnCardDragEndedInHand);
 
 		CardContainer->AddChildToWrapBox(CardItem);
 		HandCardWidgets.Add(CardItem);
@@ -117,14 +119,37 @@ void ULFPCardHandWidget::OnCardClickedInHand(const FLFPCardInstance& CardInstanc
 
 void ULFPCardHandWidget::OnCardHoveredInHand(const FLFPCardInstance& CardInstance)
 {
-	if (CardInstance.RuntimeSkill)
+	if (TacticsPC && CardInstance.RuntimeSkill)
 	{
-		// 悬停卡牌时预览释放范围。
 		TacticsPC->PreviewCardSkillRange(CardInstance);
 	}
 }
 
 void ULFPCardHandWidget::OnCardUnhoveredInHand()
 {
+	if (TacticsPC)
+	{
+		TacticsPC->ClearCardSkillPreview();
+	}
+}
+
+void ULFPCardHandWidget::OnCardDragStartedInHand(const FLFPCardInstance& CardInstance)
+{
+	if (!TacticsPC)
+	{
+		return;
+	}
+
 	TacticsPC->ClearCardSkillPreview();
+	TacticsPC->BeginCardDrag(CardInstance);
+}
+
+void ULFPCardHandWidget::OnCardDragEndedInHand()
+{
+	if (TacticsPC)
+	{
+		TacticsPC->EndCardDrag();
+	}
+
+	RefreshHandDisplay();
 }

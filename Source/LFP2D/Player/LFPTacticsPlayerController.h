@@ -247,6 +247,13 @@ public:
 	void OnHandCardClicked(const FLFPCardInstance& CardInstance);
 	void PreviewCardSkillRange(const FLFPCardInstance& CardInstance);
 	void ClearCardSkillPreview();
+	bool ProcessCardDropOnUnit(const FLFPCardInstance& CardInstance, ALFPTacticsUnit* Unit);
+	void BeginCardDrag(const FLFPCardInstance& CardInstance);
+	void EndCardDrag();
+
+	// 拖拽释放到视口（由 DropTarget Widget 调用）。
+	bool OnCardDroppedOnViewport(const FLFPCardInstance& CardInstance, FVector2D DropScreenPos,
+		bool bDroppedInNoTargetZone);
 
 	/*UFUNCTION(BlueprintCallable, Category = "Skill")
 	void HandleSkillTargetSelected(ALFPHexTile* TargetTile);*/
@@ -377,6 +384,9 @@ protected:
 	bool IsCurrentSkillTargetTileValid(ALFPHexTile* Tile) const;
 	void BuildHandSkillListForUnit(ALFPTacticsUnit* Unit, TArray<ULFPSkillBase*>& OutSkills);
 	bool FinishCardForSkill(ULFPSkillBase* Skill);
+	bool CancelPendingCardPlay();
+	bool IsDirectEffectCard(const FLFPCardInstance& CardInstance) const;
+	bool ExecuteDroppedCardImmediately(const FLFPCardInstance& CardInstance, ALFPTacticsUnit* Unit, ALFPHexTile* TargetTile);
 
 	// 移动已部署单位到空格子
 	void MoveDeployedUnitToTile(int32 PartyIndex, ALFPHexTile* TargetTile);

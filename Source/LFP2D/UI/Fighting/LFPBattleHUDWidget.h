@@ -12,10 +12,14 @@ class ULFPDeploymentWidget;
 class ULFPBattleResultWidget;
 class ULFPCurrentUnitInfoWidget;
 class ULFPCardHandWidget;
+class ULFPPendingCardWidget;
+class ULFPCardDropTargetWidget;
 class UButton;
 class UImage;
 class UProgressBar;
 class UTextBlock;
+
+struct FLFPCardInstance;
 class ALFPTacticsUnit;
 class ALFPTacticsPlayerController;
 class ALFPTurnManager;
@@ -70,6 +74,12 @@ public:
 	void RefreshCardHand();
 	ULFPCardHandWidget* GetCardHandWidget() const { return CardHandWidget; }
 
+	// === PendingCard ===
+	void ShowPendingCard(const FLFPCardInstance& Card);
+	void HidePendingCard();
+	ULFPPendingCardWidget* GetPendingCardWidget() const { return PendingCardWidget; }
+	void SetCardDropTargetActive(bool bActive);
+
 	// ==== 检查模式 ====
 	void EnterInspectionMode(ALFPTacticsUnit* InspectedUnit, ALFPTacticsPlayerController* PC);
 	void ExitInspectionMode(ALFPTacticsPlayerController* PC);
@@ -115,6 +125,12 @@ protected:
 
 	UPROPERTY(meta = (BindWidgetOptional))
 	TObjectPtr<ULFPCardHandWidget> CardHandWidget;
+
+	UPROPERTY(meta = (BindWidgetOptional))
+	TObjectPtr<ULFPPendingCardWidget> PendingCardWidget;
+
+	UPROPERTY(meta = (BindWidgetOptional))
+	TObjectPtr<ULFPCardDropTargetWidget> CardDropTargetWidget;
 
 	UPROPERTY(meta = (BindWidgetOptional))
 	TObjectPtr<UButton> EndTurnButton;

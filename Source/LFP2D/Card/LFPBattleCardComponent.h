@@ -30,7 +30,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Card")
 	int32 DrawUpToHandLimit();
 
-	/* 获取当前单位可以使用的手牌。单位专属卡只给来源单位使用，公共牌库卡临时绑定到当前单位。 */
+	/* 获取当前单位可以使用的手牌。基于 CardCategory + RequiredTag + CanUseCard 过滤。 */
 	UFUNCTION(BlueprintCallable, Category = "Card")
 	TArray<FLFPCardInstance> GetPlayableHandCardsForUnit(ALFPTacticsUnit* Unit);
 
@@ -59,6 +59,16 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Card")
 	TArray<FLFPCardInstance> GetExhaustPile() const { return ExhaustPile; }
 
+	UFUNCTION(BlueprintPure, Category = "Card")
+	TArray<FLFPCardInstance> GetPendingPile() const { return PendingPile; }
+
+	// 将卡牌从当前所在牌堆移动到目标牌堆（不限于手牌）。
+	UFUNCTION(BlueprintCallable, Category = "Card")
+	bool MoveCardToPile(int32 CardInstanceID, ELFPCardPile TargetPile);
+
+	UFUNCTION(BlueprintCallable, Category = "Card")
+	bool ReturnPendingCardToHand(int32 CardInstanceID);
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card")
 	int32 OpeningDrawCount = 5;
@@ -66,8 +76,15 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card")
 	int32 MaxHandSize = 5;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card")
-	TSubclassOf<ULFPSkillBase> FallbackDefaultAttackSkillClass;
+	// 三种通用普攻的兜底技能类，在蓝图中按攻击Tag分别配置。
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card|AttackDefaults")
+	TSubclassOf<ULFPSkillBase> FallbackMeleeAttackClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card|AttackDefaults")
+	TSubclassOf<ULFPSkillBase> FallbackRangedAttackClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card|AttackDefaults")
+	TSubclassOf<ULFPSkillBase> FallbackMagicAttackClass;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Card")
 	TArray<FLFPCardInstance> DrawPile;
@@ -81,12 +98,17 @@ protected:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Card")
 	TArray<FLFPCardInstance> ExhaustPile;
 
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Card")
+	TArray<FLFPCardInstance> PendingPile;
+
 private:
-	void AddCardToDrawPile(TSubclassOf<ULFPSkillBase> SkillClass, ALFPTacticsUnit* SourceUnit);
+	void AddCardToDrawPile(TSubclassOf<ULFPSkillBase> SkillClass, ALFPTacticsUnit* SourceUnit,
+		ELFPCardCategory Category = ELFPCardCategory::FullyGeneric, FGameplayTag RequiredTag = FGameplayTag());
 	void AddPlayerDeckCards(ULFPGameInstance* GameInstance);
 	void AddUnitCards(ULFPGameInstance* GameInstance, const TArray<ALFPTacticsUnit*>& DeployedUnits);
-	void AddConfiguredUnitCards(ALFPTacticsUnit* Unit, const TArray<TSubclassOf<ULFPSkillBase>>& CardSkillClasses);
-	void AddDefaultAttackCard(ALFPTacticsUnit* Unit);
+	void AddConfiguredUnitCards(ALFPTacticsUnit* Unit, const TArray<TSubclassOf<ULFPSkillBase>>& CardSkillClasses,
+		ELFPCardCategory Category);
+	void AddSharedAttackCards(const TArray<ALFPTacticsUnit*>& DeployedUnits);
 	void PrepareCardForUnit(FLFPCardInstance& Card, ALFPTacticsUnit* Unit);
 	void ShuffleDrawPile();
 	void ShuffleDiscardIntoDrawPile();

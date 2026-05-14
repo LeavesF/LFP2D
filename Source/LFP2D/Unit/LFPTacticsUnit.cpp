@@ -13,6 +13,7 @@
 #include "LFP2D/Turn/LFPBattleRelicRuntimeManager.h"
 #include "LFP2D/Turn/LFPTurnManager.h"
 #include "LFP2D/Core/LFPTurnGameMode.h"
+#include "LFP2D/Card/LFPCardTypes.h"
 #include "LFP2D/Core/LFPGameInstance.h"
 #include "LFP2D/Core/LFPUnitRegistryDataAsset.h"
 #include "LFP2D/UI/Fighting/LFPHealthBarWidget.h"
@@ -1338,4 +1339,42 @@ void ALFPTacticsUnit::ShowPlannedSkillIcon(bool bShow)
             IconWidget->SetSkillIcon(CurrentActionPlan.PlannedSkill->SkillIcon);
         }
     }
+}
+
+bool ALFPTacticsUnit::CanUseCard(const FLFPCardInstance& Card) const
+{
+	if (!Card.IsValid())
+	{
+		return false;
+	}
+
+	const ELFPCardCategory Category = Card.Definition.CardCategory;
+
+	switch (Category)
+	{
+	case ELFPCardCategory::FullyGeneric:
+		return true;
+
+	case ELFPCardCategory::NoTarget:
+		return true;
+
+	case ELFPCardCategory::GeneralAttack:
+		// 检查单位是否拥有匹配的 AttackTag（如 Unit.Attack.Melee）
+		if (Card.Definition.RequiredTag.IsValid())
+		{
+			return HasSpecialTag(Card.Definition.RequiredTag);
+		}
+		return true;
+
+	case ELFPCardCategory::RaceSpecific:
+		// 检查单位种族Tag是否匹配
+		if (Card.Definition.RequiredTag.IsValid())
+		{
+			return HasSpecialTag(Card.Definition.RequiredTag);
+		}
+		return false;
+
+	default:
+		return false;
+	}
 }

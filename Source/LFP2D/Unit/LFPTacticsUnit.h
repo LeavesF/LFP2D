@@ -456,6 +456,9 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Unit Identity")
 	bool HasAnySpecialTags(const FGameplayTagContainer& InTags) const { return SpecialTags.HasAny(InTags); }
 
+	// 检查单位是否可以使用指定卡牌。根据卡牌类别和单位的AttackTag/种族进行匹配。
+	bool CanUseCard(const struct FLFPCardInstance& Card) const;
+
 	// 血条组件
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	class UWidgetComponent* HealthBarComponent;

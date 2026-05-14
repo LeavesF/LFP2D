@@ -14,8 +14,19 @@ enum class ELFPCardPile : uint8
 {
 	DrawPile     UMETA(DisplayName = "DrawPile"),
 	Hand         UMETA(DisplayName = "Hand"),
+	Pending      UMETA(DisplayName = "Pending"),
 	DiscardPile  UMETA(DisplayName = "DiscardPile"),
 	ExhaustPile  UMETA(DisplayName = "ExhaustPile")
+};
+
+/* 卡牌使用类别：决定该卡能被哪些单位打出。 */
+UENUM(BlueprintType)
+enum class ELFPCardCategory : uint8
+{
+	GeneralAttack  UMETA(DisplayName = "通用型普攻"),
+	RaceSpecific   UMETA(DisplayName = "种族专属型"),
+	FullyGeneric   UMETA(DisplayName = "完全通用型"),
+	NoTarget       UMETA(DisplayName = "无目标型")
 };
 
 /* 卡牌静态定义：当前先用技能类承载卡牌效果，后续可以替换为独立 Card DataAsset。 */
@@ -42,6 +53,14 @@ struct FLFPCardDefinition
 	/* 默认出牌成功后进入弃牌堆；特殊消耗牌后续可改成销毁牌堆。 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card")
 	ELFPCardPile DestinationAfterPlay = ELFPCardPile::DiscardPile;
+
+	/* 卡牌使用类别：决定该卡能被哪些单位打出。 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card")
+	ELFPCardCategory CardCategory = ELFPCardCategory::FullyGeneric;
+
+	/* 使用匹配Tag。通用型时为攻击Tag（如 Unit.Attack.Melee），种族专属型时为种族Tag。 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card")
+	FGameplayTag RequiredTag;
 
 	bool IsValid() const { return SkillClass != nullptr; }
 };
