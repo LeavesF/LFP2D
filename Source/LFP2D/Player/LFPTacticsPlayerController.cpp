@@ -1347,39 +1347,43 @@ void ALFPTacticsPlayerController::OnHandCardClicked(const FLFPCardInstance& Card
 	HandSkillToCardInstanceID.Add(CardInstance.RuntimeSkill, CardInstance.InstanceID);
 }
 
-void ALFPTacticsPlayerController::PreviewCardSkillRange(const FLFPCardInstance& CardInstance)
+void ALFPTacticsPlayerController::PreviewCardUsableUnits(const FLFPCardInstance& CardInstance)
 {
-	if (!CardInstance.RuntimeSkill || !GridManager)
+	ClearCardUsableUnitPreview();
+
+	if (!CardInstance.IsValid() || !GridManager)
 	{
 		return;
 	}
 
-	ALFPTacticsUnit* CardUnit = (CardInstance.SourceUnit != nullptr)
-		? CardInstance.SourceUnit.Get()
-		: SelectedUnit;
-
-	if (!CardUnit)
+	if (CardInstance.Definition.CardCategory == ELFPCardCategory::NoTarget)
 	{
 		return;
 	}
 
-	CardInstance.RuntimeSkill->Owner = CardUnit;
-	CardInstance.RuntimeSkill->UpdateSkillRange();
+	TArray<ALFPHexTile*> CardUsableTiles;
+	for (TObjectPtr<ALFPTacticsUnit>& UnitPtr : DeployedUnits)
+	{
+		ALFPTacticsUnit* Unit = UnitPtr.Get();
+		if (!Unit || !Unit->IsAlive() || !Unit->CanUseCard(CardInstance))
+		{
+			continue;
+		}
 
-	TArray<FLFPHexCoordinates> ReleaseCoords = CardInstance.RuntimeSkill->GetReleaseRangeInGrid();
-	GridManager->ShowRangeHighlightByCoords(ReleaseCoords, EUnitRange::UR_SkillRelease);
+		if (ALFPHexTile* UnitTile = Unit->GetCurrentTile())
+		{
+			CardUsableTiles.AddUnique(UnitTile);
+		}
+	}
+
+	GridManager->ShowRangeHighlight(CardUsableTiles, EUnitRange::UR_CardPlayable);
 }
 
-void ALFPTacticsPlayerController::ClearCardSkillPreview()
+void ALFPTacticsPlayerController::ClearCardUsableUnitPreview()
 {
-	if (bIsReleaseSkill)
-	{
-		return;
-	}
-
 	if (GridManager)
 	{
-		GridManager->ClearRangeHighlight(EUnitRange::UR_SkillRelease);
+		GridManager->ClearRangeHighlight(EUnitRange::UR_CardPlayable);
 	}
 }
 

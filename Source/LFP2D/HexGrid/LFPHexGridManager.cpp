@@ -29,6 +29,7 @@ const TArray<EUnitRange>& GetRangeHighlightPriorityOrder()
 	static const TArray<EUnitRange> PriorityOrder = {
 		EUnitRange::UR_Move,
 		EUnitRange::UR_Enemy_Move,
+		EUnitRange::UR_CardPlayable,
 		EUnitRange::UR_SkillRelease,
 		EUnitRange::UR_Enemy_SkillRelease,
 		EUnitRange::UR_SkillEffect,
@@ -1310,6 +1311,7 @@ FLinearColor ALFPHexGridManager::GetEdgeColorForRange(EUnitRange HexRangeType) c
 	switch (HexRangeType)
 	{
 	case EUnitRange::UR_Move:        return MoveEdgeColor;
+	case EUnitRange::UR_CardPlayable: return CardPlayableEdgeColor;
 	case EUnitRange::UR_SkillRelease: return SkillReleaseEdgeColor;
 	case EUnitRange::UR_SkillEffect: return SkillEffectEdgeColor;
 	case EUnitRange::UR_Enemy_Move:        return EnemyMoveEdgeColor;
@@ -1324,6 +1326,7 @@ FLinearColor ALFPHexGridManager::GetOverlayColorForRange(EUnitRange HexRangeType
 	switch (HexRangeType)
 	{
 	case EUnitRange::UR_Move:        return MoveOverlayColor;
+	case EUnitRange::UR_CardPlayable: return CardPlayableOverlayColor;
 	case EUnitRange::UR_SkillRelease: return SkillReleaseOverlayColor;
 	case EUnitRange::UR_SkillEffect: return SkillEffectOverlayColor;
 	case EUnitRange::UR_Enemy_Move:        return EnemyMoveOverlayColor;

@@ -146,6 +146,10 @@ void ALFPHexTile::ShowEdge(int32 DirIndex, FLinearColor Color, EUnitRange HexRan
 			SortPriority = MoveEdgeTranslucencySortPriority;
 			break;
 
+		case EUnitRange::UR_CardPlayable:
+			SortPriority = SkillReleaseEdgeTranslucencySortPriority;
+			break;
+
 		case EUnitRange::UR_SkillRelease:
 			SortPriority = SkillReleaseEdgeTranslucencySortPriority;
 			break;

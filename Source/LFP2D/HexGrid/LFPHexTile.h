@@ -166,7 +166,8 @@ enum class EUnitRange : uint8
 	UR_SkillEffect    UMETA(DisplayName = "SkillEffect"),
 	UR_Enemy_Move     UMETA(DisplayName = "Enemy_Move"),
 	UR_Enemy_SkillRelease    UMETA(DisplayName = "Enemy_SkillRelease"),
-	UR_Enemy_SkillEffect    UMETA(DisplayName = "Enemy_SkillEffect")
+	UR_Enemy_SkillEffect    UMETA(DisplayName = "Enemy_SkillEffect"),
+	UR_CardPlayable     UMETA(DisplayName = "CardPlayable")
 };
 
 // 玩家操作状态

@@ -34,6 +34,11 @@ void ULFPCardHandWidget::RefreshHandDisplay()
 	CardContainer->ClearChildren();
 	HandCardWidgets.Empty();
 
+	if (TacticsPC)
+	{
+		TacticsPC->ClearCardUsableUnitPreview();
+	}
+
 	if (!CardComponent || !TacticsPC)
 	{
 		return;
@@ -121,7 +126,7 @@ void ULFPCardHandWidget::OnCardHoveredInHand(const FLFPCardInstance& CardInstanc
 {
 	if (TacticsPC && CardInstance.RuntimeSkill)
 	{
-		TacticsPC->PreviewCardSkillRange(CardInstance);
+		TacticsPC->PreviewCardUsableUnits(CardInstance);
 	}
 }
 
@@ -129,7 +134,7 @@ void ULFPCardHandWidget::OnCardUnhoveredInHand()
 {
 	if (TacticsPC)
 	{
-		TacticsPC->ClearCardSkillPreview();
+		TacticsPC->ClearCardUsableUnitPreview();
 	}
 }
 
@@ -140,7 +145,7 @@ void ULFPCardHandWidget::OnCardDragStartedInHand(const FLFPCardInstance& CardIns
 		return;
 	}
 
-	TacticsPC->ClearCardSkillPreview();
+	TacticsPC->ClearCardUsableUnitPreview();
 	TacticsPC->BeginCardDrag(CardInstance);
 }
 

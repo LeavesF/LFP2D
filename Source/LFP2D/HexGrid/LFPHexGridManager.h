@@ -295,6 +295,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Highlight|Move")
 	FLinearColor MoveOverlayColor = FLinearColor(0.2f, 0.5f, 1.0f, 0.25f);
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Highlight|Card")
+	FLinearColor CardPlayableEdgeColor = FLinearColor(0.1f, 1.0f, 0.35f, 0.85f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Highlight|Card")
+	FLinearColor CardPlayableOverlayColor = FLinearColor(0.1f, 1.0f, 0.35f, 0.25f);
+
 	// 技能释放范围 - 边缘颜色
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Highlight|Skill")
 	FLinearColor SkillReleaseEdgeColor = FLinearColor(0.2f, 1.0f, 0.4f, 0.8f);

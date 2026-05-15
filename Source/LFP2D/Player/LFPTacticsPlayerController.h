@@ -245,8 +245,8 @@ public:
 
 	// 手牌操作：点击出牌 / 悬停预览 / 取消预览
 	void OnHandCardClicked(const FLFPCardInstance& CardInstance);
-	void PreviewCardSkillRange(const FLFPCardInstance& CardInstance);
-	void ClearCardSkillPreview();
+	void PreviewCardUsableUnits(const FLFPCardInstance& CardInstance);
+	void ClearCardUsableUnitPreview();
 	bool ProcessCardDropOnUnit(const FLFPCardInstance& CardInstance, ALFPTacticsUnit* Unit);
 	void BeginCardDrag(const FLFPCardInstance& CardInstance);
 	void EndCardDrag();
