@@ -13,6 +13,7 @@ class ULFPUnitRegistryDataAsset;
 class ULFPRelicDataAsset;
 class ULFPShopDataAsset;
 class ULFPHireMarketDataAsset;
+class ULFPCardDataAsset;
 class ULFPSkillBase;
 
 // 资源（金币/食物）变动委托
@@ -183,6 +184,9 @@ struct FLFPSaveData
 	// 存档中的玩家基础牌库技能类。
 	UPROPERTY(BlueprintReadWrite, Category = "Save")
 	TArray<TSubclassOf<ULFPSkillBase>> PlayerDeckCardSkillClasses;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Save")
+	TArray<TSoftObjectPtr<ULFPCardDataAsset>> PlayerDeckCards;
 
 	// 雇佣市场已购买（扁平化存储，Key=Value 对）
 	UPROPERTY(BlueprintReadWrite, Category = "Save")
@@ -441,6 +445,9 @@ public:
 	// 玩家基础牌库。战斗牌库 = 这里的卡 + 出战单位携带卡 + 每个出战单位的普通攻击卡。
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cards")
 	TArray<TSubclassOf<ULFPSkillBase>> PlayerDeckCardSkillClasses;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cards")
+	TArray<TSoftObjectPtr<ULFPCardDataAsset>> PlayerDeckCards;
 
 	// 出战队伍上限
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Party")

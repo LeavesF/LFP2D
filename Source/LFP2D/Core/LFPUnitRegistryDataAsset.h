@@ -7,6 +7,7 @@
 #include "LFPUnitRegistryDataAsset.generated.h"
 
 class ALFPTacticsUnit;
+class ULFPCardDataAsset;
 class ULFPSkillBase;
 
 /* 单位注册表条目：映射 TypeID 到单位蓝图、属性和默认携带卡。 */
@@ -54,6 +55,9 @@ struct FLFPUnitRegistryEntry
 	/* 单位类型默认携带进战斗牌库的卡牌技能类；每个出战实例仍会额外获得普通攻击卡。 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit Registry|Cards")
 	TArray<TSubclassOf<ULFPSkillBase>> DefaultCarriedCardSkillClasses;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit Registry|Cards")
+	TArray<TSoftObjectPtr<ULFPCardDataAsset>> DefaultCarriedCards;
 };
 
 /* 单位注册表：全局唯一，映射 TypeID 到单位蓝图类和元数据。 */

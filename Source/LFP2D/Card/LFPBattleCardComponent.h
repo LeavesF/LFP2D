@@ -6,6 +6,7 @@
 #include "LFPBattleCardComponent.generated.h"
 
 class ALFPTacticsUnit;
+class ULFPCardDataAsset;
 class ULFPGameInstance;
 class ULFPSkillBase;
 
@@ -78,12 +79,21 @@ protected:
 
 	// 三种通用普攻的兜底技能类，在蓝图中按攻击Tag分别配置。
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card|AttackDefaults")
+	TSoftObjectPtr<ULFPCardDataAsset> FallbackMeleeAttackCard;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card|AttackDefaults")
+	TSoftObjectPtr<ULFPCardDataAsset> FallbackRangedAttackCard;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card|AttackDefaults")
+	TSoftObjectPtr<ULFPCardDataAsset> FallbackMagicAttackCard;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card|AttackDefaults|Legacy")
 	TSubclassOf<ULFPSkillBase> FallbackMeleeAttackClass;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card|AttackDefaults")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card|AttackDefaults|Legacy")
 	TSubclassOf<ULFPSkillBase> FallbackRangedAttackClass;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card|AttackDefaults")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card|AttackDefaults|Legacy")
 	TSubclassOf<ULFPSkillBase> FallbackMagicAttackClass;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Card")
@@ -102,13 +112,21 @@ protected:
 	TArray<FLFPCardInstance> PendingPile;
 
 private:
-	void AddCardToDrawPile(TSubclassOf<ULFPSkillBase> SkillClass, ALFPTacticsUnit* SourceUnit,
+	bool AddCardToDrawPile(const FLFPCardDefinition& Definition, ALFPTacticsUnit* SourceUnit,
+		FGameplayTag RequiredTagOverride = FGameplayTag());
+	bool AddCardDataToDrawPile(const TSoftObjectPtr<ULFPCardDataAsset>& CardData, ALFPTacticsUnit* SourceUnit,
+		FGameplayTag RequiredTagOverride = FGameplayTag());
+	bool AddCardToDrawPile(TSubclassOf<ULFPSkillBase> SkillClass, ALFPTacticsUnit* SourceUnit,
 		ELFPCardCategory Category = ELFPCardCategory::FullyGeneric, FGameplayTag RequiredTag = FGameplayTag());
 	void AddPlayerDeckCards(ULFPGameInstance* GameInstance);
 	void AddUnitCards(ULFPGameInstance* GameInstance, const TArray<ALFPTacticsUnit*>& DeployedUnits);
+	void AddConfiguredUnitCards(ALFPTacticsUnit* Unit, const TArray<TSoftObjectPtr<ULFPCardDataAsset>>& Cards);
 	void AddConfiguredUnitCards(ALFPTacticsUnit* Unit, const TArray<TSubclassOf<ULFPSkillBase>>& CardSkillClasses,
 		ELFPCardCategory Category);
 	void AddSharedAttackCards(const TArray<ALFPTacticsUnit*>& DeployedUnits);
+	FGameplayTag ResolveRequiredTag(const FLFPCardDefinition& Definition, ALFPTacticsUnit* SourceUnit,
+		FGameplayTag RequiredTagOverride) const;
+	FGameplayTag FindFirstUnitTagWithPrefix(ALFPTacticsUnit* Unit, const FString& Prefix) const;
 	void PrepareCardForUnit(FLFPCardInstance& Card, ALFPTacticsUnit* Unit);
 	void ShuffleDrawPile();
 	void ShuffleDiscardIntoDrawPile();

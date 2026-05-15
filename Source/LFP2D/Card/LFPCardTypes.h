@@ -48,6 +48,9 @@ struct FLFPCardDefinition
 	TObjectPtr<UTexture2D> Icon = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card")
+	int32 ActionPointCost = INDEX_NONE;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card")
 	TSubclassOf<ULFPSkillBase> SkillClass;
 
 	/* 默认出牌成功后进入弃牌堆；特殊消耗牌后续可改成销毁牌堆。 */

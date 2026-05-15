@@ -7,7 +7,6 @@
 
 class UImage;
 class UTextBlock;
-class ULFPSkillBase;
 
 UCLASS()
 class LFP2D_API ULFPPendingCardWidget : public UUserWidget

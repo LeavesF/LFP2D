@@ -1309,6 +1309,7 @@ bool ALFPTacticsPlayerController::ExecuteDroppedCardImmediately(const FLFPCardIn
 		return false;
 	}
 
+	Unit->ConsumeActionPoints(CardInstance.Definition.ActionPointCost);
 	const bool bMoved = BattleCardComponent->FinishPlayingCard(CardInstance.InstanceID);
 	HandSkillToCardInstanceID.Remove(CardInstance.RuntimeSkill);
 

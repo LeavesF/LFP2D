@@ -1,6 +1,5 @@
 #include "LFP2D/UI/Fighting/LFPPendingCardWidget.h"
 
-#include "LFP2D/Skill/LFPSkillBase.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 
@@ -15,14 +14,14 @@ void ULFPPendingCardWidget::ShowPendingCard(const FLFPCardInstance& InCard)
 	PendingCard = InCard;
 	bHasPendingCard = InCard.IsValid();
 
-	if (CardIcon && InCard.RuntimeSkill)
+	if (CardIcon)
 	{
-		CardIcon->SetBrushFromTexture(InCard.RuntimeSkill->SkillIcon);
+		CardIcon->SetBrushFromTexture(InCard.Definition.Icon);
 	}
 
-	if (CardNameText && InCard.RuntimeSkill)
+	if (CardNameText)
 	{
-		CardNameText->SetText(InCard.RuntimeSkill->SkillName);
+		CardNameText->SetText(InCard.Definition.DisplayName);
 	}
 
 	if (HintText)

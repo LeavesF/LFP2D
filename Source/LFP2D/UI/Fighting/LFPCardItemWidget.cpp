@@ -4,7 +4,6 @@
 #include "LFP2D/Card/LFPCardDragDropOperation.h"
 #include "LFP2D/Card/LFPCardTypes.h"
 #include "LFP2D/Player/LFPTacticsPlayerController.h"
-#include "LFP2D/Skill/LFPSkillBase.h"
 #include "LFP2D/Unit/LFPTacticsUnit.h"
 #include "Components/Border.h"
 #include "Components/Button.h"
@@ -41,25 +40,24 @@ void ULFPCardItemWidget::InitializeCardItem(const FLFPCardInstance& InCardInstan
 		CardButton->SetVisibility(ESlateVisibility::HitTestInvisible);
 	}
 
-	const ULFPSkillBase* Skill = CardInstance.RuntimeSkill;
-	if (!Skill)
+	if (!CardInstance.IsValid())
 	{
 		return;
 	}
 
 	if (CardIcon)
 	{
-		CardIcon->SetBrushFromTexture(Skill->SkillIcon);
+		CardIcon->SetBrushFromTexture(CardInstance.Definition.Icon);
 	}
 
 	if (CardNameText)
 	{
-		CardNameText->SetText(Skill->SkillName);
+		CardNameText->SetText(CardInstance.Definition.DisplayName);
 	}
 
 	if (CostText)
 	{
-		CostText->SetText(FText::AsNumber(Skill->ActionPointCost));
+		CostText->SetText(FText::AsNumber(CardInstance.Definition.ActionPointCost));
 	}
 
 	if (SourceUnitText)

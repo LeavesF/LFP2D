@@ -1,5 +1,6 @@
 #include "LFP2D/Card/LFPBattleCardComponent.h"
 
+#include "LFP2D/Card/LFPCardDataAsset.h"
 #include "LFP2D/Core/LFPGameInstance.h"
 #include "LFP2D/Core/LFPUnitRegistryDataAsset.h"
 #include "LFP2D/Skill/LFPSkillBase.h"
@@ -148,44 +149,104 @@ bool ULFPBattleCardComponent::MoveHandCardToPile(int32 CardInstanceID, ELFPCardP
 	return true;
 }
 
-void ULFPBattleCardComponent::AddCardToDrawPile(TSubclassOf<ULFPSkillBase> SkillClass, ALFPTacticsUnit* SourceUnit,
-	ELFPCardCategory Category, FGameplayTag RequiredTag)
+bool ULFPBattleCardComponent::AddCardToDrawPile(const FLFPCardDefinition& Definition, ALFPTacticsUnit* SourceUnit,
+	FGameplayTag RequiredTagOverride)
 {
-	if (!SkillClass)
+	if (!Definition.SkillClass)
 	{
-		return;
+		return false;
 	}
 
-	ULFPSkillBase* RuntimeSkill = NewObject<ULFPSkillBase>(this, SkillClass);
+	ULFPSkillBase* RuntimeSkill = NewObject<ULFPSkillBase>(this, Definition.SkillClass);
 	if (!RuntimeSkill)
 	{
-		return;
+		return false;
 	}
 
-	const FString SkillClassName = SkillClass->GetName();
 	RuntimeSkill->InitSkill(SourceUnit);
+	const FString SkillClassName = Definition.SkillClass->GetName();
 
 	FLFPCardInstance Card;
 	Card.InstanceID = NextCardInstanceID++;
 	Card.SourceUnit = SourceUnit;
 	Card.RuntimeSkill = RuntimeSkill;
 	Card.CurrentPile = ELFPCardPile::DrawPile;
-	Card.Definition.CardID = FName(*FString::Printf(TEXT("%s_%d"), *SkillClassName, Card.InstanceID));
-	Card.Definition.DisplayName = RuntimeSkill->SkillName;
-	Card.Definition.Description = RuntimeSkill->SkillDescription;
-	Card.Definition.Icon = RuntimeSkill->SkillIcon;
-	Card.Definition.SkillClass = SkillClass;
-	Card.Definition.DestinationAfterPlay = ELFPCardPile::DiscardPile;
-	Card.Definition.CardCategory = Category;
-	Card.Definition.RequiredTag = RequiredTag;
+	Card.Definition = Definition;
+	if (Card.Definition.CardID.IsNone())
+	{
+		Card.Definition.CardID = FName(*FString::Printf(TEXT("%s_%d"), *SkillClassName, Card.InstanceID));
+	}
+	if (Card.Definition.DisplayName.IsEmpty())
+	{
+		Card.Definition.DisplayName = RuntimeSkill->SkillName;
+	}
+	if (Card.Definition.Description.IsEmpty())
+	{
+		Card.Definition.Description = RuntimeSkill->SkillDescription;
+	}
+	if (!Card.Definition.Icon)
+	{
+		Card.Definition.Icon = RuntimeSkill->SkillIcon;
+	}
+	if (Card.Definition.ActionPointCost < 0)
+	{
+		Card.Definition.ActionPointCost = RuntimeSkill->ActionPointCost;
+	}
+	else
+	{
+		Card.Definition.ActionPointCost = FMath::Max(0, Card.Definition.ActionPointCost);
+		RuntimeSkill->ActionPointCost = Card.Definition.ActionPointCost;
+	}
+	RuntimeSkill->SkillName = Card.Definition.DisplayName;
+	RuntimeSkill->SkillDescription = Card.Definition.Description;
+	RuntimeSkill->SkillIcon = Card.Definition.Icon;
+	Card.Definition.RequiredTag = ResolveRequiredTag(Card.Definition, SourceUnit, RequiredTagOverride);
 
 	DrawPile.Add(Card);
+	return true;
+}
+
+bool ULFPBattleCardComponent::AddCardDataToDrawPile(const TSoftObjectPtr<ULFPCardDataAsset>& CardData,
+	ALFPTacticsUnit* SourceUnit, FGameplayTag RequiredTagOverride)
+{
+	ULFPCardDataAsset* LoadedCardData = CardData.LoadSynchronous();
+	if (!LoadedCardData || !LoadedCardData->IsValidCardData())
+	{
+		return false;
+	}
+
+	return AddCardToDrawPile(LoadedCardData->BuildCardDefinition(), SourceUnit, RequiredTagOverride);
+}
+
+bool ULFPBattleCardComponent::AddCardToDrawPile(TSubclassOf<ULFPSkillBase> SkillClass, ALFPTacticsUnit* SourceUnit,
+	ELFPCardCategory Category, FGameplayTag RequiredTag)
+{
+	if (!SkillClass)
+	{
+		return false;
+	}
+
+	FLFPCardDefinition Definition;
+	Definition.SkillClass = SkillClass;
+	Definition.DestinationAfterPlay = ELFPCardPile::DiscardPile;
+	Definition.CardCategory = Category;
+	Definition.RequiredTag = RequiredTag;
+	return AddCardToDrawPile(Definition, SourceUnit);
 }
 
 void ULFPBattleCardComponent::AddPlayerDeckCards(ULFPGameInstance* GameInstance)
 {
 	if (!GameInstance)
 	{
+		return;
+	}
+
+	if (!GameInstance->PlayerDeckCards.IsEmpty())
+	{
+		for (const TSoftObjectPtr<ULFPCardDataAsset>& CardData : GameInstance->PlayerDeckCards)
+		{
+			AddCardDataToDrawPile(CardData, nullptr);
+		}
 		return;
 	}
 
@@ -212,14 +273,30 @@ void ULFPBattleCardComponent::AddUnitCards(ULFPGameInstance* GameInstance, const
 			FLFPUnitRegistryEntry Entry;
 			if (GameInstance->UnitRegistry->FindEntry(Unit->UnitTypeID, Entry))
 			{
-				AddConfiguredUnitCards(Unit, Entry.DefaultCarriedCardSkillClasses,
-					ELFPCardCategory::RaceSpecific);
+				if (!Entry.DefaultCarriedCards.IsEmpty())
+				{
+					AddConfiguredUnitCards(Unit, Entry.DefaultCarriedCards);
+				}
+				else
+				{
+					AddConfiguredUnitCards(Unit, Entry.DefaultCarriedCardSkillClasses,
+						ELFPCardCategory::RaceSpecific);
+				}
 			}
 		}
 	}
 
 	// 普攻卡按攻击Tag分组共享生成，不再按单位独立创建。
 	AddSharedAttackCards(DeployedUnits);
+}
+
+void ULFPBattleCardComponent::AddConfiguredUnitCards(ALFPTacticsUnit* Unit,
+	const TArray<TSoftObjectPtr<ULFPCardDataAsset>>& Cards)
+{
+	for (const TSoftObjectPtr<ULFPCardDataAsset>& CardData : Cards)
+	{
+		AddCardDataToDrawPile(CardData, Unit);
+	}
 }
 
 void ULFPBattleCardComponent::AddConfiguredUnitCards(ALFPTacticsUnit* Unit,
@@ -280,6 +357,11 @@ void ULFPBattleCardComponent::AddSharedAttackCards(const TArray<ALFPTacticsUnit*
 				continue;
 			}
 
+			if (!FallbackMeleeAttackCard.IsNull() && AddCardDataToDrawPile(FallbackMeleeAttackCard, nullptr))
+			{
+				continue;
+			}
+
 			TSubclassOf<ULFPSkillBase> AttackClass = FallbackMeleeAttackClass;
 			if (ULFPSkillBase* DefaultAttackSkill = Unit->GetDefaultAttackSkill())
 			{
@@ -297,32 +379,82 @@ void ULFPBattleCardComponent::AddSharedAttackCards(const TArray<ALFPTacticsUnit*
 		const FGameplayTag& AttackTag = Pair.Key;
 		const int32 Count = Pair.Value;
 		const FString TagName = AttackTag.GetTagName().ToString();
+		TSoftObjectPtr<ULFPCardDataAsset> AttackCard;
 
 		// 根据攻击Tag选择对应的兜底技能类。
 		TSubclassOf<ULFPSkillBase> AttackClass;
 		if (TagName.EndsWith(TEXT(".Melee")))
 		{
+			AttackCard = FallbackMeleeAttackCard;
 			AttackClass = FallbackMeleeAttackClass;
 		}
 		else if (TagName.EndsWith(TEXT(".Ranged")))
 		{
+			AttackCard = FallbackRangedAttackCard;
 			AttackClass = FallbackRangedAttackClass;
 		}
 		else if (TagName.EndsWith(TEXT(".Magic")))
 		{
+			AttackCard = FallbackMagicAttackCard;
 			AttackClass = FallbackMagicAttackClass;
 		}
 		else
 		{
+			AttackCard = FallbackMeleeAttackCard;
 			AttackClass = FallbackMeleeAttackClass;
 		}
 
 		for (int32 i = 0; i < Count; ++i)
 		{
+			if (!AttackCard.IsNull() && AddCardDataToDrawPile(AttackCard, nullptr, AttackTag))
+			{
+				continue;
+			}
+
 			AddCardToDrawPile(AttackClass, nullptr,
 				ELFPCardCategory::GeneralAttack, AttackTag);
 		}
 	}
+}
+
+FGameplayTag ULFPBattleCardComponent::ResolveRequiredTag(const FLFPCardDefinition& Definition,
+	ALFPTacticsUnit* SourceUnit, FGameplayTag RequiredTagOverride) const
+{
+	if (RequiredTagOverride.IsValid())
+	{
+		return RequiredTagOverride;
+	}
+
+	if (Definition.RequiredTag.IsValid())
+	{
+		return Definition.RequiredTag;
+	}
+
+	if (Definition.CardCategory == ELFPCardCategory::RaceSpecific)
+	{
+		return FindFirstUnitTagWithPrefix(SourceUnit, TEXT("Unit.Race."));
+	}
+
+	return FGameplayTag();
+}
+
+FGameplayTag ULFPBattleCardComponent::FindFirstUnitTagWithPrefix(ALFPTacticsUnit* Unit, const FString& Prefix) const
+{
+	if (!Unit)
+	{
+		return FGameplayTag();
+	}
+
+	const FGameplayTagContainer& Tags = Unit->GetSpecialTags();
+	for (const FGameplayTag& Tag : Tags)
+	{
+		if (Tag.GetTagName().ToString().StartsWith(Prefix))
+		{
+			return Tag;
+		}
+	}
+
+	return FGameplayTag();
 }
 
 void ULFPBattleCardComponent::PrepareCardForUnit(FLFPCardInstance& Card, ALFPTacticsUnit* Unit)
