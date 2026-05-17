@@ -9,6 +9,7 @@
 #include "Components/Button.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
+#include "Framework/Text/TextLayout.h"
 
 ULFPCardItemWidget::ULFPCardItemWidget(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -19,6 +20,10 @@ void ULFPCardItemWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
+	BaseRenderTranslation = GetRenderTransform().Translation;
+	bBaseRenderTranslationInitialized = true;
+	ResetPopupReasons();
+
 	if (HighlightBorder)
 	{
 		HighlightBorder->SetVisibility(ESlateVisibility::Collapsed);
@@ -28,6 +33,40 @@ void ULFPCardItemWidget::NativeConstruct()
 	{
 		CardButton->SetVisibility(ESlateVisibility::HitTestInvisible);
 	}
+
+	ApplyDescriptionTextSettings();
+}
+
+void ULFPCardItemWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	if (!bBaseRenderTranslationInitialized)
+	{
+		BaseRenderTranslation = GetRenderTransform().Translation;
+		bBaseRenderTranslationInitialized = true;
+	}
+
+	const FVector2D TargetTranslation = BaseRenderTranslation + (HasActivePopupReason() ? PopupOffset : FVector2D::ZeroVector);
+	const FVector2D CurrentTranslation = GetRenderTransform().Translation;
+
+	if (CurrentTranslation.Equals(TargetTranslation, 0.1f))
+	{
+		if (!CurrentTranslation.Equals(TargetTranslation))
+		{
+			SetRenderTranslation(TargetTranslation);
+		}
+		return;
+	}
+
+	if (PopupInterpSpeed <= 0.0f || InDeltaTime <= 0.0f)
+	{
+		SetRenderTranslation(TargetTranslation);
+		return;
+	}
+
+	const float Alpha = FMath::Clamp(InDeltaTime * PopupInterpSpeed, 0.0f, 1.0f);
+	SetRenderTranslation(CurrentTranslation + (TargetTranslation - CurrentTranslation) * Alpha);
 }
 
 void ULFPCardItemWidget::InitializeCardItem(const FLFPCardInstance& InCardInstance, ALFPTacticsPlayerController* InPC)
@@ -53,6 +92,12 @@ void ULFPCardItemWidget::InitializeCardItem(const FLFPCardInstance& InCardInstan
 	if (CardNameText)
 	{
 		CardNameText->SetText(CardInstance.Definition.DisplayName);
+	}
+
+	if (CardDescriptionText)
+	{
+		ApplyDescriptionTextSettings();
+		CardDescriptionText->SetText(CardInstance.Definition.Description);
 	}
 
 	if (CostText)
@@ -89,6 +134,45 @@ void ULFPCardItemWidget::InitializeCardItem(const FLFPCardInstance& InCardInstan
 			SourceUnitText->SetText(FText::FromString(CategoryLabel));
 			SourceUnitText->SetVisibility(ESlateVisibility::Visible);
 		}
+	}
+}
+
+void ULFPCardItemWidget::SetPopupReasonActive(ELFPCardPopupReason Reason, bool bActive)
+{
+	switch (Reason)
+	{
+	case ELFPCardPopupReason::Hover:
+		bHoverPopupActive = bActive;
+		break;
+	case ELFPCardPopupReason::UnitPlayable:
+		bUnitPlayablePopupActive = bActive;
+		break;
+	default:
+		break;
+	}
+}
+
+void ULFPCardItemWidget::ResetPopupReasons()
+{
+	bHoverPopupActive = false;
+	bUnitPlayablePopupActive = false;
+}
+
+void ULFPCardItemWidget::ApplyDescriptionTextSettings() const
+{
+	if (!CardDescriptionText)
+	{
+		return;
+	}
+
+	CardDescriptionText->SetAutoWrapText(bAutoWrapDescriptionText);
+	CardDescriptionText->SetWrappingPolicy(bAllowDescriptionPerCharacterWrapping
+		? ETextWrappingPolicy::AllowPerCharacterWrapping
+		: ETextWrappingPolicy::DefaultWrapping);
+
+	if (DescriptionWrapTextAt > 0.0f)
+	{
+		CardDescriptionText->SetWrapTextAt(DescriptionWrapTextAt);
 	}
 }
 
@@ -177,4 +261,9 @@ void ULFPCardItemWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
 {
 	Super::NativeOnMouseLeave(InMouseEvent);
 	OnCardUnhovered.Broadcast();
+}
+
+bool ULFPCardItemWidget::HasActivePopupReason() const
+{
+	return bHoverPopupActive || bUnitPlayablePopupActive;
 }

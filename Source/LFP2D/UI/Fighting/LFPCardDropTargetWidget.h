@@ -15,6 +15,10 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Drop Target", meta = (BindWidgetOptional))
 	TObjectPtr<UWidget> NoTargetDropZone = nullptr;
 
+public:
+	bool IsViewportPositionInsideNoTargetZone(FVector2D ViewportPosition) const;
+
+protected:
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	virtual bool NativeOnDragOver(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent,
 		UDragDropOperation* InOperation) override;
@@ -23,4 +27,5 @@ protected:
 
 private:
 	bool IsDropInsideNoTargetZone(const FDragDropEvent& InDragDropEvent) const;
+	bool IsSlatePositionInsideNoTargetZone(FVector2D SlatePosition) const;
 };

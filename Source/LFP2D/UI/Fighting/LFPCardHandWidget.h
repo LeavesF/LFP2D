@@ -12,6 +12,7 @@ class UButton;
 class ULFPCardItemWidget;
 class ULFPBattleCardComponent;
 class ALFPTacticsPlayerController;
+class ALFPTacticsUnit;
 
 UCLASS()
 class LFP2D_API ULFPCardHandWidget : public UUserWidget
@@ -32,6 +33,18 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Card Hand")
 	void Hide();
+
+	UFUNCTION(BlueprintCallable, Category = "Card Hand|Popup")
+	void PopPlayableCardsForUnit(ALFPTacticsUnit* Unit);
+
+	UFUNCTION(BlueprintCallable, Category = "Card Hand|Popup")
+	void ResetUnitPlayablePopups();
+
+	UFUNCTION(BlueprintCallable, Category = "Card Hand|Popup")
+	void ResetHoverPopups();
+
+	UFUNCTION(BlueprintCallable, Category = "Card Hand|Popup")
+	void ResetAllCardPopups();
 
 	UFUNCTION(BlueprintPure, Category = "Card Hand")
 	int32 GetHandCardCount() const { return HandCardWidgets.Num(); }
@@ -78,11 +91,17 @@ public:
 	TObjectPtr<UTextBlock> ExhaustPileCountText;
 
 private:
+	void ApplyUnitPlayablePopups();
+	void ResetDisplayedCardPopups();
+
 	UPROPERTY()
 	TObjectPtr<ULFPBattleCardComponent> CardComponent;
 
 	UPROPERTY()
 	TObjectPtr<ALFPTacticsPlayerController> TacticsPC;
+
+	UPROPERTY()
+	TObjectPtr<ALFPTacticsUnit> CurrentPlayableUnit;
 
 	UPROPERTY()
 	TArray<TObjectPtr<ULFPCardItemWidget>> HandCardWidgets;

@@ -44,12 +44,31 @@ bool ULFPCardDropTargetWidget::NativeOnDrop(const FGeometry& InGeometry, const F
 	const float ViewportScale = UWidgetLayoutLibrary::GetViewportScale(this);
 	const FVector2D DropViewportPos = LocalDropPos * ViewportScale;
 	const bool bDroppedInNoTargetZone = IsDropInsideNoTargetZone(InDragDropEvent);
-	TacticsPC->OnCardDroppedOnViewport(CardDragOp->DraggedCard, DropViewportPos, bDroppedInNoTargetZone);
-	TacticsPC->EndCardDrag();
+	const bool bShouldEndCardDrag = TacticsPC->OnCardDroppedOnViewport(
+		CardDragOp->DraggedCard, DropViewportPos, bDroppedInNoTargetZone);
+	if (bShouldEndCardDrag)
+	{
+		TacticsPC->EndCardDrag();
+	}
 	return true;
 }
 
 bool ULFPCardDropTargetWidget::IsDropInsideNoTargetZone(const FDragDropEvent& InDragDropEvent) const
+{
+	return IsSlatePositionInsideNoTargetZone(InDragDropEvent.GetScreenSpacePosition());
+}
+
+bool ULFPCardDropTargetWidget::IsViewportPositionInsideNoTargetZone(FVector2D ViewportPosition) const
+{
+	const float ViewportScale = UWidgetLayoutLibrary::GetViewportScale(this);
+	const FVector2D SlatePosition = ViewportScale > KINDA_SMALL_NUMBER
+		? ViewportPosition / ViewportScale
+		: ViewportPosition;
+
+	return IsSlatePositionInsideNoTargetZone(SlatePosition);
+}
+
+bool ULFPCardDropTargetWidget::IsSlatePositionInsideNoTargetZone(FVector2D SlatePosition) const
 {
 	if (!NoTargetDropZone)
 	{
@@ -63,7 +82,7 @@ bool ULFPCardDropTargetWidget::IsDropInsideNoTargetZone(const FDragDropEvent& In
 		return false;
 	}
 
-	const FVector2D ZoneLocalDropPos = ZoneGeometry.AbsoluteToLocal(InDragDropEvent.GetScreenSpacePosition());
+	const FVector2D ZoneLocalDropPos = ZoneGeometry.AbsoluteToLocal(SlatePosition);
 	return ZoneLocalDropPos.X >= 0.0f
 		&& ZoneLocalDropPos.Y >= 0.0f
 		&& ZoneLocalDropPos.X <= ZoneSize.X

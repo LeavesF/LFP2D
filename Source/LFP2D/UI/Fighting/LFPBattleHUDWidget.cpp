@@ -383,6 +383,7 @@ void ULFPBattleHUDWidget::HideCardHand()
 {
 	if (CardHandWidget)
 	{
+		CardHandWidget->ResetAllCardPopups();
 		CardHandWidget->SetVisibility(ESlateVisibility::Collapsed);
 	}
 }
@@ -392,6 +393,30 @@ void ULFPBattleHUDWidget::RefreshCardHand()
 	if (CardHandWidget && CardHandWidget->IsVisible())
 	{
 		CardHandWidget->RefreshHandDisplay();
+	}
+}
+
+void ULFPBattleHUDWidget::PopPlayableCardsForUnit(ALFPTacticsUnit* Unit)
+{
+	if (CardHandWidget)
+	{
+		CardHandWidget->PopPlayableCardsForUnit(Unit);
+	}
+}
+
+void ULFPBattleHUDWidget::ResetCardHandUnitPlayablePopups()
+{
+	if (CardHandWidget)
+	{
+		CardHandWidget->ResetUnitPlayablePopups();
+	}
+}
+
+void ULFPBattleHUDWidget::ResetCardHandPopups()
+{
+	if (CardHandWidget)
+	{
+		CardHandWidget->ResetAllCardPopups();
 	}
 }
 
@@ -417,4 +442,10 @@ void ULFPBattleHUDWidget::SetCardDropTargetActive(bool bActive)
 	{
 		CardDropTargetWidget->SetVisibility(bActive ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
 	}
+}
+
+bool ULFPBattleHUDWidget::IsCardNoTargetDropPosition(FVector2D ViewportPosition) const
+{
+	return CardDropTargetWidget &&
+		CardDropTargetWidget->IsViewportPositionInsideNoTargetZone(ViewportPosition);
 }

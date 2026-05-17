@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "LFP2D/Card/LFPCardTypes.h"
 #include "LFP2D/HexGrid/LFPHexTile.h"
 #include "LFP2D/Turn/LFPBattleTypes.h"
 #include "InputActionValue.h"
@@ -14,6 +15,7 @@ class ALFPHexGridManager;
 
 class UInputMappingContext;
 class UInputAction;
+class UUserWidget;
 
 class ULFPSkillBase;
 
@@ -26,6 +28,14 @@ class ULFPUnitRegistryDataAsset;
 class ULFPBattleCardComponent;
 
 struct FLFPCardInstance;
+
+enum class ELFPActiveCardDragPhase : uint8
+{
+	None,
+	SelectingUsableUnit,
+	SelectingSkillTarget
+};
+
 /**
  *
  */
@@ -128,6 +138,9 @@ protected:
 	// 玩家战斗牌堆组件：维护抽牌堆、手牌、弃牌堆和销毁牌堆。
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Cards")
 	TObjectPtr<ULFPBattleCardComponent> BattleCardComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cards|Drag")
+	FVector2D CardClickDragVisualOffset = FVector2D(-64.0f, -96.0f);
 
 	// 当前选中的单位
 	UPROPERTY()
@@ -244,14 +257,18 @@ public:
 	void HandleSkillTargetSelecting(ULFPSkillBase* Skill);
 
 	// 手牌操作：点击出牌 / 悬停预览 / 取消预览
-	void OnHandCardClicked(const FLFPCardInstance& CardInstance);
+	void OnHandCardClicked(const FLFPCardInstance& CardInstance, TSubclassOf<UUserWidget> DragVisualClass = nullptr);
 	void PreviewCardUsableUnits(const FLFPCardInstance& CardInstance);
 	void ClearCardUsableUnitPreview();
+	bool IsCardDragActive() const { return bHasActiveDraggedCard; }
 	bool ProcessCardDropOnUnit(const FLFPCardInstance& CardInstance, ALFPTacticsUnit* Unit);
-	void BeginCardDrag(const FLFPCardInstance& CardInstance);
+	void BeginCardDrag(const FLFPCardInstance& CardInstance, TSubclassOf<UUserWidget> DragVisualClass = nullptr,
+		bool bShowDragVisual = true);
 	void EndCardDrag();
+	void CancelActiveCardDrag();
 
 	// 拖拽释放到视口（由 DropTarget Widget 调用）。
+	// Returns true when the caller should end the controller card drag state.
 	bool OnCardDroppedOnViewport(const FLFPCardInstance& CardInstance, FVector2D DropScreenPos,
 		bool bDroppedInNoTargetZone);
 
@@ -382,11 +399,21 @@ protected:
 	void HandlePrimaryActionAtHit(const FHitResult& HitResult);
 	void HandlePrimaryTileClicked(ALFPHexTile* Tile);
 	bool IsCurrentSkillTargetTileValid(ALFPHexTile* Tile) const;
+	void UpdateCardHandPlayablePopupsForSelection();
+	void ShowActiveCardDragVisual(const FLFPCardInstance& CardInstance, TSubclassOf<UUserWidget> DragVisualClass);
+	void UpdateActiveCardDragVisual();
+	void ClearActiveCardDragVisual();
+	bool TryCompleteActiveCardDragAtViewportPosition(FVector2D ViewportPosition);
 	void BuildHandSkillListForUnit(ALFPTacticsUnit* Unit, TArray<ULFPSkillBase*>& OutSkills);
 	bool FinishCardForSkill(ULFPSkillBase* Skill);
 	bool CancelPendingCardPlay();
+	bool IsNoTargetCard(const FLFPCardInstance& CardInstance) const;
 	bool IsDirectEffectCard(const FLFPCardInstance& CardInstance) const;
+	bool IsTargetSelectingCard(const FLFPCardInstance& CardInstance) const;
+	bool ExecuteNoTargetCardImmediately(const FLFPCardInstance& CardInstance);
 	bool ExecuteDroppedCardImmediately(const FLFPCardInstance& CardInstance, ALFPTacticsUnit* Unit, ALFPHexTile* TargetTile);
+	bool BeginPendingCardTargetSelection(const FLFPCardInstance& CardInstance, ALFPTacticsUnit* Unit);
+	void ResolveActiveCardSkillTargetAtViewportPosition(const FLFPCardInstance& CardInstance, FVector2D ViewportPosition);
 
 	// 移动已部署单位到空格子
 	void MoveDeployedUnitToTile(int32 PartyIndex, ALFPHexTile* TargetTile);
@@ -427,6 +454,16 @@ protected:
 
 	// 当前 UI 中每个技能按钮对应的手牌实例 ID；技能释放成功后用它移动到弃牌堆。
 	TMap<ULFPSkillBase*, int32> HandSkillToCardInstanceID;
+
+	FLFPCardInstance ActiveDraggedCard;
+	bool bHasActiveDraggedCard = false;
+	ELFPActiveCardDragPhase ActiveCardDragPhase = ELFPActiveCardDragPhase::None;
+
+	UPROPERTY()
+	TObjectPtr<UUserWidget> ActiveCardDragVisual;
+
+	UPROPERTY()
+	TSubclassOf<UUserWidget> ActiveCardDragVisualClass;
 
 	// 当前选中高亮的格子（用于清除上一次高亮）
 	UPROPERTY()

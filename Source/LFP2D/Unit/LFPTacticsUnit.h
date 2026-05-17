@@ -100,25 +100,17 @@ public:
 	UPROPERTY(VisibleInstanceOnly, Category = "Unit State")
 	TArray<ALFPHexTile*> MovementRangeTiles;
 
-	// 回合开始时的原始位置（预览移动未提交前的起点）
+	// 最近一次正式提交的移动位置
 	UPROPERTY(VisibleInstanceOnly, Category = "Unit State")
-	FLFPHexCoordinates OriginalTurnCoordinates;
+	FLFPHexCoordinates LastCommittedCoordinates;
 
-	// 是否处于预览移动状态
-	UPROPERTY(VisibleInstanceOnly, Category = "Unit State")
-	bool bHasPreviewMoved = false;
-
-	// 移动到目标格子（预览移动，不消耗移动力）
+	// 移动到目标格子（动画完成后提交移动消耗）
 	UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
 	bool MoveToTile(ALFPHexTile* NewTargetTile);
 
-	// 提交移动位置（消耗从原始位置到当前位置的移动力）
+	// 提交移动位置（消耗从上次提交位置到当前位置的移动力）
 	UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
 	void CommitMovePosition();
-
-	// 回到回合开始时的原始位置（取消预览移动）
-	UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
-	void RevertToOriginalPosition();
 
 	// 设置选中状态
 	UFUNCTION(BlueprintCallable, Category = "Tactics Unit")

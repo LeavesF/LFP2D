@@ -19,6 +19,13 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FCardUnhoveredSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCardDragStartedSignature, const FLFPCardInstance&, CardInstance);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FCardDragEndedSignature);
 
+UENUM(BlueprintType)
+enum class ELFPCardPopupReason : uint8
+{
+	Hover,
+	UnitPlayable
+};
+
 UCLASS()
 class LFP2D_API ULFPCardItemWidget : public UUserWidget
 {
@@ -35,8 +42,15 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Card")
 	void SetHighlighted(bool bHighlighted);
 
+	UFUNCTION(BlueprintCallable, Category = "Card|Popup")
+	void SetPopupReasonActive(ELFPCardPopupReason Reason, bool bActive);
+
+	UFUNCTION(BlueprintCallable, Category = "Card|Popup")
+	void ResetPopupReasons();
+
 protected:
 	virtual void NativeConstruct() override;
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	virtual FReply NativeOnMouseButtonUp(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent,
@@ -73,6 +87,9 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> CardNameText;
 
+	UPROPERTY(meta = (BindWidgetOptional))
+	TObjectPtr<UTextBlock> CardDescriptionText;
+
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> CostText;
 
@@ -95,12 +112,34 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card")
 	float DragThreshold = 8.0f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card|Description")
+	bool bAutoWrapDescriptionText = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card|Description")
+	bool bAllowDescriptionPerCharacterWrapping = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card|Description", meta = (ClampMin = "0.0"))
+	float DescriptionWrapTextAt = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card|Popup")
+	FVector2D PopupOffset = FVector2D(0.0f, -48.0f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card|Popup", meta = (ClampMin = "0.0"))
+	float PopupInterpSpeed = 16.0f;
+
 private:
+	void ApplyDescriptionTextSettings() const;
+	bool HasActivePopupReason() const;
+
 	FLFPCardInstance CardInstance;
 
 	UPROPERTY()
 	TObjectPtr<ALFPTacticsPlayerController> TacticsPC;
 
+	FVector2D BaseRenderTranslation = FVector2D::ZeroVector;
 	FVector2D MouseDownPosition;
+	bool bHoverPopupActive = false;
+	bool bUnitPlayablePopupActive = false;
+	bool bBaseRenderTranslationInitialized = false;
 	bool bIsDragDetecting = false;
 };

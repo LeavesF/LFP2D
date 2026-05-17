@@ -456,11 +456,10 @@ void ALFPTacticsUnit::FinishMove()
 {
     bIsMoving = false;
 
-    // 预览移动：仅更新坐标和位置，不占用目标格子（提交时由 CommitMovePosition 占用）
+    // 移动完成后先更新坐标，目标格占用由 CommitMovePosition 统一处理
     if (TargetTile)
     {
         SetCurrentCoordinates(TargetTile->GetCoordinates(), false);
-        bHasPreviewMoved = true;
     }
 
     // 清除移动状态
@@ -480,29 +479,25 @@ void ALFPTacticsUnit::FinishMove()
 
 void ALFPTacticsUnit::CommitMovePosition()
 {
-    // 已提交过（如 ExecuteSkill 内部已提交，SkipTurn 再次调用时跳过）
-    if (!bHasPreviewMoved) return;
-
     ALFPHexGridManager* GM = GetGridManager();
     if (!GM) return;
 
-    ALFPHexTile* OrigTile = GM->GetTileAtCoordinates(OriginalTurnCoordinates);
+    ALFPHexTile* StartTile = GM->GetTileAtCoordinates(LastCommittedCoordinates);
     ALFPHexTile* CurrTile = GetCurrentTile();
-    if (!OrigTile || !CurrTile) return;
-    if (OriginalTurnCoordinates == CurrentCoordinates)
+    if (!StartTile || !CurrTile) return;
+    if (LastCommittedCoordinates == CurrentCoordinates)
     {
         CurrTile->SetIsOccupied(true);
         CurrTile->SetUnitOnTile(this);
-        bHasPreviewMoved = false;
         return;
     }
 
-    TArray<ALFPHexTile*> Path = GM->FindPath(OrigTile, CurrTile, nullptr, GetAffiliation());
+    TArray<ALFPHexTile*> Path = GM->FindPath(StartTile, CurrTile, nullptr, GetAffiliation());
 
     // 构建 ZoC 映射，逐格累计消耗（从 ZoC 格出发时消耗替换为 ZoC 代价）
     const TMap<FIntPoint, int32> ZocMap = GM->BuildZocCountMap(GetAffiliation());
     int32 TotalCost = 0;
-    ALFPHexTile* PrevTile = OrigTile;
+    ALFPHexTile* PrevTile = StartTile;
     for (ALFPHexTile* Tile : Path)
     {
         const FIntPoint PrevKey(PrevTile->GetCoordinates().Q, PrevTile->GetCoordinates().R);
@@ -523,22 +518,14 @@ void ALFPTacticsUnit::CommitMovePosition()
         Tile->SetIsOccupied(true);
         Tile->SetUnitOnTile(this);
     }
-    bHasPreviewMoved = false;
-}
-
-void ALFPTacticsUnit::RevertToOriginalPosition()
-{
-    if (!bHasPreviewMoved) return;
-    SetCurrentCoordinates(OriginalTurnCoordinates);
-    bHasPreviewMoved = false;
+    LastCommittedCoordinates = CurrentCoordinates;
 }
 
 void ALFPTacticsUnit::ResetForNewRound()
 {
     CurrentMovePoints = CurrentMaxMovePoints;
     bHasActed = false;
-    bHasPreviewMoved = false;
-    OriginalTurnCoordinates = CurrentCoordinates;
+    LastCommittedCoordinates = CurrentCoordinates;
 
     // 重置精灵视觉效果
     if (SpriteComponent)
@@ -554,9 +541,8 @@ void ALFPTacticsUnit::OnTurnStarted()
 {
     bOnTurn = true;
 
-    // 保存回合开始时的位置，用于预览移动的提交和撤销
-    OriginalTurnCoordinates = CurrentCoordinates;
-    bHasPreviewMoved = false;
+    // 记录当前提交位置，用于后续移动消耗结算
+    LastCommittedCoordinates = CurrentCoordinates;
 
     if (BuffComponent)
     {
@@ -1356,7 +1342,7 @@ bool ALFPTacticsUnit::CanUseCard(const FLFPCardInstance& Card) const
 		return true;
 
 	case ELFPCardCategory::NoTarget:
-		return true;
+		return false;
 
 	case ELFPCardCategory::GeneralAttack:
 		// 检查单位是否拥有匹配的 AttackTag（如 Unit.Attack.Melee）

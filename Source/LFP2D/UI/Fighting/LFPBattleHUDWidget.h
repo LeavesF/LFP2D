@@ -72,6 +72,9 @@ public:
 	void ShowCardHand();
 	void HideCardHand();
 	void RefreshCardHand();
+	void PopPlayableCardsForUnit(ALFPTacticsUnit* Unit);
+	void ResetCardHandUnitPlayablePopups();
+	void ResetCardHandPopups();
 	ULFPCardHandWidget* GetCardHandWidget() const { return CardHandWidget; }
 
 	// === PendingCard ===
@@ -79,6 +82,7 @@ public:
 	void HidePendingCard();
 	ULFPPendingCardWidget* GetPendingCardWidget() const { return PendingCardWidget; }
 	void SetCardDropTargetActive(bool bActive);
+	bool IsCardNoTargetDropPosition(FVector2D ViewportPosition) const;
 
 	// ==== 检查模式 ====
 	void EnterInspectionMode(ALFPTacticsUnit* InspectedUnit, ALFPTacticsPlayerController* PC);

@@ -3,6 +3,7 @@
 #include "LFP2D/Card/LFPBattleCardComponent.h"
 #include "LFP2D/Card/LFPCardTypes.h"
 #include "LFP2D/Player/LFPTacticsPlayerController.h"
+#include "LFP2D/Unit/LFPTacticsUnit.h"
 #include "LFP2D/UI/Fighting/LFPCardItemWidget.h"
 #include "Components/TextBlock.h"
 #include "Components/WrapBox.h"
@@ -34,7 +35,7 @@ void ULFPCardHandWidget::RefreshHandDisplay()
 	CardContainer->ClearChildren();
 	HandCardWidgets.Empty();
 
-	if (TacticsPC)
+	if (TacticsPC && !TacticsPC->IsCardDragActive())
 	{
 		TacticsPC->ClearCardUsableUnitPreview();
 	}
@@ -95,6 +96,8 @@ void ULFPCardHandWidget::RefreshHandDisplay()
 	{
 		ExhaustPileCountText->SetText(FText::AsNumber(CardComponent->GetExhaustPile().Num()));
 	}
+
+	ApplyUnitPlayablePopups();
 }
 
 void ULFPCardHandWidget::Show()
@@ -105,7 +108,55 @@ void ULFPCardHandWidget::Show()
 
 void ULFPCardHandWidget::Hide()
 {
+	ResetAllCardPopups();
 	SetVisibility(ESlateVisibility::Collapsed);
+}
+
+void ULFPCardHandWidget::PopPlayableCardsForUnit(ALFPTacticsUnit* Unit)
+{
+	CurrentPlayableUnit = Unit;
+	ApplyUnitPlayablePopups();
+}
+
+void ULFPCardHandWidget::ResetUnitPlayablePopups()
+{
+	CurrentPlayableUnit = nullptr;
+
+	for (ULFPCardItemWidget* CardWidget : HandCardWidgets)
+	{
+		if (CardWidget)
+		{
+			CardWidget->SetPopupReasonActive(ELFPCardPopupReason::UnitPlayable, false);
+		}
+	}
+}
+
+void ULFPCardHandWidget::ResetHoverPopups()
+{
+	for (ULFPCardItemWidget* CardWidget : HandCardWidgets)
+	{
+		if (CardWidget)
+		{
+			CardWidget->SetPopupReasonActive(ELFPCardPopupReason::Hover, false);
+		}
+	}
+}
+
+void ULFPCardHandWidget::ResetAllCardPopups()
+{
+	CurrentPlayableUnit = nullptr;
+	ResetDisplayedCardPopups();
+}
+
+void ULFPCardHandWidget::ResetDisplayedCardPopups()
+{
+	for (ULFPCardItemWidget* CardWidget : HandCardWidgets)
+	{
+		if (CardWidget)
+		{
+			CardWidget->ResetPopupReasons();
+		}
+	}
 }
 
 void ULFPCardHandWidget::OnCardClickedInHand(const FLFPCardInstance& CardInstance)
@@ -116,14 +167,47 @@ void ULFPCardHandWidget::OnCardClickedInHand(const FLFPCardInstance& CardInstanc
 	}
 
 	// 通知 PlayerController 处理手牌点击。
-	TacticsPC->OnHandCardClicked(CardInstance);
+	ResetDisplayedCardPopups();
+	TacticsPC->ClearCardUsableUnitPreview();
+	TSubclassOf<UUserWidget> DragVisualClass;
+	for (ULFPCardItemWidget* CardWidget : HandCardWidgets)
+	{
+		if (CardWidget && CardWidget->GetCardInstance().InstanceID == CardInstance.InstanceID)
+		{
+			DragVisualClass = CardWidget->DragVisualClass;
+			if (!DragVisualClass)
+			{
+				DragVisualClass = CardWidget->GetClass();
+			}
+			break;
+		}
+	}
+	TacticsPC->OnHandCardClicked(CardInstance, DragVisualClass);
 
 	// 点击后刷新手牌（当前选中单位对应的可用卡高亮会变化）。
-	RefreshHandDisplay();
 }
 
 void ULFPCardHandWidget::OnCardHoveredInHand(const FLFPCardInstance& CardInstance)
 {
+	if (TacticsPC && TacticsPC->IsCardDragActive())
+	{
+		return;
+	}
+
+	ResetHoverPopups();
+
+	for (ULFPCardItemWidget* CardWidget : HandCardWidgets)
+	{
+		if (!CardWidget)
+		{
+			continue;
+		}
+
+		const FLFPCardInstance& WidgetCard = CardWidget->GetCardInstance();
+		const bool bMatchesHoveredCard = WidgetCard.InstanceID == CardInstance.InstanceID;
+		CardWidget->SetPopupReasonActive(ELFPCardPopupReason::Hover, bMatchesHoveredCard);
+	}
+
 	if (TacticsPC && CardInstance.RuntimeSkill)
 	{
 		TacticsPC->PreviewCardUsableUnits(CardInstance);
@@ -132,7 +216,14 @@ void ULFPCardHandWidget::OnCardHoveredInHand(const FLFPCardInstance& CardInstanc
 
 void ULFPCardHandWidget::OnCardUnhoveredInHand()
 {
-	if (TacticsPC)
+	if (TacticsPC && TacticsPC->IsCardDragActive())
+	{
+		return;
+	}
+
+	ResetHoverPopups();
+
+	if (TacticsPC && !TacticsPC->IsCardDragActive())
 	{
 		TacticsPC->ClearCardUsableUnitPreview();
 	}
@@ -146,15 +237,47 @@ void ULFPCardHandWidget::OnCardDragStartedInHand(const FLFPCardInstance& CardIns
 	}
 
 	TacticsPC->ClearCardUsableUnitPreview();
-	TacticsPC->BeginCardDrag(CardInstance);
+	ResetDisplayedCardPopups();
+
+	TSubclassOf<UUserWidget> DragVisualClass;
+	for (ULFPCardItemWidget* CardWidget : HandCardWidgets)
+	{
+		if (CardWidget && CardWidget->GetCardInstance().InstanceID == CardInstance.InstanceID)
+		{
+			DragVisualClass = CardWidget->DragVisualClass;
+			if (!DragVisualClass)
+			{
+				DragVisualClass = CardWidget->GetClass();
+			}
+			break;
+		}
+	}
+
+	TacticsPC->BeginCardDrag(CardInstance, DragVisualClass, false);
 }
 
 void ULFPCardHandWidget::OnCardDragEndedInHand()
 {
 	if (TacticsPC)
 	{
-		TacticsPC->EndCardDrag();
+		TacticsPC->CancelActiveCardDrag();
 	}
 
 	RefreshHandDisplay();
+}
+
+void ULFPCardHandWidget::ApplyUnitPlayablePopups()
+{
+	for (ULFPCardItemWidget* CardWidget : HandCardWidgets)
+	{
+		if (!CardWidget)
+		{
+			continue;
+		}
+
+		const bool bCanUseCard = TacticsPC && !TacticsPC->IsCardDragActive() &&
+			CurrentPlayableUnit != nullptr &&
+			CurrentPlayableUnit->CanUseCard(CardWidget->GetCardInstance());
+		CardWidget->SetPopupReasonActive(ELFPCardPopupReason::UnitPlayable, bCanUseCard);
+	}
 }
