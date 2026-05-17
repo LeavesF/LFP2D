@@ -60,15 +60,9 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Card")
 	TArray<FLFPCardInstance> GetExhaustPile() const { return ExhaustPile; }
 
-	UFUNCTION(BlueprintPure, Category = "Card")
-	TArray<FLFPCardInstance> GetPendingPile() const { return PendingPile; }
-
 	// 将卡牌从当前所在牌堆移动到目标牌堆（不限于手牌）。
 	UFUNCTION(BlueprintCallable, Category = "Card")
 	bool MoveCardToPile(int32 CardInstanceID, ELFPCardPile TargetPile);
-
-	UFUNCTION(BlueprintCallable, Category = "Card")
-	bool ReturnPendingCardToHand(int32 CardInstanceID);
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card")
@@ -107,9 +101,6 @@ protected:
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Card")
 	TArray<FLFPCardInstance> ExhaustPile;
-
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Card")
-	TArray<FLFPCardInstance> PendingPile;
 
 private:
 	bool AddCardToDrawPile(const FLFPCardDefinition& Definition, ALFPTacticsUnit* SourceUnit,

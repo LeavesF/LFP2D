@@ -105,17 +105,6 @@ bool ULFPBattleCardComponent::FinishPlayingCard(int32 CardInstanceID)
 	}
 
 	// 从待执行区查找。
-	const int32 PendingIndex = PendingPile.IndexOfByPredicate([CardInstanceID](const FLFPCardInstance& Card)
-	{
-		return Card.InstanceID == CardInstanceID;
-	});
-
-	if (PendingIndex != INDEX_NONE)
-	{
-		const ELFPCardPile Destination = PendingPile[PendingIndex].Definition.DestinationAfterPlay;
-		return MoveCardToPile(CardInstanceID, Destination);
-	}
-
 	return false;
 }
 
@@ -509,8 +498,6 @@ TArray<FLFPCardInstance>* ULFPBattleCardComponent::GetPileMutable(ELFPCardPile P
 		return &DrawPile;
 	case ELFPCardPile::Hand:
 		return &Hand;
-	case ELFPCardPile::Pending:
-		return &PendingPile;
 	case ELFPCardPile::DiscardPile:
 		return &DiscardPile;
 	case ELFPCardPile::ExhaustPile:
@@ -529,7 +516,7 @@ bool ULFPBattleCardComponent::MoveCardToPile(int32 CardInstanceID, ELFPCardPile 
 
 	// 在所有牌堆中查找该卡牌。
 	static const TArray<ELFPCardPile> AllPiles = {
-		ELFPCardPile::DrawPile, ELFPCardPile::Hand, ELFPCardPile::Pending,
+		ELFPCardPile::DrawPile, ELFPCardPile::Hand,
 		ELFPCardPile::DiscardPile, ELFPCardPile::ExhaustPile
 	};
 
@@ -573,24 +560,5 @@ bool ULFPBattleCardComponent::MoveCardToPile(int32 CardInstanceID, ELFPCardPile 
 
 	FoundCard.CurrentPile = TargetPile;
 	TargetCards->Add(FoundCard);
-	return true;
-}
-
-bool ULFPBattleCardComponent::ReturnPendingCardToHand(int32 CardInstanceID)
-{
-	const int32 PendingIndex = PendingPile.IndexOfByPredicate([CardInstanceID](const FLFPCardInstance& Card)
-	{
-		return Card.InstanceID == CardInstanceID;
-	});
-
-	if (PendingIndex == INDEX_NONE)
-	{
-		return false;
-	}
-
-	FLFPCardInstance Card = PendingPile[PendingIndex];
-	PendingPile.RemoveAt(PendingIndex);
-	Card.CurrentPile = ELFPCardPile::Hand;
-	Hand.Add(Card);
 	return true;
 }

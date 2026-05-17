@@ -51,6 +51,7 @@ public:
 
 protected:
 	virtual void NativeConstruct() override;
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 	UFUNCTION()
 	void OnCardClickedInHand(const FLFPCardInstance& CardInstance);
@@ -93,6 +94,8 @@ public:
 private:
 	void ApplyUnitPlayablePopups();
 	void ResetDisplayedCardPopups();
+	void SetCardMainContentHiddenForDrag(int32 CardInstanceID, bool bHidden);
+	void RestoreHiddenDraggedCard();
 
 	UPROPERTY()
 	TObjectPtr<ULFPBattleCardComponent> CardComponent;
@@ -105,4 +108,6 @@ private:
 
 	UPROPERTY()
 	TArray<TObjectPtr<ULFPCardItemWidget>> HandCardWidgets;
+
+	int32 HiddenDraggedCardInstanceID = INDEX_NONE;
 };

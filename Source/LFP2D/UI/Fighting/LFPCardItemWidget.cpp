@@ -8,6 +8,7 @@
 #include "Components/Border.h"
 #include "Components/Button.h"
 #include "Components/Image.h"
+#include "Components/Overlay.h"
 #include "Components/TextBlock.h"
 #include "Framework/Text/TextLayout.h"
 
@@ -23,6 +24,12 @@ void ULFPCardItemWidget::NativeConstruct()
 	BaseRenderTranslation = GetRenderTransform().Translation;
 	bBaseRenderTranslationInitialized = true;
 	ResetPopupReasons();
+
+	if (CardRootOverlay && !bCardRootVisibilityInitialized)
+	{
+		CardRootVisibleVisibility = CardRootOverlay->GetVisibility();
+		bCardRootVisibilityInitialized = true;
+	}
 
 	if (HighlightBorder)
 	{
@@ -156,6 +163,22 @@ void ULFPCardItemWidget::ResetPopupReasons()
 {
 	bHoverPopupActive = false;
 	bUnitPlayablePopupActive = false;
+}
+
+void ULFPCardItemWidget::SetMainContentHiddenForDrag(bool bHidden)
+{
+	if (!CardRootOverlay)
+	{
+		return;
+	}
+
+	if (!bCardRootVisibilityInitialized)
+	{
+		CardRootVisibleVisibility = CardRootOverlay->GetVisibility();
+		bCardRootVisibilityInitialized = true;
+	}
+
+	CardRootOverlay->SetVisibility(bHidden ? ESlateVisibility::Hidden : CardRootVisibleVisibility);
 }
 
 void ULFPCardItemWidget::ApplyDescriptionTextSettings() const

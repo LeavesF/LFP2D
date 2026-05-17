@@ -12,11 +12,10 @@ class UTexture2D;
 UENUM(BlueprintType)
 enum class ELFPCardPile : uint8
 {
-	DrawPile     UMETA(DisplayName = "DrawPile"),
-	Hand         UMETA(DisplayName = "Hand"),
-	Pending      UMETA(DisplayName = "Pending"),
-	DiscardPile  UMETA(DisplayName = "DiscardPile"),
-	ExhaustPile  UMETA(DisplayName = "ExhaustPile")
+	DrawPile     = 0 UMETA(DisplayName = "DrawPile"),
+	Hand         = 1 UMETA(DisplayName = "Hand"),
+	DiscardPile  = 3 UMETA(DisplayName = "DiscardPile"),
+	ExhaustPile  = 4 UMETA(DisplayName = "ExhaustPile")
 };
 
 /* 卡牌使用类别：决定该卡能被哪些单位打出。 */

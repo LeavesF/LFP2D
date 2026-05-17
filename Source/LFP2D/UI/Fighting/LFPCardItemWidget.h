@@ -8,6 +8,7 @@
 class UBorder;
 class UButton;
 class UImage;
+class UOverlay;
 class UTextBlock;
 class ULFPSkillBase;
 class ALFPTacticsPlayerController;
@@ -48,6 +49,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Card|Popup")
 	void ResetPopupReasons();
 
+	UFUNCTION(BlueprintCallable, Category = "Card|Drag")
+	void SetMainContentHiddenForDrag(bool bHidden);
+
 protected:
 	virtual void NativeConstruct() override;
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
@@ -80,6 +84,9 @@ public:
 
 	UPROPERTY(meta = (BindWidgetOptional))
 	TObjectPtr<UButton> CardButton;
+
+	UPROPERTY(meta = (BindWidgetOptional))
+	TObjectPtr<UOverlay> CardRootOverlay;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> CardIcon;
@@ -142,4 +149,6 @@ private:
 	bool bUnitPlayablePopupActive = false;
 	bool bBaseRenderTranslationInitialized = false;
 	bool bIsDragDetecting = false;
+	ESlateVisibility CardRootVisibleVisibility = ESlateVisibility::Visible;
+	bool bCardRootVisibilityInitialized = false;
 };

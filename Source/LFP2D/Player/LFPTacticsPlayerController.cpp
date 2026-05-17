@@ -12,7 +12,6 @@
 #include "LFP2D/UI/Fighting/LFPCardItemWidget.h"
 #include "LFP2D/UI/Fighting/LFPCurrentUnitInfoWidget.h"
 #include "LFP2D/UI/Fighting/LFPCardHandWidget.h"
-#include "LFP2D/UI/Fighting/LFPPendingCardWidget.h"
 #include "LFP2D/UI/Fighting/LFPTurnSpeedListWidget.h"
 #include "LFP2D/UI/Fighting/LFPSkillSelectionWidget.h"
 #include "LFP2D/UI/Fighting/LFPDeploymentWidget.h"
@@ -420,7 +419,6 @@ bool ALFPTacticsPlayerController::IsPrimaryActionOverUI() const
 		IsVisibleAndHovered(BattleHUDWidget->GetBattleResultWidget()) ||
 		IsVisibleAndHovered(BattleHUDWidget->GetCurrentUnitInfoWidget()) ||
 		IsVisibleAndHovered(BattleHUDWidget->GetCardHandWidget()) ||
-		IsVisibleAndHovered(BattleHUDWidget->GetPendingCardWidget()) ||
 		IsVisibleAndHovered(BattleHUDWidget->GetTurnSpeedListWidget());
 }
 
@@ -654,7 +652,7 @@ void ALFPTacticsPlayerController::OnCancelAction(const FInputActionValue& Value)
 	// 技能释放状态：取消技能选择，回到移动预览状态
 	if (bIsReleaseSkill)
 	{
-		CancelPendingCardPlay();
+		CancelCardTargetSelection();
 		ShowUnitRange(EUnitRange::UR_Move);
 		return;
 	}
@@ -1134,7 +1132,6 @@ void ALFPTacticsPlayerController::ExecuteSkill(ULFPSkillBase* CurrentSkill)
 			FinishCardForSkill(CurrentSkill);
 			if (BattleHUDWidget)
 			{
-				BattleHUDWidget->HidePendingCard();
 				BattleHUDWidget->RefreshCardHand();
 			}
 			bIsReleaseSkill = false;
@@ -1143,7 +1140,6 @@ void ALFPTacticsPlayerController::ExecuteSkill(ULFPSkillBase* CurrentSkill)
 			SelectedTile = nullptr;
 			CurrentControlState = EPlayControlState::MoveState;
 			ShowUnitRange(EUnitRange::UR_Move);
-			SkipTurn(SelectedUnit);
 		}
 		else
 		{
@@ -1160,7 +1156,7 @@ void ALFPTacticsPlayerController::EndPlayerTurn()
 	// 清除当前选择/状态
 	if (bIsReleaseSkill)
 	{
-		CancelPendingCardPlay();
+		CancelCardTargetSelection();
 	}
 	if (BattleHUDWidget)
 	{
@@ -1354,17 +1350,11 @@ bool ALFPTacticsPlayerController::FinishCardForSkill(ULFPSkillBase* Skill)
 	return bMoved;
 }
 
-bool ALFPTacticsPlayerController::CancelPendingCardPlay()
+void ALFPTacticsPlayerController::CancelCardTargetSelection()
 {
-	bool bReturnedPendingCard = false;
-
-	if (CurrentSelectedSkill && BattleCardComponent)
+	if (CurrentSelectedSkill)
 	{
-		if (const int32* CardInstanceID = HandSkillToCardInstanceID.Find(CurrentSelectedSkill))
-		{
-			bReturnedPendingCard = BattleCardComponent->ReturnPendingCardToHand(*CardInstanceID);
-			HandSkillToCardInstanceID.Remove(CurrentSelectedSkill);
-		}
+		HandSkillToCardInstanceID.Remove(CurrentSelectedSkill);
 	}
 
 	bIsReleaseSkill = false;
@@ -1381,11 +1371,8 @@ bool ALFPTacticsPlayerController::CancelPendingCardPlay()
 	if (BattleHUDWidget)
 	{
 		BattleHUDWidget->ClearSelectedSkill();
-		BattleHUDWidget->HidePendingCard();
 		BattleHUDWidget->RefreshCardHand();
 	}
-
-	return bReturnedPendingCard;
 }
 
 bool ALFPTacticsPlayerController::IsNoTargetCard(const FLFPCardInstance& CardInstance) const
@@ -1401,8 +1388,7 @@ bool ALFPTacticsPlayerController::IsDirectEffectCard(const FLFPCardInstance& Car
 		return false;
 	}
 
-	return Skill->TargetType == ESkillTargetType::Self
-		|| Skill->TargetType == ESkillTargetType::AllAlly
+	return Skill->TargetType == ESkillTargetType::AllAlly
 		|| Skill->TargetType == ESkillTargetType::AllEnemy
 		|| Skill->TargetType == ESkillTargetType::AllUnit;
 }
@@ -1455,7 +1441,6 @@ bool ALFPTacticsPlayerController::ExecuteNoTargetCardImmediately(const FLFPCardI
 
 	if (BattleHUDWidget)
 	{
-		BattleHUDWidget->HidePendingCard();
 		BattleHUDWidget->RefreshCardHand();
 	}
 
@@ -1490,23 +1475,17 @@ bool ALFPTacticsPlayerController::ExecuteDroppedCardImmediately(const FLFPCardIn
 
 	if (BattleHUDWidget)
 	{
-		BattleHUDWidget->HidePendingCard();
 		BattleHUDWidget->RefreshCardHand();
 	}
 
 	return bMoved;
 }
 
-bool ALFPTacticsPlayerController::BeginPendingCardTargetSelection(const FLFPCardInstance& CardInstance,
+bool ALFPTacticsPlayerController::BeginCardTargetSelection(const FLFPCardInstance& CardInstance,
 	ALFPTacticsUnit* Unit)
 {
 	if (!Unit || !CardInstance.IsValid() || !BattleCardComponent || !IsTargetSelectingCard(CardInstance) ||
 		!Unit->CanUseCard(CardInstance))
-	{
-		return false;
-	}
-
-	if (!BattleCardComponent->MoveCardToPile(CardInstance.InstanceID, ELFPCardPile::Pending))
 	{
 		return false;
 	}
@@ -1520,12 +1499,6 @@ bool ALFPTacticsPlayerController::BeginPendingCardTargetSelection(const FLFPCard
 	CardInstance.RuntimeSkill->UpdateSkillRange();
 	HandSkillToCardInstanceID.Add(CardInstance.RuntimeSkill, CardInstance.InstanceID);
 
-	if (BattleHUDWidget)
-	{
-		BattleHUDWidget->HidePendingCard();
-		BattleHUDWidget->RefreshCardHand();
-	}
-
 	HandleSkillTargetSelecting(CardInstance.RuntimeSkill);
 	return true;
 }
@@ -1535,7 +1508,7 @@ void ALFPTacticsPlayerController::ResolveActiveCardSkillTargetAtViewportPosition
 {
 	if (!CardInstance.IsValid() || !CurrentSelectedSkill)
 	{
-		CancelPendingCardPlay();
+		CancelCardTargetSelection();
 		return;
 	}
 
@@ -1563,7 +1536,7 @@ void ALFPTacticsPlayerController::ResolveActiveCardSkillTargetAtViewportPosition
 		return;
 	}
 
-	CancelPendingCardPlay();
+	CancelCardTargetSelection();
 	if (SelectedUnit)
 	{
 		ShowUnitRange(EUnitRange::UR_Move);
@@ -1593,7 +1566,7 @@ void ALFPTacticsPlayerController::OnHandCardClicked(const FLFPCardInstance& Card
 
 			if (bIsReleaseSkill)
 			{
-				CancelPendingCardPlay();
+				CancelCardTargetSelection();
 			}
 			SelectUnit(nullptr);
 		}
@@ -1669,7 +1642,7 @@ void ALFPTacticsPlayerController::BeginCardDrag(const FLFPCardInstance& CardInst
 		if (CanControlPlayerUnit(SelectedUnit, GetTurnManager()))
 		{
 			if (SelectedUnit->CanUseCard(CardInstance) &&
-				BeginPendingCardTargetSelection(CardInstance, SelectedUnit))
+				BeginCardTargetSelection(CardInstance, SelectedUnit))
 			{
 				ActiveCardDragPhase = ELFPActiveCardDragPhase::SelectingSkillTarget;
 			}
@@ -1704,14 +1677,17 @@ void ALFPTacticsPlayerController::EndCardDrag()
 	{
 		BattleHUDWidget->SetCardDropTargetActive(false);
 	}
+
+	// 拖拽状态结束后重新应用选中单位的可打出卡牌弹出效果
+	UpdateCardHandPlayablePopupsForSelection();
 }
 
 void ALFPTacticsPlayerController::CancelActiveCardDrag()
 {
-	const bool bShouldCancelPendingCard = ActiveCardDragPhase == ELFPActiveCardDragPhase::SelectingSkillTarget;
-	if (bShouldCancelPendingCard)
+	const bool bShouldCancelCardTargetSelection = ActiveCardDragPhase == ELFPActiveCardDragPhase::SelectingSkillTarget;
+	if (bShouldCancelCardTargetSelection)
 	{
-		CancelPendingCardPlay();
+		CancelCardTargetSelection();
 		if (SelectedUnit)
 		{
 			ShowUnitRange(EUnitRange::UR_Move);
@@ -1777,7 +1753,7 @@ bool ALFPTacticsPlayerController::OnCardDroppedOnViewport(const FLFPCardInstance
 	if (ActiveCardDragPhase == ELFPActiveCardDragPhase::SelectingUsableUnit)
 	{
 		if (HitUnit && HitUnit->CanUseCard(CardInstance) &&
-			BeginPendingCardTargetSelection(CardInstance, HitUnit))
+			BeginCardTargetSelection(CardInstance, HitUnit))
 		{
 			ActiveCardDragPhase = ELFPActiveCardDragPhase::SelectingSkillTarget;
 			if (!ActiveCardDragVisual && ActiveCardDragVisualClass)
@@ -1817,7 +1793,7 @@ bool ALFPTacticsPlayerController::ProcessCardDropOnUnit(const FLFPCardInstance& 
 	}
 
 	// 流程1: 需要目标的卡 → 移到待执行区 → 显示释放范围。
-	return BeginPendingCardTargetSelection(CardInstance, Unit);
+	return BeginCardTargetSelection(CardInstance, Unit);
 }
 
 void ALFPTacticsPlayerController::HideSkillSelection()
@@ -1981,7 +1957,7 @@ void ALFPTacticsPlayerController::OnPhaseChanged(EBattlePhase NewPhase)
 		// 敌人行动阶段：禁用玩家输入，隐藏技能UI
 		if (bIsReleaseSkill)
 		{
-			CancelPendingCardPlay();
+			CancelCardTargetSelection();
 		}
 		HideSkillSelection();
 		ClearMovementAndRange();

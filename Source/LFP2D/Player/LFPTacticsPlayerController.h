@@ -406,13 +406,13 @@ protected:
 	bool TryCompleteActiveCardDragAtViewportPosition(FVector2D ViewportPosition);
 	void BuildHandSkillListForUnit(ALFPTacticsUnit* Unit, TArray<ULFPSkillBase*>& OutSkills);
 	bool FinishCardForSkill(ULFPSkillBase* Skill);
-	bool CancelPendingCardPlay();
+	void CancelCardTargetSelection();
 	bool IsNoTargetCard(const FLFPCardInstance& CardInstance) const;
 	bool IsDirectEffectCard(const FLFPCardInstance& CardInstance) const;
 	bool IsTargetSelectingCard(const FLFPCardInstance& CardInstance) const;
 	bool ExecuteNoTargetCardImmediately(const FLFPCardInstance& CardInstance);
 	bool ExecuteDroppedCardImmediately(const FLFPCardInstance& CardInstance, ALFPTacticsUnit* Unit, ALFPHexTile* TargetTile);
-	bool BeginPendingCardTargetSelection(const FLFPCardInstance& CardInstance, ALFPTacticsUnit* Unit);
+	bool BeginCardTargetSelection(const FLFPCardInstance& CardInstance, ALFPTacticsUnit* Unit);
 	void ResolveActiveCardSkillTargetAtViewportPosition(const FLFPCardInstance& CardInstance, FVector2D ViewportPosition);
 
 	// 移动已部署单位到空格子

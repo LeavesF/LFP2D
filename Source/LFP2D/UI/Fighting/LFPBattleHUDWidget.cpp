@@ -5,7 +5,6 @@
 #include "LFP2D/UI/Fighting/LFPBattleResultWidget.h"
 #include "LFP2D/UI/Fighting/LFPCurrentUnitInfoWidget.h"
 #include "LFP2D/UI/Fighting/LFPCardHandWidget.h"
-#include "LFP2D/UI/Fighting/LFPPendingCardWidget.h"
 #include "LFP2D/UI/Fighting/LFPCardDropTargetWidget.h"
 #include "LFP2D/Card/LFPBattleCardComponent.h"
 #include "LFP2D/Card/LFPCardTypes.h"
@@ -41,10 +40,6 @@ void ULFPBattleHUDWidget::NativeConstruct()
 	if (CardHandWidget)
 	{
 		CardHandWidget->SetVisibility(ESlateVisibility::Collapsed);
-	}
-	if (PendingCardWidget)
-	{
-		PendingCardWidget->SetVisibility(ESlateVisibility::Collapsed);
 	}
 	if (CardDropTargetWidget)
 	{
@@ -124,7 +119,6 @@ void ULFPBattleHUDWidget::OnPhaseChanged(EBattlePhase NewPhase)
 	else
 	{
 		HideCardHand();
-		HidePendingCard();
 	}
 }
 
@@ -417,22 +411,6 @@ void ULFPBattleHUDWidget::ResetCardHandPopups()
 	if (CardHandWidget)
 	{
 		CardHandWidget->ResetAllCardPopups();
-	}
-}
-
-void ULFPBattleHUDWidget::ShowPendingCard(const FLFPCardInstance& Card)
-{
-	if (PendingCardWidget)
-	{
-		PendingCardWidget->ShowPendingCard(Card);
-	}
-}
-
-void ULFPBattleHUDWidget::HidePendingCard()
-{
-	if (PendingCardWidget)
-	{
-		PendingCardWidget->HidePendingCard();
 	}
 }
 

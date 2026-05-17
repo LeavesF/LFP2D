@@ -12,7 +12,6 @@ class ULFPDeploymentWidget;
 class ULFPBattleResultWidget;
 class ULFPCurrentUnitInfoWidget;
 class ULFPCardHandWidget;
-class ULFPPendingCardWidget;
 class ULFPCardDropTargetWidget;
 class UButton;
 class UImage;
@@ -77,10 +76,6 @@ public:
 	void ResetCardHandPopups();
 	ULFPCardHandWidget* GetCardHandWidget() const { return CardHandWidget; }
 
-	// === PendingCard ===
-	void ShowPendingCard(const FLFPCardInstance& Card);
-	void HidePendingCard();
-	ULFPPendingCardWidget* GetPendingCardWidget() const { return PendingCardWidget; }
 	void SetCardDropTargetActive(bool bActive);
 	bool IsCardNoTargetDropPosition(FVector2D ViewportPosition) const;
 
@@ -129,9 +124,6 @@ protected:
 
 	UPROPERTY(meta = (BindWidgetOptional))
 	TObjectPtr<ULFPCardHandWidget> CardHandWidget;
-
-	UPROPERTY(meta = (BindWidgetOptional))
-	TObjectPtr<ULFPPendingCardWidget> PendingCardWidget;
 
 	UPROPERTY(meta = (BindWidgetOptional))
 	TObjectPtr<ULFPCardDropTargetWidget> CardDropTargetWidget;

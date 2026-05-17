@@ -18,6 +18,16 @@ void ULFPCardHandWidget::NativeConstruct()
 	Super::NativeConstruct();
 }
 
+void ULFPCardHandWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	if (HiddenDraggedCardInstanceID != INDEX_NONE && (!TacticsPC || !TacticsPC->IsCardDragActive()))
+	{
+		RestoreHiddenDraggedCard();
+	}
+}
+
 void ULFPCardHandWidget::InitializeFromBattleCardComponent(ULFPBattleCardComponent* InCardComponent, ALFPTacticsPlayerController* InPC)
 {
 	CardComponent = InCardComponent;
@@ -183,6 +193,10 @@ void ULFPCardHandWidget::OnCardClickedInHand(const FLFPCardInstance& CardInstanc
 		}
 	}
 	TacticsPC->OnHandCardClicked(CardInstance, DragVisualClass);
+	if (TacticsPC->IsCardDragActive())
+	{
+		SetCardMainContentHiddenForDrag(CardInstance.InstanceID, true);
+	}
 
 	// 点击后刷新手牌（当前选中单位对应的可用卡高亮会变化）。
 }
@@ -254,6 +268,10 @@ void ULFPCardHandWidget::OnCardDragStartedInHand(const FLFPCardInstance& CardIns
 	}
 
 	TacticsPC->BeginCardDrag(CardInstance, DragVisualClass, false);
+	if (TacticsPC->IsCardDragActive())
+	{
+		SetCardMainContentHiddenForDrag(CardInstance.InstanceID, true);
+	}
 }
 
 void ULFPCardHandWidget::OnCardDragEndedInHand()
@@ -263,6 +281,7 @@ void ULFPCardHandWidget::OnCardDragEndedInHand()
 		TacticsPC->CancelActiveCardDrag();
 	}
 
+	RestoreHiddenDraggedCard();
 	RefreshHandDisplay();
 }
 
@@ -280,4 +299,38 @@ void ULFPCardHandWidget::ApplyUnitPlayablePopups()
 			CurrentPlayableUnit->CanUseCard(CardWidget->GetCardInstance());
 		CardWidget->SetPopupReasonActive(ELFPCardPopupReason::UnitPlayable, bCanUseCard);
 	}
+}
+
+void ULFPCardHandWidget::SetCardMainContentHiddenForDrag(int32 CardInstanceID, bool bHidden)
+{
+	if (CardInstanceID == INDEX_NONE)
+	{
+		return;
+	}
+
+	for (ULFPCardItemWidget* CardWidget : HandCardWidgets)
+	{
+		if (CardWidget && CardWidget->GetCardInstance().InstanceID == CardInstanceID)
+		{
+			CardWidget->SetMainContentHiddenForDrag(bHidden);
+			HiddenDraggedCardInstanceID = bHidden ? CardInstanceID : INDEX_NONE;
+			return;
+		}
+	}
+
+	if (!bHidden && HiddenDraggedCardInstanceID == CardInstanceID)
+	{
+		HiddenDraggedCardInstanceID = INDEX_NONE;
+	}
+}
+
+void ULFPCardHandWidget::RestoreHiddenDraggedCard()
+{
+	if (HiddenDraggedCardInstanceID == INDEX_NONE)
+	{
+		return;
+	}
+
+	SetCardMainContentHiddenForDrag(HiddenDraggedCardInstanceID, false);
+	HiddenDraggedCardInstanceID = INDEX_NONE;
 }
