@@ -65,7 +65,9 @@ public:
 	void ShowCurrentUnitInfo();
 	void HideCurrentUnitInfo();
 	void SetCurrentUnitInfoUnit(ALFPTacticsUnit* Unit);
-	ULFPCurrentUnitInfoWidget* GetCurrentUnitInfoWidget() const { return CurrentUnitInfoWidget; }
+	ULFPCurrentUnitInfoWidget* GetCurrentUnitInfoWidget() const;
+	ULFPCurrentUnitInfoWidget* GetPlayerCurrentUnitInfoWidget() const { return CurrentUnitInfoWidget; }
+	ULFPCurrentUnitInfoWidget* GetNonPlayerCurrentUnitInfoWidget() const { return NonPlayerCurrentUnitInfoWidget; }
 
 	// === CardHand ===
 	void ShowCardHand();
@@ -123,6 +125,9 @@ protected:
 	TObjectPtr<ULFPCurrentUnitInfoWidget> CurrentUnitInfoWidget;
 
 	UPROPERTY(meta = (BindWidgetOptional))
+	TObjectPtr<ULFPCurrentUnitInfoWidget> NonPlayerCurrentUnitInfoWidget;
+
+	UPROPERTY(meta = (BindWidgetOptional))
 	TObjectPtr<ULFPCardHandWidget> CardHandWidget;
 
 	UPROPERTY(meta = (BindWidgetOptional))
@@ -140,9 +145,15 @@ protected:
 	UPROPERTY(Transient)
 	TObjectPtr<ALFPTurnManager> TurnManagerRef;
 
+	UPROPERTY(Transient)
+	TObjectPtr<ULFPCurrentUnitInfoWidget> ActiveCurrentUnitInfoWidget;
+
 private:
 	void SetTurnManager(ALFPTurnManager* TurnManager);
 	void UpdateTurnInfo();
 	void UpdateRoundText();
 	void UpdatePhaseText(EBattlePhase NewPhase);
+	ULFPCurrentUnitInfoWidget* GetUnitInfoWidgetForUnit(ALFPTacticsUnit* Unit) const;
+	void HideUnitInfoWidget(ULFPCurrentUnitInfoWidget* UnitInfoWidget);
+	void HideInactiveUnitInfoWidgets(ULFPCurrentUnitInfoWidget* WidgetToKeepVisible);
 };

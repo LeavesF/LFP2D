@@ -1,5 +1,7 @@
 #include "LFP2D/UI/Fighting/LFPCurrentUnitInfoWidget.h"
 
+#include "LFP2D/Card/LFPBattleCardComponent.h"
+#include "LFP2D/Card/LFPCardDataAsset.h"
 #include "Components/Image.h"
 #include "Components/PanelWidget.h"
 #include "Components/ProgressBar.h"
@@ -10,6 +12,9 @@
 #include "LFP2D/Core/LFPGameInstance.h"
 #include "LFP2D/Core/LFPUnitRegistryDataAsset.h"
 #include "LFP2D/UI/Fighting/LFPBuffIconWidget.h"
+#include "LFP2D/UI/Fighting/LFPCardItemWidget.h"
+#include "LFP2D/Player/LFPTacticsPlayerController.h"
+#include "LFP2D/Skill/LFPSkillBase.h"
 #include "LFP2D/Turn/LFPTurnManager.h"
 #include "LFP2D/Unit/LFPTacticsUnit.h"
 #include "TimerManager.h"
@@ -182,6 +187,7 @@ void ULFPCurrentUnitInfoWidget::RefreshUnitInfo()
 	RefreshHealth();
 	RefreshStats();
 	RefreshBuffIcons();
+	RefreshCarriedCards();
 
 	OnUnitInfoRefreshed(BoundUnit);
 }
@@ -284,6 +290,51 @@ void ULFPCurrentUnitInfoWidget::RefreshBuffIcons()
 	}
 }
 
+void ULFPCurrentUnitInfoWidget::RefreshCarriedCards()
+{
+	DisplayedCarriedCards.Reset();
+
+	if (CarriedCardContainer)
+	{
+		CarriedCardContainer->ClearChildren();
+	}
+
+	if (CarriedCardCountText)
+	{
+		CarriedCardCountText->SetText(FText::GetEmpty());
+	}
+
+	if (!BoundUnit || !CarriedCardContainer || !CarriedCardItemWidgetClass || MaxCarriedCards <= 0)
+	{
+		return;
+	}
+
+	BuildCarriedCardInstances(DisplayedCarriedCards);
+
+	if (CarriedCardCountText)
+	{
+		CarriedCardCountText->SetText(FText::AsNumber(DisplayedCarriedCards.Num()));
+	}
+
+	ALFPTacticsPlayerController* TacticsPC = Cast<ALFPTacticsPlayerController>(GetOwningPlayer());
+	for (const FLFPCardInstance& Card : DisplayedCarriedCards)
+	{
+		if (!Card.IsValid())
+		{
+			continue;
+		}
+
+		ULFPCardItemWidget* CardItem = CreateWidget<ULFPCardItemWidget>(this, CarriedCardItemWidgetClass);
+		if (!CardItem)
+		{
+			continue;
+		}
+
+		CardItem->InitializeCardItem(Card, TacticsPC);
+		CarriedCardContainer->AddChild(CardItem);
+	}
+}
+
 void ULFPCurrentUnitInfoWidget::OnTurnChanged()
 {
 	if (UWorld* World = GetWorld())
@@ -346,6 +397,13 @@ void ULFPCurrentUnitInfoWidget::ClearUnitInfo()
 	{
 		BuffContainer->ClearChildren();
 	}
+
+	DisplayedCarriedCards.Reset();
+	if (CarriedCardContainer)
+	{
+		CarriedCardContainer->ClearChildren();
+	}
+	SetOptionalText(CarriedCardCountText, FText::GetEmpty());
 }
 
 void ULFPCurrentUnitInfoWidget::UnbindFromTurnManager()
@@ -413,4 +471,155 @@ UTexture2D* ULFPCurrentUnitInfoWidget::GetUnitDisplayIcon(ALFPTacticsUnit* Unit)
 	}
 
 	return nullptr;
+}
+
+void ULFPCurrentUnitInfoWidget::BuildCarriedCardInstances(TArray<FLFPCardInstance>& OutCards)
+{
+	OutCards.Reset();
+
+	if (!BoundUnit)
+	{
+		return;
+	}
+
+	ULFPGameInstance* GameInstance = Cast<ULFPGameInstance>(GetGameInstance());
+	if (ALFPTacticsPlayerController* TacticsPC = Cast<ALFPTacticsPlayerController>(GetOwningPlayer()))
+	{
+		if (ULFPBattleCardComponent* CardComponent = TacticsPC->GetBattleCardComponent())
+		{
+			OutCards = CardComponent->BuildUnitCardsPreview(GameInstance, BoundUnit);
+			if (OutCards.Num() > MaxCarriedCards)
+			{
+				OutCards.SetNum(MaxCarriedCards);
+			}
+			return;
+		}
+	}
+
+	if (!GameInstance || !GameInstance->UnitRegistry)
+	{
+		return;
+	}
+
+	FLFPUnitRegistryEntry RegistryEntry;
+	if (!GameInstance->UnitRegistry->FindEntry(BoundUnit->UnitTypeID, RegistryEntry))
+	{
+		return;
+	}
+
+	if (!RegistryEntry.DefaultCarriedCards.IsEmpty())
+	{
+		for (const TSoftObjectPtr<ULFPCardDataAsset>& CardData : RegistryEntry.DefaultCarriedCards)
+		{
+			AddCarriedCardData(CardData, OutCards);
+			if (OutCards.Num() >= MaxCarriedCards)
+			{
+				break;
+			}
+		}
+		return;
+	}
+
+	for (TSubclassOf<ULFPSkillBase> SkillClass : RegistryEntry.DefaultCarriedCardSkillClasses)
+	{
+		AddCarriedCardSkillClass(SkillClass, OutCards);
+		if (OutCards.Num() >= MaxCarriedCards)
+		{
+			break;
+		}
+	}
+}
+
+bool ULFPCurrentUnitInfoWidget::AddCarriedCardData(
+	const TSoftObjectPtr<ULFPCardDataAsset>& CardData,
+	TArray<FLFPCardInstance>& OutCards)
+{
+	if (OutCards.Num() >= MaxCarriedCards)
+	{
+		return false;
+	}
+
+	ULFPCardDataAsset* LoadedCardData = CardData.LoadSynchronous();
+	if (!LoadedCardData || !LoadedCardData->IsValidCardData())
+	{
+		return false;
+	}
+
+	return AddCarriedCardDefinition(LoadedCardData->BuildCardDefinition(), OutCards);
+}
+
+bool ULFPCurrentUnitInfoWidget::AddCarriedCardSkillClass(
+	TSubclassOf<ULFPSkillBase> SkillClass,
+	TArray<FLFPCardInstance>& OutCards)
+{
+	if (!SkillClass || OutCards.Num() >= MaxCarriedCards)
+	{
+		return false;
+	}
+
+	FLFPCardDefinition Definition;
+	Definition.SkillClass = SkillClass;
+	Definition.DestinationAfterPlay = ELFPCardPile::DiscardPile;
+	Definition.CardCategory = ELFPCardCategory::RaceSpecific;
+	return AddCarriedCardDefinition(Definition, OutCards);
+}
+
+bool ULFPCurrentUnitInfoWidget::AddCarriedCardDefinition(
+	const FLFPCardDefinition& Definition,
+	TArray<FLFPCardInstance>& OutCards)
+{
+	if (!Definition.SkillClass || OutCards.Num() >= MaxCarriedCards)
+	{
+		return false;
+	}
+
+	ULFPSkillBase* RuntimeSkill = NewObject<ULFPSkillBase>(this, Definition.SkillClass);
+	if (!RuntimeSkill)
+	{
+		return false;
+	}
+
+	RuntimeSkill->InitSkill(BoundUnit);
+
+	FLFPCardInstance Card;
+	Card.InstanceID = OutCards.Num() + 1;
+	Card.SourceUnit = BoundUnit;
+	Card.RuntimeSkill = RuntimeSkill;
+	Card.CurrentPile = ELFPCardPile::DrawPile;
+	Card.Definition = Definition;
+
+	if (Card.Definition.CardID.IsNone())
+	{
+		Card.Definition.CardID = FName(*FString::Printf(TEXT("%s_%d"),
+			*Definition.SkillClass->GetName(),
+			Card.InstanceID));
+	}
+	if (Card.Definition.DisplayName.IsEmpty())
+	{
+		Card.Definition.DisplayName = RuntimeSkill->SkillName;
+	}
+	if (Card.Definition.Description.IsEmpty())
+	{
+		Card.Definition.Description = RuntimeSkill->SkillDescription;
+	}
+	if (!Card.Definition.Icon)
+	{
+		Card.Definition.Icon = RuntimeSkill->SkillIcon;
+	}
+	if (Card.Definition.ActionPointCost < 0)
+	{
+		Card.Definition.ActionPointCost = RuntimeSkill->ActionPointCost;
+	}
+	else
+	{
+		Card.Definition.ActionPointCost = FMath::Max(0, Card.Definition.ActionPointCost);
+		RuntimeSkill->ActionPointCost = Card.Definition.ActionPointCost;
+	}
+
+	RuntimeSkill->SkillName = Card.Definition.DisplayName;
+	RuntimeSkill->SkillDescription = Card.Definition.Description;
+	RuntimeSkill->SkillIcon = Card.Definition.Icon;
+
+	OutCards.Add(Card);
+	return true;
 }

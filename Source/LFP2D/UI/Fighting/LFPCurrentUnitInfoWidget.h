@@ -2,12 +2,15 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "LFP2D/Card/LFPCardTypes.h"
 #include "LFP2D/Turn/LFPBattleTypes.h"
 #include "LFPCurrentUnitInfoWidget.generated.h"
 
 class ALFPTacticsUnit;
 class ALFPTurnManager;
 class ULFPBuffIconWidget;
+class ULFPCardDataAsset;
+class ULFPCardItemWidget;
 class UImage;
 class UPanelWidget;
 class UProgressBar;
@@ -49,6 +52,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Current Unit|Buff")
 	void RefreshBuffIcons();
+
+	UFUNCTION(BlueprintCallable, Category = "Current Unit|Cards")
+	void RefreshCarriedCards();
 
 	UFUNCTION(BlueprintPure, Category = "Current Unit")
 	ALFPTacticsUnit* GetBoundUnit() const { return BoundUnit; }
@@ -139,6 +145,18 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Current Unit|Buff", meta = (ClampMin = "0"))
 	int32 MaxBuffIcons = 8;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Current Unit|Cards", meta = (BindWidgetOptional))
+	TObjectPtr<UPanelWidget> CarriedCardContainer;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Current Unit|Cards", meta = (BindWidgetOptional))
+	TObjectPtr<UTextBlock> CarriedCardCountText;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Current Unit|Cards")
+	TSubclassOf<ULFPCardItemWidget> CarriedCardItemWidgetClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Current Unit|Cards", meta = (ClampMin = "0"))
+	int32 MaxCarriedCards = 16;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Current Unit")
 	bool bHideOutsideActionPhase = true;
 
@@ -157,6 +175,9 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Current Unit")
 	TObjectPtr<ALFPTurnManager> TurnManagerRef;
 
+	UPROPERTY()
+	TArray<FLFPCardInstance> DisplayedCarriedCards;
+
 private:
 	void FindTurnManager();
 	void ClearUnitInfo();
@@ -164,6 +185,10 @@ private:
 	void SetOptionalText(UTextBlock* TextBlock, const FText& Text) const;
 	FText GetUnitDisplayName(ALFPTacticsUnit* Unit) const;
 	UTexture2D* GetUnitDisplayIcon(ALFPTacticsUnit* Unit) const;
+	void BuildCarriedCardInstances(TArray<FLFPCardInstance>& OutCards);
+	bool AddCarriedCardData(const TSoftObjectPtr<ULFPCardDataAsset>& CardData, TArray<FLFPCardInstance>& OutCards);
+	bool AddCarriedCardDefinition(const FLFPCardDefinition& Definition, TArray<FLFPCardInstance>& OutCards);
+	bool AddCarriedCardSkillClass(TSubclassOf<ULFPSkillBase> SkillClass, TArray<FLFPCardInstance>& OutCards);
 
 	FTimerHandle RefreshTimerHandle;
 };

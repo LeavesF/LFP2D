@@ -66,6 +66,47 @@ TArray<FLFPCardInstance> ULFPBattleCardComponent::BuildBattleDeckPreview(
 	return PreviewCards;
 }
 
+TArray<FLFPCardInstance> ULFPBattleCardComponent::BuildUnitCardsPreview(
+	ULFPGameInstance* GameInstance,
+	ALFPTacticsUnit* Unit)
+{
+	const TArray<FLFPCardInstance> SavedDrawPile = DrawPile;
+	const TArray<FLFPCardInstance> SavedHand = Hand;
+	const TArray<FLFPCardInstance> SavedDiscardPile = DiscardPile;
+	const TArray<FLFPCardInstance> SavedExhaustPile = ExhaustPile;
+	const bool bSavedInitialized = bInitialized;
+	const int32 SavedNextCardInstanceID = NextCardInstanceID;
+
+	DrawPile.Empty();
+	Hand.Empty();
+	DiscardPile.Empty();
+	ExhaustPile.Empty();
+	NextCardInstanceID = 1;
+	bInitialized = false;
+
+	TArray<ALFPTacticsUnit*> Units;
+	if (Unit)
+	{
+		Units.Add(Unit);
+	}
+	AddUnitCards(GameInstance, Units);
+
+	TArray<FLFPCardInstance> PreviewCards = DrawPile;
+	for (FLFPCardInstance& Card : PreviewCards)
+	{
+		Card.CurrentPile = ELFPCardPile::DrawPile;
+	}
+
+	DrawPile = SavedDrawPile;
+	Hand = SavedHand;
+	DiscardPile = SavedDiscardPile;
+	ExhaustPile = SavedExhaustPile;
+	bInitialized = bSavedInitialized;
+	NextCardInstanceID = SavedNextCardInstanceID;
+
+	return PreviewCards;
+}
+
 int32 ULFPBattleCardComponent::DrawCards(int32 Count)
 {
 	if (Count <= 0)
@@ -285,6 +326,9 @@ void ULFPBattleCardComponent::AddPlayerDeckCards(ULFPGameInstance* GameInstance)
 
 void ULFPBattleCardComponent::AddUnitCards(ULFPGameInstance* GameInstance, const TArray<ALFPTacticsUnit*>& DeployedUnits)
 {
+	// 通用普攻卡排在单位携带卡之前，UI 预览和正式牌库保持一致。
+	AddSharedAttackCards(DeployedUnits);
+
 	for (int32 Index = 0; Index < DeployedUnits.Num(); ++Index)
 	{
 		ALFPTacticsUnit* Unit = DeployedUnits[Index];
@@ -311,9 +355,6 @@ void ULFPBattleCardComponent::AddUnitCards(ULFPGameInstance* GameInstance, const
 			}
 		}
 	}
-
-	// 普攻卡按攻击Tag分组共享生成，不再按单位独立创建。
-	AddSharedAttackCards(DeployedUnits);
 }
 
 void ULFPBattleCardComponent::AddConfiguredUnitCards(ALFPTacticsUnit* Unit,

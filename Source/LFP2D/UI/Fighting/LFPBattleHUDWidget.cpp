@@ -10,6 +10,7 @@
 #include "LFP2D/Card/LFPCardTypes.h"
 #include "LFP2D/Player/LFPTacticsPlayerController.h"
 #include "LFP2D/Turn/LFPTurnManager.h"
+#include "LFP2D/Unit/LFPTacticsUnit.h"
 #include "Components/Button.h"
 #include "Components/CanvasPanel.h"
 #include "Components/Image.h"
@@ -36,6 +37,10 @@ void ULFPBattleHUDWidget::NativeConstruct()
 	if (CurrentUnitInfoWidget)
 	{
 		CurrentUnitInfoWidget->SetVisibility(ESlateVisibility::Collapsed);
+	}
+	if (NonPlayerCurrentUnitInfoWidget)
+	{
+		NonPlayerCurrentUnitInfoWidget->SetVisibility(ESlateVisibility::Collapsed);
 	}
 	if (CardHandWidget)
 	{
@@ -273,41 +278,81 @@ void ULFPBattleHUDWidget::InitializeCurrentUnitInfo(ALFPTurnManager* TurnManager
 	{
 		CurrentUnitInfoWidget->InitializeCurrentUnitInfo(TurnManager);
 	}
+	if (NonPlayerCurrentUnitInfoWidget)
+	{
+		NonPlayerCurrentUnitInfoWidget->InitializeCurrentUnitInfo(TurnManager);
+	}
 }
 
 void ULFPBattleHUDWidget::ShowCurrentUnitInfo()
 {
-	if (CurrentUnitInfoWidget)
+	if (!ActiveCurrentUnitInfoWidget)
 	{
-		CurrentUnitInfoWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		ActiveCurrentUnitInfoWidget = CurrentUnitInfoWidget;
+	}
+
+	if (ActiveCurrentUnitInfoWidget)
+	{
+		ActiveCurrentUnitInfoWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	}
 }
 
 void ULFPBattleHUDWidget::HideCurrentUnitInfo()
 {
-	if (CurrentUnitInfoWidget)
-	{
-		CurrentUnitInfoWidget->SetInspectionMode(false);
-		CurrentUnitInfoWidget->SetVisibility(ESlateVisibility::Collapsed);
-	}
+	HideUnitInfoWidget(CurrentUnitInfoWidget);
+	HideUnitInfoWidget(NonPlayerCurrentUnitInfoWidget);
+	ActiveCurrentUnitInfoWidget = nullptr;
 }
 
 void ULFPBattleHUDWidget::SetCurrentUnitInfoUnit(ALFPTacticsUnit* Unit)
 {
-	if (CurrentUnitInfoWidget)
+	if (!Unit)
 	{
-		CurrentUnitInfoWidget->BindToUnit(Unit);
+		HideCurrentUnitInfo();
+		return;
 	}
+
+	ULFPCurrentUnitInfoWidget* TargetWidget = GetUnitInfoWidgetForUnit(Unit);
+	HideInactiveUnitInfoWidgets(TargetWidget);
+
+	if (TargetWidget)
+	{
+		ActiveCurrentUnitInfoWidget = TargetWidget;
+		TargetWidget->BindToUnit(Unit);
+	}
+}
+
+ULFPCurrentUnitInfoWidget* ULFPBattleHUDWidget::GetCurrentUnitInfoWidget() const
+{
+	if (ActiveCurrentUnitInfoWidget)
+	{
+		return ActiveCurrentUnitInfoWidget;
+	}
+
+	if (CurrentUnitInfoWidget && CurrentUnitInfoWidget->IsVisible())
+	{
+		return CurrentUnitInfoWidget;
+	}
+	if (NonPlayerCurrentUnitInfoWidget && NonPlayerCurrentUnitInfoWidget->IsVisible())
+	{
+		return NonPlayerCurrentUnitInfoWidget;
+	}
+
+	return CurrentUnitInfoWidget ? CurrentUnitInfoWidget.Get() : NonPlayerCurrentUnitInfoWidget.Get();
 }
 
 void ULFPBattleHUDWidget::EnterInspectionMode(ALFPTacticsUnit* InspectedUnit, ALFPTacticsPlayerController* PC)
 {
 	if (!InspectedUnit || !PC) return;
 
-	if (CurrentUnitInfoWidget)
+	ULFPCurrentUnitInfoWidget* TargetWidget = GetUnitInfoWidgetForUnit(InspectedUnit);
+	HideInactiveUnitInfoWidgets(TargetWidget);
+
+	if (TargetWidget)
 	{
-		CurrentUnitInfoWidget->BindToUnit(InspectedUnit);
-		CurrentUnitInfoWidget->SetInspectionMode(true);
+		ActiveCurrentUnitInfoWidget = TargetWidget;
+		TargetWidget->BindToUnit(InspectedUnit);
+		TargetWidget->SetInspectionMode(true);
 	}
 
 	if (SkillSelectionWidget)
@@ -323,6 +368,10 @@ void ULFPBattleHUDWidget::ExitInspectionMode(ALFPTacticsPlayerController* PC)
 	if (CurrentUnitInfoWidget)
 	{
 		CurrentUnitInfoWidget->SetInspectionMode(false);
+	}
+	if (NonPlayerCurrentUnitInfoWidget)
+	{
+		NonPlayerCurrentUnitInfoWidget->SetInspectionMode(false);
 	}
 	if (SkillSelectionWidget)
 	{
@@ -426,4 +475,38 @@ bool ULFPBattleHUDWidget::IsCardNoTargetDropPosition(FVector2D ViewportPosition)
 {
 	return CardDropTargetWidget &&
 		CardDropTargetWidget->IsViewportPositionInsideNoTargetZone(ViewportPosition);
+}
+
+ULFPCurrentUnitInfoWidget* ULFPBattleHUDWidget::GetUnitInfoWidgetForUnit(ALFPTacticsUnit* Unit) const
+{
+	if (Unit && Unit->GetAffiliation() != EUnitAffiliation::UA_Player && NonPlayerCurrentUnitInfoWidget)
+	{
+		return NonPlayerCurrentUnitInfoWidget;
+	}
+
+	return CurrentUnitInfoWidget ? CurrentUnitInfoWidget.Get() : NonPlayerCurrentUnitInfoWidget.Get();
+}
+
+void ULFPBattleHUDWidget::HideUnitInfoWidget(ULFPCurrentUnitInfoWidget* UnitInfoWidget)
+{
+	if (!UnitInfoWidget)
+	{
+		return;
+	}
+
+	UnitInfoWidget->SetInspectionMode(false);
+	UnitInfoWidget->BindToUnit(nullptr);
+	UnitInfoWidget->SetVisibility(ESlateVisibility::Collapsed);
+}
+
+void ULFPBattleHUDWidget::HideInactiveUnitInfoWidgets(ULFPCurrentUnitInfoWidget* WidgetToKeepVisible)
+{
+	if (CurrentUnitInfoWidget && CurrentUnitInfoWidget != WidgetToKeepVisible)
+	{
+		HideUnitInfoWidget(CurrentUnitInfoWidget);
+	}
+	if (NonPlayerCurrentUnitInfoWidget && NonPlayerCurrentUnitInfoWidget != WidgetToKeepVisible)
+	{
+		HideUnitInfoWidget(NonPlayerCurrentUnitInfoWidget);
+	}
 }
