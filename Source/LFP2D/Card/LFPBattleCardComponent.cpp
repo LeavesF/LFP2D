@@ -29,6 +29,43 @@ void ULFPBattleCardComponent::InitializeBattleDeck(ULFPGameInstance* GameInstanc
 	DrawCards(OpeningDrawCount);
 }
 
+TArray<FLFPCardInstance> ULFPBattleCardComponent::BuildBattleDeckPreview(
+	ULFPGameInstance* GameInstance,
+	const TArray<ALFPTacticsUnit*>& DeployedUnits)
+{
+	const TArray<FLFPCardInstance> SavedDrawPile = DrawPile;
+	const TArray<FLFPCardInstance> SavedHand = Hand;
+	const TArray<FLFPCardInstance> SavedDiscardPile = DiscardPile;
+	const TArray<FLFPCardInstance> SavedExhaustPile = ExhaustPile;
+	const bool bSavedInitialized = bInitialized;
+	const int32 SavedNextCardInstanceID = NextCardInstanceID;
+
+	DrawPile.Empty();
+	Hand.Empty();
+	DiscardPile.Empty();
+	ExhaustPile.Empty();
+	NextCardInstanceID = 1;
+	bInitialized = false;
+
+	AddPlayerDeckCards(GameInstance);
+	AddUnitCards(GameInstance, DeployedUnits);
+
+	TArray<FLFPCardInstance> PreviewCards = DrawPile;
+	for (FLFPCardInstance& Card : PreviewCards)
+	{
+		Card.CurrentPile = ELFPCardPile::DrawPile;
+	}
+
+	DrawPile = SavedDrawPile;
+	Hand = SavedHand;
+	DiscardPile = SavedDiscardPile;
+	ExhaustPile = SavedExhaustPile;
+	bInitialized = bSavedInitialized;
+	NextCardInstanceID = SavedNextCardInstanceID;
+
+	return PreviewCards;
+}
+
 int32 ULFPBattleCardComponent::DrawCards(int32 Count)
 {
 	if (Count <= 0)

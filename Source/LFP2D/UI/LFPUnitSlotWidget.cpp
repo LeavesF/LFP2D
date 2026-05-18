@@ -35,6 +35,7 @@ void ULFPUnitSlotWidget::Setup(const FLFPUnitEntry& Entry, ULFPUnitRegistryDataA
 	}
 
 	SetSelected(false);
+	SetDeployed(false);
 }
 
 void ULFPUnitSlotWidget::Clear()
@@ -46,6 +47,8 @@ void ULFPUnitSlotWidget::Clear()
 	{
 		Button_Unit->SetVisibility(ESlateVisibility::Collapsed);
 	}
+
+	SetDeployed(false);
 }
 
 void ULFPUnitSlotWidget::SetSelected(bool bSelected)
@@ -55,6 +58,16 @@ void ULFPUnitSlotWidget::SetSelected(bool bSelected)
 		Image_Unit->SetColorAndOpacity(bSelected
 			? FLinearColor(1.0f, 0.9f, 0.3f, 1.0f)   // 金色高亮
 			: FLinearColor::White);
+	}
+}
+
+void ULFPUnitSlotWidget::SetDeployed(bool bDeployed)
+{
+	if (Image_Deployed)
+	{
+		Image_Deployed->SetVisibility(bDeployed
+			? ESlateVisibility::HitTestInvisible
+			: ESlateVisibility::Hidden);
 	}
 }
 

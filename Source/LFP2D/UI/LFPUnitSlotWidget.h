@@ -30,6 +30,9 @@ public:
 	// 设置选中/高亮状态
 	void SetSelected(bool bSelected);
 
+	// Show or hide the deployment marker image.
+	void SetDeployed(bool bDeployed);
+
 	// 是否为占用状态
 	bool IsOccupied() const { return CachedEntry.IsValid(); }
 
@@ -48,6 +51,9 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UImage> Image_Unit;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+	TObjectPtr<UImage> Image_Deployed;
 
 private:
 	UFUNCTION()

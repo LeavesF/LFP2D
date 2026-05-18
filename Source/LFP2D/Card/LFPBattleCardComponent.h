@@ -23,6 +23,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Card")
 	void InitializeBattleDeck(ULFPGameInstance* GameInstance, const TArray<ALFPTacticsUnit*>& DeployedUnits);
 
+	UFUNCTION(BlueprintCallable, Category = "Card")
+	TArray<FLFPCardInstance> BuildBattleDeckPreview(ULFPGameInstance* GameInstance, const TArray<ALFPTacticsUnit*>& DeployedUnits);
+
 	/* 抽指定数量的牌；抽牌堆为空时会自动把弃牌堆洗回抽牌堆。 */
 	UFUNCTION(BlueprintCallable, Category = "Card")
 	int32 DrawCards(int32 Count);

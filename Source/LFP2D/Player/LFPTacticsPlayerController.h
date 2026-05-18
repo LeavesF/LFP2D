@@ -26,6 +26,7 @@ class ULFPMapEditorComponent;
 class ULFPMapEditorWidget;
 class ULFPUnitRegistryDataAsset;
 class ULFPBattleCardComponent;
+class ULFPGameInstance;
 
 struct FLFPCardInstance;
 
@@ -370,13 +371,9 @@ public:
 	// 自动将所有出战单位放置到出生点
 	void AutoPlacePartyUnits();
 
-	// UI 委托：点击出战单位图标
+	// UI 委托：点击合并列表单位图标，切换出战/备战状态
 	UFUNCTION()
-	void OnDeploymentPartyUnitClicked(int32 PartyIndex);
-
-	// UI 委托：点击备战单位图标
-	UFUNCTION()
-	void OnDeploymentReserveUnitClicked(int32 ReserveIndex);
+	void OnDeploymentUnitClicked(int32 UnitIndex);
 
 	// 确认布置完毕
 	UFUNCTION()
@@ -394,6 +391,8 @@ protected:
 
 	bool IsPrimaryActionOverUI() const;
 	bool IsInInspectionMode() const;
+	void ClearSelectionHighlight();
+	void UpdateSelectionHighlightForUnit(ALFPTacticsUnit* Unit);
 	bool ExitInspectionMode();
 	bool HandleInspectionPrimaryAction(const FHitResult& HitResult);
 	void HandlePrimaryActionAtHit(const FHitResult& HitResult);
@@ -421,14 +420,15 @@ protected:
 	// 交换两个已部署单位的位置（地图上互换）
 	void SwapDeployedUnits(int32 PartyIndexA, int32 PartyIndexB);
 
-	// 交换两个出战图标（仅 UI，不影响地图位置）
-	void SwapPartyUnitIcons(int32 PartyIndexA, int32 PartyIndexB);
-
-	// 交换两个备战图标
-	void SwapReserveUnitIcons(int32 PartyIndexA, int32 PartyIndexB);
-
-	// 用备战单位替换出战单位
-	void ReplacePartyWithReserve(int32 PartyIndex, int32 ReserveIndex);
+	ALFPHexTile* FindFirstEmptyPlayerSpawnTile() const;
+	int32 GetCurrentDeployedUnitCount() const;
+	ALFPTacticsUnit* SpawnDeploymentUnit(const FLFPUnitEntry& Entry, ALFPHexTile* Tile);
+	void RemoveDeploymentUnitAt(int32 UnitIndex);
+	void DeployUnitAtFirstEmptySpawn(int32 UnitIndex);
+	void RefreshDeploymentUnitIcon(int32 UnitIndex);
+	void RefreshDeploymentDeckPreview();
+	void GetRuntimeDeployedUnits(TArray<ALFPTacticsUnit*>& OutUnits) const;
+	void RebuildDeploymentRoster(ULFPGameInstance* GI) const;
 
 	// 布置阶段状态
 	bool bIsInDeployment = false;
@@ -436,13 +436,10 @@ protected:
 	// 当前选中的地图单位（确认键点击场上的单位）
 	int32 SelectedMapUnitIndex = -1;
 
-	// 当前选中的出战图标（-1 = 无）
-	int32 SelectedPartyIconIdx = -1;
+	// 部署 UI 的合并单位列表：原出战单位在前，原备战单位在后
+	TArray<FLFPUnitEntry> DeploymentUnitEntries;
 
-	// 当前选中的备战图标（-1 = 无）
-	int32 SelectedReserveIndex = -1;
-
-	// 已部署的单位列表（索引对应 GameInstance->PartyUnits 索引）
+	// 已部署的单位列表（索引对应 DeploymentUnitEntries；备战单位为 nullptr）
 	UPROPERTY()
 	TArray<TObjectPtr<ALFPTacticsUnit>> DeployedUnits;
 
