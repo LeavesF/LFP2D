@@ -112,4 +112,5 @@ protected:
 	// 战斗遗物运行时管理器实例
 	UPROPERTY()
 	TObjectPtr<ALFPBattleRelicRuntimeManager> BattleRelicRuntimeManager;
+
 };

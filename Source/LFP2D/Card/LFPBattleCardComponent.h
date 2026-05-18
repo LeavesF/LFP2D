@@ -29,6 +29,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Card")
 	TArray<FLFPCardInstance> BuildUnitCardsPreview(ULFPGameInstance* GameInstance, ALFPTacticsUnit* Unit);
 
+	UFUNCTION(BlueprintCallable, Category = "Card")
+	int32 AddUnitCarriedCardsToHand(ULFPGameInstance* GameInstance, ALFPTacticsUnit* Unit);
+
+	UFUNCTION(BlueprintCallable, Category = "Card")
+	int32 AddUnitCardsToHand(ULFPGameInstance* GameInstance, ALFPTacticsUnit* Unit);
+
 	/* 抽指定数量的牌；抽牌堆为空时会自动把弃牌堆洗回抽牌堆。 */
 	UFUNCTION(BlueprintCallable, Category = "Card")
 	int32 DrawCards(int32 Count);
@@ -115,12 +121,19 @@ private:
 		FGameplayTag RequiredTagOverride = FGameplayTag());
 	bool AddCardToDrawPile(TSubclassOf<ULFPSkillBase> SkillClass, ALFPTacticsUnit* SourceUnit,
 		ELFPCardCategory Category = ELFPCardCategory::FullyGeneric, FGameplayTag RequiredTag = FGameplayTag());
+	bool AddCardToHand(const FLFPCardDefinition& Definition, ALFPTacticsUnit* SourceUnit,
+		FGameplayTag RequiredTagOverride = FGameplayTag());
+	bool AddCardDataToHand(const TSoftObjectPtr<ULFPCardDataAsset>& CardData, ALFPTacticsUnit* SourceUnit,
+		FGameplayTag RequiredTagOverride = FGameplayTag());
+	bool AddCardToHand(TSubclassOf<ULFPSkillBase> SkillClass, ALFPTacticsUnit* SourceUnit,
+		ELFPCardCategory Category = ELFPCardCategory::FullyGeneric, FGameplayTag RequiredTag = FGameplayTag());
 	void AddPlayerDeckCards(ULFPGameInstance* GameInstance);
 	void AddUnitCards(ULFPGameInstance* GameInstance, const TArray<ALFPTacticsUnit*>& DeployedUnits);
 	void AddConfiguredUnitCards(ALFPTacticsUnit* Unit, const TArray<TSoftObjectPtr<ULFPCardDataAsset>>& Cards);
 	void AddConfiguredUnitCards(ALFPTacticsUnit* Unit, const TArray<TSubclassOf<ULFPSkillBase>>& CardSkillClasses,
 		ELFPCardCategory Category);
 	void AddSharedAttackCards(const TArray<ALFPTacticsUnit*>& DeployedUnits);
+	bool AddUnitSharedAttackCardToHand(ALFPTacticsUnit* Unit);
 	FGameplayTag ResolveRequiredTag(const FLFPCardDefinition& Definition, ALFPTacticsUnit* SourceUnit,
 		FGameplayTag RequiredTagOverride) const;
 	FGameplayTag FindFirstUnitTagWithPrefix(ALFPTacticsUnit* Unit, const FString& Prefix) const;

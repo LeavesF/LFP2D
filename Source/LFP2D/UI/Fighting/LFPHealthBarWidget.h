@@ -53,6 +53,9 @@ protected:
 	UFUNCTION()
 	void OnBuffListChanged();
 
+	UFUNCTION()
+	void OnUnitAffiliationChanged(ALFPTacticsUnit* Unit, EUnitAffiliation OldAffiliation, EUnitAffiliation NewAffiliation);
+
 	// 血条控件
 	UPROPERTY(BlueprintReadOnly, Category = "Health Bar", meta = (BindWidget))
 	UProgressBar* HealthProgressBar;

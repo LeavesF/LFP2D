@@ -10,12 +10,12 @@ bool ULFPBetrayalCondition::CheckCondition_Implementation(ALFPTacticsUnit* Unit)
 
 bool ULFPBetrayalCondition::RegisterCondition_Implementation(ALFPTacticsUnit* Unit)
 {
-	return false;
+	return Unit != nullptr;
 }
 
 bool ULFPBetrayalCondition::UnRegisterCondition_Implementation(ALFPTacticsUnit* Unit)
 {
-	return false;
+	return Unit != nullptr;
 }
 
 FText ULFPBetrayalCondition::GetConditionDescription() const

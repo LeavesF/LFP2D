@@ -27,6 +27,7 @@ class ULFPMapEditorWidget;
 class ULFPUnitRegistryDataAsset;
 class ULFPBattleCardComponent;
 class ULFPGameInstance;
+class ULFPBetrayalCondition;
 
 struct FLFPCardInstance;
 
@@ -50,6 +51,7 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void SetupInputComponent() override;
 	virtual void Tick(float DeltaTime) override;
 
@@ -349,6 +351,9 @@ public:
 	// 阶段变化响应
 	UFUNCTION()
 	void OnPhaseChanged(EBattlePhase NewPhase);
+
+	UFUNCTION()
+	void OnUnitBetrayedToPlayer(ALFPTacticsUnit* Unit, EUnitAffiliation OldAffiliation, ULFPBetrayalCondition* TriggeringCondition);
 
 protected:
 	// 当前预览的敌人

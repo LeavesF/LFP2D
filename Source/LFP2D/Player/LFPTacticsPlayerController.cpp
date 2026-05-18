@@ -6,6 +6,7 @@
 #include "LFP2D/HexGrid/LFPHexTile.h"
 #include "LFP2D/Card/LFPBattleCardComponent.h"
 #include "LFP2D/Skill/LFPSkillBase.h"
+#include "LFP2D/Unit/Betrayal/LFPBetrayalWorldSubsystem.h"
 #include "LFP2D/Unit/LFPTacticsUnit.h"
 #include "LFP2D/Turn/LFPTurnManager.h"
 #include "LFP2D/UI/Fighting/LFPBattleHUDWidget.h"
@@ -29,6 +30,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+#include "TimerManager.h"
 
 namespace
 {
@@ -145,6 +147,14 @@ void ALFPTacticsPlayerController::BeginPlay()
 		}
 	}
 
+	if (UWorld* World = GetWorld())
+	{
+		if (ULFPBetrayalWorldSubsystem* BetrayalSubsystem = World->GetSubsystem<ULFPBetrayalWorldSubsystem>())
+		{
+			BetrayalSubsystem->OnBetrayalResolvedInSubsystem.AddUniqueDynamic(this, &ALFPTacticsPlayerController::OnUnitBetrayedToPlayer);
+		}
+	}
+
 	// 场景切换淡入效果
 	if (PlayerCameraManager)
 	{
@@ -155,6 +165,19 @@ void ALFPTacticsPlayerController::BeginPlay()
 
 	// 首帧跳过相机平滑插值
 	bSnapCameraNextFrame = true;
+}
+
+void ALFPTacticsPlayerController::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	if (UWorld* World = GetWorld())
+	{
+		if (ULFPBetrayalWorldSubsystem* BetrayalSubsystem = World->GetSubsystem<ULFPBetrayalWorldSubsystem>())
+		{
+			BetrayalSubsystem->OnBetrayalResolvedInSubsystem.RemoveDynamic(this, &ALFPTacticsPlayerController::OnUnitBetrayedToPlayer);
+		}
+	}
+
+	Super::EndPlay(EndPlayReason);
 }
 
 void ALFPTacticsPlayerController::SetupInputComponent()
@@ -2007,6 +2030,45 @@ void ALFPTacticsPlayerController::OnPhaseChanged(EBattlePhase NewPhase)
 		}
 		break;
 	}
+}
+
+void ALFPTacticsPlayerController::OnUnitBetrayedToPlayer(ALFPTacticsUnit* Unit, EUnitAffiliation OldAffiliation,
+	ULFPBetrayalCondition* /*TriggeringCondition*/)
+{
+	if (!Unit ||
+		OldAffiliation == EUnitAffiliation::UA_Player ||
+		Unit->GetAffiliation() != EUnitAffiliation::UA_Player)
+	{
+		return;
+	}
+
+	if (BattleCardComponent)
+	{
+		const int32 AddedCardCount = BattleCardComponent->AddUnitCardsToHand(
+			Cast<ULFPGameInstance>(GetGameInstance()), Unit);
+		if (AddedCardCount > 0 && BattleHUDWidget)
+		{
+			BattleHUDWidget->RefreshCardHand();
+		}
+	}
+
+	if (UWorld* World = GetWorld())
+	{
+		TWeakObjectPtr<ALFPTacticsUnit> WeakUnit(Unit);
+		World->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [this, WeakUnit]()
+		{
+			ALFPTacticsUnit* BetrayedUnit = WeakUnit.Get();
+			if (BetrayedUnit &&
+				BetrayedUnit->IsAlive() &&
+				BetrayedUnit->GetAffiliation() == EUnitAffiliation::UA_Player)
+			{
+				SelectUnit(BetrayedUnit);
+			}
+		}));
+		return;
+	}
+
+	SelectUnit(Unit);
 }
 
 void ALFPTacticsPlayerController::OnToggleEditorAction(const FInputActionValue& Value)

@@ -7,6 +7,7 @@
 #include "LFP2D/Skill/LFPSkillBase.h"
 #include "LFP2D/Skill/LFPSkillComponent.h"
 #include "LFP2D/Buff/LFPBuffComponent.h"
+#include "LFP2D/Unit/Betrayal/LFPBetrayalComponent.h"
 #include "LFP2D/Unit/Betrayal/LFPBetrayalCondition.h"
 #include "LFP2D/HexGrid/LFPHexTile.h"
 #include "LFP2D/HexGrid/LFPHexGridManager.h"
@@ -65,6 +66,7 @@ ALFPTacticsUnit::ALFPTacticsUnit()
     // 创建技能组件
     SkillComponent = CreateDefaultSubobject<ULFPSkillComponent>(TEXT("SkillComponent"));
     BuffComponent = CreateDefaultSubobject<ULFPBuffComponent>(TEXT("BuffComponent"));
+    BetrayalComponent = CreateDefaultSubobject<ULFPBetrayalComponent>(TEXT("BetrayalComponent"));
 
     // 创建头顶计划技能图标组件
     PlannedSkillIconComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("PlannedSkillIconComponent"));
@@ -116,6 +118,10 @@ void ALFPTacticsUnit::ApplyRegistryEntry(const FLFPUnitRegistryEntry& Entry)
     BaseWeight = Entry.AdvancedStats.Weight;
 
     ResetCurrentStatsToBase();
+    if (BetrayalComponent)
+    {
+        BetrayalComponent->ConfigureFromTemplates(Entry.BetrayalConditionTemplates);
+    }
 }
 
 void ALFPTacticsUnit::ResetCurrentStatsToBase(bool bResetHealth)
@@ -289,14 +295,6 @@ void ALFPTacticsUnit::BeginPlay()
         TurnManager->RegisterUnit(this);
     }
 
-    for (ULFPBetrayalCondition* Condition : BetrayalConditions)
-    {
-        if (Condition)
-        {
-            Condition->RegisterCondition(this);
-        }
-    }
-
     FLFPHexCoordinates SpawnPoint = FLFPHexCoordinates(StartCoordinates_Q, StartCoordinates_R);
     SetCurrentCoordinates(SpawnPoint);
 
@@ -334,13 +332,6 @@ void ALFPTacticsUnit::EndPlay(const EEndPlayReason::Type EndPlayReason)
         TurnManager->UnregisterUnit(this);
     }
 
-	for (ULFPBetrayalCondition* Condition : BetrayalConditions)
-	{
-		if (Condition)
-		{
-			Condition->UnRegisterCondition(this);
-		}
-	}
 }
 
 void ALFPTacticsUnit::SetCurrentCoordinates(const FLFPHexCoordinates& NewCoords, bool bUpdateOccupancy)
@@ -1016,8 +1007,23 @@ void ALFPTacticsUnit::HandleDeath()
         }, 2.0f, false);
 }
 
+bool ALFPTacticsUnit::EvaluateBetrayalConditions()
+{
+    return BetrayalComponent ? BetrayalComponent->EvaluateBetrayalConditions() : false;
+}
+
+bool ALFPTacticsUnit::TryBetrayToPlayer(ULFPBetrayalCondition* TriggeringCondition)
+{
+    return BetrayalComponent ? BetrayalComponent->TryBetrayToPlayer(TriggeringCondition) : false;
+}
+
 void ALFPTacticsUnit::ChangeAffiliation(EUnitAffiliation NewAffiliation)
 {
+    if (Affiliation == NewAffiliation)
+    {
+        return;
+    }
+
 	EUnitAffiliation OldAffiliation = Affiliation;
 	Affiliation = NewAffiliation;
 
@@ -1027,6 +1033,7 @@ void ALFPTacticsUnit::ChangeAffiliation(EUnitAffiliation NewAffiliation)
         {
             AIController->UnPossess();
             AIController->Destroy();
+            AIController = nullptr;
         }
 
         // 敌人→玩家：记录捕获
@@ -1040,6 +1047,8 @@ void ALFPTacticsUnit::ChangeAffiliation(EUnitAffiliation NewAffiliation)
     }
 
     // 阵营变更后重新检查胜负条件（如最后一个敌人背叛）
+    OnAffiliationChangedDelegate.Broadcast(this, OldAffiliation, NewAffiliation);
+
     if (ALFPTurnManager* TurnManager = GetTurnManager())
     {
         TurnManager->RefreshAllRuntimeUnitStates();

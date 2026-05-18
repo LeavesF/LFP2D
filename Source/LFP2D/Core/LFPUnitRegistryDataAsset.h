@@ -8,6 +8,7 @@
 
 class ALFPTacticsUnit;
 class ULFPCardDataAsset;
+class ULFPBetrayalCondition;
 class ULFPSkillBase;
 
 /* 单位注册表条目：映射 TypeID 到单位蓝图、属性和默认携带卡。 */
@@ -58,6 +59,9 @@ struct FLFPUnitRegistryEntry
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit Registry|Cards")
 	TArray<TSoftObjectPtr<ULFPCardDataAsset>> DefaultCarriedCards;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Instanced, Category = "Unit Registry|Betrayal")
+	TArray<TObjectPtr<ULFPBetrayalCondition>> BetrayalConditionTemplates;
 };
 
 /* 单位注册表：全局唯一，映射 TypeID 到单位蓝图类和元数据。 */

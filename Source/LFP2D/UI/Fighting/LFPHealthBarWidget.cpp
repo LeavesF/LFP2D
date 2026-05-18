@@ -32,6 +32,7 @@ void ULFPHealthBarWidget::BindToUnit(ALFPTacticsUnit* Unit)
 	// 订阅事件
 	BoundUnit->OnHealthChangedDelegate.AddDynamic(this, &ULFPHealthBarWidget::OnHealthChanged);
 	BoundUnit->OnDeathDelegate.AddDynamic(this, &ULFPHealthBarWidget::OnUnitDeath);
+	BoundUnit->OnAffiliationChangedDelegate.AddDynamic(this, &ULFPHealthBarWidget::OnUnitAffiliationChanged);
 	if (ULFPBuffComponent* BuffComponent = BoundUnit->GetBuffComponent())
 	{
 		BuffComponent->OnBuffListChanged.AddDynamic(this, &ULFPHealthBarWidget::OnBuffListChanged);
@@ -58,6 +59,7 @@ void ULFPHealthBarWidget::UnbindFromUnit()
 		// 取消订阅事件
 		BoundUnit->OnHealthChangedDelegate.RemoveDynamic(this, &ULFPHealthBarWidget::OnHealthChanged);
 		BoundUnit->OnDeathDelegate.RemoveDynamic(this, &ULFPHealthBarWidget::OnUnitDeath);
+		BoundUnit->OnAffiliationChangedDelegate.RemoveDynamic(this, &ULFPHealthBarWidget::OnUnitAffiliationChanged);
 		if (ULFPBuffComponent* BuffComponent = BoundUnit->GetBuffComponent())
 		{
 			BuffComponent->OnBuffListChanged.RemoveDynamic(this, &ULFPHealthBarWidget::OnBuffListChanged);
@@ -114,6 +116,11 @@ void ULFPHealthBarWidget::OnUnitDeath()
 void ULFPHealthBarWidget::OnBuffListChanged()
 {
 	RefreshBuffIcons();
+}
+
+void ULFPHealthBarWidget::OnUnitAffiliationChanged(ALFPTacticsUnit* Unit, EUnitAffiliation OldAffiliation, EUnitAffiliation NewAffiliation)
+{
+	UpdateAffiliationColor(NewAffiliation);
 }
 
 void ULFPHealthBarWidget::RefreshBuffIcons()

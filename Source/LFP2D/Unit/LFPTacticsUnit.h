@@ -13,6 +13,7 @@
 #include "LFPTacticsUnit.generated.h"
 
 class ALFPTacticsUnit;
+class ULFPBetrayalCondition;
 
 // 委托签名
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnHealthChangedSignature, int32, CurrentHealth, int32, MaxHealth);
@@ -20,15 +21,17 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnHealthChangedWithUnitSignature
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUnitDeathSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUnitDeathWithUnitSignature, ALFPTacticsUnit*, Unit);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnUnitAffiliationChangedSignature, ALFPTacticsUnit*, Unit, EUnitAffiliation, OldAffiliation, EUnitAffiliation, NewAffiliation);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnUnitBetrayedSignature, ALFPTacticsUnit*, Unit, EUnitAffiliation, OldAffiliation, ULFPBetrayalCondition*, TriggeringCondition);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMoveFinishedSignature);
 
 class ULFPSkillBase;
 class ALFPHexGridManager;
 class ALFPTurnManager;
+class ULFPBetrayalComponent;
 class ULFPUnitRegistryDataAsset;
 struct FLFPUnitRegistryEntry;
-class ULFPBetrayalCondition;
 class ALFPAIController;
 class ULFPSkillComponent;
 class ULFPBuffComponent;
@@ -390,6 +393,12 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Unit Events")
 	FOnUnitDeathWithUnitSignature OnDeathWithUnitDelegate;
 
+	UPROPERTY(BlueprintAssignable, Category = "Unit Events")
+	FOnUnitAffiliationChangedSignature OnAffiliationChangedDelegate;
+
+	UPROPERTY(BlueprintAssignable, Category = "Unit Events")
+	FOnUnitBetrayedSignature OnUnitBetrayedDelegate;
+
 	// 获取当前血量
 	UFUNCTION(BlueprintPure, Category = "Unit Combat")
 	int32 GetCurrentHealth() const { return CurrentHealth; }
@@ -653,9 +662,18 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Betrayal")
 	void ChangeAffiliation(EUnitAffiliation NewAffiliation = EUnitAffiliation::UA_Player);
 
+	UFUNCTION(BlueprintCallable, Category = "Betrayal")
+	bool EvaluateBetrayalConditions();
+
+	UFUNCTION(BlueprintCallable, Category = "Betrayal")
+	bool TryBetrayToPlayer(ULFPBetrayalCondition* TriggeringCondition = nullptr);
+
+	UFUNCTION(BlueprintPure, Category = "Betrayal")
+	ULFPBetrayalComponent* GetBetrayalComponent() const { return BetrayalComponent; }
+
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Betrayal")
-	TArray<ULFPBetrayalCondition*> BetrayalConditions;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Betrayal", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<ULFPBetrayalComponent> BetrayalComponent;
 
 	// 敌方AI控制器支持和事件
 public:
