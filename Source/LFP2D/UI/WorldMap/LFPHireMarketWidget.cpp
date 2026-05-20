@@ -1,12 +1,17 @@
 #include "LFP2D/UI/WorldMap/LFPHireMarketWidget.h"
+#include "LFP2D/Card/LFPCardPreviewBuilder.h"
 #include "LFP2D/Core/LFPGameInstance.h"
 #include "LFP2D/Core/LFPUnitRegistryDataAsset.h"
+#include "LFP2D/UI/Fighting/LFPCardItemWidget.h"
 #include "LFP2D/UI/WorldMap/LFPUnitReplacementWidget.h"
 #include "Components/Button.h"
 #include "Components/Image.h"
+#include "Components/ScaleBox.h"
+#include "Components/SizeBox.h"
 #include "Components/TextBlock.h"
 #include "Components/VerticalBox.h"
 #include "Components/VerticalBoxSlot.h"
+#include "Components/WrapBox.h"
 
 void ULFPHireMarketWidget::NativeOnInitialized()
 {
@@ -107,6 +112,8 @@ void ULFPHireMarketWidget::RefreshUnitList()
 
 void ULFPHireMarketWidget::RefreshDetailPanel()
 {
+	ClearSelectedUnitCardPreview();
+
 	if (!CachedGameInstance || !CachedGameInstance->UnitRegistry)
 	{
 		return;
@@ -133,6 +140,7 @@ void ULFPHireMarketWidget::RefreshDetailPanel()
 	}
 
 	const bool bPurchased = CachedGameInstance->HasPurchasedHireMarketUnit(CachedHireMarketID, Entry.UnitTypeID);
+	RefreshSelectedUnitCardPreview(UnitDefinition);
 
 	if (Image_SelectedUnit)
 	{
@@ -194,6 +202,85 @@ void ULFPHireMarketWidget::RefreshDetailPanel()
 		{
 			Text_Status->SetText(FText::FromString(TEXT("可雇佣")));
 		}
+	}
+}
+
+void ULFPHireMarketWidget::ClearSelectedUnitCardPreview()
+{
+	DisplayedSelectedUnitCards.Reset();
+
+	if (Box_SelectedUnitCards)
+	{
+		Box_SelectedUnitCards->ClearChildren();
+	}
+}
+
+void ULFPHireMarketWidget::RefreshSelectedUnitCardPreview(const FLFPUnitRegistryEntry& UnitDefinition)
+{
+	if (!Box_SelectedUnitCards || !SelectedUnitCardItemWidgetClass || MaxSelectedUnitPreviewCards <= 0)
+	{
+		return;
+	}
+
+	FLFPCardPreviewAttackDefaults AttackDefaults;
+	AttackDefaults.MeleeAttackCard = PreviewFallbackMeleeAttackCard;
+	AttackDefaults.RangedAttackCard = PreviewFallbackRangedAttackCard;
+	AttackDefaults.MagicAttackCard = PreviewFallbackMagicAttackCard;
+	AttackDefaults.MeleeAttackClass = PreviewFallbackMeleeAttackClass;
+	AttackDefaults.RangedAttackClass = PreviewFallbackRangedAttackClass;
+	AttackDefaults.MagicAttackClass = PreviewFallbackMagicAttackClass;
+
+	FLFPCardPreviewBuilder::BuildUnitCardsPreview(
+		UnitDefinition,
+		AttackDefaults,
+		this,
+		MaxSelectedUnitPreviewCards,
+		DisplayedSelectedUnitCards);
+
+	for (const FLFPCardInstance& Card : DisplayedSelectedUnitCards)
+	{
+		if (!Card.IsValid())
+		{
+			continue;
+		}
+
+		ULFPCardItemWidget* CardItem = CreateWidget<ULFPCardItemWidget>(this, SelectedUnitCardItemWidgetClass);
+		if (!CardItem)
+		{
+			continue;
+		}
+
+		CardItem->InitializeCardItem(Card, nullptr);
+		CardItem->SetVisibility(ESlateVisibility::HitTestInvisible);
+
+		USizeBox* CardSizeBox = NewObject<USizeBox>(this);
+		if (!CardSizeBox)
+		{
+			continue;
+		}
+		CardSizeBox->SetVisibility(ESlateVisibility::HitTestInvisible);
+
+		if (SelectedUnitCardPreviewSize.X > 0.0f)
+		{
+			CardSizeBox->SetWidthOverride(SelectedUnitCardPreviewSize.X);
+		}
+		if (SelectedUnitCardPreviewSize.Y > 0.0f)
+		{
+			CardSizeBox->SetHeightOverride(SelectedUnitCardPreviewSize.Y);
+		}
+
+		UScaleBox* CardScaleBox = NewObject<UScaleBox>(this);
+		if (!CardScaleBox)
+		{
+			continue;
+		}
+		CardScaleBox->SetVisibility(ESlateVisibility::HitTestInvisible);
+		CardScaleBox->SetStretch(EStretch::ScaleToFit);
+		CardScaleBox->SetStretchDirection(EStretchDirection::Both);
+
+		CardScaleBox->AddChild(CardItem);
+		CardSizeBox->AddChild(CardScaleBox);
+		Box_SelectedUnitCards->AddChildToWrapBox(CardSizeBox);
 	}
 }
 

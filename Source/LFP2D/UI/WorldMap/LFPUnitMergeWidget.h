@@ -2,14 +2,20 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "LFP2D/Card/LFPCardTypes.h"
 #include "LFP2D/Core/LFPGameInstance.h"
 #include "LFPUnitMergeWidget.generated.h"
 
+class ULFPCardDataAsset;
+class ULFPCardItemWidget;
 class ULFPUnitRegistryDataAsset;
 class UButton;
+class UHorizontalBox;
 class UImage;
 class UTextBlock;
-class UHorizontalBox;
+class UWrapBox;
+class ULFPSkillBase;
+struct FLFPUnitRegistryEntry;
 
 // 合成框槽位信息
 USTRUCT(BlueprintType)
@@ -47,7 +53,7 @@ class LFP2D_API ULFPUnitMergeWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	// 初始化（传入 GameInstance 和注册表）
+	// 初始化：传入 GameInstance 和单位注册表。
 	UFUNCTION(BlueprintCallable, Category = "Unit Merge")
 	void Setup(ULFPGameInstance* GI, ULFPUnitRegistryDataAsset* Registry);
 
@@ -59,54 +65,78 @@ protected:
 	virtual void NativeOnInitialized() override;
 
 private:
-	// 刷新底部单位 icon 栏
+	// 刷新底部单位 icon 栏。
 	void RefreshUnitIcons();
 
-	// 将单位放入第一个空的合成框
+	// 将单位放入第一个空的合成框。
 	void PlaceUnitInSlot(bool bIsParty, int32 Index);
 
-	// 底部 icon 按钮点击回调（通过映射表查找对应单位）
+	// 底部 icon 按钮点击回调（通过映射表查找对应单位）。
 	UFUNCTION() void OnUnitIconClicked();
 
-	// 点击合成框 → 清空该框
+	// 点击合成框 -> 清空该框。
 	UFUNCTION() void OnSlotAClicked();
 	UFUNCTION() void OnSlotBClicked();
 
-	// 清空两个合成框
+	// 清空两个合成框。
 	void ClearSlots();
 
-	// 检查匹配并更新预览
+	// 检查匹配并更新预览。
 	void UpdatePreview();
 
-	// 确认合并
+	// 清空待合成和合成后单位的卡牌预览。
+	void ClearCardPreviews();
+
+	// 根据当前合成槽位，刷新待合成单位的只读卡牌预览。
+	void RefreshMergeSourceCardPreview();
+
+	// 根据进化目标单位 TypeID，刷新合成后单位的只读卡牌预览。
+	void RefreshMergeResultCardPreview(FName ResultUnitTypeID);
+
+	// 在指定 WrapBox 中重建某个单位的只读卡牌预览。
+	void RebuildUnitCardPreview(
+		const FLFPUnitRegistryEntry& UnitDefinition,
+		UWrapBox* TargetBox,
+		TArray<FLFPCardInstance>& OutDisplayedCards,
+		bool bAppend = false);
+
+	// 确认合并。
 	UFUNCTION() void OnMergeClicked();
 
-	// 分支选择按钮点击
+	// 分支选择按钮点击。
 	UFUNCTION() void OnEvolutionChoiceClicked();
 
-	// 清空按钮
+	// 清空按钮。
 	UFUNCTION() void OnClearClicked();
 
-	// 关闭
+	// 关闭。
 	UFUNCTION() void OnCloseClicked();
 
-	// 更新合成框的图标显示
+	// 更新合成槽的图标显示。
 	void UpdateSlotVisual(const FLFPMergeSlotInfo& InSlot, UImage* SlotImage);
 
-	// 生成星级文本（如 "★★☆"）
+	// 生成星级文本（如 "★★☆"）。
 	FString MakeTierStars(int32 Tier) const;
 
 protected:
 	// ==== BindWidget 控件 ====
 
-	// 进化目标展示容器（单目标/多分支统一用此容器）
+	// 进化目标展示容器（单目标/多分支统一用此容器）。
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
 	TObjectPtr<UHorizontalBox> Box_EvolutionChoices;
+
+	// 待合成单位的卡牌预览容器，只展示不交互。
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+	TObjectPtr<UWrapBox> Box_MergeSourceUnitCards;
+
+	// 合成后单位的卡牌预览容器，只展示不交互。
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+	TObjectPtr<UWrapBox> Box_MergeResultUnitCards;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
 	TObjectPtr<UTextBlock> Text_PreviewName;
 
-	// 合成框（可点击清空）
+	// 合成框（可点击清空）。
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
 	TObjectPtr<UButton> Button_SlotA;
 
@@ -119,7 +149,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
 	TObjectPtr<UImage> Image_SlotB;
 
-	// 操作按钮
+	// 操作按钮。
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
 	TObjectPtr<UButton> Button_Merge;
 
@@ -129,16 +159,48 @@ protected:
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
 	TObjectPtr<UButton> Button_Close;
 
-	// 底部单位 icon 容器
+	// 底部单位 icon 容器。
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
 	TObjectPtr<UHorizontalBox> Box_PartyUnits;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
 	TObjectPtr<UHorizontalBox> Box_ReserveUnits;
 
-	// 标题
+	// 标题。
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
 	TObjectPtr<UTextBlock> Text_Title;
+
+	// ==== 卡牌预览配置 ====
+
+	// 用于创建预览卡牌条目的 Widget 类，通常配置为现有 WBP_CardItem。
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Merge|Cards")
+	TSubclassOf<ULFPCardItemWidget> MergeCardItemWidgetClass;
+
+	// 每个单位最多显示的预览卡牌数量。
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Merge|Cards", meta = (ClampMin = "0"))
+	int32 MaxMergeUnitPreviewCards = 16;
+
+	// 单张预览卡在 WrapBox 中占用的固定尺寸，内部用 ScaleBox 缩放卡牌内容。
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Merge|Cards")
+	FVector2D MergeCardPreviewSize = FVector2D(320.0f, 420.0f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Merge|Cards|AttackDefaults")
+	TSoftObjectPtr<ULFPCardDataAsset> PreviewFallbackMeleeAttackCard;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Merge|Cards|AttackDefaults")
+	TSoftObjectPtr<ULFPCardDataAsset> PreviewFallbackRangedAttackCard;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Merge|Cards|AttackDefaults")
+	TSoftObjectPtr<ULFPCardDataAsset> PreviewFallbackMagicAttackCard;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Merge|Cards|AttackDefaults|Legacy")
+	TSubclassOf<ULFPSkillBase> PreviewFallbackMeleeAttackClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Merge|Cards|AttackDefaults|Legacy")
+	TSubclassOf<ULFPSkillBase> PreviewFallbackRangedAttackClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Merge|Cards|AttackDefaults|Legacy")
+	TSubclassOf<ULFPSkillBase> PreviewFallbackMagicAttackClass;
 
 	// ==== 运行时数据 ====
 
@@ -148,22 +210,29 @@ protected:
 	UPROPERTY()
 	TObjectPtr<ULFPUnitRegistryDataAsset> CachedRegistry;
 
-	// 合成框状态
+	// 合成框状态。
 	FLFPMergeSlotInfo SlotA;
 	FLFPMergeSlotInfo SlotB;
 
-	// 当前选中的进化目标（分支选择时使用）
+	// 当前选中的进化目标（分支选择时使用）。
 	FName SelectedEvolutionTarget;
 
-	// 动态创建的底部 icon 按钮缓存（防止 GC）
+	// 动态创建的底部 icon 按钮缓存（防止 GC）。
 	UPROPERTY()
 	TArray<TObjectPtr<UButton>> UnitIconButtons;
 
-	// 分支选择按钮缓存
+	// 分支选择按钮缓存。
 	UPROPERTY()
 	TArray<TObjectPtr<UButton>> EvolutionChoiceButtons;
 
-	// 按钮 → 单位来源映射（bIsParty, SlotIndex）
+	// 预览卡牌实例需要持有 RuntimeSkill，避免临时技能被 GC。
+	UPROPERTY()
+	TArray<FLFPCardInstance> DisplayedMergeSourceCards;
+
+	UPROPERTY()
+	TArray<FLFPCardInstance> DisplayedMergeResultCards;
+
+	// 按钮 -> 单位来源映射（bIsParty, SlotIndex）。
 	struct FButtonUnitMapping
 	{
 		bool bIsParty;
@@ -171,6 +240,6 @@ protected:
 	};
 	TMap<UButton*, FButtonUnitMapping> ButtonToUnitMap;
 
-	// 分支选择按钮 → 目标 TypeID 映射
+	// 分支选择按钮 -> 目标 TypeID 映射。
 	TMap<UButton*, FName> EvolutionButtonToTargetMap;
 };

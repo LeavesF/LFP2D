@@ -1642,9 +1642,20 @@ void ALFPTacticsPlayerController::PreviewCardUsableUnits(const FLFPCardInstance&
 	}
 
 	TArray<ALFPHexTile*> CardUsableTiles;
-	for (TObjectPtr<ALFPTacticsUnit>& UnitPtr : DeployedUnits)
+	TArray<ALFPTacticsUnit*> CandidateUnits;
+	if (ALFPTurnManager* TurnManager = GetTurnManager())
 	{
-		ALFPTacticsUnit* Unit = UnitPtr.Get();
+		for (ALFPTacticsUnit* Unit : TurnManager->GetTurnOrderUnits())
+		{
+			if (Unit && Unit->GetAffiliation() == EUnitAffiliation::UA_Player)
+			{
+				CandidateUnits.Add(Unit);
+			}
+		}
+	}
+
+	for (ALFPTacticsUnit* Unit : CandidateUnits)
+	{
 		if (!Unit || !Unit->IsAlive() || !Unit->CanUseCard(CardInstance))
 		{
 			continue;

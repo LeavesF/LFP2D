@@ -1,10 +1,15 @@
 #include "LFP2D/UI/WorldMap/LFPUnitMergeWidget.h"
+#include "LFP2D/Card/LFPCardPreviewBuilder.h"
 #include "LFP2D/Core/LFPUnitRegistryDataAsset.h"
+#include "LFP2D/UI/Fighting/LFPCardItemWidget.h"
 #include "Components/Button.h"
+#include "Components/ScaleBox.h"
 #include "Components/Image.h"
+#include "Components/SizeBox.h"
 #include "Components/TextBlock.h"
 #include "Components/HorizontalBox.h"
 #include "Components/HorizontalBoxSlot.h"
+#include "Components/WrapBox.h"
 #include "Engine/Texture2D.h"
 
 void ULFPUnitMergeWidget::NativeOnInitialized()
@@ -197,12 +202,177 @@ void ULFPUnitMergeWidget::ClearSlots()
 	UpdateSlotVisual(SlotA, Image_SlotA);
 	UpdateSlotVisual(SlotB, Image_SlotB);
 	UpdatePreview();
+	ClearCardPreviews();
+}
+
+void ULFPUnitMergeWidget::ClearCardPreviews()
+{
+	DisplayedMergeSourceCards.Reset();
+	DisplayedMergeResultCards.Reset();
+
+	if (Box_MergeSourceUnitCards)
+	{
+		Box_MergeSourceUnitCards->ClearChildren();
+	}
+
+	if (Box_MergeResultUnitCards)
+	{
+		Box_MergeResultUnitCards->ClearChildren();
+	}
+}
+
+void ULFPUnitMergeWidget::RefreshMergeSourceCardPreview()
+{
+	DisplayedMergeSourceCards.Reset();
+	if (Box_MergeSourceUnitCards)
+	{
+		Box_MergeSourceUnitCards->ClearChildren();
+	}
+
+	if (!CachedRegistry)
+	{
+		return;
+	}
+
+	const auto AddSlotCards = [this](const FLFPMergeSlotInfo& MergeSlot)
+	{
+		if (MergeSlot.bIsEmpty)
+		{
+			return;
+		}
+
+		FLFPUnitRegistryEntry UnitDefinition;
+		if (!CachedRegistry->FindEntry(MergeSlot.Unit.TypeID, UnitDefinition))
+		{
+			return;
+		}
+
+		RebuildUnitCardPreview(UnitDefinition, Box_MergeSourceUnitCards, DisplayedMergeSourceCards, true);
+	};
+
+	AddSlotCards(SlotA);
+	AddSlotCards(SlotB);
+}
+
+void ULFPUnitMergeWidget::RefreshMergeResultCardPreview(FName ResultUnitTypeID)
+{
+	if (ResultUnitTypeID.IsNone() || !CachedRegistry)
+	{
+		DisplayedMergeResultCards.Reset();
+		if (Box_MergeResultUnitCards)
+		{
+			Box_MergeResultUnitCards->ClearChildren();
+		}
+		return;
+	}
+
+	FLFPUnitRegistryEntry UnitDefinition;
+	if (!CachedRegistry->FindEntry(ResultUnitTypeID, UnitDefinition))
+	{
+		DisplayedMergeResultCards.Reset();
+		if (Box_MergeResultUnitCards)
+		{
+			Box_MergeResultUnitCards->ClearChildren();
+		}
+		return;
+	}
+
+	RebuildUnitCardPreview(UnitDefinition, Box_MergeResultUnitCards, DisplayedMergeResultCards);
+}
+
+void ULFPUnitMergeWidget::RebuildUnitCardPreview(
+	const FLFPUnitRegistryEntry& UnitDefinition,
+	UWrapBox* TargetBox,
+	TArray<FLFPCardInstance>& OutDisplayedCards,
+	bool bAppend)
+{
+	if (!bAppend)
+	{
+		OutDisplayedCards.Reset();
+		if (TargetBox)
+		{
+			TargetBox->ClearChildren();
+		}
+	}
+
+	if (!TargetBox || !MergeCardItemWidgetClass || MaxMergeUnitPreviewCards <= 0)
+	{
+		return;
+	}
+
+	FLFPCardPreviewAttackDefaults AttackDefaults;
+	AttackDefaults.MeleeAttackCard = PreviewFallbackMeleeAttackCard;
+	AttackDefaults.RangedAttackCard = PreviewFallbackRangedAttackCard;
+	AttackDefaults.MagicAttackCard = PreviewFallbackMagicAttackCard;
+	AttackDefaults.MeleeAttackClass = PreviewFallbackMeleeAttackClass;
+	AttackDefaults.RangedAttackClass = PreviewFallbackRangedAttackClass;
+	AttackDefaults.MagicAttackClass = PreviewFallbackMagicAttackClass;
+
+	TArray<FLFPCardInstance> BuiltCards;
+	FLFPCardPreviewBuilder::BuildUnitCardsPreview(
+		UnitDefinition,
+		AttackDefaults,
+		this,
+		MaxMergeUnitPreviewCards,
+		BuiltCards);
+
+	for (const FLFPCardInstance& Card : BuiltCards)
+	{
+		if (!Card.IsValid())
+		{
+			continue;
+		}
+
+		FLFPCardInstance DisplayCard = Card;
+		DisplayCard.InstanceID = OutDisplayedCards.Num() + 1;
+
+		ULFPCardItemWidget* CardItem = CreateWidget<ULFPCardItemWidget>(this, MergeCardItemWidgetClass);
+		if (!CardItem)
+		{
+			continue;
+		}
+
+		CardItem->InitializeCardItem(DisplayCard, nullptr);
+		CardItem->SetVisibility(ESlateVisibility::HitTestInvisible);
+
+		USizeBox* CardSizeBox = NewObject<USizeBox>(this);
+		if (!CardSizeBox)
+		{
+			continue;
+		}
+		CardSizeBox->SetVisibility(ESlateVisibility::HitTestInvisible);
+
+		if (MergeCardPreviewSize.X > 0.0f)
+		{
+			CardSizeBox->SetWidthOverride(MergeCardPreviewSize.X);
+		}
+		if (MergeCardPreviewSize.Y > 0.0f)
+		{
+			CardSizeBox->SetHeightOverride(MergeCardPreviewSize.Y);
+		}
+
+		UScaleBox* CardScaleBox = NewObject<UScaleBox>(this);
+		if (!CardScaleBox)
+		{
+			continue;
+		}
+		CardScaleBox->SetVisibility(ESlateVisibility::HitTestInvisible);
+		CardScaleBox->SetStretch(EStretch::ScaleToFit);
+		CardScaleBox->SetStretchDirection(EStretchDirection::Both);
+
+		CardScaleBox->AddChild(CardItem);
+		CardSizeBox->AddChild(CardScaleBox);
+		TargetBox->AddChildToWrapBox(CardSizeBox);
+		OutDisplayedCards.Add(DisplayCard);
+	}
 }
 
 void ULFPUnitMergeWidget::UpdatePreview()
 {
 	bool bCanMerge = false;
 	SelectedEvolutionTarget = NAME_None;
+	ClearCardPreviews();
+	RefreshMergeSourceCardPreview();
 
 	// 清空进化目标展示
 	if (Box_EvolutionChoices) Box_EvolutionChoices->ClearChildren();
@@ -280,6 +450,8 @@ void ULFPUnitMergeWidget::UpdatePreview()
 							*TargetEntry.DisplayName.ToString(), *MakeTierStars(TargetEntry.Tier));
 						Text_PreviewName->SetText(FText::FromString(PreviewText));
 					}
+
+					RefreshMergeResultCardPreview(SelectedEvolutionTarget);
 				}
 				else
 				{
@@ -368,6 +540,8 @@ void ULFPUnitMergeWidget::OnEvolutionChoiceClicked()
 				}
 			}
 
+			RefreshMergeResultCardPreview(SelectedEvolutionTarget);
+
 			if (Button_Merge)
 			{
 				Button_Merge->SetIsEnabled(true);
@@ -394,12 +568,14 @@ void ULFPUnitMergeWidget::OnMergeClicked()
 
 	ClearSlots();
 	RefreshUnitIcons();
+	ClearCardPreviews();
 }
 
 void ULFPUnitMergeWidget::OnClearClicked()
 {
 	ClearSlots();
 	RefreshUnitIcons();
+	ClearCardPreviews();
 }
 
 void ULFPUnitMergeWidget::OnCloseClicked()
