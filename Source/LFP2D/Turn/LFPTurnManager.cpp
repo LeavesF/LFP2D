@@ -1076,6 +1076,61 @@ void ALFPTurnManager::RestoreFactionAP(EUnitAffiliation Faction, int32 Amount)
 
 void ALFPTurnManager::AllocateEnemyPlans()
 {
+    {
+        AllocatedPlans.Empty();
+
+        TSet<ALFPHexTile*> ReservedDestinationTiles;
+        TMap<ALFPTacticsUnit*, int32> TargetLockCounts;
+
+        for (ALFPTacticsUnit* Enemy : PlanningOrderEnemies)
+        {
+            if (!Enemy || !Enemy->IsAlive())
+            {
+                continue;
+            }
+
+            FEnemyActionPlan Plan;
+            Plan.EnemyUnit = Enemy;
+
+            if (ALFPAIController* AIController = Enemy->GetAIController())
+            {
+                Plan = AIController->CreateActionPlanWithTargetLocks(&TargetLockCounts);
+                Plan.EnemyUnit = Enemy;
+            }
+
+            if (!Plan.CasterPositionTile)
+            {
+                Plan.CasterPositionTile = Enemy->GetCurrentTile();
+            }
+
+            if (Plan.CasterPositionTile &&
+                Plan.CasterPositionTile != Enemy->GetCurrentTile() &&
+                ReservedDestinationTiles.Contains(Plan.CasterPositionTile))
+            {
+                Plan.CasterPositionTile = Enemy->GetCurrentTile();
+                Plan.PlannedSkill = nullptr;
+                Plan.EffectAreaTiles.Empty();
+            }
+
+            Plan.bIsValid = Plan.CasterPositionTile != nullptr;
+
+            if (Plan.bIsValid && Plan.CasterPositionTile)
+            {
+                ReservedDestinationTiles.Add(Plan.CasterPositionTile);
+            }
+
+            AllocatedPlans.Add(Enemy, Plan);
+
+            if (Plan.PlannedSkill && Plan.TargetUnit && Plan.TargetUnit->IsAlive())
+            {
+                TargetLockCounts.FindOrAdd(Plan.TargetUnit)++;
+            }
+        }
+    }
+    return;
+}
+
+#if 0
     AllocatedPlans.Empty();
 
     // 收集所有敌方单位的所有消耗AP的技能候选
@@ -1246,6 +1301,8 @@ void ALFPTurnManager::AllocateEnemyPlans()
 
     // 未分配到AP技能的敌人会在 CreateActionPlan 中 fallback 到默认攻击
 }
+
+#endif
 
 void ALFPTurnManager::CheckBattleEnd()
 {

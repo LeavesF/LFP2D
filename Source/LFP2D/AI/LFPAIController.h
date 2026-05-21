@@ -13,6 +13,7 @@
 class ALFPTacticsUnit;
 class ALFPHexGridManager;
 class ALFPHexTile;
+class ULFPCardDataAsset;
 class ULFPEnemyBehaviorData;
 
 struct FEnemySkillPlanCandidate
@@ -113,6 +114,10 @@ public:
     UFUNCTION(BlueprintCallable, Category = "AI")
     ALFPTacticsUnit* FindBestTarget() const;
 
+    UFUNCTION(BlueprintCallable, Category = "AI")
+    ALFPTacticsUnit* FindBestHatredTarget() const;
+    ALFPTacticsUnit* FindBestHatredTarget(const TMap<ALFPTacticsUnit*, int32>* ExistingTargetLocks) const;
+
     // 根据技能的仇恨值公式，从所有玩家单位中找到最优攻击目标
     UFUNCTION(BlueprintCallable, Category = "AI")
     ALFPTacticsUnit* FindBestSkillTarget(ULFPSkillBase* Skill) const;
@@ -125,6 +130,10 @@ public:
     UFUNCTION(BlueprintCallable, Category = "AI")
     float CalculateThreatValue(ALFPTacticsUnit* Target) const;
 
+    UFUNCTION(BlueprintCallable, Category = "AI")
+    float CalculateTargetHatredValue(ALFPTacticsUnit* Target) const;
+    float CalculateTargetHatredValue(ALFPTacticsUnit* Target, const TMap<ALFPTacticsUnit*, int32>* ExistingTargetLocks) const;
+
     // 计算位置价值
     UFUNCTION(BlueprintCallable, Category = "AI")
     float CalculatePositionValue(ALFPHexTile* Tile, ALFPTacticsUnit* Target) const;
@@ -135,6 +144,7 @@ public:
     // PreAllocatedSkill: 全局分配阶段预分配的技能，为空则自行选择
     UFUNCTION(BlueprintCallable, Category = "AI|Planning")
     FEnemyActionPlan CreateActionPlan(ULFPSkillBase* PreAllocatedSkill = nullptr);
+    FEnemyActionPlan CreateActionPlanWithTargetLocks(const TMap<ALFPTacticsUnit*, int32>* ExistingTargetLocks);
     bool BuildBestSkillPlanCandidate(ULFPSkillBase* Skill, int32 PlanningOrderIndex, FEnemySkillPlanCandidate& OutCandidate) const;
     FEnemyActionPlan CreateMovementOnlyPlan(const FEnemySkillPlanCandidate* PreferredCandidate = nullptr) const;
 
@@ -159,6 +169,7 @@ public:
     ALFPTacticsUnit* GetControlledUnit();
 
     void SetControlledUnit(ALFPTacticsUnit* NewUnit);
+    void SetBehaviorData(ULFPEnemyBehaviorData* NewBehaviorData);
 
 protected:
     // 当前控制的单位
@@ -174,6 +185,19 @@ protected:
     ULFPEnemyBehaviorData* BehaviorData;
 
 private:
+    UPROPERTY()
+    TArray<TObjectPtr<ULFPSkillBase>> RuntimeEnemyCardSkills;
+
+    void BuildEnemyCardSkills();
+    bool AddEnemyCardSkillFromCardData(const TSoftObjectPtr<ULFPCardDataAsset>& CardData);
+    TSoftObjectPtr<ULFPCardDataAsset> GetGlobalAttackCardForUnit() const;
+    FGameplayTag FindFirstControlledUnitTagWithPrefix(const FString& Prefix) const;
+    bool IsEnemyTargetSkill(ULFPSkillBase* Skill) const;
+    bool SelectWeightedSkillForTarget(
+        ALFPTacticsUnit* TargetUnit,
+        ULFPSkillBase*& OutSkill,
+        ALFPHexTile*& OutCasterTile,
+        TArray<ALFPHexTile*>& OutEffectAreaTiles);
     void CollectPotentialTargets(ULFPSkillBase* Skill, TArray<ALFPTacticsUnit*>& OutTargets) const;
     bool TryBuildCandidateForTarget(
         ULFPSkillBase* Skill,

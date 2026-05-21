@@ -35,6 +35,7 @@ struct FLFPUnitRegistryEntry;
 class ALFPAIController;
 class ULFPSkillComponent;
 class ULFPBuffComponent;
+class ULFPEnemyBehaviorData;
 
 USTRUCT(BlueprintType)
 struct FLFPUnitBaseStats
@@ -519,6 +520,9 @@ public:
 	// 特殊标签
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Unit Identity")
 	FGameplayTagContainer SpecialTags;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Unit Identity")
+	TObjectPtr<ULFPEnemyBehaviorData> EnemyBehaviorData = nullptr;
 
 	// 生成轻量单位数据（用于捕获、保存）
 	FLFPUnitEntry ToUnitEntry() const

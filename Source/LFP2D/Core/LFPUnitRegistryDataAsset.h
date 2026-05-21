@@ -9,6 +9,7 @@
 class ALFPTacticsUnit;
 class ULFPCardDataAsset;
 class ULFPBetrayalCondition;
+class ULFPEnemyBehaviorData;
 class ULFPSkillBase;
 
 /* 单位注册表条目：映射 TypeID 到单位蓝图、属性和默认携带卡。 */
@@ -59,6 +60,9 @@ struct FLFPUnitRegistryEntry
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit Registry|Cards")
 	TArray<TSoftObjectPtr<ULFPCardDataAsset>> DefaultCarriedCards;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit Registry|AI")
+	TObjectPtr<ULFPEnemyBehaviorData> EnemyBehaviorData = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Instanced, Category = "Unit Registry|Betrayal")
 	TArray<TObjectPtr<ULFPBetrayalCondition>> BetrayalConditionTemplates;

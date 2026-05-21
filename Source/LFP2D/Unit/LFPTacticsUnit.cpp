@@ -104,6 +104,7 @@ void ALFPTacticsUnit::ApplyRegistryEntry(const FLFPUnitRegistryEntry& Entry)
 {
     UnitRace = Entry.Race;
     SpecialTags = Entry.SpecialTags;
+    EnemyBehaviorData = Entry.EnemyBehaviorData;
 
     BaseAttackType = Entry.BaseStats.AttackType;
     BaseAttack = Entry.BaseStats.Attack;
@@ -121,6 +122,11 @@ void ALFPTacticsUnit::ApplyRegistryEntry(const FLFPUnitRegistryEntry& Entry)
     if (BetrayalComponent)
     {
         BetrayalComponent->ConfigureFromTemplates(Entry.BetrayalConditionTemplates);
+    }
+
+    if (AIController)
+    {
+        AIController->SetBehaviorData(EnemyBehaviorData);
     }
 }
 
@@ -318,6 +324,7 @@ void ALFPTacticsUnit::BeginPlay()
             {
                 AIController->Possess(this);
                 AIController->SetControlledUnit(this);
+                AIController->SetBehaviorData(EnemyBehaviorData);
             }
         }
     }

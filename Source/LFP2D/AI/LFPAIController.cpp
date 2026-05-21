@@ -3,6 +3,9 @@
 
 #include "LFP2D/AI/LFPAIController.h"
 #include "LFP2D/AI/LFPEnemyBehaviorData.h"
+#include "LFP2D/Card/LFPCardDataAsset.h"
+#include "LFP2D/Core/LFPGameInstance.h"
+#include "LFP2D/Core/LFPUnitRegistryDataAsset.h"
 #include "LFP2D/Unit/LFPTacticsUnit.h"
 #include "LFP2D/HexGrid/LFPHexGridManager.h"
 #include "LFP2D/HexGrid/LFPHexTile.h"
@@ -11,6 +14,21 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "Kismet/GameplayStatics.h"
+
+namespace
+{
+ULFPGameInstance* GetLFPGameInstance(const UObject* WorldContext)
+{
+    if (!WorldContext)
+    {
+        return nullptr;
+    }
+
+    UWorld* World = WorldContext->GetWorld();
+    return World ? Cast<ULFPGameInstance>(World->GetGameInstance()) : nullptr;
+}
+}
+
 FEnemyActionPlan FEnemySkillPlanCandidate::ToActionPlan() const
 {
     FEnemyActionPlan Plan;
@@ -84,23 +102,33 @@ void ALFPAIController::EndUnitTurn()
 
 ALFPTacticsUnit* ALFPAIController::FindBestTarget() const
 {
+    return FindBestHatredTarget();
+}
+
+ALFPTacticsUnit* ALFPAIController::FindBestHatredTarget() const
+{
+    return FindBestHatredTarget(nullptr);
+}
+
+ALFPTacticsUnit* ALFPAIController::FindBestHatredTarget(const TMap<ALFPTacticsUnit*, int32>* ExistingTargetLocks) const
+{
     if (!ControlledUnit || !GridManager) return nullptr;
 
-    TArray<AActor*> PlayerUnits;
-    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALFPTacticsUnit::StaticClass(), PlayerUnits);
+    TArray<AActor*> AllUnits;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALFPTacticsUnit::StaticClass(), AllUnits);
 
     ALFPTacticsUnit* BestTarget = nullptr;
-    float BestThreatValue = -MAX_FLT;
+    float BestHatredValue = -MAX_FLT;
 
-    for (AActor* Actor : PlayerUnits)
+    for (AActor* Actor : AllUnits)
     {
         ALFPTacticsUnit* Unit = Cast<ALFPTacticsUnit>(Actor);
         if (Unit && Unit->IsAlive() && Unit->IsAlly())
         {
-            float ThreatValue = CalculateThreatValue(Unit);
-            if (ThreatValue > BestThreatValue)
+            const float HatredValue = CalculateTargetHatredValue(Unit, ExistingTargetLocks);
+            if (HatredValue > BestHatredValue)
             {
-                BestThreatValue = ThreatValue;
+                BestHatredValue = HatredValue;
                 BestTarget = Unit;
             }
         }
@@ -164,6 +192,54 @@ float ALFPAIController::CalculateThreatValue(ALFPTacticsUnit* Target) const
     return ThreatValue * DistanceFactor;
 }
 
+float ALFPAIController::CalculateTargetHatredValue(ALFPTacticsUnit* Target) const
+{
+    return CalculateTargetHatredValue(Target, nullptr);
+}
+
+float ALFPAIController::CalculateTargetHatredValue(
+    ALFPTacticsUnit* Target,
+    const TMap<ALFPTacticsUnit*, int32>* ExistingTargetLocks) const
+{
+    if (!ControlledUnit || !Target)
+    {
+        return 0.0f;
+    }
+
+    float TagHatred = 0.0f;
+    if (BehaviorData)
+    {
+        const FGameplayTagContainer& TargetTags = Target->GetSpecialTags();
+        for (const TPair<FGameplayTag, float>& Pair : BehaviorData->TargetTagHatredModifiers)
+        {
+            if (Pair.Key.IsValid() && TargetTags.HasTag(Pair.Key))
+            {
+                TagHatred += Pair.Value;
+            }
+        }
+    }
+
+    const int32 Distance = FLFPHexCoordinates::Distance(
+        ControlledUnit->GetCurrentCoordinates(),
+        Target->GetCurrentCoordinates());
+    const float DistanceHatred = 100.0f / FMath::Max(Distance, 1);
+    const float ThreatHatred = static_cast<float>(Target->GetCurrentAttack());
+
+    const float TagWeight = BehaviorData ? BehaviorData->TagHatredWeight : 1.0f;
+    const float DistanceWeight = BehaviorData ? BehaviorData->DistanceHatredWeight : 1.0f;
+    const float ThreatWeight = BehaviorData ? BehaviorData->ThreatHatredWeight : 1.0f;
+    const float ExistingLockWeight = BehaviorData ? BehaviorData->ExistingTargetLockHatredWeight : 1.0f;
+    const float ExistingLockPenalty = BehaviorData ? BehaviorData->ExistingTargetLockHatredPenalty : 50.0f;
+    const int32* ExistingLockCountPtr = ExistingTargetLocks ? ExistingTargetLocks->Find(Target) : nullptr;
+    const int32 ExistingLockCount = ExistingLockCountPtr ? *ExistingLockCountPtr : 0;
+
+    return
+        (TagWeight * TagHatred) +
+        (DistanceWeight * DistanceHatred) +
+        (ThreatWeight * ThreatHatred) -
+        (ExistingLockWeight * ExistingLockPenalty * ExistingLockCount);
+}
+
 float ALFPAIController::CalculatePositionValue(ALFPHexTile* Tile, ALFPTacticsUnit* Target) const
 {
     if (!Tile || !Target) return 0.0f;
@@ -204,6 +280,31 @@ float ALFPAIController::CalculatePositionValue(ALFPHexTile* Tile, ALFPTacticsUni
 
 FEnemyActionPlan ALFPAIController::CreateActionPlan(ULFPSkillBase* PreAllocatedSkill)
 {
+    if (PreAllocatedSkill)
+    {
+        FEnemyActionPlan Plan;
+        Plan.EnemyUnit = ControlledUnit;
+
+        if (!ControlledUnit || !GridManager)
+        {
+            return Plan;
+        }
+
+        FEnemySkillPlanCandidate Candidate;
+        if (BuildBestSkillPlanCandidate(PreAllocatedSkill, 0, Candidate))
+        {
+            return Candidate.ToActionPlan();
+        }
+
+        return CreateActionPlanWithTargetLocks(nullptr);
+    }
+
+    return CreateActionPlanWithTargetLocks(nullptr);
+}
+
+FEnemyActionPlan ALFPAIController::CreateActionPlanWithTargetLocks(
+    const TMap<ALFPTacticsUnit*, int32>* ExistingTargetLocks)
+{
     FEnemyActionPlan Plan;
     Plan.EnemyUnit = ControlledUnit;
 
@@ -212,49 +313,32 @@ FEnemyActionPlan ALFPAIController::CreateActionPlan(ULFPSkillBase* PreAllocatedS
         return Plan;
     }
 
-    if (PreAllocatedSkill)
+    ALFPTacticsUnit* TargetUnit = FindBestHatredTarget(ExistingTargetLocks);
+    if (!TargetUnit)
     {
-        FEnemySkillPlanCandidate Candidate;
-        if (BuildBestSkillPlanCandidate(PreAllocatedSkill, 0, Candidate))
-        {
-            return Candidate.ToActionPlan();
-        }
+        return CreateMovementOnlyPlan(nullptr);
     }
 
-    TArray<FEnemySkillPlanCandidate> Candidates;
-    TArray<ULFPSkillBase*> Skills = ControlledUnit->GetAvailableSkills();
-    for (ULFPSkillBase* Skill : Skills)
+    BuildEnemyCardSkills();
+
+    ULFPSkillBase* SelectedSkill = nullptr;
+    ALFPHexTile* CasterTile = nullptr;
+    TArray<ALFPHexTile*> EffectAreaTiles;
+    if (SelectWeightedSkillForTarget(TargetUnit, SelectedSkill, CasterTile, EffectAreaTiles))
     {
-        FEnemySkillPlanCandidate Candidate;
-        if (BuildBestSkillPlanCandidate(Skill, 0, Candidate))
-        {
-            Candidates.Add(Candidate);
-        }
+        Plan.PlannedSkill = SelectedSkill;
+        Plan.TargetUnit = TargetUnit;
+        Plan.TargetTile = TargetUnit->GetCurrentTile();
+        Plan.CasterPositionTile = CasterTile;
+        Plan.EffectAreaTiles = EffectAreaTiles;
+        Plan.bIsValid = Plan.TargetTile != nullptr && Plan.CasterPositionTile != nullptr;
+        return Plan;
     }
 
-    NormalizeCandidateScores(Candidates);
-
-    FEnemySkillPlanCandidate* BestCandidate = nullptr;
-    for (FEnemySkillPlanCandidate& Candidate : Candidates)
-    {
-        if (!BestCandidate ||
-            Candidate.TotalScore > BestCandidate->TotalScore ||
-            (FMath::IsNearlyEqual(Candidate.TotalScore, BestCandidate->TotalScore) &&
-                Candidate.EffectivePriority > BestCandidate->EffectivePriority) ||
-            (FMath::IsNearlyEqual(Candidate.TotalScore, BestCandidate->TotalScore) &&
-                FMath::IsNearlyEqual(Candidate.EffectivePriority, BestCandidate->EffectivePriority) &&
-                Candidate.HatredValue > BestCandidate->HatredValue))
-        {
-            BestCandidate = &Candidate;
-        }
-    }
-
-    if (BestCandidate)
-    {
-        return BestCandidate->ToActionPlan();
-    }
-
-    return CreateMovementOnlyPlan(nullptr);
+    FEnemySkillPlanCandidate MovementCandidate;
+    MovementCandidate.TargetUnit = TargetUnit;
+    MovementCandidate.TargetTile = TargetUnit->GetCurrentTile();
+    return CreateMovementOnlyPlan(&MovementCandidate);
 }
 
 ULFPSkillBase* ALFPAIController::SelectBestSkill()
@@ -299,6 +383,221 @@ ALFPHexTile* ALFPAIController::FindBestCasterPosition(ULFPSkillBase* Skill, ALFP
 {
     float BestValue = -MAX_FLT;
     return FindBestCasterPositionInternal(Skill, TargetTile, BestValue);
+}
+
+void ALFPAIController::BuildEnemyCardSkills()
+{
+    RuntimeEnemyCardSkills.Empty();
+
+    if (!ControlledUnit)
+    {
+        return;
+    }
+
+    const TSoftObjectPtr<ULFPCardDataAsset> AttackCard = GetGlobalAttackCardForUnit();
+    if (!AttackCard.IsNull())
+    {
+        AddEnemyCardSkillFromCardData(AttackCard);
+    }
+
+    ULFPGameInstance* GameInstance = GetLFPGameInstance(this);
+    if (!GameInstance || !GameInstance->UnitRegistry)
+    {
+        return;
+    }
+
+    FLFPUnitRegistryEntry Entry;
+    if (!GameInstance->UnitRegistry->FindEntry(ControlledUnit->UnitTypeID, Entry))
+    {
+        return;
+    }
+
+    for (const TSoftObjectPtr<ULFPCardDataAsset>& CardData : Entry.DefaultCarriedCards)
+    {
+        AddEnemyCardSkillFromCardData(CardData);
+    }
+}
+
+bool ALFPAIController::AddEnemyCardSkillFromCardData(const TSoftObjectPtr<ULFPCardDataAsset>& CardData)
+{
+    if (CardData.IsNull() || !ControlledUnit)
+    {
+        return false;
+    }
+
+    ULFPCardDataAsset* LoadedCardData = CardData.LoadSynchronous();
+    if (!LoadedCardData || !LoadedCardData->IsValidCardData())
+    {
+        return false;
+    }
+
+    ULFPSkillBase* RuntimeSkill = NewObject<ULFPSkillBase>(this, LoadedCardData->SkillClass);
+    if (!RuntimeSkill)
+    {
+        return false;
+    }
+
+    RuntimeSkill->InitSkill(ControlledUnit);
+    RuntimeSkill->SkillName = LoadedCardData->DisplayName;
+    RuntimeSkill->SkillDescription = LoadedCardData->Description;
+    RuntimeSkill->SkillIcon = LoadedCardData->Icon;
+    if (LoadedCardData->ActionPointCost != INDEX_NONE)
+    {
+        RuntimeSkill->ActionPointCost = LoadedCardData->ActionPointCost;
+    }
+
+    RuntimeEnemyCardSkills.Add(RuntimeSkill);
+    return true;
+}
+
+TSoftObjectPtr<ULFPCardDataAsset> ALFPAIController::GetGlobalAttackCardForUnit() const
+{
+    const ULFPGameInstance* GameInstance = GetLFPGameInstance(this);
+    if (!GameInstance || !ControlledUnit)
+    {
+        return TSoftObjectPtr<ULFPCardDataAsset>();
+    }
+
+    const FGameplayTag AttackTag = FindFirstControlledUnitTagWithPrefix(TEXT("Unit.Attack."));
+    if (!AttackTag.IsValid())
+    {
+        return TSoftObjectPtr<ULFPCardDataAsset>();
+    }
+
+    const FString TagName = AttackTag.GetTagName().ToString();
+    if (TagName.EndsWith(TEXT(".Melee")))
+    {
+        return GameInstance->FallbackMeleeAttackCard;
+    }
+    if (TagName.EndsWith(TEXT(".Ranged")))
+    {
+        return GameInstance->FallbackRangedAttackCard;
+    }
+    if (TagName.EndsWith(TEXT(".Magic")))
+    {
+        return GameInstance->FallbackMagicAttackCard;
+    }
+
+    return TSoftObjectPtr<ULFPCardDataAsset>();
+}
+
+FGameplayTag ALFPAIController::FindFirstControlledUnitTagWithPrefix(const FString& Prefix) const
+{
+    if (!ControlledUnit)
+    {
+        return FGameplayTag();
+    }
+
+    const FGameplayTagContainer& UnitTags = ControlledUnit->GetSpecialTags();
+    for (const FGameplayTag& Tag : UnitTags)
+    {
+        if (Tag.GetTagName().ToString().StartsWith(Prefix))
+        {
+            return Tag;
+        }
+    }
+
+    return FGameplayTag();
+}
+
+bool ALFPAIController::IsEnemyTargetSkill(ULFPSkillBase* Skill) const
+{
+    if (!Skill || Skill->IsPassiveSkill() || Skill->CurrentCooldown > 0 || Skill->BasePriority <= 0.0f)
+    {
+        return false;
+    }
+
+    return
+        Skill->TargetType == ESkillTargetType::SingleEnemy ||
+        Skill->TargetType == ESkillTargetType::MutiEnemy ||
+        Skill->TargetType == ESkillTargetType::AllEnemy ||
+        Skill->TargetType == ESkillTargetType::SingleUnit ||
+        Skill->TargetType == ESkillTargetType::MutiUnit ||
+        Skill->TargetType == ESkillTargetType::AllUnit ||
+        Skill->TargetType == ESkillTargetType::AnyTile;
+}
+
+bool ALFPAIController::SelectWeightedSkillForTarget(
+    ALFPTacticsUnit* TargetUnit,
+    ULFPSkillBase*& OutSkill,
+    ALFPHexTile*& OutCasterTile,
+    TArray<ALFPHexTile*>& OutEffectAreaTiles)
+{
+    OutSkill = nullptr;
+    OutCasterTile = nullptr;
+    OutEffectAreaTiles.Empty();
+
+    if (!ControlledUnit || !TargetUnit)
+    {
+        return false;
+    }
+
+    ALFPHexTile* TargetTile = TargetUnit->GetCurrentTile();
+    if (!TargetTile)
+    {
+        return false;
+    }
+
+    TArray<FEnemySkillPlanCandidate> Candidates;
+    for (ULFPSkillBase* Skill : RuntimeEnemyCardSkills)
+    {
+        if (!IsEnemyTargetSkill(Skill))
+        {
+            continue;
+        }
+
+        float PositionValue = -MAX_FLT;
+        FEnemySkillPlanCandidate Candidate;
+        if (TryBuildCandidateForTarget(Skill, TargetUnit, TargetTile, 0, PositionValue, Candidate))
+        {
+            Candidate.EffectivePriority = Skill->BasePriority;
+            Candidates.Add(Candidate);
+        }
+    }
+
+    while (!Candidates.IsEmpty())
+    {
+        float TotalWeight = 0.0f;
+        for (const FEnemySkillPlanCandidate& Candidate : Candidates)
+        {
+            TotalWeight += FMath::Max(0.0f, Candidate.Skill ? Candidate.Skill->BasePriority : 0.0f);
+        }
+
+        if (TotalWeight <= 0.0f)
+        {
+            return false;
+        }
+
+        float Roll = FMath::FRandRange(0.0f, TotalWeight);
+        int32 ChosenIndex = INDEX_NONE;
+        for (int32 Index = 0; Index < Candidates.Num(); ++Index)
+        {
+            Roll -= FMath::Max(0.0f, Candidates[Index].Skill ? Candidates[Index].Skill->BasePriority : 0.0f);
+            if (Roll <= 0.0f)
+            {
+                ChosenIndex = Index;
+                break;
+            }
+        }
+
+        if (ChosenIndex == INDEX_NONE)
+        {
+            ChosenIndex = Candidates.Num() - 1;
+        }
+
+        const FEnemySkillPlanCandidate Candidate = Candidates[ChosenIndex];
+        if (Candidate.bIsValid && Candidate.Skill && Candidate.CasterPositionTile)
+        {
+            OutSkill = Candidate.Skill;
+            OutCasterTile = Candidate.CasterPositionTile;
+            OutEffectAreaTiles = Candidate.EffectAreaTiles;
+            return true;
+        }
+
+        Candidates.RemoveAt(ChosenIndex);
+    }
+
+    return false;
 }
 
 bool ALFPAIController::BuildBestSkillPlanCandidate(ULFPSkillBase* Skill, int32 PlanningOrderIndex, FEnemySkillPlanCandidate& OutCandidate) const
@@ -424,7 +723,7 @@ FEnemyActionPlan ALFPAIController::CreateMovementOnlyPlan(const FEnemySkillPlanC
     if (!MoveTargetTile)
     {
         // 没有可铺路的高分候选时，退化为朝当前最高威胁目标逼近。
-        FallbackTarget = FindBestTarget();
+        FallbackTarget = (Plan.TargetUnit && Plan.TargetUnit->IsAlive()) ? Plan.TargetUnit : FindBestTarget();
         if (!Plan.TargetUnit)
         {
             Plan.TargetUnit = FallbackTarget;
@@ -544,7 +843,7 @@ bool ALFPAIController::TryBuildCandidateForTarget(
     OutCandidate.CasterPositionTile = CasterTile;
     OutCandidate.APCost = FMath::Max(0, Skill->ActionPointCost);
     OutCandidate.EffectivePriority = Skill->GetEffectivePriority();
-    OutCandidate.HatredValue = TargetUnit ? Skill->CalculateHatredValue(ControlledUnit, TargetUnit) : 0.0f;
+    OutCandidate.HatredValue = TargetUnit ? CalculateTargetHatredValue(TargetUnit) : 0.0f;
     OutCandidate.PlanningOrderIndex = PlanningOrderIndex;
     OutCandidate.bIsValid = true;
     BuildEffectAreaTiles(Skill, TargetTile, OutCandidate.EffectAreaTiles);
@@ -711,4 +1010,9 @@ ALFPTacticsUnit* ALFPAIController::GetControlledUnit()
 void ALFPAIController::SetControlledUnit(ALFPTacticsUnit* NewUnit)
 {
     ControlledUnit = NewUnit;
+}
+
+void ALFPAIController::SetBehaviorData(ULFPEnemyBehaviorData* NewBehaviorData)
+{
+    BehaviorData = NewBehaviorData;
 }

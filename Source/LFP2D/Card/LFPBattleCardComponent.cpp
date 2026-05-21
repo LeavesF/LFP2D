@@ -7,6 +7,28 @@
 #include "LFP2D/Skill/SkillInstance/LFPSkill_BasicMeleeAttack.h"
 #include "LFP2D/Unit/LFPTacticsUnit.h"
 
+namespace
+{
+ULFPGameInstance* GetCardGameInstance(const UObject* WorldContext)
+{
+	if (!WorldContext)
+	{
+		return nullptr;
+	}
+
+	UWorld* World = WorldContext->GetWorld();
+	return World ? Cast<ULFPGameInstance>(World->GetGameInstance()) : nullptr;
+}
+
+TSoftObjectPtr<ULFPCardDataAsset> ResolveAttackCard(
+	const ULFPGameInstance* GameInstance,
+	const TSoftObjectPtr<ULFPCardDataAsset>& GlobalCard,
+	const TSoftObjectPtr<ULFPCardDataAsset>& ComponentCard)
+{
+	return GameInstance && !GlobalCard.IsNull() ? GlobalCard : ComponentCard;
+}
+}
+
 ULFPBattleCardComponent::ULFPBattleCardComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
@@ -495,6 +517,7 @@ void ULFPBattleCardComponent::AddConfiguredUnitCards(ALFPTacticsUnit* Unit,
 
 void ULFPBattleCardComponent::AddSharedAttackCards(const TArray<ALFPTacticsUnit*>& DeployedUnits)
 {
+	const ULFPGameInstance* GameInstance = GetCardGameInstance(this);
 	// 按攻击Tag分组，每种Tag生成等于该Tag单位数量的普攻卡。
 	TMap<FGameplayTag, int32> AttackTagCounts;
 
@@ -526,7 +549,11 @@ void ULFPBattleCardComponent::AddSharedAttackCards(const TArray<ALFPTacticsUnit*
 				continue;
 			}
 
-			if (!FallbackMeleeAttackCard.IsNull() && AddCardDataToDrawPile(FallbackMeleeAttackCard, nullptr))
+			const TSoftObjectPtr<ULFPCardDataAsset> AttackCard = ResolveAttackCard(
+				GameInstance,
+				GameInstance ? GameInstance->FallbackMeleeAttackCard : TSoftObjectPtr<ULFPCardDataAsset>(),
+				FallbackMeleeAttackCard);
+			if (!AttackCard.IsNull() && AddCardDataToDrawPile(AttackCard, nullptr))
 			{
 				continue;
 			}
@@ -554,22 +581,34 @@ void ULFPBattleCardComponent::AddSharedAttackCards(const TArray<ALFPTacticsUnit*
 		TSubclassOf<ULFPSkillBase> AttackClass;
 		if (TagName.EndsWith(TEXT(".Melee")))
 		{
-			AttackCard = FallbackMeleeAttackCard;
+			AttackCard = ResolveAttackCard(
+				GameInstance,
+				GameInstance ? GameInstance->FallbackMeleeAttackCard : TSoftObjectPtr<ULFPCardDataAsset>(),
+				FallbackMeleeAttackCard);
 			AttackClass = FallbackMeleeAttackClass;
 		}
 		else if (TagName.EndsWith(TEXT(".Ranged")))
 		{
-			AttackCard = FallbackRangedAttackCard;
+			AttackCard = ResolveAttackCard(
+				GameInstance,
+				GameInstance ? GameInstance->FallbackRangedAttackCard : TSoftObjectPtr<ULFPCardDataAsset>(),
+				FallbackRangedAttackCard);
 			AttackClass = FallbackRangedAttackClass;
 		}
 		else if (TagName.EndsWith(TEXT(".Magic")))
 		{
-			AttackCard = FallbackMagicAttackCard;
+			AttackCard = ResolveAttackCard(
+				GameInstance,
+				GameInstance ? GameInstance->FallbackMagicAttackCard : TSoftObjectPtr<ULFPCardDataAsset>(),
+				FallbackMagicAttackCard);
 			AttackClass = FallbackMagicAttackClass;
 		}
 		else
 		{
-			AttackCard = FallbackMeleeAttackCard;
+			AttackCard = ResolveAttackCard(
+				GameInstance,
+				GameInstance ? GameInstance->FallbackMeleeAttackCard : TSoftObjectPtr<ULFPCardDataAsset>(),
+				FallbackMeleeAttackCard);
 			AttackClass = FallbackMeleeAttackClass;
 		}
 
@@ -593,10 +632,15 @@ bool ULFPBattleCardComponent::AddUnitSharedAttackCardToHand(ALFPTacticsUnit* Uni
 		return false;
 	}
 
+	const ULFPGameInstance* GameInstance = GetCardGameInstance(this);
 	const FGameplayTag AttackTag = FindFirstUnitTagWithPrefix(Unit, TEXT("Unit.Attack."));
 	if (!AttackTag.IsValid())
 	{
-		if (!FallbackMeleeAttackCard.IsNull() && AddCardDataToHand(FallbackMeleeAttackCard, nullptr))
+		const TSoftObjectPtr<ULFPCardDataAsset> AttackCard = ResolveAttackCard(
+			GameInstance,
+			GameInstance ? GameInstance->FallbackMeleeAttackCard : TSoftObjectPtr<ULFPCardDataAsset>(),
+			FallbackMeleeAttackCard);
+		if (!AttackCard.IsNull() && AddCardDataToHand(AttackCard, nullptr))
 		{
 			return true;
 		}
@@ -615,22 +659,34 @@ bool ULFPBattleCardComponent::AddUnitSharedAttackCardToHand(ALFPTacticsUnit* Uni
 	TSubclassOf<ULFPSkillBase> AttackClass;
 	if (TagName.EndsWith(TEXT(".Melee")))
 	{
-		AttackCard = FallbackMeleeAttackCard;
+		AttackCard = ResolveAttackCard(
+			GameInstance,
+			GameInstance ? GameInstance->FallbackMeleeAttackCard : TSoftObjectPtr<ULFPCardDataAsset>(),
+			FallbackMeleeAttackCard);
 		AttackClass = FallbackMeleeAttackClass;
 	}
 	else if (TagName.EndsWith(TEXT(".Ranged")))
 	{
-		AttackCard = FallbackRangedAttackCard;
+		AttackCard = ResolveAttackCard(
+			GameInstance,
+			GameInstance ? GameInstance->FallbackRangedAttackCard : TSoftObjectPtr<ULFPCardDataAsset>(),
+			FallbackRangedAttackCard);
 		AttackClass = FallbackRangedAttackClass;
 	}
 	else if (TagName.EndsWith(TEXT(".Magic")))
 	{
-		AttackCard = FallbackMagicAttackCard;
+		AttackCard = ResolveAttackCard(
+			GameInstance,
+			GameInstance ? GameInstance->FallbackMagicAttackCard : TSoftObjectPtr<ULFPCardDataAsset>(),
+			FallbackMagicAttackCard);
 		AttackClass = FallbackMagicAttackClass;
 	}
 	else
 	{
-		AttackCard = FallbackMeleeAttackCard;
+		AttackCard = ResolveAttackCard(
+			GameInstance,
+			GameInstance ? GameInstance->FallbackMeleeAttackCard : TSoftObjectPtr<ULFPCardDataAsset>(),
+			FallbackMeleeAttackCard);
 		AttackClass = FallbackMeleeAttackClass;
 	}
 

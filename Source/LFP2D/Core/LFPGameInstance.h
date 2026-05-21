@@ -449,6 +449,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cards")
 	TArray<TSoftObjectPtr<ULFPCardDataAsset>> PlayerDeckCards;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cards|AttackDefaults")
+	TSoftObjectPtr<ULFPCardDataAsset> FallbackMeleeAttackCard;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cards|AttackDefaults")
+	TSoftObjectPtr<ULFPCardDataAsset> FallbackRangedAttackCard;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cards|AttackDefaults")
+	TSoftObjectPtr<ULFPCardDataAsset> FallbackMagicAttackCard;
+
 	// 出战队伍上限
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Party")
 	int32 MaxPartySize = 3;
