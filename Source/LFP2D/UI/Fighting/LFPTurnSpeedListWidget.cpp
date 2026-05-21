@@ -11,7 +11,7 @@ void ULFPTurnSpeedListWidget::InitializeTurnOrder()
 {
 	if (!TurnManagerRef)
 	{
-		// ���һغϹ�����
+		// 查找回合管理器
 		TArray<AActor*> FoundManagers;
 		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALFPTurnManager::StaticClass(), FoundManagers);
 		if (FoundManagers.Num() > 0)
@@ -51,17 +51,17 @@ void ULFPTurnSpeedListWidget::UpdateTurnOrder()
 
 		if (i < ExistingIcons.Num())
 		{
-			// ��������ͼ��
+			// 复用已有头像
 			Icon = Cast<ULFPTurnSpeedIconWidget>(ExistingIcons[i]);
 		}
 		else
 		{
-			// ������ͼ��
+			// 创建新的头像
 			Icon = CreateWidget<ULFPTurnSpeedIconWidget>(this, UnitIconClass);
 			UnitIconsContainer->AddChild(Icon);
 		}
 
-		// ����ͼ������
+		// 更新头像状态
 		ALFPTacticsUnit* Unit = TurnOrderUnits[i];
 		if (Icon && Unit)
 		{
@@ -71,17 +71,16 @@ void ULFPTurnSpeedListWidget::UpdateTurnOrder()
 		}
 	}
 
-	// �Ƴ�����ͼ��
+	// 移除多余头像
 	for (int32 i = TurnOrderUnits.Num(); i < ExistingIcons.Num(); i++)
 	{
 		ExistingIcons[i]->RemoveFromParent();
 	}
 
-
 	//if (!UnitIconsContainer || !UnitIconClass) return;
-	//// �������ͼ��
+	//// 清空现有头像
 	//UnitIconsContainer->ClearChildren();
-	//// Ϊÿ����λ����ͼ��
+	//// 为每个单位创建头像
 	//for (int32 i = 0; i < Units.Num(); i++)
 	//{
 	//	ALFPTacticsUnit* Unit = Units[i];
@@ -90,23 +89,23 @@ void ULFPTurnSpeedListWidget::UpdateTurnOrder()
 	//		UUserWidget* IconWidget = CreateWidget<UUserWidget>(this, UnitIconClass);
 	//		if (IconWidget)
 	//		{
-	//			// ����ͼ�꣨���������UnitIconClass����һ��Image�ؼ���Ϊ"UnitIcon"��������һ�������򹫿��������ø�����
+	//			// 设置头像控件（假设 UnitIconClass 中有一个名为 "UnitIcon" 的 Image 控件）
 	//			UImage* IconImage = Cast<UImage>(IconWidget->GetWidgetFromName(TEXT("UnitIcon")));
 	//			if (IconImage)
 	//			{
-	//				// ����ͼƬ��������Ҫ��λ��ͷ����Դ�������ڵ�λ���л�ȡ
-	//				// ���磺IconImage->SetBrushFromTexture(Unit->GetUnitIcon());
-	//				// ��ʱ��ռλ��������Ҫ���ڵ�λ�������ӻ�ȡͷ��ĺ���
+	//				// 设置头像图片，这里需要单位头像资源，可从单位数据中获取
+	//				// 例如：IconImage->SetBrushFromTexture(Unit->GetUnitIcon());
+	//				// 暂时使用占位逻辑，后续可在单位类中添加获取头像的函数
 	//			}
-	//			// ������ǰ��λ
+	//			// 高亮当前单位
 	//			UWidget* Highlight = IconWidget->GetWidgetFromName(TEXT("Highlight"));
 	//			if (Highlight)
 	//			{
 	//				Highlight->SetVisibility(i == CurrentUnitIndex ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
 	//			}
-	//			// ���ӵ�ˮƽ��
+	//			// 添加到水平框
 	//			UHorizontalBoxSlot* Slot = UnitIconsContainer->AddChildToHorizontalBox(IconWidget);
-	//			Slot->SetPadding(FMargin(5, 0, 5, 0)); // ���ü��
+	//			Slot->SetPadding(FMargin(5, 0, 5, 0)); // 设置间距
 	//			Slot->SetHorizontalAlignment(HAlign_Center);
 	//			Slot->SetVerticalAlignment(VAlign_Center);
 	//		}

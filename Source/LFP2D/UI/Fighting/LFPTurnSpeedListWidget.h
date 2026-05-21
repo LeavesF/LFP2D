@@ -23,9 +23,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Turn UI")
 	void InitializeTurnOrder();
 
-	// ���ûغ���
+	// 初始化回合顺序
 
-	// �����ж���λ�б�
+	// 更新单位顺序列表
 	UFUNCTION(BlueprintCallable, Category = "Turn UI")
 	void UpdateTurnOrder();
 
@@ -40,10 +40,10 @@ protected:
 	// 显示回合数的文本
 
 	// 阶段文本（可选绑定）
-	// ���ڷ��õ�λͷ���ˮƽ��
+	// 用于存放单位头像的水平框
 	UPROPERTY(meta = (BindWidget))
 	UHorizontalBox* UnitIconsContainer;
-	// ��λͷ��Ŀؼ���ͼ�ࣨ����ͼ�����ã�
+	// 单位头像控件蓝图类（用于生成头像）
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turn UI")
 	TSubclassOf<UUserWidget> UnitIconClass;
 

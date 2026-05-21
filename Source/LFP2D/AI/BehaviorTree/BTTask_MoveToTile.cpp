@@ -25,11 +25,11 @@ EBTNodeResult::Type UBTTask_MoveToTile::ExecuteTask(UBehaviorTreeComponent& Owne
 
     if (!TargetTile) return EBTNodeResult::Failed;
 
-    // °ó¶¨ÒÆ¶¯Íê³ÉÊÂ¼ş
+    // ç»‘å®šç§»åŠ¨å®Œæˆäº‹ä»¶
     //ControlledUnit->OnMoveComplete.AddDynamic(this, &UBTTask_MoveToTile::OnMoveComplete);
     BTComponent = &OwnerComp;
 
-    // ¿ªÊ¼ÒÆ¶¯
+    // å¼€å§‹ç§»åŠ¨
     ControlledUnit->MoveToTile(TargetTile);
 
     return EBTNodeResult::InProgress;
@@ -37,7 +37,7 @@ EBTNodeResult::Type UBTTask_MoveToTile::ExecuteTask(UBehaviorTreeComponent& Owne
 
 void UBTTask_MoveToTile::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTNodeResult::Type TaskResult)
 {
-    // ÇåÀí
+    // æ¸…ç†ç§»åŠ¨å®Œæˆäº‹ä»¶ç»‘å®š
     /*if (ALFPTacticsUnit* ControlledUnit = Cast<ALFPTacticsUnit>(OwnerComp.GetAIOwner()->GetPawn()))
     {
         ControlledUnit->OnMoveComplete.RemoveDynamic(this, &UBTTask_MoveToTile::OnMoveComplete);
@@ -51,4 +51,3 @@ void UBTTask_MoveToTile::OnMoveComplete()
         FinishLatentTask(*BTComponent, EBTNodeResult::Succeeded);
     }
 }
-

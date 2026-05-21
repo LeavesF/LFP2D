@@ -23,15 +23,15 @@ void UBTService_UpdateConditions::TickNode(UBehaviorTreeComponent& OwnerComp, ui
     UBlackboardComponent* Blackboard = OwnerComp.GetBlackboardComponent();
     ALFPTacticsUnit* TargetUnit = Cast<ALFPTacticsUnit>(Blackboard->GetValueAsObject(TargetUnitKey.SelectedKeyName));
 
-    // ¸üÐÂ¹¥»÷·¶Î§×´Ì¬
+    // æ›´æ–°æ”»å‡»èŒƒå›´çŠ¶æ€
     bool bInAttackRange = TargetUnit && ControlledUnit->IsTargetInAttackRange(TargetUnit);
     Blackboard->SetValueAsBool("IsInAttackRange", bInAttackRange);
 
-    // ¸üÐÂÄÜ·ñ¹¥»÷×´Ì¬
+    // æ›´æ–°èƒ½å¦æ”»å‡»çŠ¶æ€
     bool bCanAttack = TargetUnit && bInAttackRange && ControlledUnit->CanAct();
     Blackboard->SetValueAsBool("CanAttack", bCanAttack);
 
-    // ¸üÐÂÊÇ·ñÓ¦¸Ã½áÊø»ØºÏ
+    // æ›´æ–°æ˜¯å¦åº”è¯¥ç»“æŸå›žåˆ
     bool bShouldEndTurn = !TargetUnit || (ControlledUnit->HasActed() && !bCanAttack);
     Blackboard->SetValueAsBool("ShouldEndTurn", bShouldEndTurn);
 }

@@ -7,6 +7,7 @@
 #include "LFP2D/Skill/LFPSkillBase.h"
 #include "LFP2D/Skill/LFPSkillComponent.h"
 #include "LFP2D/Buff/LFPBuffComponent.h"
+#include "LFP2D/Buff/LFPBuffTags.h"
 #include "LFP2D/Unit/Betrayal/LFPBetrayalComponent.h"
 #include "LFP2D/Unit/Betrayal/LFPBetrayalCondition.h"
 #include "LFP2D/HexGrid/LFPHexTile.h"
@@ -25,17 +26,6 @@
 #include "Curves/CurveFloat.h"
 #include "DrawDebugHelpers.h"
 #include "Templates/UnrealTemplate.h"
-
-namespace
-{
-constexpr const TCHAR* EnemyMissDamageBoostBuffIdName = TEXT("Buff.Status.EnemyMissDamageBoost");
-constexpr const TCHAR* EnemyMissSpeedBoostBuffIdName = TEXT("Buff.Status.EnemyMissSpeedBoost");
-
-FGameplayTag RequestBuffTag(const TCHAR* TagName)
-{
-    return FGameplayTag::RequestGameplayTag(FName(TagName), false);
-}
-}
 
 ALFPTacticsUnit::ALFPTacticsUnit()
 {
@@ -917,13 +907,13 @@ bool ALFPTacticsUnit::ConsumeEnemyMissCompensationBuffs()
     int32 RemovedCount = 0;
 
     // 命中后两个补偿 Buff 一起消耗；如果只存在其中一个，也允许清理掉。
-    const FGameplayTag DamageBoostTag = RequestBuffTag(EnemyMissDamageBoostBuffIdName);
+    const FGameplayTag DamageBoostTag = LFPBuffTags::RequestBuffTag(LFPBuffTags::EnemyMissDamageBoostBuffIdName);
     if (DamageBoostTag.IsValid())
     {
         RemovedCount += BuffComponent->RemoveBuffById(DamageBoostTag);
     }
 
-    const FGameplayTag SpeedBoostTag = RequestBuffTag(EnemyMissSpeedBoostBuffIdName);
+    const FGameplayTag SpeedBoostTag = LFPBuffTags::RequestBuffTag(LFPBuffTags::EnemyMissSpeedBoostBuffIdName);
     if (SpeedBoostTag.IsValid())
     {
         RemovedCount += BuffComponent->RemoveBuffById(SpeedBoostTag);

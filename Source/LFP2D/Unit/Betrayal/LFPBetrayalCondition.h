@@ -16,19 +16,19 @@ class LFP2D_API ULFPBetrayalCondition : public UObject
 	GENERATED_BODY()
 	
 public:
-	// ¼ì²éÌõ¼şÊÇ·ñÂú×ã
+	// æ£€æŸ¥æ¡ä»¶æ˜¯å¦æ»¡è¶³
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Betrayal")
 	bool CheckCondition(ALFPTacticsUnit* Unit);
 
-	// ¼ì²éÌõ¼şÊÇ·ñÂú×ã
+	// æ³¨å†Œæ¡ä»¶
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Betrayal")
 	bool RegisterCondition(ALFPTacticsUnit* Unit);
 
-	// ¼ì²éÌõ¼şÊÇ·ñÂú×ã
+	// å–æ¶ˆæ³¨å†Œæ¡ä»¶
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Betrayal")
 	bool UnRegisterCondition(ALFPTacticsUnit* Unit);
 
-	// Ìõ¼şÃèÊö£¨ÓÃÓÚUIÏÔÊ¾£©
+	// æ¡ä»¶æè¿°ï¼ˆç”¨äºUIæ˜¾ç¤ºï¼‰
 	UFUNCTION(BlueprintPure, Category = "Betrayal")
 	FText GetConditionDescription() const;
 

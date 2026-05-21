@@ -17,11 +17,11 @@ class LFP2D_API ULFPSkillDataAsset : public UDataAsset
 	GENERATED_BODY()
 	
 public:
-    // µ¥Î»¿ÉÓÃµÄ¼¼ÄÜÀà
+    // å•ä½å¯ç”¨çš„æŠ€èƒ½ç±»
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skills")
     TArray<TSubclassOf<ULFPSkillBase>> AvailableSkills;
 
-    // ¸ù¾İµ¥Î»ÀàĞÍ»ñÈ¡¼¼ÄÜÊı¾İ
+    // æ ¹æ®å•ä½ç±»å‹è·å–æŠ€èƒ½æ•°æ®
     UFUNCTION(BlueprintCallable, Category = "Skills")
     static ULFPSkillDataAsset* GetSkillDataForUnitType(TSubclassOf<ALFPTacticsUnit> UnitType);
 };

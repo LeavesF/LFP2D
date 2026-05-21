@@ -8,6 +8,7 @@
 #include "LFP2D/Buff/LFPBuffComponent.h"
 #include "LFP2D/Buff/LFPBuffDefinitionDataAsset.h"
 #include "LFP2D/Buff/LFPBuffEffect.h"
+#include "LFP2D/Buff/LFPBuffTags.h"
 #include "LFP2D/Skill/LFPSkillBase.h"
 #include "LFP2D/Skill/LFPSkillComponent.h"
 #include "LFP2D/Core/LFPTurnGameMode.h"
@@ -15,16 +16,6 @@
 #include "Kismet/GameplayStatics.h"
 
 FEnemyActionPlan ALFPTurnManager::EmptyPlan;
-
-namespace
-{
-constexpr const TCHAR* EnemyMissDamageBoostBuffIdName = TEXT("Buff.Status.EnemyMissDamageBoost");
-constexpr const TCHAR* EnemyMissSpeedBoostBuffIdName = TEXT("Buff.Status.EnemyMissSpeedBoost");
-
-FGameplayTag RequestBuffTag(const TCHAR* TagName)
-{
-    return FGameplayTag::RequestGameplayTag(FName(TagName), false);
-}
 
 void SortUnitsBySpeedStable(TArray<ALFPTacticsUnit*>& Units)
 {
@@ -90,7 +81,6 @@ void UpdateBestBlockedCandidate(
     {
         BestBlockedCandidates.Add(Candidate.EnemyUnit, Candidate);
     }
-}
 }
 
 ALFPTurnManager::ALFPTurnManager()
@@ -800,7 +790,7 @@ ULFPBuffDefinitionDataAsset* ALFPTurnManager::GetEnemyMissDamageBoostBuffDefinit
     {
         // 未配置资产时创建内置兜底 Buff，避免空引用导致规则失效。
         RuntimeEnemyMissDamageBoostBuffDefinition = NewObject<ULFPBuffDefinitionDataAsset>(this, TEXT("RuntimeEnemyMissDamageBoostBuffDefinition"));
-        RuntimeEnemyMissDamageBoostBuffDefinition->BuffId = RequestBuffTag(EnemyMissDamageBoostBuffIdName);
+        RuntimeEnemyMissDamageBoostBuffDefinition->BuffId = LFPBuffTags::RequestBuffTag(LFPBuffTags::EnemyMissDamageBoostBuffIdName);
         RuntimeEnemyMissDamageBoostBuffDefinition->DisplayName = FText::FromString(TEXT("Enemy Miss Damage Boost"));
         RuntimeEnemyMissDamageBoostBuffDefinition->Description = FText::FromString(TEXT("Next hit deals 150% final damage."));
         RuntimeEnemyMissDamageBoostBuffDefinition->Category = ELFPBuffCategory::Buff;
@@ -828,7 +818,7 @@ ULFPBuffDefinitionDataAsset* ALFPTurnManager::GetEnemyMissSpeedBoostBuffDefiniti
     {
         // 未配置资产时创建内置兜底 Buff；速度补偿可叠层，连续打空会提高后续行动顺序。
         RuntimeEnemyMissSpeedBoostBuffDefinition = NewObject<ULFPBuffDefinitionDataAsset>(this, TEXT("RuntimeEnemyMissSpeedBoostBuffDefinition"));
-        RuntimeEnemyMissSpeedBoostBuffDefinition->BuffId = RequestBuffTag(EnemyMissSpeedBoostBuffIdName);
+        RuntimeEnemyMissSpeedBoostBuffDefinition->BuffId = LFPBuffTags::RequestBuffTag(LFPBuffTags::EnemyMissSpeedBoostBuffIdName);
         RuntimeEnemyMissSpeedBoostBuffDefinition->DisplayName = FText::FromString(TEXT("Enemy Miss Speed Boost"));
         RuntimeEnemyMissSpeedBoostBuffDefinition->Description = FText::FromString(TEXT("Speed +2 until the next hit."));
         RuntimeEnemyMissSpeedBoostBuffDefinition->Category = ELFPBuffCategory::Buff;
