@@ -7,7 +7,6 @@
 
 class UCanvasPanel;
 class ULFPTurnSpeedListWidget;
-class ULFPSkillSelectionWidget;
 class ULFPDeploymentWidget;
 class ULFPBattleResultWidget;
 class ULFPCurrentUnitInfoWidget;
@@ -43,12 +42,6 @@ public:
 	void ShowTurnSpeedList();
 	void HideTurnSpeedList();
 	ULFPTurnSpeedListWidget* GetTurnSpeedListWidget() const { return TurnSpeedListWidget; }
-
-	// === SkillSelection ===
-	void ShowSkillSelection();
-	void HideSkillSelection();
-	void ClearSelectedSkill();
-	ULFPSkillSelectionWidget* GetSkillSelectionWidget() const { return SkillSelectionWidget; }
 
 	// === Deployment ===
 	void ShowDeploymentWidget();
@@ -111,9 +104,6 @@ protected:
 
 	UPROPERTY(meta = (BindWidgetOptional))
 	TObjectPtr<UTextBlock> PhaseText;
-
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<ULFPSkillSelectionWidget> SkillSelectionWidget;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<ULFPDeploymentWidget> DeploymentWidget;

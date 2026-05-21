@@ -14,7 +14,6 @@
 #include "LFP2D/UI/Fighting/LFPCurrentUnitInfoWidget.h"
 #include "LFP2D/UI/Fighting/LFPCardHandWidget.h"
 #include "LFP2D/UI/Fighting/LFPTurnSpeedListWidget.h"
-#include "LFP2D/UI/Fighting/LFPSkillSelectionWidget.h"
 #include "LFP2D/UI/Fighting/LFPDeploymentWidget.h"
 #include "LFP2D/UI/Fighting/LFPBattleResultWidget.h"
 #include "LFP2D/HexGrid/LFPMapEditorComponent.h"
@@ -437,8 +436,7 @@ bool ALFPTacticsPlayerController::IsPrimaryActionOverUI() const
 		return false;
 	}
 
-	return IsVisibleAndHovered(BattleHUDWidget->GetSkillSelectionWidget()) ||
-		IsVisibleAndHovered(BattleHUDWidget->GetDeploymentWidget()) ||
+	return IsVisibleAndHovered(BattleHUDWidget->GetDeploymentWidget()) ||
 		IsVisibleAndHovered(BattleHUDWidget->GetBattleResultWidget()) ||
 		IsVisibleAndHovered(BattleHUDWidget->GetCurrentUnitInfoWidget()) ||
 		IsVisibleAndHovered(BattleHUDWidget->GetCardHandWidget()) ||
@@ -493,7 +491,6 @@ bool ALFPTacticsPlayerController::ExitInspectionMode()
 	if (BattleHUDWidget)
 	{
 		BattleHUDWidget->ExitInspectionMode(this);
-		BattleHUDWidget->HideSkillSelection();
 		BattleHUDWidget->SetCurrentUnitInfoUnit(nullptr);
 		BattleHUDWidget->ResetCardHandUnitPlayablePopups();
 	}
@@ -844,10 +841,6 @@ void ALFPTacticsPlayerController::SelectUnit(ALFPTacticsUnit* Unit)
 			GridManager->ClearRangeHighlight(EUnitRange::UR_SkillRelease);
 			GridManager->ClearRangeHighlight(EUnitRange::UR_SkillEffect);
 		}
-		if (BattleHUDWidget)
-		{
-			BattleHUDWidget->ClearSelectedSkill();
-		}
 	}
 
 	// 选择新单位
@@ -859,7 +852,6 @@ void ALFPTacticsPlayerController::SelectUnit(ALFPTacticsUnit* Unit)
 		ClearMovementAndRange();
 		if (BattleHUDWidget)
 		{
-			BattleHUDWidget->HideSkillSelection();
 			BattleHUDWidget->SetCurrentUnitInfoUnit(nullptr);
 		}
 		UpdateCardHandPlayablePopupsForSelection();
@@ -899,13 +891,11 @@ void ALFPTacticsPlayerController::SelectUnit(ALFPTacticsUnit* Unit)
 	if (bCanControlSelectedUnit)
 	{
 		ShowUnitRange(EUnitRange::UR_Move);
-		HandleSkillSelection();
 		UpdateCardHandPlayablePopupsForSelection();
 	}
 	else
 	{
 		ClearMovementAndRange();
-		HideSkillSelection();
 		UpdateCardHandPlayablePopupsForSelection();
 	}
 }
@@ -1136,7 +1126,7 @@ void ALFPTacticsPlayerController::OnUnitMoveComplete()
 		{
 			BattleHUDWidget->SetCurrentUnitInfoUnit(SelectedUnit);
 		}
-		HandleSkillSelection();
+		UpdateCardHandPlayablePopupsForSelection();
 	}
 
 	MovingUnit = nullptr;
@@ -1211,8 +1201,6 @@ void ALFPTacticsPlayerController::EndPlayerTurn()
 	}
 	if (BattleHUDWidget)
 	{
-		BattleHUDWidget->HideSkillSelection();
-		BattleHUDWidget->ClearSelectedSkill();
 		BattleHUDWidget->ResetCardHandPopups();
 	}
 	ClearMovementAndRange();
@@ -1236,28 +1224,6 @@ ALFPTurnManager* ALFPTacticsPlayerController::GetTurnManager() const
 		return Cast<ALFPTurnManager>(FoundManagers[0]);
 	}
 	return nullptr;
-}
-
-void ALFPTacticsPlayerController::HandleSkillSelection()
-{
-	if (!SelectedUnit) return;
-	if (!BattleHUDWidget) return;
-
-	if (!CanControlPlayerUnit(SelectedUnit, GetTurnManager()))
-	{
-		BattleHUDWidget->HideSkillSelection();
-		return;
-	}
-
-	ULFPSkillSelectionWidget* SkillWidget = BattleHUDWidget->GetSkillSelectionWidget();
-	if (SkillWidget)
-	{
-		TArray<ULFPSkillBase*> HandSkills;
-		BuildHandSkillListForUnit(SelectedUnit, HandSkills);
-
-		BattleHUDWidget->ShowSkillSelection();
-		SkillWidget->InitializeProvidedSkillsInfo(SelectedUnit, this, HandSkills);
-	}
 }
 
 void ALFPTacticsPlayerController::UpdateCardHandPlayablePopupsForSelection()
@@ -1353,36 +1319,6 @@ bool ALFPTacticsPlayerController::TryCompleteActiveCardDragAtViewportPosition(FV
 	return true;
 }
 
-void ALFPTacticsPlayerController::BuildHandSkillListForUnit(ALFPTacticsUnit* Unit, TArray<ULFPSkillBase*>& OutSkills)
-{
-	OutSkills.Empty();
-	HandSkillToCardInstanceID.Empty();
-
-	if (!Unit)
-	{
-		return;
-	}
-
-	if (!BattleCardComponent || !BattleCardComponent->IsInitialized())
-	{
-		OutSkills = Unit->GetAvailableSkills();
-		return;
-	}
-
-	// 当前 UI 只展示这名单位能打出的手牌技能；映射保存出牌后要移动的卡牌实例。
-	const TArray<FLFPCardInstance> PlayableCards = BattleCardComponent->GetPlayableHandCardsForUnit(Unit);
-	for (const FLFPCardInstance& Card : PlayableCards)
-	{
-		if (!Card.RuntimeSkill)
-		{
-			continue;
-		}
-
-		OutSkills.Add(Card.RuntimeSkill);
-		HandSkillToCardInstanceID.Add(Card.RuntimeSkill, Card.InstanceID);
-	}
-}
-
 bool ALFPTacticsPlayerController::FinishCardForSkill(ULFPSkillBase* Skill)
 {
 	if (!Skill || !BattleCardComponent)
@@ -1422,7 +1358,6 @@ void ALFPTacticsPlayerController::CancelCardTargetSelection()
 
 	if (BattleHUDWidget)
 	{
-		BattleHUDWidget->ClearSelectedSkill();
 		BattleHUDWidget->RefreshCardHand();
 	}
 }
@@ -1859,19 +1794,10 @@ bool ALFPTacticsPlayerController::ProcessCardDropOnUnit(const FLFPCardInstance& 
 	return BeginCardTargetSelection(CardInstance, Unit);
 }
 
-void ALFPTacticsPlayerController::HideSkillSelection()
-{
-	if (BattleHUDWidget)
-	{
-		BattleHUDWidget->HideSkillSelection();
-	}
-}
-
 void ALFPTacticsPlayerController::HideCurrentUnitActionWidgets()
 {
 	if (BattleHUDWidget)
 	{
-		BattleHUDWidget->HideSkillSelection();
 		BattleHUDWidget->HideCurrentUnitInfo();
 	}
 	ClearMovementAndRange();
@@ -1999,7 +1925,6 @@ void ALFPTacticsPlayerController::OnPhaseChanged(EBattlePhase NewPhase)
 			BattleHUDWidget->ResetCardHandPopups();
 		}
 		// 敌人规划阶段：隐藏技能选择UI
-		HideSkillSelection();
 		break;
 
 	case EBattlePhase::BP_PlayerActionPhase:
@@ -2022,7 +1947,6 @@ void ALFPTacticsPlayerController::OnPhaseChanged(EBattlePhase NewPhase)
 		{
 			CancelCardTargetSelection();
 		}
-		HideSkillSelection();
 		ClearMovementAndRange();
 		ClearSelectionHighlight();
 		CurrentControlState = EPlayControlState::MoveState;

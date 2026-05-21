@@ -244,17 +244,11 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Cards")
 	ULFPBattleCardComponent* GetBattleCardComponent() const { return BattleCardComponent; }
 
-	UFUNCTION(BlueprintCallable, Category = "Skill")
-	void HideSkillSelection();
-
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	void HideCurrentUnitActionWidgets();
 
 	UFUNCTION(BlueprintCallable, Category = "Skill")
 	void ClearMovementAndRange();
-
-	UFUNCTION(BlueprintCallable, Category = "Skill")
-	void HandleSkillSelection();
 
 	UFUNCTION(BlueprintCallable, Category = "Skill")
 	void HandleSkillTargetSelecting(ULFPSkillBase* Skill);
@@ -408,7 +402,6 @@ protected:
 	void UpdateActiveCardDragVisual();
 	void ClearActiveCardDragVisual();
 	bool TryCompleteActiveCardDragAtViewportPosition(FVector2D ViewportPosition);
-	void BuildHandSkillListForUnit(ALFPTacticsUnit* Unit, TArray<ULFPSkillBase*>& OutSkills);
 	bool FinishCardForSkill(ULFPSkillBase* Skill);
 	void CancelCardTargetSelection();
 	bool IsNoTargetCard(const FLFPCardInstance& CardInstance) const;

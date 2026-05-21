@@ -374,12 +374,6 @@ void ALFPTurnManager::BeginEnemyPlanningPhase()
         return;
     }
 
-    // 隐藏玩家技能选择UI
-    if (ALFPTacticsPlayerController* PC = GetWorld()->GetFirstPlayerController<ALFPTacticsPlayerController>())
-    {
-        PC->HideSkillSelection();
-    }
-
     // Step 1: 全局技能分配（按优先级分配AP技能）
     AllocateEnemyPlans();
 
@@ -585,10 +579,8 @@ void ALFPTurnManager::BeginEnemyActionPhase()
 {
     SetPhase(EBattlePhase::BP_EnemyActionPhase);
 
-    // 隐藏玩家的技能选择UI
     if (ALFPTacticsPlayerController* PC = GetWorld()->GetFirstPlayerController<ALFPTacticsPlayerController>())
     {
-        PC->HideSkillSelection();
         PC->ClearMovementAndRange();
     }
 
@@ -689,7 +681,6 @@ void ALFPTurnManager::BeginUnitTurn(ALFPTacticsUnit* Unit)
     {
         PC->OnTurnStarted(Unit);
         PC->SelectUnit(Unit);
-        PC->HandleSkillSelection();
     }
 }
 
