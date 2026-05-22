@@ -58,11 +58,32 @@ namespace
 			!Unit->HasActed();
 	}
 
-	bool CanMovePlayerUnit(const ALFPTacticsUnit* Unit, const ALFPTurnManager* TurnManager)
+bool CanMovePlayerUnit(const ALFPTacticsUnit* Unit, const ALFPTurnManager* TurnManager)
 	{
 		return CanControlPlayerUnit(Unit, TurnManager) &&
 			Unit->GetCurrentMovePoints() > 0 &&
 			TurnManager->HasEnoughFactionAP(Unit->GetAffiliation(), MovementActionPointCost);
+	}
+
+	bool IsEnemyPlanPreviewPhase(EBattlePhase Phase)
+	{
+		return Phase == EBattlePhase::BP_EnemyPlanning ||
+			Phase == EBattlePhase::BP_PlayerActionPhase ||
+			Phase == EBattlePhase::BP_EnemyActionPhase;
+	}
+
+	bool CanPreviewEnemyPlan(const ALFPTacticsUnit* Unit, EBattlePhase Phase)
+	{
+		return Unit &&
+			IsEnemyPlanPreviewPhase(Phase) &&
+			Unit->IsEnemy() &&
+			Unit->HasActionPlan();
+	}
+
+	bool CanLockEnemyPlanPreview(const ALFPTacticsUnit* Unit, EBattlePhase Phase)
+	{
+		return Phase == EBattlePhase::BP_PlayerActionPhase &&
+			CanPreviewEnemyPlan(Unit, Phase);
 	}
 }
 
@@ -278,37 +299,7 @@ void ALFPTacticsPlayerController::Tick(float DeltaTime)
 			}
 
 			// 敌人计划预览：检测悬停的格子上是否有带行动计划的敌人
-			if (CachedBattlePhase == EBattlePhase::BP_EnemyPlanning || CachedBattlePhase == EBattlePhase::BP_PlayerActionPhase || CachedBattlePhase == EBattlePhase::BP_EnemyActionPhase)
-			{
-				if (IsInInspectionMode())
-				{
-					if (PreviewedEnemy)
-					{
-						HideEnemyPlanPreview();
-					}
-				}
-				else
-				{
-					ALFPTacticsUnit* HoveredEnemy = nullptr;
-					if (LastHoveredTile)
-					{
-						ALFPTacticsUnit* UnitOnTile = LastHoveredTile->GetUnitOnTile();
-						if (UnitOnTile && UnitOnTile->IsEnemy() && UnitOnTile->HasActionPlan())
-						{
-							HoveredEnemy = UnitOnTile;
-						}
-					}
-
-					if (HoveredEnemy && HoveredEnemy != PreviewedEnemy && CurrentControlState == EPlayControlState::MoveState)
-					{
-						ShowEnemyPlanPreview(HoveredEnemy);
-					}
-					else if (!HoveredEnemy && PreviewedEnemy)
-					{
-						HideEnemyPlanPreview();
-					}
-				}
-			}
+			RefreshEnemyPlanPreviewForCurrentState();
 		}
 	}
 
@@ -495,6 +486,7 @@ bool ALFPTacticsPlayerController::ExitInspectionMode()
 		BattleHUDWidget->ResetCardHandUnitPlayablePopups();
 	}
 
+	ClearEnemyPlanPreview(false);
 	ClearMovementAndRange();
 	return true;
 }
@@ -849,6 +841,7 @@ void ALFPTacticsPlayerController::SelectUnit(ALFPTacticsUnit* Unit)
 	{
 		bIsInspectingUnit = false;
 		ClearSelectionHighlight();
+		ClearEnemyPlanPreview(false);
 		ClearMovementAndRange();
 		if (BattleHUDWidget)
 		{
@@ -867,19 +860,17 @@ void ALFPTacticsPlayerController::SelectUnit(ALFPTacticsUnit* Unit)
 
 	if (bIsInspectingUnit)
 	{
-		if (PreviewedEnemy)
-		{
-			HideEnemyPlanPreview();
-		}
-
 		if (BattleHUDWidget)
 		{
 			BattleHUDWidget->EnterInspectionMode(SelectedUnit, this);
 		}
 		ClearMovementAndRange();
+		RefreshEnemyPlanPreviewForCurrentState();
 		UpdateCardHandPlayablePopupsForSelection();
 		return;
 	}
+
+	ClearEnemyPlanPreview(false);
 
 	if (BattleHUDWidget)
 	{
@@ -1204,6 +1195,7 @@ void ALFPTacticsPlayerController::EndPlayerTurn()
 		BattleHUDWidget->ResetCardHandPopups();
 	}
 	ClearMovementAndRange();
+	ClearEnemyPlanPreview(false);
 	ClearSelectionHighlight();
 	if (SelectedUnit)
 	{
@@ -1855,10 +1847,71 @@ void ALFPTacticsPlayerController::HandleSkillTargetSelecting(ULFPSkillBase* Skil
 
 // ==== 敌人计划预览和阶段感知 ====
 
+ALFPTacticsUnit* ALFPTacticsPlayerController::GetHoveredEnemyPlanPreviewTarget() const
+{
+	if (!LastHoveredTile)
+	{
+		return nullptr;
+	}
+
+	ALFPTacticsUnit* UnitOnTile = LastHoveredTile->GetUnitOnTile();
+	return CanPreviewEnemyPlan(UnitOnTile, CachedBattlePhase) ? UnitOnTile : nullptr;
+}
+
+ALFPTacticsUnit* ALFPTacticsPlayerController::GetLockedEnemyPlanPreviewTarget() const
+{
+	return bIsInspectingUnit && CanLockEnemyPlanPreview(SelectedUnit, CachedBattlePhase)
+		? SelectedUnit
+		: nullptr;
+}
+
+void ALFPTacticsPlayerController::RefreshEnemyPlanPreviewForCurrentState()
+{
+	if (CurrentControlState != EPlayControlState::MoveState)
+	{
+		ClearEnemyPlanPreview(false);
+		return;
+	}
+
+	ALFPTacticsUnit* DesiredPreviewEnemy = GetHoveredEnemyPlanPreviewTarget();
+	if (!DesiredPreviewEnemy)
+	{
+		DesiredPreviewEnemy = GetLockedEnemyPlanPreviewTarget();
+	}
+
+	if (DesiredPreviewEnemy)
+	{
+		if (DesiredPreviewEnemy != PreviewedEnemy)
+		{
+			ShowEnemyPlanPreview(DesiredPreviewEnemy);
+		}
+		return;
+	}
+
+	ClearEnemyPlanPreview(true);
+}
+
+void ALFPTacticsPlayerController::ClearEnemyPlanPreview(bool bRestoreMovementRange)
+{
+	PreviewReleaseTiles.Empty();
+	PreviewEffectTiles.Empty();
+	PreviewedEnemy = nullptr;
+
+	if (GridManager)
+	{
+		GridManager->ClearRangeHighlight(EUnitRange::UR_Enemy_SkillRelease);
+		GridManager->ClearRangeHighlight(EUnitRange::UR_Enemy_SkillEffect);
+	}
+
+	if (bRestoreMovementRange && SelectedUnit && !bIsInspectingUnit)
+	{
+		ShowUnitRange(EUnitRange::UR_Move);
+	}
+}
+
 void ALFPTacticsPlayerController::ShowEnemyPlanPreview(ALFPTacticsUnit* EnemyUnit)
 {
 	if (!EnemyUnit || !EnemyUnit->HasActionPlan() || !GridManager) return;
-	if (IsInInspectionMode()) return;
 
 	PreviewedEnemy = EnemyUnit;
 	const FEnemyActionPlan& Plan = EnemyUnit->CurrentActionPlan;
@@ -1890,16 +1943,7 @@ void ALFPTacticsPlayerController::ShowEnemyPlanPreview(ALFPTacticsUnit* EnemyUni
 
 void ALFPTacticsPlayerController::HideEnemyPlanPreview()
 {
-	// 清除预览格子高亮
-	if (GridManager)
-	{
-		PreviewReleaseTiles.Empty();
-		PreviewEffectTiles.Empty();
-		PreviewedEnemy = nullptr;
-		GridManager->ClearRangeHighlight(EUnitRange::UR_Enemy_SkillRelease);
-		GridManager->ClearRangeHighlight(EUnitRange::UR_Enemy_SkillEffect);
-		ShowUnitRange(EUnitRange::UR_Move);
-	}
+	ClearEnemyPlanPreview(true);
 }
 
 void ALFPTacticsPlayerController::OnPhaseChanged(EBattlePhase NewPhase)
@@ -1907,7 +1951,7 @@ void ALFPTacticsPlayerController::OnPhaseChanged(EBattlePhase NewPhase)
 	CachedBattlePhase = NewPhase;
 	UE_LOG(LogTemp, Log, TEXT("OnPhaseChanged:=%d"), NewPhase);
 	// 阶段切换时清理预览状态
-	HideEnemyPlanPreview();
+	ClearEnemyPlanPreview(false);
 
 	switch (NewPhase)
 	{

@@ -350,6 +350,12 @@ public:
 	void OnUnitBetrayedToPlayer(ALFPTacticsUnit* Unit, EUnitAffiliation OldAffiliation, ULFPBetrayalCondition* TriggeringCondition);
 
 protected:
+	ALFPTacticsUnit* GetHoveredEnemyPlanPreviewTarget() const;
+	ALFPTacticsUnit* GetLockedEnemyPlanPreviewTarget() const;
+	void RefreshEnemyPlanPreviewForCurrentState();
+	void ClearEnemyPlanPreview(bool bRestoreMovementRange);
+
+protected:
 	// 当前预览的敌人
 	UPROPERTY()
 	ALFPTacticsUnit* PreviewedEnemy = nullptr;
