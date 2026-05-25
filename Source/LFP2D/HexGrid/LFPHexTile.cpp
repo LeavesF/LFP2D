@@ -7,6 +7,16 @@
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Engine/Texture2D.h"
 
+namespace
+{
+int32 GetTerrainSortPriorityOffset(const FLFPHexCoordinates& Coordinates)
+{
+	const int32 QOffset = FMath::Abs(Coordinates.Q) % 2;
+	const int32 ROffset = (FMath::Abs(Coordinates.R) % 2) * 2;
+	return QOffset + ROffset;
+}
+}
+
 // Sets default values
 ALFPHexTile::ALFPHexTile()
 {
@@ -18,8 +28,8 @@ ALFPHexTile::ALFPHexTile()
 	RootComponent = RootSceneComponent;
 
 	// 创建视觉精灵组件
-	SpriteComponent = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("SpriteComponent"));
-	SpriteComponent->SetupAttachment(RootComponent);
+	TerrainSpriteComponent = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("TerrainSpriteComponent"));
+	TerrainSpriteComponent->SetupAttachment(RootComponent);
 
 	// 创建装饰精灵组件（在基础精灵上方）
 	DecorationSpriteComponent = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("DecorationSpriteComponent"));
@@ -277,17 +287,29 @@ void ALFPHexTile::SetTerrainData(ULFPTerrainDataAsset* InTerrainData)
 		bIsWalkable = TerrainData->bIsWalkable;
 
 		// 设置基础精灵
-		if (TerrainData->TerrainSprite)
+		TerrainSprite = nullptr;
+		TArray<UPaperSprite*> AvailableTerrainSprites;
+		for (UPaperSprite* Sprite : TerrainData->TerrainSprites)
 		{
-			TerrainSprite = TerrainData->TerrainSprite;
-			SpriteComponent->SetSprite(TerrainSprite);
+			if (Sprite)
+			{
+				AvailableTerrainSprites.Add(Sprite);
+			}
 		}
+
+		if (!AvailableTerrainSprites.IsEmpty())
+		{
+			TerrainSprite = AvailableTerrainSprites[FMath::RandRange(0, AvailableTerrainSprites.Num() - 1)];
+		}
+		TerrainSpriteComponent->SetSprite(TerrainSprite);
+		TerrainSpriteComponent->TranslucencySortPriority =
+			TerrainData->RenderPriority + GetTerrainSortPriorityOffset(Coordinates);
 
 		// 设置植被覆盖精灵
 		if (TerrainData->FoliageSprite)
 		{
 			FoliageSpriteComponent->SetSprite(TerrainData->FoliageSprite);
-			FoliageSpriteComponent->TranslucencySortPriority = TerrainData->RenderPriority + 1;
+			FoliageSpriteComponent->TranslucencySortPriority = TerrainData->RenderPriority + 4;
 		}
 		else
 		{
@@ -325,7 +347,7 @@ void ALFPHexTile::InitializeBaseMaterial(UMaterialInterface* BaseTerrainMat,
 		BaseMID->SetScalarParameterValue(TEXT("TextureScale"), TextureScale);
 		BaseMID->SetScalarParameterValue(TEXT("HexMaskScale"), InHexMaskScale);
 		BaseMID->SetScalarParameterValue(TEXT("HexMaskYScale"), InHexMaskYScale);
-		SpriteComponent->SetMaterial(0, BaseMID);
+		TerrainSpriteComponent->SetMaterial(0, BaseMID);
 	}
 }
 

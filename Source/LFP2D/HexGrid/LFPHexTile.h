@@ -349,7 +349,7 @@ public:
 	int32 SkillEffectEdgeTranslucencySortPriority = 5;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	TObjectPtr<UPaperSpriteComponent> SpriteComponent;
+	TObjectPtr<UPaperSpriteComponent> TerrainSpriteComponent;
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UPaperSprite> TerrainSprite;

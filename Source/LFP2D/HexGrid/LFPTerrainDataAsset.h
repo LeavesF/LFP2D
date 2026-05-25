@@ -34,7 +34,7 @@ public:
 
 	// 地形基础精灵
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Terrain|Visuals")
-	TObjectPtr<UPaperSprite> TerrainSprite = nullptr;
+	TArray<TObjectPtr<UPaperSprite>> TerrainSprites;
 
 	// 植被覆盖精灵（可选，有值时叠加显示在地形上方，渲染优先级 = RenderPriority + 1）
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Terrain|Visuals")
