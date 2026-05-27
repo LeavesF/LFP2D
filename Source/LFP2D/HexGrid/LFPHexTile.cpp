@@ -2,6 +2,7 @@
 
 
 #include "LFP2D/HexGrid/LFPHexTile.h"
+#include "LFP2D/Core/LFPGameInstance.h"
 #include "LFP2D/HexGrid/LFPTerrainDataAsset.h"
 #include "PaperSpriteComponent.h"
 #include "Materials/MaterialInstanceDynamic.h"
@@ -83,6 +84,16 @@ void ALFPHexTile::BeginPlay()
 	if (DecorationSprite && DecorationSpriteComponent)
 	{
 		DecorationSpriteComponent->SetSprite(DecorationSprite);
+	}
+
+	if (FoliageSpriteComponent)
+	{
+		if (const ULFPGameInstance* GI = Cast<ULFPGameInstance>(GetGameInstance()))
+		{
+			FRotator FoliageRotation = FoliageSpriteComponent->GetRelativeRotation();
+			FoliageRotation.Roll += GI->OrthoOffest_Roll;
+			FoliageSpriteComponent->SetRelativeRotation(FoliageRotation);
+		}
 	}
 }
 

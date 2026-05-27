@@ -29,21 +29,21 @@
 
 ALFPTacticsUnit::ALFPTacticsUnit()
 {
-    PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = true;
 
-    // 创建根组件
-    RootSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
-    RootComponent = RootSceneComponent;
+	// 创建根组件
+	RootSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
+	RootComponent = RootSceneComponent;
 
-    // 创建精灵组件
-    SpriteComponent = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("SpriteComponent"));
-    SpriteComponent->SetupAttachment(RootComponent);
-    SpriteComponent->SetRelativeLocation(FVector(0, 0, 0)); // 在根组件上方
+	// 创建精灵组件
+	SpriteComponent = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("SpriteComponent"));
+	SpriteComponent->SetupAttachment(RootComponent);
+	SpriteComponent->SetRelativeLocation(FVector(0, 0, 0)); // 在根组件上方
 
-    // 默认值
-    ResetCurrentStatsToBase();
-    CurrentPathIndex = -1;
-    MoveProgress = 0.0f;
+	// 默认值
+	ResetCurrentStatsToBase();
+	CurrentPathIndex = -1;
+	MoveProgress = 0.0f;
 
 	// 创建血条组件
 	HealthBarComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBarComponent"));
@@ -53,321 +53,328 @@ ALFPTacticsUnit::ALFPTacticsUnit()
 	// 设置相对位置（在单位上方）
 	HealthBarComponent->SetRelativeLocation(FVector(0, 150, 0));
 
-    // 创建技能组件
-    SkillComponent = CreateDefaultSubobject<ULFPSkillComponent>(TEXT("SkillComponent"));
-    BuffComponent = CreateDefaultSubobject<ULFPBuffComponent>(TEXT("BuffComponent"));
-    BetrayalComponent = CreateDefaultSubobject<ULFPBetrayalComponent>(TEXT("BetrayalComponent"));
+	// 创建技能组件
+	SkillComponent = CreateDefaultSubobject<ULFPSkillComponent>(TEXT("SkillComponent"));
+	BuffComponent = CreateDefaultSubobject<ULFPBuffComponent>(TEXT("BuffComponent"));
+	BetrayalComponent = CreateDefaultSubobject<ULFPBetrayalComponent>(TEXT("BetrayalComponent"));
 
-    // 创建头顶计划技能图标组件
-    PlannedSkillIconComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("PlannedSkillIconComponent"));
-    PlannedSkillIconComponent->SetupAttachment(RootComponent);
-    PlannedSkillIconComponent->SetWidgetSpace(EWidgetSpace::Screen);
-    PlannedSkillIconComponent->SetDrawAtDesiredSize(true);
-    PlannedSkillIconComponent->SetRelativeLocation(FVector(0, 250, 0)); // 在血条上方
-    PlannedSkillIconComponent->SetVisibility(false); // 默认隐藏
+	// 创建头顶计划技能图标组件
+	PlannedSkillIconComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("PlannedSkillIconComponent"));
+	PlannedSkillIconComponent->SetupAttachment(RootComponent);
+	PlannedSkillIconComponent->SetWidgetSpace(EWidgetSpace::Screen);
+	PlannedSkillIconComponent->SetDrawAtDesiredSize(true);
+	PlannedSkillIconComponent->SetRelativeLocation(FVector(0, 250, 0)); // 在血条上方
+	PlannedSkillIconComponent->SetVisibility(false); // 默认隐藏
 }
 
 bool ALFPTacticsUnit::InitializeFromRegistry(ULFPUnitRegistryDataAsset* Registry)
 {
-    if (bStatsInitialized)
-    {
-        return true;
-    }
+	if (bStatsInitialized)
+	{
+		return true;
+	}
 
-    if (!Registry || UnitTypeID == NAME_None)
-    {
-        return false;
-    }
+	if (!Registry || UnitTypeID == NAME_None)
+	{
+		return false;
+	}
 
-    FLFPUnitRegistryEntry Entry;
-    if (!Registry->FindEntry(UnitTypeID, Entry))
-    {
-        return false;
-    }
+	FLFPUnitRegistryEntry Entry;
+	if (!Registry->FindEntry(UnitTypeID, Entry))
+	{
+		return false;
+	}
 
-    ApplyRegistryEntry(Entry);
-    bStatsInitialized = true;
-    return true;
+	ApplyRegistryEntry(Entry);
+	bStatsInitialized = true;
+	return true;
 }
 
 void ALFPTacticsUnit::ApplyRegistryEntry(const FLFPUnitRegistryEntry& Entry)
 {
-    UnitRace = Entry.Race;
-    SpecialTags = Entry.SpecialTags;
-    EnemyBehaviorData = Entry.EnemyBehaviorData;
+	UnitRace = Entry.Race;
+	SpecialTags = Entry.SpecialTags;
+	EnemyBehaviorData = Entry.EnemyBehaviorData;
 
-    BaseAttackType = Entry.BaseStats.AttackType;
-    BaseAttack = Entry.BaseStats.Attack;
-    BaseMaxHealth = Entry.BaseStats.MaxHealth;
-    BaseMaxMovePoints = Entry.BaseStats.MaxMovePoints;
-    BaseSpeed = Entry.BaseStats.Speed;
+	BaseAttackType = Entry.BaseStats.AttackType;
+	BaseAttack = Entry.BaseStats.Attack;
+	BaseMaxHealth = Entry.BaseStats.MaxHealth;
+	BaseMaxMovePoints = Entry.BaseStats.MaxMovePoints;
+	BaseSpeed = Entry.BaseStats.Speed;
 
-    BaseAttackCount = Entry.AdvancedStats.AttackCount;
-    BaseActionCount = Entry.AdvancedStats.ActionCount;
-    BasePhysicalBlock = Entry.AdvancedStats.PhysicalBlock;
-    BaseSpellDefense = Entry.AdvancedStats.SpellDefense;
-    BaseWeight = Entry.AdvancedStats.Weight;
+	BaseAttackCount = Entry.AdvancedStats.AttackCount;
+	BaseActionCount = Entry.AdvancedStats.ActionCount;
+	BasePhysicalBlock = Entry.AdvancedStats.PhysicalBlock;
+	BaseSpellDefense = Entry.AdvancedStats.SpellDefense;
+	BaseWeight = Entry.AdvancedStats.Weight;
 
-    ResetCurrentStatsToBase();
-    if (BetrayalComponent)
-    {
-        BetrayalComponent->ConfigureFromTemplates(Entry.BetrayalConditionTemplates);
-    }
+	ResetCurrentStatsToBase();
+	if (BetrayalComponent)
+	{
+		BetrayalComponent->ConfigureFromTemplates(Entry.BetrayalConditionTemplates);
+	}
 
-    if (AIController)
-    {
-        AIController->SetBehaviorData(EnemyBehaviorData);
-    }
+	if (AIController)
+	{
+		AIController->SetBehaviorData(EnemyBehaviorData);
+	}
 }
 
 void ALFPTacticsUnit::ResetCurrentStatsToBase(bool bResetHealth)
 {
-    CurrentAttackType = BaseAttackType;
-    CurrentAttack = BaseAttack;
-    CurrentMaxHealth = BaseMaxHealth;
-    CurrentMaxMovePoints = BaseMaxMovePoints;
-    CurrentSpeed = BaseSpeed;
-    CurrentAttackCount = BaseAttackCount;
-    CurrentActionCount = BaseActionCount;
-    CurrentPhysicalBlock = BasePhysicalBlock;
-    CurrentSpellDefense = BaseSpellDefense;
-    CurrentWeight = BaseWeight;
+	CurrentAttackType = BaseAttackType;
+	CurrentAttack = BaseAttack;
+	CurrentMaxHealth = BaseMaxHealth;
+	CurrentMaxMovePoints = BaseMaxMovePoints;
+	CurrentSpeed = BaseSpeed;
+	CurrentAttackCount = BaseAttackCount;
+	CurrentActionCount = BaseActionCount;
+	CurrentPhysicalBlock = BasePhysicalBlock;
+	CurrentSpellDefense = BaseSpellDefense;
+	CurrentWeight = BaseWeight;
 
-    AttackPower = CurrentAttack;
-    MaxHealth = CurrentMaxHealth;
-    MaxMovePoints = CurrentMaxMovePoints;
-    Speed = CurrentSpeed;
-    Defense = CurrentPhysicalBlock;
+	AttackPower = CurrentAttack;
+	MaxHealth = CurrentMaxHealth;
+	MaxMovePoints = CurrentMaxMovePoints;
+	Speed = CurrentSpeed;
+	Defense = CurrentPhysicalBlock;
 
-    if (bResetHealth)
-    {
-        CurrentHealth = CurrentMaxHealth;
-    }
-    else
-    {
-        CurrentHealth = FMath::Clamp(CurrentHealth, 0, CurrentMaxHealth);
-    }
+	if (bResetHealth)
+	{
+		CurrentHealth = CurrentMaxHealth;
+	}
+	else
+	{
+		CurrentHealth = FMath::Clamp(CurrentHealth, 0, CurrentMaxHealth);
+	}
 
-    CurrentMovePoints = CurrentMaxMovePoints;
+	CurrentMovePoints = CurrentMaxMovePoints;
 }
 
 void ALFPTacticsUnit::AddCurrentAttack(int32 Delta)
 {
-    CurrentAttack = FMath::Max(0, CurrentAttack + Delta);
-    AttackPower = CurrentAttack;
+	CurrentAttack = FMath::Max(0, CurrentAttack + Delta);
+	AttackPower = CurrentAttack;
 }
 
 void ALFPTacticsUnit::AddCurrentMaxHealth(int32 Delta, bool bKeepHealthRatio)
 {
-    const int32 OldMaxHealth = CurrentMaxHealth;
-    CurrentMaxHealth = FMath::Max(1, CurrentMaxHealth + Delta);
-    MaxHealth = CurrentMaxHealth;
+	const int32 OldMaxHealth = CurrentMaxHealth;
+	CurrentMaxHealth = FMath::Max(1, CurrentMaxHealth + Delta);
+	MaxHealth = CurrentMaxHealth;
 
-    if (bKeepHealthRatio && OldMaxHealth > 0)
-    {
-        const float HealthRatio = static_cast<float>(CurrentHealth) / OldMaxHealth;
-        CurrentHealth = FMath::Clamp(FMath::RoundToInt(CurrentMaxHealth * HealthRatio), 0, CurrentMaxHealth);
-    }
-    else
-    {
-        CurrentHealth = FMath::Clamp(CurrentHealth + Delta, 0, CurrentMaxHealth);
-    }
-    OnHealthChangedDelegate.Broadcast(CurrentHealth, CurrentMaxHealth);
-    OnHealthChangedWithUnitDelegate.Broadcast(this, CurrentHealth, CurrentMaxHealth);
+	if (bKeepHealthRatio && OldMaxHealth > 0)
+	{
+		const float HealthRatio = static_cast<float>(CurrentHealth) / OldMaxHealth;
+		CurrentHealth = FMath::Clamp(FMath::RoundToInt(CurrentMaxHealth * HealthRatio), 0, CurrentMaxHealth);
+	}
+	else
+	{
+		CurrentHealth = FMath::Clamp(CurrentHealth + Delta, 0, CurrentMaxHealth);
+	}
+	OnHealthChangedDelegate.Broadcast(CurrentHealth, CurrentMaxHealth);
+	OnHealthChangedWithUnitDelegate.Broadcast(this, CurrentHealth, CurrentMaxHealth);
 }
 
 void ALFPTacticsUnit::AddCurrentSpeed(int32 Delta)
 {
-    CurrentSpeed = FMath::Max(0, CurrentSpeed + Delta);
-    Speed = CurrentSpeed;
+	CurrentSpeed = FMath::Max(0, CurrentSpeed + Delta);
+	Speed = CurrentSpeed;
 }
 
 void ALFPTacticsUnit::AddCurrentPhysicalBlock(int32 Delta)
 {
-    CurrentPhysicalBlock = FMath::Max(0, CurrentPhysicalBlock + Delta);
-    Defense = CurrentPhysicalBlock;
+	CurrentPhysicalBlock = FMath::Max(0, CurrentPhysicalBlock + Delta);
+	Defense = CurrentPhysicalBlock;
 }
 
 void ALFPTacticsUnit::RebuildCurrentStatsFromRuntimeSources()
 {
-    if (bIsRebuildingRuntimeStats)
-    {
-        return;
-    }
+	if (bIsRebuildingRuntimeStats)
+	{
+		return;
+	}
 
-    TGuardValue<bool> RebuildGuard(bIsRebuildingRuntimeStats, true);
-    const int32 SavedCurrentMovePoints = CurrentMovePoints;
+	TGuardValue<bool> RebuildGuard(bIsRebuildingRuntimeStats, true);
+	const int32 SavedCurrentMovePoints = CurrentMovePoints;
 
-    // 统一按 Base -> Relic -> Buff 的顺序重建运行时属性，避免不同系统互相覆盖。
-    ResetCurrentStatsToBase(false);
+	// 统一按 Base -> Relic -> Buff 的顺序重建运行时属性，避免不同系统互相覆盖。
+	ResetCurrentStatsToBase(false);
 
-    if (ALFPTurnGameMode* GM = Cast<ALFPTurnGameMode>(GetWorld()->GetAuthGameMode()))
-    {
-        if (ALFPBattleRelicRuntimeManager* RelicManager = GM->GetBattleRelicRuntimeManager())
-        {
-            RelicManager->ApplyPersistentModifiers(this);
-        }
-    }
+	if (ALFPTurnGameMode* GM = Cast<ALFPTurnGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		if (ALFPBattleRelicRuntimeManager* RelicManager = GM->GetBattleRelicRuntimeManager())
+		{
+			RelicManager->ApplyPersistentModifiers(this);
+		}
+	}
 
-    if (BuffComponent)
-    {
-        const FLFPBuffStatModifier BuffModifier = BuffComponent->GetActiveStatModifier();
-        AddCurrentAttack(BuffModifier.AttackDelta);
-        AddCurrentPhysicalBlock(BuffModifier.PhysicalBlockDelta);
-        AddCurrentSpeed(BuffModifier.SpeedDelta);
-    }
+	if (BuffComponent)
+	{
+		const FLFPBuffStatModifier BuffModifier = BuffComponent->GetActiveStatModifier();
+		AddCurrentAttack(BuffModifier.AttackDelta);
+		AddCurrentPhysicalBlock(BuffModifier.PhysicalBlockDelta);
+		AddCurrentSpeed(BuffModifier.SpeedDelta);
+	}
 
-    CurrentHealth = FMath::Clamp(CurrentHealth, 0, GetCurrentMaxHealth());
-    CurrentMovePoints = FMath::Clamp(SavedCurrentMovePoints, 0, CurrentMaxMovePoints);
-    OnRuntimeStatsChangedDelegate.Broadcast(this);
+	CurrentHealth = FMath::Clamp(CurrentHealth, 0, GetCurrentMaxHealth());
+	CurrentMovePoints = FMath::Clamp(SavedCurrentMovePoints, 0, CurrentMaxMovePoints);
+	OnRuntimeStatsChangedDelegate.Broadcast(this);
 }
 
 bool ALFPTacticsUnit::HasAliveFriendlyWithinHexRange(int32 Range, bool bExcludeSelf) const
 {
-    ALFPHexGridManager* GridManager = GetGridManager();
-    if (Range < 0 || !GridManager || !GridManager->GetTileAtCoordinates(GetCurrentCoordinates()))
-    {
-        return false;
-    }
+	ALFPHexGridManager* GridManager = GetGridManager();
+	if (Range < 0 || !GridManager || !GridManager->GetTileAtCoordinates(GetCurrentCoordinates()))
+	{
+		return false;
+	}
 
-    TArray<AActor*> FoundUnits;
-    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALFPTacticsUnit::StaticClass(), FoundUnits);
+	TArray<AActor*> FoundUnits;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALFPTacticsUnit::StaticClass(), FoundUnits);
 
-    for (AActor* Actor : FoundUnits)
-    {
-        const ALFPTacticsUnit* OtherUnit = Cast<ALFPTacticsUnit>(Actor);
-        if (!OtherUnit || !OtherUnit->IsAlive())
-        {
-            continue;
-        }
+	for (AActor* Actor : FoundUnits)
+	{
+		const ALFPTacticsUnit* OtherUnit = Cast<ALFPTacticsUnit>(Actor);
+		if (!OtherUnit || !OtherUnit->IsAlive())
+		{
+			continue;
+		}
 
-        if (bExcludeSelf && OtherUnit == this)
-        {
-            continue;
-        }
+		if (bExcludeSelf && OtherUnit == this)
+		{
+			continue;
+		}
 
-        if (OtherUnit->GetAffiliation() != GetAffiliation())
-        {
-            continue;
-        }
+		if (OtherUnit->GetAffiliation() != GetAffiliation())
+		{
+			continue;
+		}
 
-        if (!GridManager->GetTileAtCoordinates(OtherUnit->GetCurrentCoordinates()))
-        {
-            continue;
-        }
+		if (!GridManager->GetTileAtCoordinates(OtherUnit->GetCurrentCoordinates()))
+		{
+			continue;
+		}
 
-        const int32 Distance = FLFPHexCoordinates::Distance(
-            GetCurrentCoordinates(),
-            OtherUnit->GetCurrentCoordinates());
+		const int32 Distance = FLFPHexCoordinates::Distance(
+			GetCurrentCoordinates(),
+			OtherUnit->GetCurrentCoordinates());
 
-        // 条件被动使用纯 hex distance 判定，不走寻路和地形消耗。
-        if (Distance <= Range)
-        {
-            return true;
-        }
-    }
+		// 条件被动使用纯 hex distance 判定，不走寻路和地形消耗。
+		if (Distance <= Range)
+		{
+			return true;
+		}
+	}
 
-    return false;
+	return false;
 }
 
 void ALFPTacticsUnit::BeginPlay()
 {
-    Super::BeginPlay();
+	Super::BeginPlay();
 
-    if (!bStatsInitialized)
-    {
-        if (ULFPGameInstance* GI = Cast<ULFPGameInstance>(GetGameInstance()))
-        {
-            InitializeFromRegistry(GI->UnitRegistry);
-        }
-        else
-        {
-            ResetCurrentStatsToBase();
-        }
-    }
+	if (const ULFPGameInstance* GI = Cast<ULFPGameInstance>(GetGameInstance()))
+	{
+		FRotator UnitRotation = GetActorRotation();
+		UnitRotation.Roll += GI->OrthoOffest_Roll;
+		SetActorRotation(UnitRotation);
+	}
 
-    // 注册到回合管理器
-    if (ALFPTurnManager* TurnManager = GetTurnManager())
-    {
-        TurnManager->RegisterUnit(this);
-    }
+	if (!bStatsInitialized)
+	{
+		if (ULFPGameInstance* GI = Cast<ULFPGameInstance>(GetGameInstance()))
+		{
+			InitializeFromRegistry(GI->UnitRegistry);
+		}
+		else
+		{
+			ResetCurrentStatsToBase();
+		}
+	}
 
-    FLFPHexCoordinates SpawnPoint = FLFPHexCoordinates(StartCoordinates_Q, StartCoordinates_R);
-    SetCurrentCoordinates(SpawnPoint);
+	// 注册到回合管理器
+	if (ALFPTurnManager* TurnManager = GetTurnManager())
+	{
+		TurnManager->RegisterUnit(this);
+	}
+
+	FLFPHexCoordinates SpawnPoint = FLFPHexCoordinates(StartCoordinates_Q, StartCoordinates_R);
+	SetCurrentCoordinates(SpawnPoint);
 
 	// 初始化血量
-    CurrentHealth = FMath::Clamp(CurrentHealth, 0, GetCurrentMaxHealth());
+	CurrentHealth = FMath::Clamp(CurrentHealth, 0, GetCurrentMaxHealth());
 	InitializeHealthBar();
 
-    PlannedSkillIconComponent->SetRelativeLocation(FVector(0, SkillIconTopDist, 0)); // 在血条上方
+	PlannedSkillIconComponent->SetRelativeLocation(FVector(0, SkillIconTopDist, 0)); // 在血条上方
 
-    // 如果是敌方单位，创建AI控制器
-    if (IsEnemy())
-    {
-        FActorSpawnParameters SpawnParams;
-        SpawnParams.Owner = this;
-        SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	// 如果是敌方单位，创建AI控制器
+	if (IsEnemy())
+	{
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = this;
+		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-        if (AIControllerClass)
-        {
-            AIController = GetWorld()->SpawnActor<ALFPAIController>(AIControllerClass, SpawnParams);
-            if (AIController)
-            {
-                AIController->Possess(this);
-                AIController->SetControlledUnit(this);
-                AIController->SetBehaviorData(EnemyBehaviorData);
-            }
-        }
-    }
+		if (AIControllerClass)
+		{
+			AIController = GetWorld()->SpawnActor<ALFPAIController>(AIControllerClass, SpawnParams);
+			if (AIController)
+			{
+				AIController->Possess(this);
+				AIController->SetControlledUnit(this);
+				AIController->SetBehaviorData(EnemyBehaviorData);
+			}
+		}
+	}
 }
 
 void ALFPTacticsUnit::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-    Super::EndPlay(EndPlayReason);
+	Super::EndPlay(EndPlayReason);
 
-    if (ALFPTurnManager* TurnManager = GetTurnManager())
-    {
-        TurnManager->UnregisterUnit(this);
-    }
+	if (ALFPTurnManager* TurnManager = GetTurnManager())
+	{
+		TurnManager->UnregisterUnit(this);
+	}
 
 }
 
 void ALFPTacticsUnit::SetCurrentCoordinates(const FLFPHexCoordinates& NewCoords, bool bUpdateOccupancy)
 {
-    if (ALFPHexGridManager* GridManager = GetGridManager())
-    {
-        if (bUpdateOccupancy)
-        {
-            // 清除旧位置占用
-            if (ALFPHexTile* LastTile = GridManager->GetTileAtCoordinates(CurrentCoordinates))
-            {
-                LastTile->SetIsOccupied(false);
-                LastTile->SetUnitOnTile(nullptr);
-            }
-        }
-        if (ALFPHexTile* Tile = GridManager->GetTileAtCoordinates(NewCoords))
-        {
-            SetActorLocation(Tile->GetActorLocation() + FVector(0, 0, 1));
-            if (bUpdateOccupancy)
-            {
-                Tile->SetIsOccupied(true);
-                Tile->SetUnitOnTile(this);
-            }
-            CurrentCoordinates = NewCoords;
-        }
-    }
+	if (ALFPHexGridManager* GridManager = GetGridManager())
+	{
+		if (bUpdateOccupancy)
+		{
+			// 清除旧位置占用
+			if (ALFPHexTile* LastTile = GridManager->GetTileAtCoordinates(CurrentCoordinates))
+			{
+				LastTile->SetIsOccupied(false);
+				LastTile->SetUnitOnTile(nullptr);
+			}
+		}
+		if (ALFPHexTile* Tile = GridManager->GetTileAtCoordinates(NewCoords))
+		{
+			SetActorLocation(Tile->GetActorLocation() + FVector(0, 0, 1));
+			if (bUpdateOccupancy)
+			{
+				Tile->SetIsOccupied(true);
+				Tile->SetUnitOnTile(this);
+			}
+			CurrentCoordinates = NewCoords;
+		}
+	}
 }
 
 ALFPHexTile* ALFPTacticsUnit::GetCurrentTile()
 {
-    if (ALFPHexGridManager* GridManager = GetGridManager())
-    {
-        if (ALFPHexTile* Tile = GridManager->GetTileAtCoordinates(CurrentCoordinates))
-        {
-            return Tile;
-        }
-    }
-    return nullptr;
+	if (ALFPHexGridManager* GridManager = GetGridManager())
+	{
+		if (ALFPHexTile* Tile = GridManager->GetTileAtCoordinates(CurrentCoordinates))
+		{
+			return Tile;
+		}
+	}
+	return nullptr;
 }
 
 //void ALFPTacticsUnit::SnapToGrid()
@@ -400,162 +407,162 @@ ALFPHexTile* ALFPTacticsUnit::GetCurrentTile()
 
 bool ALFPTacticsUnit::MoveToTile(ALFPHexTile* NewTargetTile)
 {
-    if (!NewTargetTile) return false;
+	if (!NewTargetTile) return false;
 
-    ALFPHexGridManager* GridManager = GetGridManager();
-    if (!GridManager) return false;
+	ALFPHexGridManager* GridManager = GetGridManager();
+	if (!GridManager) return false;
 
-    // 获取当前所在的格子
-    ALFPHexTile* CurrentTile = GridManager->GetTileAtCoordinates(CurrentCoordinates);
-    if (!CurrentTile) return false;
+	// 获取当前所在的格子
+	ALFPHexTile* CurrentTile = GridManager->GetTileAtCoordinates(CurrentCoordinates);
+	if (!CurrentTile) return false;
 
-    // 受约束寻路（有 MovementRangeTiles 时限制搜索范围）
-    if (MovementRangeTiles.Num() > 0)
-    {
-        MovePath = GridManager->FindPath(CurrentTile, NewTargetTile, &MovementRangeTiles, GetAffiliation());
-    }
-    else
-    {
-        MovePath = GridManager->FindPath(CurrentTile, NewTargetTile, nullptr, GetAffiliation());
-    }
-    if (MovePath.Num() == 0) return false;
+	// 受约束寻路（有 MovementRangeTiles 时限制搜索范围）
+	if (MovementRangeTiles.Num() > 0)
+	{
+		MovePath = GridManager->FindPath(CurrentTile, NewTargetTile, &MovementRangeTiles, GetAffiliation());
+	}
+	else
+	{
+		MovePath = GridManager->FindPath(CurrentTile, NewTargetTile, nullptr, GetAffiliation());
+	}
+	if (MovePath.Num() == 0) return false;
 
-    // 在路径开头插入当前格子，使 Tick 中 MovePath[0] → MovePath[1] 为第一段移动
-    MovePath.Insert(CurrentTile, 0);
+	// 在路径开头插入当前格子，使 Tick 中 MovePath[0] → MovePath[1] 为第一段移动
+	MovePath.Insert(CurrentTile, 0);
 
-    // 设置移动状态：清除起点占用，目标格暂不占用（等 CommitMovePosition 提交）
-    CurrentTile->SetIsOccupied(false);
-    CurrentTile->SetUnitOnTile(nullptr);
-    TargetTile = NewTargetTile;
-    CurrentPathIndex = 0;
-    MoveProgress = 0.0f;
+	// 设置移动状态：清除起点占用，目标格暂不占用（等 CommitMovePosition 提交）
+	CurrentTile->SetIsOccupied(false);
+	CurrentTile->SetUnitOnTile(nullptr);
+	TargetTile = NewTargetTile;
+	CurrentPathIndex = 0;
+	MoveProgress = 0.0f;
 
-    // 启动移动动画（Tick 驱动逐格插值）
-    bIsMoving = true;
+	// 启动移动动画（Tick 驱动逐格插值）
+	bIsMoving = true;
 
-    return true;
+	return true;
 }
 
 void ALFPTacticsUnit::UpdateMoveAnimation(float Value)
 {
-    // 已弃用，移动动画改为 Tick 驱动
+	// 已弃用，移动动画改为 Tick 驱动
 }
 
 void ALFPTacticsUnit::FinishMove()
 {
-    bIsMoving = false;
+	bIsMoving = false;
 
-    // 移动完成后先更新坐标，目标格占用由 CommitMovePosition 统一处理
-    if (TargetTile)
-    {
-        SetCurrentCoordinates(TargetTile->GetCoordinates(), false);
-    }
+	// 移动完成后先更新坐标，目标格占用由 CommitMovePosition 统一处理
+	if (TargetTile)
+	{
+		SetCurrentCoordinates(TargetTile->GetCoordinates(), false);
+	}
 
-    // 清除移动状态
-    TargetTile = nullptr;
-    MovePath.Empty();
-    CurrentPathIndex = -1;
-    MoveProgress = 0.0f;
+	// 清除移动状态
+	TargetTile = nullptr;
+	MovePath.Empty();
+	CurrentPathIndex = -1;
+	MoveProgress = 0.0f;
 
-    // 广播移动完成
-    if (ALFPTurnManager* TurnManager = GetTurnManager())
-    {
-        TurnManager->RefreshAllRuntimeUnitStates();
-    }
+	// 广播移动完成
+	if (ALFPTurnManager* TurnManager = GetTurnManager())
+	{
+		TurnManager->RefreshAllRuntimeUnitStates();
+	}
 
-    OnMoveFinished.Broadcast();
+	OnMoveFinished.Broadcast();
 }
 
 void ALFPTacticsUnit::CommitMovePosition()
 {
-    ALFPHexGridManager* GM = GetGridManager();
-    if (!GM) return;
+	ALFPHexGridManager* GM = GetGridManager();
+	if (!GM) return;
 
-    ALFPHexTile* StartTile = GM->GetTileAtCoordinates(LastCommittedCoordinates);
-    ALFPHexTile* CurrTile = GetCurrentTile();
-    if (!StartTile || !CurrTile) return;
-    if (LastCommittedCoordinates == CurrentCoordinates)
-    {
-        CurrTile->SetIsOccupied(true);
-        CurrTile->SetUnitOnTile(this);
-        return;
-    }
+	ALFPHexTile* StartTile = GM->GetTileAtCoordinates(LastCommittedCoordinates);
+	ALFPHexTile* CurrTile = GetCurrentTile();
+	if (!StartTile || !CurrTile) return;
+	if (LastCommittedCoordinates == CurrentCoordinates)
+	{
+		CurrTile->SetIsOccupied(true);
+		CurrTile->SetUnitOnTile(this);
+		return;
+	}
 
-    TArray<ALFPHexTile*> Path = GM->FindPath(StartTile, CurrTile, nullptr, GetAffiliation());
+	TArray<ALFPHexTile*> Path = GM->FindPath(StartTile, CurrTile, nullptr, GetAffiliation());
 
-    // 构建 ZoC 映射，逐格累计消耗（从 ZoC 格出发时消耗替换为 ZoC 代价）
-    const TMap<FIntPoint, int32> ZocMap = GM->BuildZocCountMap(GetAffiliation());
-    int32 TotalCost = 0;
-    ALFPHexTile* PrevTile = StartTile;
-    for (ALFPHexTile* Tile : Path)
-    {
-        const FIntPoint PrevKey(PrevTile->GetCoordinates().Q, PrevTile->GetCoordinates().R);
-        if (const int32* Count = ZocMap.Find(PrevKey))
-        {
-            TotalCost += (*Count) * GM->ZoCBaseCost;
-        }
-        else
-        {
-            TotalCost += Tile->GetMovementCost();
-        }
-        PrevTile = Tile;
-    }
-    ConsumeMovePoints(TotalCost);
-    // 占用当前格子（预览模式下未占用，提交后正式占用）
-    if (ALFPHexTile* Tile = GetCurrentTile())
-    {
-        Tile->SetIsOccupied(true);
-        Tile->SetUnitOnTile(this);
-    }
-    LastCommittedCoordinates = CurrentCoordinates;
+	// 构建 ZoC 映射，逐格累计消耗（从 ZoC 格出发时消耗替换为 ZoC 代价）
+	const TMap<FIntPoint, int32> ZocMap = GM->BuildZocCountMap(GetAffiliation());
+	int32 TotalCost = 0;
+	ALFPHexTile* PrevTile = StartTile;
+	for (ALFPHexTile* Tile : Path)
+	{
+		const FIntPoint PrevKey(PrevTile->GetCoordinates().Q, PrevTile->GetCoordinates().R);
+		if (const int32* Count = ZocMap.Find(PrevKey))
+		{
+			TotalCost += (*Count) * GM->ZoCBaseCost;
+		}
+		else
+		{
+			TotalCost += Tile->GetMovementCost();
+		}
+		PrevTile = Tile;
+	}
+	ConsumeMovePoints(TotalCost);
+	// 占用当前格子（预览模式下未占用，提交后正式占用）
+	if (ALFPHexTile* Tile = GetCurrentTile())
+	{
+		Tile->SetIsOccupied(true);
+		Tile->SetUnitOnTile(this);
+	}
+	LastCommittedCoordinates = CurrentCoordinates;
 }
 
 void ALFPTacticsUnit::ResetForNewRound()
 {
-    CurrentMovePoints = CurrentMaxMovePoints;
-    bHasActed = false;
-    LastCommittedCoordinates = CurrentCoordinates;
+	CurrentMovePoints = CurrentMaxMovePoints;
+	bHasActed = false;
+	LastCommittedCoordinates = CurrentCoordinates;
 
-    // 重置精灵视觉效果
-    if (SpriteComponent)
-    {
-        SpriteComponent->SetSpriteColor(FLinearColor::White);
-    }
+	// 重置精灵视觉效果
+	if (SpriteComponent)
+	{
+		SpriteComponent->SetSpriteColor(FLinearColor::White);
+	}
 
-    // 清除上一轮的行动计划
-    ClearActionPlan();
+	// 清除上一轮的行动计划
+	ClearActionPlan();
 }
 
 void ALFPTacticsUnit::OnTurnStarted()
 {
-    bOnTurn = true;
+	bOnTurn = true;
 
-    // 记录当前提交位置，用于后续移动消耗结算
-    LastCommittedCoordinates = CurrentCoordinates;
+	// 记录当前提交位置，用于后续移动消耗结算
+	LastCommittedCoordinates = CurrentCoordinates;
 
-    if (BuffComponent)
-    {
-        BuffComponent->OnTurnStarted();
-    }
-    if (bIsDead)
-    {
-        return;
-    }
+	if (BuffComponent)
+	{
+		BuffComponent->OnTurnStarted();
+	}
+	if (bIsDead)
+	{
+		return;
+	}
 
-    if (SkillComponent)
-    {
-        SkillComponent->OnTurnStarted();
-    }
+	if (SkillComponent)
+	{
+		SkillComponent->OnTurnStarted();
+	}
 }
 
 void ALFPTacticsUnit::OnTurnEnded()
 {
-    if (BuffComponent)
-    {
-        BuffComponent->OnTurnEnded();
-    }
+	if (BuffComponent)
+	{
+		BuffComponent->OnTurnEnded();
+	}
 
-    bOnTurn = false;
+	bOnTurn = false;
 }
 
 void ALFPTacticsUnit::OnMouseEnter()
@@ -564,16 +571,16 @@ void ALFPTacticsUnit::OnMouseEnter()
 
 void ALFPTacticsUnit::SetSelected(bool bSelected)
 {
-    bIsSelected = bSelected;
-    // 视觉反馈：高亮选中单位
-    if (bSelected)
-    {
-        SpriteComponent->SetSpriteColor(FLinearColor::Yellow);
-    }
-    else
-    {
-        SpriteComponent->SetSpriteColor(FLinearColor::White);
-    }
+	bIsSelected = bSelected;
+	// 视觉反馈：高亮选中单位
+	if (bSelected)
+	{
+		SpriteComponent->SetSpriteColor(FLinearColor::Yellow);
+	}
+	else
+	{
+		SpriteComponent->SetSpriteColor(FLinearColor::White);
+	}
 }
 
 //void ALFPTacticsUnit::HighlightMovementRange(bool bHighlight)
@@ -600,103 +607,103 @@ void ALFPTacticsUnit::SetSelected(bool bSelected)
 
 void ALFPTacticsUnit::ConsumeMovePoints(int32 Amount)
 {
-    CurrentMovePoints = FMath::Max(0, CurrentMovePoints - Amount);
+	CurrentMovePoints = FMath::Max(0, CurrentMovePoints - Amount);
 
-    // 如果没有行动力了，标记为已行动
-    if (CurrentMovePoints <= 0)
-    {
-        //bHasActed = true;
-    }
+	// 如果没有行动力了，标记为已行动
+	if (CurrentMovePoints <= 0)
+	{
+		//bHasActed = true;
+	}
 }
 
 void ALFPTacticsUnit::ConsumeActionPoints(int32 Amount)
 {
-    if (ALFPTurnManager* TurnManager = GetTurnManager())
-    {
-        TurnManager->ConsumeFactionAP(Affiliation, Amount);
-    }
-    CurrentMovePoints = 0;
+	if (ALFPTurnManager* TurnManager = GetTurnManager())
+	{
+		TurnManager->ConsumeFactionAP(Affiliation, Amount);
+	}
+	CurrentMovePoints = 0;
 }
 
 bool ALFPTacticsUnit::HasEnoughMovePoints(int32 Required) const
 {
-    return CurrentMovePoints >= Required;
+	return CurrentMovePoints >= Required;
 }
 
 bool ALFPTacticsUnit::HasEnoughActionPoints(int32 Required) const
 {
-    if (ALFPTurnManager* TurnManager = GetTurnManager())
-    {
-        return TurnManager->HasEnoughFactionAP(Affiliation, Required);
-    }
-    return false;
+	if (ALFPTurnManager* TurnManager = GetTurnManager())
+	{
+		return TurnManager->HasEnoughFactionAP(Affiliation, Required);
+	}
+	return false;
 }
 
 int32 ALFPTacticsUnit::GetActionPoints()
 {
-    if (ALFPTurnManager* TurnManager = GetTurnManager())
-    {
-        return TurnManager->GetFactionAP(Affiliation);
-    }
-    return 0;
+	if (ALFPTurnManager* TurnManager = GetTurnManager())
+	{
+		return TurnManager->GetFactionAP(Affiliation);
+	}
+	return 0;
 }
 
 ALFPHexGridManager* ALFPTacticsUnit::GetGridManager() const
 {
-    TArray<AActor*> FoundActors;
-    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALFPHexGridManager::StaticClass(), FoundActors);
-    if (FoundActors.Num() > 0)
-    {
-        return Cast<ALFPHexGridManager>(FoundActors[0]);
-    }
-    return nullptr;
+	TArray<AActor*> FoundActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALFPHexGridManager::StaticClass(), FoundActors);
+	if (FoundActors.Num() > 0)
+	{
+		return Cast<ALFPHexGridManager>(FoundActors[0]);
+	}
+	return nullptr;
 }
 
 ALFPTurnManager* ALFPTacticsUnit::GetTurnManager() const
 {
-    TArray<AActor*> FoundManagers;
-    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALFPTurnManager::StaticClass(), FoundManagers);
+	TArray<AActor*> FoundManagers;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALFPTurnManager::StaticClass(), FoundManagers);
 
-    if (FoundManagers.Num() > 0)
-    {
-        return Cast<ALFPTurnManager>(FoundManagers[0]);
-    }
-    return nullptr;
+	if (FoundManagers.Num() > 0)
+	{
+		return Cast<ALFPTurnManager>(FoundManagers[0]);
+	}
+	return nullptr;
 }
 
 void ALFPTacticsUnit::Tick(float DeltaTime)
 {
-    Super::Tick(DeltaTime);
+	Super::Tick(DeltaTime);
 
-    // 逐格平滑移动
-    if (bIsMoving && CurrentPathIndex >= 0 && CurrentPathIndex < MovePath.Num() - 1)
-    {
-        MoveProgress += MoveSpeed * DeltaTime;
+	// 逐格平滑移动
+	if (bIsMoving && CurrentPathIndex >= 0 && CurrentPathIndex < MovePath.Num() - 1)
+	{
+		MoveProgress += MoveSpeed * DeltaTime;
 
-        ALFPHexTile* FromTile = MovePath[CurrentPathIndex];
-        ALFPHexTile* ToTile = MovePath[CurrentPathIndex + 1];
+		ALFPHexTile* FromTile = MovePath[CurrentPathIndex];
+		ALFPHexTile* ToTile = MovePath[CurrentPathIndex + 1];
 
-        if (FromTile && ToTile)
-        {
-            FVector StartPos = FromTile->GetActorLocation() + FVector(0, 0, 1);
-            FVector EndPos = ToTile->GetActorLocation() + FVector(0, 0, 1);
+		if (FromTile && ToTile)
+		{
+			FVector StartPos = FromTile->GetActorLocation() + FVector(0, 0, 1);
+			FVector EndPos = ToTile->GetActorLocation() + FVector(0, 0, 1);
 
-            float Alpha = FMath::Clamp(MoveProgress, 0.f, 1.f);
-            SetActorLocation(FMath::Lerp(StartPos, EndPos, Alpha));
-        }
+			float Alpha = FMath::Clamp(MoveProgress, 0.f, 1.f);
+			SetActorLocation(FMath::Lerp(StartPos, EndPos, Alpha));
+		}
 
-        if (MoveProgress >= 1.0f)
-        {
-            CurrentPathIndex++;
-            MoveProgress = 0.0f;
+		if (MoveProgress >= 1.0f)
+		{
+			CurrentPathIndex++;
+			MoveProgress = 0.0f;
 
-            if (CurrentPathIndex >= MovePath.Num() - 1)
-            {
-                // 到达终点
-                FinishMove();
-            }
-        }
-    }
+			if (CurrentPathIndex >= MovePath.Num() - 1)
+			{
+				// 到达终点
+				FinishMove();
+			}
+		}
+	}
 }
 
 void ALFPTacticsUnit::InitializeHealthBar()
@@ -715,217 +722,217 @@ void ALFPTacticsUnit::InitializeHealthBar()
 
 void ALFPTacticsUnit::ReceiveTypedDamage(int32 Damage)
 {
-    TakeTypedDamage(Damage, ELFPAttackType::AT_Physical);
+	TakeTypedDamage(Damage, ELFPAttackType::AT_Physical);
 }
 
 int32 ALFPTacticsUnit::TakeTypedDamage(int32 Damage, ELFPAttackType DamageType)
 {
-    return TakeTypedDamageInternal(Damage, DamageType);
+	return TakeTypedDamageInternal(Damage, DamageType);
 }
 
 int32 ALFPTacticsUnit::TakeTypedDamageInternal(int32 Damage, ELFPAttackType DamageType)
 {
-    if (bIsDead)
-    {
-        return 0;
-    }
+	if (bIsDead)
+	{
+		return 0;
+	}
 
-    const int32 DefenseValue = (DamageType == ELFPAttackType::AT_Magical) ? GetSpellDefense() : GetPhysicalBlock();
-    const int32 ActualDamage = FMath::Max(Damage - DefenseValue, 1);
-    return ApplyResolvedDamage(ActualDamage);
+	const int32 DefenseValue = (DamageType == ELFPAttackType::AT_Magical) ? GetSpellDefense() : GetPhysicalBlock();
+	const int32 ActualDamage = FMath::Max(Damage - DefenseValue, 1);
+	return ApplyResolvedDamage(ActualDamage);
 }
 
 int32 ALFPTacticsUnit::TakeTrueDamage(int32 Damage)
 {
-    return ApplyResolvedDamage(Damage);
+	return ApplyResolvedDamage(Damage);
 }
 
 int32 ALFPTacticsUnit::ApplySkillDamage(ALFPTacticsUnit* Target, const ULFPSkillBase* SourceSkill)
 {
-    if (!Target || !SourceSkill || !SourceSkill->Owner || !Target->IsAlive())
-    {
-        return 0;
-    }
+	if (!Target || !SourceSkill || !SourceSkill->Owner || !Target->IsAlive())
+	{
+		return 0;
+	}
 
-    const int32 HitCount = FMath::Max(0, SourceSkill->GetHitCount(Target));
-    if (HitCount <= 0)
-    {
-        return 0;
-    }
+	const int32 HitCount = FMath::Max(0, SourceSkill->GetHitCount(Target));
+	if (HitCount <= 0)
+	{
+		return 0;
+	}
 
-    ALFPTacticsUnit* DamageSource = SourceSkill->Owner;
-    // 进入这里代表技能已经找到有效受击目标；用于敌人计划判断“命中”，不依赖最终扣血量。
-    DamageSource->RecordOutgoingSkillDamageCalculation(SourceSkill, Target);
+	ALFPTacticsUnit* DamageSource = SourceSkill->Owner;
+	// 进入这里代表技能已经找到有效受击目标；用于敌人计划判断“命中”，不依赖最终扣血量。
+	DamageSource->RecordOutgoingSkillDamageCalculation(SourceSkill, Target);
 
-    int32 TotalDamage = 0;
-    for (int32 HitIndex = 0; HitIndex < HitCount; ++HitIndex)
-    {
-        if (!Target->IsAlive())
-        {
-            break;
-        }
+	int32 TotalDamage = 0;
+	for (int32 HitIndex = 0; HitIndex < HitCount; ++HitIndex)
+	{
+		if (!Target->IsAlive())
+		{
+			break;
+		}
 
-        const float DamageScalePerHit = FMath::Max(0.0f, SourceSkill->GetDamageScalePerHit(Target));
-        const ELFPAttackType DamageType = SourceSkill->GetDamageType(Target);
-        const int32 RawDamage = FMath::Max(0, FMath::RoundToInt(DamageSource->GetCurrentAttack() * DamageScalePerHit));
-        const int32 DefenseValue = (DamageType == ELFPAttackType::AT_Magical) ? Target->GetSpellDefense() : Target->GetPhysicalBlock();
-        int32 ActualDamage = FMath::Max(RawDamage - DefenseValue, 1);
+		const float DamageScalePerHit = FMath::Max(0.0f, SourceSkill->GetDamageScalePerHit(Target));
+		const ELFPAttackType DamageType = SourceSkill->GetDamageType(Target);
+		const int32 RawDamage = FMath::Max(0, FMath::RoundToInt(DamageSource->GetCurrentAttack() * DamageScalePerHit));
+		const int32 DefenseValue = (DamageType == ELFPAttackType::AT_Magical) ? Target->GetSpellDefense() : Target->GetPhysicalBlock();
+		int32 ActualDamage = FMath::Max(RawDamage - DefenseValue, 1);
 
-        const float CriticalChance = FMath::Clamp(SourceSkill->GetCriticalChance(Target), 0.0f, 1.0f);
-        if (CriticalChance > 0.0f && FMath::FRand() < CriticalChance)
-        {
-            const float CriticalMultiplier = FMath::Max(1.0f, SourceSkill->GetCriticalMultiplier(Target));
-            ActualDamage = FMath::Max(1, FMath::RoundToInt(ActualDamage * CriticalMultiplier));
-        }
+		const float CriticalChance = FMath::Clamp(SourceSkill->GetCriticalChance(Target), 0.0f, 1.0f);
+		if (CriticalChance > 0.0f && FMath::FRand() < CriticalChance)
+		{
+			const float CriticalMultiplier = FMath::Max(1.0f, SourceSkill->GetCriticalMultiplier(Target));
+			ActualDamage = FMath::Max(1, FMath::RoundToInt(ActualDamage * CriticalMultiplier));
+		}
 
-        // Buff 的增伤按“防御、暴击之后的最终伤害”生效。
-        ActualDamage = DamageSource->ApplyOutgoingDamageMultiplierToResolvedDamage(ActualDamage);
-        TotalDamage += Target->ApplyResolvedDamage(ActualDamage);
-    }
+		// Buff 的增伤按“防御、暴击之后的最终伤害”生效。
+		ActualDamage = DamageSource->ApplyOutgoingDamageMultiplierToResolvedDamage(ActualDamage);
+		TotalDamage += Target->ApplyResolvedDamage(ActualDamage);
+	}
 
-    if (TotalDamage > 0)
-    {
-        UE_LOG(LogTemp, Log, TEXT("[SkillDamage] 释放者=%s, 技能=%s, 伤害=%d, 受击者=%s"),
-            *DamageSource->GetName(),
-            *SourceSkill->GetName(),
-            TotalDamage,
-            *Target->GetName());
-    }
+	if (TotalDamage > 0)
+	{
+		UE_LOG(LogTemp, Log, TEXT("[SkillDamage] 释放者=%s, 技能=%s, 伤害=%d, 受击者=%s"),
+			*DamageSource->GetName(),
+			*SourceSkill->GetName(),
+			TotalDamage,
+			*Target->GetName());
+	}
 
-    return TotalDamage;
+	return TotalDamage;
 }
 
 int32 ALFPTacticsUnit::ApplySkillTypedDamage(ALFPTacticsUnit* Target, int32 Damage, ELFPAttackType DamageType, const ULFPSkillBase* SourceSkill)
 {
-    if (!Target || !SourceSkill || !SourceSkill->Owner || !Target->IsAlive() || Damage < 0)
-    {
-        return 0;
-    }
+	if (!Target || !SourceSkill || !SourceSkill->Owner || !Target->IsAlive() || Damage < 0)
+	{
+		return 0;
+	}
 
-    ALFPTacticsUnit* DamageSource = SourceSkill->Owner;
-    // 固定伤害类技能也走同一套“伤害结算尝试”统计，避免被敌人打空逻辑漏掉。
-    DamageSource->RecordOutgoingSkillDamageCalculation(SourceSkill, Target);
+	ALFPTacticsUnit* DamageSource = SourceSkill->Owner;
+	// 固定伤害类技能也走同一套“伤害结算尝试”统计，避免被敌人打空逻辑漏掉。
+	DamageSource->RecordOutgoingSkillDamageCalculation(SourceSkill, Target);
 
-    const int32 DefenseValue = (DamageType == ELFPAttackType::AT_Magical) ? Target->GetSpellDefense() : Target->GetPhysicalBlock();
-    int32 ActualDamage = FMath::Max(Damage - DefenseValue, 1);
-    ActualDamage = DamageSource->ApplyOutgoingDamageMultiplierToResolvedDamage(ActualDamage);
-    return Target->ApplyResolvedDamage(ActualDamage);
+	const int32 DefenseValue = (DamageType == ELFPAttackType::AT_Magical) ? Target->GetSpellDefense() : Target->GetPhysicalBlock();
+	int32 ActualDamage = FMath::Max(Damage - DefenseValue, 1);
+	ActualDamage = DamageSource->ApplyOutgoingDamageMultiplierToResolvedDamage(ActualDamage);
+	return Target->ApplyResolvedDamage(ActualDamage);
 }
 
 int32 ALFPTacticsUnit::ApplyOutgoingDamageMultiplierToResolvedDamage(int32 Damage) const
 {
-    const float DamageMultiplier = GetOutgoingDamageMultiplier();
-    if (FMath::IsNearlyEqual(DamageMultiplier, 1.0f))
-    {
-        return Damage;
-    }
+	const float DamageMultiplier = GetOutgoingDamageMultiplier();
+	if (FMath::IsNearlyEqual(DamageMultiplier, 1.0f))
+	{
+		return Damage;
+	}
 
-    return FMath::Max(0, FMath::RoundToInt(Damage * DamageMultiplier));
+	return FMath::Max(0, FMath::RoundToInt(Damage * DamageMultiplier));
 }
 
 int32 ALFPTacticsUnit::ApplyResolvedDamage(int32 Damage)
 {
-    if (bIsDead)
-    {
-        return 0;
-    }
+	if (bIsDead)
+	{
+		return 0;
+	}
 
-    const int32 ActualDamage = FMath::Max(Damage, 1);
-    CurrentHealth = FMath::Max(CurrentHealth - ActualDamage, 0);
+	const int32 ActualDamage = FMath::Max(Damage, 1);
+	CurrentHealth = FMath::Max(CurrentHealth - ActualDamage, 0);
 
-    OnHealthChangedDelegate.Broadcast(CurrentHealth, GetCurrentMaxHealth());
-    OnHealthChangedWithUnitDelegate.Broadcast(this, CurrentHealth, GetCurrentMaxHealth());
+	OnHealthChangedDelegate.Broadcast(CurrentHealth, GetCurrentMaxHealth());
+	OnHealthChangedWithUnitDelegate.Broadcast(this, CurrentHealth, GetCurrentMaxHealth());
 
-    OnTakeDamage(ActualDamage);
+	OnTakeDamage(ActualDamage);
 
-    if (CurrentHealth <= 0)
-    {
-        HandleDeath();
-    }
+	if (CurrentHealth <= 0)
+	{
+		HandleDeath();
+	}
 
-    return ActualDamage;
+	return ActualDamage;
 }
 
 int32 ALFPTacticsUnit::ApplyRepeatedHitDamage(ALFPTacticsUnit* Target, int32 HitCount, int32 RawDamagePerHit, ELFPAttackType DamageType)
 {
-    if (!Target || HitCount <= 0 || RawDamagePerHit < 0)
-    {
-        return 0;
-    }
+	if (!Target || HitCount <= 0 || RawDamagePerHit < 0)
+	{
+		return 0;
+	}
 
-    int32 TotalDamage = 0;
-    for (int32 HitIndex = 0; HitIndex < HitCount; ++HitIndex)
-    {
-        if (!Target->IsAlive())
-        {
-            break;
-        }
+	int32 TotalDamage = 0;
+	for (int32 HitIndex = 0; HitIndex < HitCount; ++HitIndex)
+	{
+		if (!Target->IsAlive())
+		{
+			break;
+		}
 
-        TotalDamage += Target->TakeTypedDamage(RawDamagePerHit, DamageType);
-    }
+		TotalDamage += Target->TakeTypedDamage(RawDamagePerHit, DamageType);
+	}
 
-    return TotalDamage;
+	return TotalDamage;
 }
 
 bool ALFPTacticsUnit::HasAnyBuffs() const
 {
-    return BuffComponent && BuffComponent->HasAnyBuffs();
+	return BuffComponent && BuffComponent->HasAnyBuffs();
 }
 
 bool ALFPTacticsUnit::HasBuffById(FGameplayTag BuffId) const
 {
-    return BuffComponent && BuffComponent->HasBuffById(BuffId);
+	return BuffComponent && BuffComponent->HasBuffById(BuffId);
 }
 
 int32 ALFPTacticsUnit::GetBuffStack(FGameplayTag BuffId) const
 {
-    return BuffComponent ? BuffComponent->GetBuffStack(BuffId) : 0;
+	return BuffComponent ? BuffComponent->GetBuffStack(BuffId) : 0;
 }
 
 int32 ALFPTacticsUnit::GetTotalBuffCount() const
 {
-    return BuffComponent ? BuffComponent->GetTotalBuffCount() : 0;
+	return BuffComponent ? BuffComponent->GetTotalBuffCount() : 0;
 }
 
 void ALFPTacticsUnit::RecordOutgoingSkillDamageCalculation(const ULFPSkillBase* SourceSkill, ALFPTacticsUnit* Target)
 {
-    if (!SourceSkill || !Target || !Target->IsAlive())
-    {
-        return;
-    }
+	if (!SourceSkill || !Target || !Target->IsAlive())
+	{
+		return;
+	}
 
-    // 这里统计的是“进入伤害公式计算”，不是“造成了正数伤害”。
-    OutgoingSkillDamageCalculationCount++;
+	// 这里统计的是“进入伤害公式计算”，不是“造成了正数伤害”。
+	OutgoingSkillDamageCalculationCount++;
 }
 
 bool ALFPTacticsUnit::ConsumeEnemyMissCompensationBuffs()
 {
-    if (!BuffComponent)
-    {
-        return false;
-    }
+	if (!BuffComponent)
+	{
+		return false;
+	}
 
-    int32 RemovedCount = 0;
+	int32 RemovedCount = 0;
 
-    // 命中后两个补偿 Buff 一起消耗；如果只存在其中一个，也允许清理掉。
-    const FGameplayTag DamageBoostTag = LFPBuffTags::RequestBuffTag(LFPBuffTags::EnemyMissDamageBoostBuffIdName);
-    if (DamageBoostTag.IsValid())
-    {
-        RemovedCount += BuffComponent->RemoveBuffById(DamageBoostTag);
-    }
+	// 命中后两个补偿 Buff 一起消耗；如果只存在其中一个，也允许清理掉。
+	const FGameplayTag DamageBoostTag = LFPBuffTags::RequestBuffTag(LFPBuffTags::EnemyMissDamageBoostBuffIdName);
+	if (DamageBoostTag.IsValid())
+	{
+		RemovedCount += BuffComponent->RemoveBuffById(DamageBoostTag);
+	}
 
-    const FGameplayTag SpeedBoostTag = LFPBuffTags::RequestBuffTag(LFPBuffTags::EnemyMissSpeedBoostBuffIdName);
-    if (SpeedBoostTag.IsValid())
-    {
-        RemovedCount += BuffComponent->RemoveBuffById(SpeedBoostTag);
-    }
+	const FGameplayTag SpeedBoostTag = LFPBuffTags::RequestBuffTag(LFPBuffTags::EnemyMissSpeedBoostBuffIdName);
+	if (SpeedBoostTag.IsValid())
+	{
+		RemovedCount += BuffComponent->RemoveBuffById(SpeedBoostTag);
+	}
 
-    return RemovedCount > 0;
+	return RemovedCount > 0;
 }
 
 float ALFPTacticsUnit::GetOutgoingDamageMultiplier() const
 {
-    return BuffComponent ? BuffComponent->GetOutgoingDamageMultiplier() : 1.0f;
+	return BuffComponent ? BuffComponent->GetOutgoingDamageMultiplier() : 1.0f;
 }
 
 void ALFPTacticsUnit::Heal(int32 Amount)
@@ -944,394 +951,394 @@ void ALFPTacticsUnit::Heal(int32 Amount)
 
 void ALFPTacticsUnit::ApplyDamageToTarget(ALFPTacticsUnit* Target)
 {
-    if (!Target || Target->bIsDead) return;
+	if (!Target || Target->bIsDead) return;
 
-    int32 Damage = GetCurrentAttack();
+	int32 Damage = GetCurrentAttack();
 
-    float RandomFactor = FMath::RandRange(0.9f, 1.1f);
-    Damage = FMath::RoundToInt(Damage * RandomFactor);
+	float RandomFactor = FMath::RandRange(0.9f, 1.1f);
+	Damage = FMath::RoundToInt(Damage * RandomFactor);
 
-    Target->TakeTypedDamage(Damage, GetAttackType());
+	Target->TakeTypedDamage(Damage, GetAttackType());
 
-    ConsumeMovePoints(1);
+	ConsumeMovePoints(1);
 }
 
 void ALFPTacticsUnit::HandleDeath()
 {
-    bIsDead = true;
-    if (BuffComponent)
-    {
-        BuffComponent->ClearAllBuffs();
-    }
+	bIsDead = true;
+	if (BuffComponent)
+	{
+		BuffComponent->ClearAllBuffs();
+	}
 
 	// 广播死亡事件
-    OnDeathDelegate.Broadcast();
-    OnDeathWithUnitDelegate.Broadcast(this);
+	OnDeathDelegate.Broadcast();
+	OnDeathWithUnitDelegate.Broadcast(this);
 
-    // 蓝图事件
-    OnDeath();
+	// 蓝图事件
+	OnDeath();
 
-    // 通知 GameMode 敌方单位被击杀（掉落追踪）
-    if (IsEnemy())
-    {
-        if (ALFPTurnGameMode* GM = Cast<ALFPTurnGameMode>(GetWorld()->GetAuthGameMode()))
-        {
-            GM->OnEnemyUnitKilled(this);
-        }
-    }
+	// 通知 GameMode 敌方单位被击杀（掉落追踪）
+	if (IsEnemy())
+	{
+		if (ALFPTurnGameMode* GM = Cast<ALFPTurnGameMode>(GetWorld()->GetAuthGameMode()))
+		{
+			GM->OnEnemyUnitKilled(this);
+		}
+	}
 
-    // 从格子上移除
-    ALFPHexTile* CurrentTile = GetCurrentTile();
-    if (CurrentTile)
-    {
-        CurrentTile->SetIsOccupied(false);
-        CurrentTile->SetUnitOnTile(nullptr);
-    }
+	// 从格子上移除
+	ALFPHexTile* CurrentTile = GetCurrentTile();
+	if (CurrentTile)
+	{
+		CurrentTile->SetIsOccupied(false);
+		CurrentTile->SetUnitOnTile(nullptr);
+	}
 
-    // 从回合系统中移除
-    if (ALFPTurnManager* TurnManager = GetTurnManager())
-    {
-        TurnManager->UnregisterUnit(this);
-    }
+	// 从回合系统中移除
+	if (ALFPTurnManager* TurnManager = GetTurnManager())
+	{
+		TurnManager->UnregisterUnit(this);
+	}
 
-    // 禁用碰撞
-    SetActorEnableCollision(false);
+	// 禁用碰撞
+	SetActorEnableCollision(false);
 
-    // 延迟销毁
-    FTimerHandle TimerHandle;
-    GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]()
-        {
-            Destroy();
-        }, 2.0f, false);
+	// 延迟销毁
+	FTimerHandle TimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]()
+		{
+			Destroy();
+		}, 2.0f, false);
 }
 
 bool ALFPTacticsUnit::EvaluateBetrayalConditions()
 {
-    return BetrayalComponent ? BetrayalComponent->EvaluateBetrayalConditions() : false;
+	return BetrayalComponent ? BetrayalComponent->EvaluateBetrayalConditions() : false;
 }
 
 bool ALFPTacticsUnit::TryBetrayToPlayer(ULFPBetrayalCondition* TriggeringCondition)
 {
-    return BetrayalComponent ? BetrayalComponent->TryBetrayToPlayer(TriggeringCondition) : false;
+	return BetrayalComponent ? BetrayalComponent->TryBetrayToPlayer(TriggeringCondition) : false;
 }
 
 void ALFPTacticsUnit::ChangeAffiliation(EUnitAffiliation NewAffiliation)
 {
-    if (Affiliation == NewAffiliation)
-    {
-        return;
-    }
+	if (Affiliation == NewAffiliation)
+	{
+		return;
+	}
 
 	EUnitAffiliation OldAffiliation = Affiliation;
 	Affiliation = NewAffiliation;
 
-    if (NewAffiliation == EUnitAffiliation::UA_Player)
-    {
-        if (AIController)
-        {
-            AIController->UnPossess();
-            AIController->Destroy();
-            AIController = nullptr;
-        }
+	if (NewAffiliation == EUnitAffiliation::UA_Player)
+	{
+		if (AIController)
+		{
+			AIController->UnPossess();
+			AIController->Destroy();
+			AIController = nullptr;
+		}
 
-        // 敌人→玩家：记录捕获
-        if (OldAffiliation == EUnitAffiliation::UA_Enemy)
-        {
-            if (ALFPTurnGameMode* GM = Cast<ALFPTurnGameMode>(GetWorld()->GetAuthGameMode()))
-            {
-                GM->RecordCapturedUnit(this);
-            }
-        }
-    }
+		// 敌人→玩家：记录捕获
+		if (OldAffiliation == EUnitAffiliation::UA_Enemy)
+		{
+			if (ALFPTurnGameMode* GM = Cast<ALFPTurnGameMode>(GetWorld()->GetAuthGameMode()))
+			{
+				GM->RecordCapturedUnit(this);
+			}
+		}
+	}
 
-    // 阵营变更后重新检查胜负条件（如最后一个敌人背叛）
-    OnAffiliationChangedDelegate.Broadcast(this, OldAffiliation, NewAffiliation);
+	// 阵营变更后重新检查胜负条件（如最后一个敌人背叛）
+	OnAffiliationChangedDelegate.Broadcast(this, OldAffiliation, NewAffiliation);
 
-    if (ALFPTurnManager* TurnManager = GetTurnManager())
-    {
-        TurnManager->RefreshAllRuntimeUnitStates();
-        TurnManager->CheckBattleEnd();
-    }
+	if (ALFPTurnManager* TurnManager = GetTurnManager())
+	{
+		TurnManager->RefreshAllRuntimeUnitStates();
+		TurnManager->CheckBattleEnd();
+	}
 }
 
 ALFPTacticsUnit* ALFPTacticsUnit::FindBestTarget()
 {
-    // 获取所有玩家单位
-    TArray<AActor*> PlayerUnits;
-    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALFPTacticsUnit::StaticClass(), PlayerUnits);
+	// 获取所有玩家单位
+	TArray<AActor*> PlayerUnits;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALFPTacticsUnit::StaticClass(), PlayerUnits);
 
-    ALFPTacticsUnit* BestTarget = nullptr;
-    float BestThreatValue = -MAX_FLT;
+	ALFPTacticsUnit* BestTarget = nullptr;
+	float BestThreatValue = -MAX_FLT;
 
-    for (AActor* Actor : PlayerUnits)
-    {
-        ALFPTacticsUnit* Unit = Cast<ALFPTacticsUnit>(Actor);
-        if (Unit && Unit->IsAlive() && Unit->IsAlly())
-        {
-            float ThreatValue = CalculateThreatValue(Unit);
-            if (ThreatValue > BestThreatValue)
-            {
-                BestThreatValue = ThreatValue;
-                BestTarget = Unit;
-            }
-        }
-    }
+	for (AActor* Actor : PlayerUnits)
+	{
+		ALFPTacticsUnit* Unit = Cast<ALFPTacticsUnit>(Actor);
+		if (Unit && Unit->IsAlive() && Unit->IsAlly())
+		{
+			float ThreatValue = CalculateThreatValue(Unit);
+			if (ThreatValue > BestThreatValue)
+			{
+				BestThreatValue = ThreatValue;
+				BestTarget = Unit;
+			}
+		}
+	}
 
-    return BestTarget;
+	return BestTarget;
 }
 
 ALFPHexTile* ALFPTacticsUnit::FindBestMovementTile(ALFPTacticsUnit* Target)
 {
-    ALFPHexGridManager* GridManager = GetGridManager();
-    if (!GridManager)
-    {
-        return nullptr;
-    }
-    // 获取所有可移动位置
-    MovementRangeTiles = GridManager->GetTilesInRange(GetCurrentTile(), GetCurrentMovePoints(), GetAffiliation());
+	ALFPHexGridManager* GridManager = GetGridManager();
+	if (!GridManager)
+	{
+		return nullptr;
+	}
+	// 获取所有可移动位置
+	MovementRangeTiles = GridManager->GetTilesInRange(GetCurrentTile(), GetCurrentMovePoints(), GetAffiliation());
 
-    ALFPHexTile* BestTile = nullptr;
-    float BestPositionValue = -MAX_FLT;
+	ALFPHexTile* BestTile = nullptr;
+	float BestPositionValue = -MAX_FLT;
 
-    for (ALFPHexTile* Tile : MovementRangeTiles)
-    {
-        // 跳过有单位的格子
-        if (Tile->GetUnitOnTile()) continue;
+	for (ALFPHexTile* Tile : MovementRangeTiles)
+	{
+		// 跳过有单位的格子
+		if (Tile->GetUnitOnTile()) continue;
 
-        float PositionValue = CalculatePositionValue(Tile, Target);
-        if (PositionValue > BestPositionValue)
-        {
-            BestPositionValue = PositionValue;
-            BestTile = Tile;
-        }
-    }
+		float PositionValue = CalculatePositionValue(Tile, Target);
+		if (PositionValue > BestPositionValue)
+		{
+			BestPositionValue = PositionValue;
+			BestTile = Tile;
+		}
+	}
 
-    return BestTile;
+	return BestTile;
 }
 
 float ALFPTacticsUnit::CalculateThreatValue(ALFPTacticsUnit* Target)
 {
-    // 威胁值 = 目标攻击力
-    float ThreatValue = Target->GetCurrentAttack();
+	// 威胁值 = 目标攻击力
+	float ThreatValue = Target->GetCurrentAttack();
 
-    // 距离因素（越近威胁越大）
-    int32 Distance = FLFPHexCoordinates::Distance(
-        GetCurrentCoordinates(),
-        Target->GetCurrentCoordinates()
-    );
-    float DistanceFactor = 1.0f / FMath::Max(Distance, 1);
+	// 距离因素（越近威胁越大）
+	int32 Distance = FLFPHexCoordinates::Distance(
+		GetCurrentCoordinates(),
+		Target->GetCurrentCoordinates()
+	);
+	float DistanceFactor = 1.0f / FMath::Max(Distance, 1);
 
-    //// 应用行为数据
-    //if (BehaviorData)
-    //{
-    //    if (BehaviorData->bPrioritizeWeakTargets)
-    //    {
-    //        // 增加对低血量目标的权重
-    //        float HealthRatio = (float)Target->GetCurrentHealth() / Target->GetMaxHealth();
-    //        // 血量越低，威胁值越高
-    //    }
+	//// 应用行为数据
+	//if (BehaviorData)
+	//{
+	//    if (BehaviorData->bPrioritizeWeakTargets)
+	//    {
+	//        // 增加对低血量目标的权重
+	//        float HealthRatio = (float)Target->GetCurrentHealth() / Target->GetMaxHealth();
+	//        // 血量越低，威胁值越高
+	//    }
 
-    //    // 应用攻击性系数
-    //    ThreatValue *= BehaviorData->Aggressiveness;
-    //}
+	//    // 应用攻击性系数
+	//    ThreatValue *= BehaviorData->Aggressiveness;
+	//}
 
-    return ThreatValue * DistanceFactor;
+	return ThreatValue * DistanceFactor;
 }
 
 float ALFPTacticsUnit::CalculatePositionValue(ALFPHexTile* Tile, ALFPTacticsUnit* Target)
 {
-    if (!Tile || !Target) return 0.0f;
+	if (!Tile || !Target) return 0.0f;
 
-    float PositionValue = 0.0f;
+	float PositionValue = 0.0f;
 
-    // 1. 离目标越近越好
-    int32 DistanceToTarget = FLFPHexCoordinates::Distance(
-        Tile->GetCoordinates(),
-        Target->GetCurrentCoordinates()
-    );
-    PositionValue += 10.0f / FMath::Max(DistanceToTarget, 1);
+	// 1. 离目标越近越好
+	int32 DistanceToTarget = FLFPHexCoordinates::Distance(
+		Tile->GetCoordinates(),
+		Target->GetCurrentCoordinates()
+	);
+	PositionValue += 10.0f / FMath::Max(DistanceToTarget, 1);
 
-    // 2. 如果在攻击范围内额外加分
-    if (DistanceToTarget <= GetAttackRange())
-    {
-        PositionValue += 20.0f;
-    }
+	// 2. 如果在攻击范围内额外加分
+	if (DistanceToTarget <= GetAttackRange())
+	{
+		PositionValue += 20.0f;
+	}
 
-    //// 3. 靠近其他敌方单位（团队协作加分）
-    //TArray<AActor*> EnemyUnits;
-    //UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALFPTacticsUnit::StaticClass(), EnemyUnits);
+	//// 3. 靠近其他敌方单位（团队协作加分）
+	//TArray<AActor*> EnemyUnits;
+	//UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALFPTacticsUnit::StaticClass(), EnemyUnits);
 
-    //for (AActor* Actor : EnemyUnits)
-    //{
-    //    ALFPTacticsUnit* Unit = Cast<ALFPTacticsUnit>(Actor);
-    //    if (Unit && Unit != this && Unit->IsEnemy() && Unit->IsAlive())
-    //    {
-    //        int32 DistanceToAlly = FLFPHexCoordinates::Distance(
-    //            Tile->GetCoordinates(),
-    //            Unit->GetCurrentCoordinates()
-    //        );
+	//for (AActor* Actor : EnemyUnits)
+	//{
+	//    ALFPTacticsUnit* Unit = Cast<ALFPTacticsUnit>(Actor);
+	//    if (Unit && Unit != this && Unit->IsEnemy() && Unit->IsAlive())
+	//    {
+	//        int32 DistanceToAlly = FLFPHexCoordinates::Distance(
+	//            Tile->GetCoordinates(),
+	//            Unit->GetCurrentCoordinates()
+	//        );
 
-    //        if (DistanceToAlly <= 2)
-    //        {
-    //            PositionValue += 5.0f / FMath::Max(DistanceToAlly, 1);
-    //        }
-    //    }
-    //}
+	//        if (DistanceToAlly <= 2)
+	//        {
+	//            PositionValue += 5.0f / FMath::Max(DistanceToAlly, 1);
+	//        }
+	//    }
+	//}
 
-    //// 4. 避免危险位置（陷阱、火焰等）
-    //if (Tile->IsDangerous())
-    //{
-    //    PositionValue -= 30.0f;
-    //}
+	//// 4. 避免危险位置（陷阱、火焰等）
+	//if (Tile->IsDangerous())
+	//{
+	//    PositionValue -= 30.0f;
+	//}
 
-    //// 5. 高地加分
-    //if (Tile->IsHighGround())
-    //{
-    //    PositionValue += 15.0f;
-    //}
+	//// 5. 高地加分
+	//if (Tile->IsHighGround())
+	//{
+	//    PositionValue += 15.0f;
+	//}
 
-    return PositionValue;
+	return PositionValue;
 }
 
 TArray<ALFPHexTile*> ALFPTacticsUnit::GetAttackRangeTiles()
 {
-    TArray<ALFPHexTile*> AttackRangeTiles;
+	TArray<ALFPHexTile*> AttackRangeTiles;
 
-    if (ALFPHexGridManager* GridManager = GetGridManager())
-    {
-        // 近战攻击范围
-        if (bMeleeAttack)
-        {
-            // 获取相邻格子
-            TArray<FLFPHexCoordinates> Neighbors = CurrentCoordinates.GetNeighbors();
-            for (const FLFPHexCoordinates& Coord : Neighbors)
-            {
-                FLFPHexCoordinates Key(Coord.Q, Coord.R);
-                if (ALFPHexTile* Tile = GridManager->GetTileAtCoordinates(Key))
-                {
-                    AttackRangeTiles.Add(Tile);
-                }
-            }
-        }
-        // 远程攻击范围
-        else
-        {
-            // 获取攻击范围内的所有格子
-            TArray<ALFPHexTile*> TilesInRange = GridManager->GetTilesInRange(GetCurrentTile(), AttackRange, GetAffiliation());
+	if (ALFPHexGridManager* GridManager = GetGridManager())
+	{
+		// 近战攻击范围
+		if (bMeleeAttack)
+		{
+			// 获取相邻格子
+			TArray<FLFPHexCoordinates> Neighbors = CurrentCoordinates.GetNeighbors();
+			for (const FLFPHexCoordinates& Coord : Neighbors)
+			{
+				FLFPHexCoordinates Key(Coord.Q, Coord.R);
+				if (ALFPHexTile* Tile = GridManager->GetTileAtCoordinates(Key))
+				{
+					AttackRangeTiles.Add(Tile);
+				}
+			}
+		}
+		// 远程攻击范围
+		else
+		{
+			// 获取攻击范围内的所有格子
+			TArray<ALFPHexTile*> TilesInRange = GridManager->GetTilesInRange(GetCurrentTile(), AttackRange, GetAffiliation());
 
-            for (ALFPHexTile* Tile : TilesInRange)
-            {
-                AttackRangeTiles.Add(Tile);
-            }
-        }
-    }
+			for (ALFPHexTile* Tile : TilesInRange)
+			{
+				AttackRangeTiles.Add(Tile);
+			}
+		}
+	}
 
-    return AttackRangeTiles;
+	return AttackRangeTiles;
 }
 
 bool ALFPTacticsUnit::IsTargetInAttackRange(ALFPTacticsUnit* Target) const
 {
-    if (!Target || !Target->GetCurrentTile()) return false;
+	if (!Target || !Target->GetCurrentTile()) return false;
 
-    // 计算距离
-    int32 Distance = FLFPHexCoordinates::Distance(
-        CurrentCoordinates,
-        Target->GetCurrentCoordinates()
-    );
+	// 计算距离
+	int32 Distance = FLFPHexCoordinates::Distance(
+		CurrentCoordinates,
+		Target->GetCurrentCoordinates()
+	);
 
-    // 近战攻击判定
-    if (bMeleeAttack)
-    {
-        return Distance == 1; // 相邻格子
-    }
-    // 远程攻击判定
-    else
-    {
-        return Distance >= 2 && Distance <= AttackRange;
-    }
+	// 近战攻击判定
+	if (bMeleeAttack)
+	{
+		return Distance == 1; // 相邻格子
+	}
+	// 远程攻击判定
+	else
+	{
+		return Distance >= 2 && Distance <= AttackRange;
+	}
 }
 
 FLinearColor ALFPTacticsUnit::GetAffiliationColor() const
 {
-    switch (Affiliation)
-    {
-    case EUnitAffiliation::UA_Player:
-        return FLinearColor(0.0f, 0.5f, 1.0f, 1.0f); // 蓝色
-    case EUnitAffiliation::UA_Enemy:
-        return FLinearColor(1.0f, 0.1f, 0.1f, 1.0f); // 红色
-    case EUnitAffiliation::UA_Neutral:
-        return FLinearColor(0.5f, 0.5f, 0.5f, 1.0f); // 灰色
-    default:
-        return FLinearColor::White;
-    }
+	switch (Affiliation)
+	{
+	case EUnitAffiliation::UA_Player:
+		return FLinearColor(0.0f, 0.5f, 1.0f, 1.0f); // 蓝色
+	case EUnitAffiliation::UA_Enemy:
+		return FLinearColor(1.0f, 0.1f, 0.1f, 1.0f); // 红色
+	case EUnitAffiliation::UA_Neutral:
+		return FLinearColor(0.5f, 0.5f, 0.5f, 1.0f); // 灰色
+	default:
+		return FLinearColor::White;
+	}
 }
 
 void ALFPTacticsUnit::UpdateHealthUI()
 {
-    // 在实际项目中，可以更新单位的血量UI
-    // 例如：HealthBarWidget->SetPercent((float)CurrentHealth / GetCurrentMaxHealth());
+	// 在实际项目中，可以更新单位的血量UI
+	// 例如：HealthBarWidget->SetPercent((float)CurrentHealth / GetCurrentMaxHealth());
 }
 
 TArray<ULFPSkillBase*> ALFPTacticsUnit::GetAvailableSkills()
 {
-    if (SkillComponent)
-    {
-        return SkillComponent->GetAvailableSkills();
-    }
-    return TArray<ULFPSkillBase*>();
+	if (SkillComponent)
+	{
+		return SkillComponent->GetAvailableSkills();
+	}
+	return TArray<ULFPSkillBase*>();
 }
 
 bool ALFPTacticsUnit::ExecuteSkill(ULFPSkillBase* Skill, ALFPHexTile* NewTargetTile)
 {
-    if (SkillComponent)
-    {
-        return SkillComponent->ExecuteSkill(Skill, NewTargetTile);
-    }
-    return false;
+	if (SkillComponent)
+	{
+		return SkillComponent->ExecuteSkill(Skill, NewTargetTile);
+	}
+	return false;
 }
 
 ULFPSkillBase* ALFPTacticsUnit::GetDefaultAttackSkill()
 {
-    if (SkillComponent)
-    {
-        return SkillComponent->GetDefaultAttackSkill();
-    }
-    return nullptr;
+	if (SkillComponent)
+	{
+		return SkillComponent->GetDefaultAttackSkill();
+	}
+	return nullptr;
 }
 
 // ==== 行动计划 ====
 
 void ALFPTacticsUnit::SetActionPlan(const FEnemyActionPlan& Plan)
 {
-    CurrentActionPlan = Plan;
-    ShowPlannedSkillIcon(Plan.bIsValid && Plan.PlannedSkill != nullptr);
+	CurrentActionPlan = Plan;
+	ShowPlannedSkillIcon(Plan.bIsValid && Plan.PlannedSkill != nullptr);
 }
 
 void ALFPTacticsUnit::ClearActionPlan()
 {
-    CurrentActionPlan.Reset();
-    ShowPlannedSkillIcon(false);
+	CurrentActionPlan.Reset();
+	ShowPlannedSkillIcon(false);
 }
 
 void ALFPTacticsUnit::ShowPlannedSkillIcon(bool bShow)
 {
-    if (!PlannedSkillIconComponent) return;
+	if (!PlannedSkillIconComponent) return;
 
-    PlannedSkillIconComponent->SetVisibility(bShow);
+	PlannedSkillIconComponent->SetVisibility(bShow);
 
-    if (bShow && CurrentActionPlan.PlannedSkill && CurrentActionPlan.PlannedSkill->SkillIcon)
-    {
-        // 确保 Widget 已创建
-        if (PlannedSkillIconWidgetClass && !PlannedSkillIconComponent->GetWidget())
-        {
-            PlannedSkillIconComponent->SetWidgetClass(PlannedSkillIconWidgetClass);
-        }
+	if (bShow && CurrentActionPlan.PlannedSkill && CurrentActionPlan.PlannedSkill->SkillIcon)
+	{
+		// 确保 Widget 已创建
+		if (PlannedSkillIconWidgetClass && !PlannedSkillIconComponent->GetWidget())
+		{
+			PlannedSkillIconComponent->SetWidgetClass(PlannedSkillIconWidgetClass);
+		}
 
-        if (ULFPPlannedSkillIconWidget* IconWidget = Cast<ULFPPlannedSkillIconWidget>(PlannedSkillIconComponent->GetWidget()))
-        {
-            IconWidget->SetSkillIcon(CurrentActionPlan.PlannedSkill->SkillIcon);
-        }
-    }
+		if (ULFPPlannedSkillIconWidget* IconWidget = Cast<ULFPPlannedSkillIconWidget>(PlannedSkillIconComponent->GetWidget()))
+		{
+			IconWidget->SetSkillIcon(CurrentActionPlan.PlannedSkill->SkillIcon);
+		}
+	}
 }
 
 bool ALFPTacticsUnit::CanUseCard(const FLFPCardInstance& Card) const

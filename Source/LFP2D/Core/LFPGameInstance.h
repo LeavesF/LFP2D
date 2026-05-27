@@ -506,6 +506,9 @@ public:
 	bool MergeUnits(bool bSourceAIsParty, int32 SourceAIndex,
 		bool bSourceBIsParty, int32 SourceBIndex, FName TargetTypeID);
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visual")
+	float OrthoOffest_Roll = -20.f;
+
 protected:
 	FString GetSaveSlotName(int32 SlotIndex) const;
 
