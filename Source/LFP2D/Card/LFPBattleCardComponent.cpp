@@ -217,6 +217,19 @@ int32 ULFPBattleCardComponent::DrawUpToHandLimit()
 	return DrawCards(FMath::Max(0, MaxHandSize - Hand.Num()));
 }
 
+int32 ULFPBattleCardComponent::DiscardHand()
+{
+	const int32 DiscardedCount = Hand.Num();
+	for (FLFPCardInstance& Card : Hand)
+	{
+		Card.CurrentPile = ELFPCardPile::DiscardPile;
+		DiscardPile.Add(Card);
+	}
+
+	Hand.Empty();
+	return DiscardedCount;
+}
+
 TArray<FLFPCardInstance> ULFPBattleCardComponent::GetPlayableHandCardsForUnit(ALFPTacticsUnit* Unit)
 {
 	TArray<FLFPCardInstance> Result;

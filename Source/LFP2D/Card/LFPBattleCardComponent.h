@@ -43,6 +43,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Card")
 	int32 DrawUpToHandLimit();
 
+	UFUNCTION(BlueprintCallable, Category = "Card")
+	int32 DiscardHand();
+
 	/* 获取当前单位可以使用的手牌。基于 CardCategory + RequiredTag + CanUseCard 过滤。 */
 	UFUNCTION(BlueprintCallable, Category = "Card")
 	TArray<FLFPCardInstance> GetPlayableHandCardsForUnit(ALFPTacticsUnit* Unit);

@@ -1372,6 +1372,13 @@ bool ALFPTacticsPlayerController::IsDirectEffectCard(const FLFPCardInstance& Car
 		|| Skill->TargetType == ESkillTargetType::AllUnit;
 }
 
+bool ALFPTacticsPlayerController::IsSelfTargetCard(const FLFPCardInstance& CardInstance) const
+{
+	return CardInstance.IsValid() &&
+		CardInstance.RuntimeSkill &&
+		CardInstance.RuntimeSkill->TargetType == ESkillTargetType::Self;
+}
+
 bool ALFPTacticsPlayerController::IsTargetSelectingCard(const FLFPCardInstance& CardInstance) const
 {
 	return CardInstance.IsValid() &&
@@ -1742,15 +1749,23 @@ bool ALFPTacticsPlayerController::OnCardDroppedOnViewport(const FLFPCardInstance
 
 	if (ActiveCardDragPhase == ELFPActiveCardDragPhase::SelectingUsableUnit)
 	{
-		if (HitUnit && HitUnit->CanUseCard(CardInstance) &&
-			BeginCardTargetSelection(CardInstance, HitUnit))
+		if (HitUnit && HitUnit->CanUseCard(CardInstance))
 		{
-			ActiveCardDragPhase = ELFPActiveCardDragPhase::SelectingSkillTarget;
-			if (!ActiveCardDragVisual && ActiveCardDragVisualClass)
+			if (IsSelfTargetCard(CardInstance))
 			{
-				ShowActiveCardDragVisual(CardInstance, ActiveCardDragVisualClass);
+				ExecuteDroppedCardImmediately(CardInstance, HitUnit, HitUnit->GetCurrentTile());
+				return true;
 			}
-			return false;
+
+			if (BeginCardTargetSelection(CardInstance, HitUnit))
+			{
+				ActiveCardDragPhase = ELFPActiveCardDragPhase::SelectingSkillTarget;
+				if (!ActiveCardDragVisual && ActiveCardDragVisualClass)
+				{
+					ShowActiveCardDragVisual(CardInstance, ActiveCardDragVisualClass);
+				}
+				return false;
+			}
 		}
 
 		return true;
@@ -1990,6 +2005,15 @@ void ALFPTacticsPlayerController::OnPhaseChanged(EBattlePhase NewPhase)
 		if (bIsReleaseSkill)
 		{
 			CancelCardTargetSelection();
+		}
+		HandSkillToCardInstanceID.Empty();
+		if (BattleCardComponent)
+		{
+			BattleCardComponent->DiscardHand();
+			if (BattleHUDWidget)
+			{
+				BattleHUDWidget->RefreshCardHand();
+			}
 		}
 		ClearMovementAndRange();
 		ClearSelectionHighlight();

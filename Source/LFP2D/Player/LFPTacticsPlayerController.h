@@ -412,6 +412,7 @@ protected:
 	void CancelCardTargetSelection();
 	bool IsNoTargetCard(const FLFPCardInstance& CardInstance) const;
 	bool IsDirectEffectCard(const FLFPCardInstance& CardInstance) const;
+	bool IsSelfTargetCard(const FLFPCardInstance& CardInstance) const;
 	bool IsTargetSelectingCard(const FLFPCardInstance& CardInstance) const;
 	bool ExecuteNoTargetCardImmediately(const FLFPCardInstance& CardInstance);
 	bool ExecuteDroppedCardImmediately(const FLFPCardInstance& CardInstance, ALFPTacticsUnit* Unit, ALFPHexTile* TargetTile);
