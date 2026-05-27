@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "LFP2D/Buff/LFPBuffRuntimeTypes.h"
+#include "LFP2D/Turn/LFPBattleTypes.h"
 #include "LFPBuffEffect.generated.h"
 
 UCLASS(Abstract, Blueprintable, BlueprintType, EditInlineNew, DefaultToInstanced)
@@ -61,6 +62,29 @@ public:
     // 是否按 Buff 层数放大属性修正。
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Buff|Effect")
     bool bScaleByStack = true;
+
+    virtual FLFPBuffStatModifier GetStatModifier_Implementation(const FLFPBuffEffectContext& Context) const override;
+};
+
+UCLASS(Blueprintable, BlueprintType, EditInlineNew, DefaultToInstanced)
+class LFP2D_API ULFPBuffEffect_TerrainStatScaling : public ULFPBuffEffect
+{
+    GENERATED_BODY()
+
+public:
+    ULFPBuffEffect_TerrainStatScaling();
+
+    // 要统计的地形类型。
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Buff|Effect")
+    ELFPTerrainType TerrainType = ELFPTerrainType::TT_Forest;
+
+    // 以单位所在格为中心，统计半径内的格子范围。
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Buff|Effect", meta = (ClampMin = "0"))
+    int32 CheckRange = 1;
+
+    // 每个地形格、每层 Buff 提供的属性修正。森林之力用例：AttackDelta = 1。
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Buff|Effect")
+    FLFPBuffStatModifier StatPerStackPerTile;
 
     virtual FLFPBuffStatModifier GetStatModifier_Implementation(const FLFPBuffEffectContext& Context) const override;
 };

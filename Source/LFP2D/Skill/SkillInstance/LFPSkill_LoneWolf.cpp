@@ -12,18 +12,32 @@ ULFPSkill_LoneWolf::ULFPSkill_LoneWolf()
     ReleaseRangeType = ESkillRangeType::Origin;
     EffectRangeType = ESkillRangeType::Origin;
     MaxRange = 0;
-    bIsPassiveSkill = true;
-    bShowDisabledInSkillBar = true;
 }
 
-void ULFPSkill_LoneWolf::RegisterPassiveBuffs_Implementation(ALFPTacticsUnit* InOwner)
+bool ULFPSkill_LoneWolf::CanExecute_Implementation(ALFPHexTile* TargetTile)
 {
-    if (!InOwner)
+    if (!Owner)
+    {
+        return false;
+    }
+
+    ALFPHexTile* SelfTile = Owner->GetCurrentTile();
+    if (!SelfTile)
+    {
+        return false;
+    }
+
+    return Super::CanExecute_Implementation(SelfTile);
+}
+
+void ULFPSkill_LoneWolf::Execute_Implementation(ALFPHexTile* TargetTile)
+{
+    if (!CanExecute(TargetTile) || !Owner)
     {
         return;
     }
 
-    ULFPBuffComponent* BuffComponent = InOwner->GetBuffComponent();
+    ULFPBuffComponent* BuffComponent = Owner->GetBuffComponent();
     if (!BuffComponent)
     {
         return;
@@ -31,9 +45,10 @@ void ULFPSkill_LoneWolf::RegisterPassiveBuffs_Implementation(ALFPTacticsUnit* In
 
     if (PassiveBuffDefinition)
     {
-        BuffComponent->ApplyBuff(PassiveBuffDefinition, InOwner);
-        return;
+        BuffComponent->ApplyBuff(PassiveBuffDefinition, Owner);
     }
-
-    UE_LOG(LogTemp, Warning, TEXT("[LoneWolf] 未配置 PassiveBuffDefinition，已跳过孤狼被动 Buff。"));
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("[LoneWolf] 未配置 PassiveBuffDefinition，已跳过孤狼 Buff。"));
+    }
 }

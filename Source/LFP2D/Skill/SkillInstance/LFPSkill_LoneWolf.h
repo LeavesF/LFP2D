@@ -14,7 +14,8 @@ class LFP2D_API ULFPSkill_LoneWolf : public ULFPSkillBase
 public:
 	ULFPSkill_LoneWolf();
 
-	virtual void RegisterPassiveBuffs_Implementation(ALFPTacticsUnit* InOwner) override;
+	virtual bool CanExecute_Implementation(ALFPHexTile* TargetTile = nullptr) override;
+	virtual void Execute_Implementation(ALFPHexTile* TargetTile = nullptr) override;
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill|Passive")
