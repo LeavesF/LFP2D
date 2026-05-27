@@ -641,5 +641,10 @@ void ULFPBuffComponent::RefreshInstanceDuration(FLFPBuffInstance& BuffInstance, 
 
 void ULFPBuffComponent::BroadcastBuffListChanged()
 {
+    if (ALFPTacticsUnit* OwnerUnit = GetOwnerUnit(); OwnerUnit && OwnerUnit->IsAlive())
+    {
+        OwnerUnit->RebuildCurrentStatsFromRuntimeSources();
+    }
+
     OnBuffListChanged.Broadcast();
 }

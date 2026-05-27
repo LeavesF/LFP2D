@@ -23,6 +23,7 @@ void ULFPCurrentUnitInfoWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
+	CacheDefaultStatTextColors();
 	SetVisibility(ESlateVisibility::Collapsed);
 }
 
@@ -125,6 +126,7 @@ void ULFPCurrentUnitInfoWidget::BindToUnit(ALFPTacticsUnit* Unit)
 
 	BoundUnit->OnHealthChangedDelegate.AddUniqueDynamic(this, &ULFPCurrentUnitInfoWidget::OnHealthChanged);
 	BoundUnit->OnDeathDelegate.AddUniqueDynamic(this, &ULFPCurrentUnitInfoWidget::OnUnitDeath);
+	BoundUnit->OnRuntimeStatsChangedDelegate.AddUniqueDynamic(this, &ULFPCurrentUnitInfoWidget::OnRuntimeStatsChanged);
 	if (ULFPBuffComponent* BuffComponent = BoundUnit->GetBuffComponent())
 	{
 		BuffComponent->OnBuffListChanged.AddUniqueDynamic(this, &ULFPCurrentUnitInfoWidget::OnBuffListChanged);
@@ -141,6 +143,7 @@ void ULFPCurrentUnitInfoWidget::UnbindFromUnit()
 	{
 		BoundUnit->OnHealthChangedDelegate.RemoveDynamic(this, &ULFPCurrentUnitInfoWidget::OnHealthChanged);
 		BoundUnit->OnDeathDelegate.RemoveDynamic(this, &ULFPCurrentUnitInfoWidget::OnUnitDeath);
+		BoundUnit->OnRuntimeStatsChangedDelegate.RemoveDynamic(this, &ULFPCurrentUnitInfoWidget::OnRuntimeStatsChanged);
 		if (ULFPBuffComponent* BuffComponent = BoundUnit->GetBuffComponent())
 		{
 			BuffComponent->OnBuffListChanged.RemoveDynamic(this, &ULFPCurrentUnitInfoWidget::OnBuffListChanged);
@@ -223,28 +226,68 @@ void ULFPCurrentUnitInfoWidget::RefreshStats()
 	if (!BoundUnit)
 	{
 		SetOptionalText(AttackText, FText::GetEmpty());
+		ResetStatTextColor(AttackText);
 		SetOptionalText(AttackTypeText, FText::GetEmpty());
 		SetOptionalText(MoveText, FText::GetEmpty());
+		ResetStatTextColor(MoveText);
 		SetOptionalText(SpeedText, FText::GetEmpty());
+		ResetStatTextColor(SpeedText);
 		SetOptionalText(AttackCountText, FText::GetEmpty());
+		ResetStatTextColor(AttackCountText);
 		SetOptionalText(ActionCountText, FText::GetEmpty());
+		ResetStatTextColor(ActionCountText);
 		SetOptionalText(PhysicalBlockText, FText::GetEmpty());
+		ResetStatTextColor(PhysicalBlockText);
 		SetOptionalText(SpellDefenseText, FText::GetEmpty());
+		ResetStatTextColor(SpellDefenseText);
 		SetOptionalText(WeightText, FText::GetEmpty());
+		ResetStatTextColor(WeightText);
 		return;
 	}
 
-	SetOptionalText(AttackText, FText::AsNumber(BoundUnit->GetCurrentAttack()));
-	SetOptionalText(MoveText, FText::FromString(FString::Printf(
-		TEXT("%d / %d"),
-		BoundUnit->GetCurrentMovePoints(),
-		BoundUnit->GetCurrentMaxMovePoints())));
-	SetOptionalText(SpeedText, FText::AsNumber(BoundUnit->GetCurrentSpeed()));
-	SetOptionalText(AttackCountText, FText::AsNumber(BoundUnit->GetAttackCount()));
-	SetOptionalText(ActionCountText, FText::AsNumber(BoundUnit->GetActionCount()));
-	SetOptionalText(PhysicalBlockText, FText::AsNumber(BoundUnit->GetPhysicalBlock()));
-	SetOptionalText(SpellDefenseText, FText::AsNumber(BoundUnit->GetSpellDefense()));
-	SetOptionalText(WeightText, FText::AsNumber(BoundUnit->GetWeight()));
+	SetStatTextWithBaseComparison(
+		AttackText,
+		FText::AsNumber(BoundUnit->GetCurrentAttack()),
+		BoundUnit->GetCurrentAttack(),
+		BoundUnit->GetBaseAttack());
+	SetStatTextWithBaseComparison(
+		MoveText,
+		FText::FromString(FString::Printf(
+			TEXT("%d / %d"),
+			BoundUnit->GetCurrentMovePoints(),
+			BoundUnit->GetCurrentMaxMovePoints())),
+		BoundUnit->GetCurrentMaxMovePoints(),
+		BoundUnit->GetBaseMovePoints());
+	SetStatTextWithBaseComparison(
+		SpeedText,
+		FText::AsNumber(BoundUnit->GetCurrentSpeed()),
+		BoundUnit->GetCurrentSpeed(),
+		BoundUnit->GetBaseSpeed());
+	SetStatTextWithBaseComparison(
+		AttackCountText,
+		FText::AsNumber(BoundUnit->GetAttackCount()),
+		BoundUnit->GetAttackCount(),
+		BoundUnit->GetBaseAttackCount());
+	SetStatTextWithBaseComparison(
+		ActionCountText,
+		FText::AsNumber(BoundUnit->GetActionCount()),
+		BoundUnit->GetActionCount(),
+		BoundUnit->GetBaseActionCount());
+	SetStatTextWithBaseComparison(
+		PhysicalBlockText,
+		FText::AsNumber(BoundUnit->GetPhysicalBlock()),
+		BoundUnit->GetPhysicalBlock(),
+		BoundUnit->GetBasePhysicalBlock());
+	SetStatTextWithBaseComparison(
+		SpellDefenseText,
+		FText::AsNumber(BoundUnit->GetSpellDefense()),
+		BoundUnit->GetSpellDefense(),
+		BoundUnit->GetBaseSpellDefense());
+	SetStatTextWithBaseComparison(
+		WeightText,
+		FText::AsNumber(BoundUnit->GetWeight()),
+		BoundUnit->GetWeight(),
+		BoundUnit->GetBaseWeight());
 
 	if (AttackTypeText)
 	{
@@ -361,8 +404,16 @@ void ULFPCurrentUnitInfoWidget::OnUnitDeath()
 
 void ULFPCurrentUnitInfoWidget::OnBuffListChanged()
 {
-	RefreshStats();
 	RefreshBuffIcons();
+}
+
+void ULFPCurrentUnitInfoWidget::OnRuntimeStatsChanged(ALFPTacticsUnit* Unit)
+{
+	if (Unit == BoundUnit)
+	{
+		RefreshHealth();
+		RefreshStats();
+	}
 }
 
 void ULFPCurrentUnitInfoWidget::FindTurnManager()
@@ -421,6 +472,67 @@ void ULFPCurrentUnitInfoWidget::SetOptionalText(UTextBlock* TextBlock, const FTe
 	if (TextBlock)
 	{
 		TextBlock->SetText(Text);
+	}
+}
+
+void ULFPCurrentUnitInfoWidget::CacheDefaultStatTextColors()
+{
+	DefaultStatTextColors.Empty();
+
+	UTextBlock* StatTextBlocks[] =
+	{
+		AttackText,
+		MoveText,
+		SpeedText,
+		AttackCountText,
+		ActionCountText,
+		PhysicalBlockText,
+		SpellDefenseText,
+		WeightText
+	};
+
+	for (UTextBlock* TextBlock : StatTextBlocks)
+	{
+		if (TextBlock)
+		{
+			DefaultStatTextColors.Add(TextBlock, TextBlock->GetColorAndOpacity());
+		}
+	}
+}
+
+void ULFPCurrentUnitInfoWidget::SetStatTextWithBaseComparison(UTextBlock* TextBlock, const FText& Text, int32 CurrentValue, int32 BaseValue)
+{
+	SetOptionalText(TextBlock, Text);
+
+	if (!TextBlock)
+	{
+		return;
+	}
+
+	if (CurrentValue > BaseValue)
+	{
+		TextBlock->SetColorAndOpacity(FSlateColor(IncreasedStatColor));
+	}
+	else if (CurrentValue < BaseValue)
+	{
+		TextBlock->SetColorAndOpacity(FSlateColor(DecreasedStatColor));
+	}
+	else
+	{
+		ResetStatTextColor(TextBlock);
+	}
+}
+
+void ULFPCurrentUnitInfoWidget::ResetStatTextColor(UTextBlock* TextBlock)
+{
+	if (!TextBlock)
+	{
+		return;
+	}
+
+	if (const FSlateColor* DefaultColor = DefaultStatTextColors.Find(TextBlock))
+	{
+		TextBlock->SetColorAndOpacity(*DefaultColor);
 	}
 }
 

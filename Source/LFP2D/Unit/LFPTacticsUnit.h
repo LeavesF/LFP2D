@@ -23,6 +23,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUnitDeathSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUnitDeathWithUnitSignature, ALFPTacticsUnit*, Unit);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnUnitAffiliationChangedSignature, ALFPTacticsUnit*, Unit, EUnitAffiliation, OldAffiliation, EUnitAffiliation, NewAffiliation);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnUnitBetrayedSignature, ALFPTacticsUnit*, Unit, EUnitAffiliation, OldAffiliation, ULFPBetrayalCondition*, TriggeringCondition);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRuntimeStatsChangedSignature, ALFPTacticsUnit*, Unit);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMoveFinishedSignature);
 
@@ -400,6 +401,9 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Unit Events")
 	FOnUnitBetrayedSignature OnUnitBetrayedDelegate;
 
+	UPROPERTY(BlueprintAssignable, Category = "Unit Events")
+	FOnRuntimeStatsChangedSignature OnRuntimeStatsChangedDelegate;
+
 	// 获取当前血量
 	UFUNCTION(BlueprintPure, Category = "Unit Combat")
 	int32 GetCurrentHealth() const { return CurrentHealth; }
@@ -431,16 +435,31 @@ public:
 	int32 GetAttackCount() const { return CurrentAttackCount; }
 
 	UFUNCTION(BlueprintPure, Category = "Unit Combat")
+	int32 GetBaseAttackCount() const { return BaseAttackCount; }
+
+	UFUNCTION(BlueprintPure, Category = "Unit Combat")
 	int32 GetActionCount() const { return CurrentActionCount; }
+
+	UFUNCTION(BlueprintPure, Category = "Unit Combat")
+	int32 GetBaseActionCount() const { return BaseActionCount; }
 
 	UFUNCTION(BlueprintPure, Category = "Unit Combat")
 	int32 GetPhysicalBlock() const { return CurrentPhysicalBlock; }
 
 	UFUNCTION(BlueprintPure, Category = "Unit Combat")
+	int32 GetBasePhysicalBlock() const { return BasePhysicalBlock; }
+
+	UFUNCTION(BlueprintPure, Category = "Unit Combat")
 	int32 GetSpellDefense() const { return CurrentSpellDefense; }
 
 	UFUNCTION(BlueprintPure, Category = "Unit Combat")
+	int32 GetBaseSpellDefense() const { return BaseSpellDefense; }
+
+	UFUNCTION(BlueprintPure, Category = "Unit Combat")
 	int32 GetWeight() const { return CurrentWeight; }
+
+	UFUNCTION(BlueprintPure, Category = "Unit Combat")
+	int32 GetBaseWeight() const { return BaseWeight; }
 
 	// 获取阵营标识
 	UFUNCTION(BlueprintPure, Category = "Unit Combat")

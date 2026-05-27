@@ -219,6 +219,7 @@ void ALFPTacticsUnit::RebuildCurrentStatsFromRuntimeSources()
 
     CurrentHealth = FMath::Clamp(CurrentHealth, 0, GetCurrentMaxHealth());
     CurrentMovePoints = FMath::Clamp(SavedCurrentMovePoints, 0, CurrentMaxMovePoints);
+    OnRuntimeStatsChangedDelegate.Broadcast(this);
 }
 
 bool ALFPTacticsUnit::HasAliveFriendlyWithinHexRange(int32 Range, bool bExcludeSelf) const

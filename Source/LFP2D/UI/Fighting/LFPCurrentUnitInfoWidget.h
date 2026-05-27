@@ -85,6 +85,9 @@ protected:
 	UFUNCTION()
 	void OnBuffListChanged();
 
+	UFUNCTION()
+	void OnRuntimeStatsChanged(ALFPTacticsUnit* Unit);
+
 	UFUNCTION(BlueprintImplementableEvent, Category = "Current Unit")
 	void OnBoundUnitChanged(ALFPTacticsUnit* NewUnit);
 
@@ -136,6 +139,12 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Current Unit|Stats", meta = (BindWidgetOptional))
 	TObjectPtr<UTextBlock> WeightText;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Current Unit|Stats")
+	FLinearColor IncreasedStatColor = FLinearColor::Green;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Current Unit|Stats")
+	FLinearColor DecreasedStatColor = FLinearColor::Red;
+
 	UPROPERTY(BlueprintReadOnly, Category = "Current Unit|Buff", meta = (BindWidgetOptional))
 	TObjectPtr<UPanelWidget> BuffContainer;
 
@@ -178,11 +187,17 @@ protected:
 	UPROPERTY()
 	TArray<FLFPCardInstance> DisplayedCarriedCards;
 
+	UPROPERTY()
+	TMap<TObjectPtr<UTextBlock>, FSlateColor> DefaultStatTextColors;
+
 private:
 	void FindTurnManager();
 	void ClearUnitInfo();
 	void UnbindFromTurnManager();
 	void SetOptionalText(UTextBlock* TextBlock, const FText& Text) const;
+	void CacheDefaultStatTextColors();
+	void SetStatTextWithBaseComparison(UTextBlock* TextBlock, const FText& Text, int32 CurrentValue, int32 BaseValue);
+	void ResetStatTextColor(UTextBlock* TextBlock);
 	FText GetUnitDisplayName(ALFPTacticsUnit* Unit) const;
 	UTexture2D* GetUnitDisplayIcon(ALFPTacticsUnit* Unit) const;
 	void BuildCarriedCardInstances(TArray<FLFPCardInstance>& OutCards);

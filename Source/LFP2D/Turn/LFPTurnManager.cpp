@@ -775,7 +775,7 @@ void ALFPTurnManager::ApplyEnemyMissCompensationBuffs(ALFPTacticsUnit* Unit)
 
     BuffComponent->ApplyBuff(GetEnemyMissDamageBoostBuffDefinition(), Unit);
     BuffComponent->ApplyBuff(GetEnemyMissSpeedBoostBuffDefinition(), Unit);
-    // 速度 Buff 需要立刻重建属性并刷新剩余速度表排序。
+    // 速度 Buff 会在 ApplyBuff 时重建属性，这里还需要刷新剩余速度表排序。
     RefreshAllRuntimeUnitStates(true);
 }
 

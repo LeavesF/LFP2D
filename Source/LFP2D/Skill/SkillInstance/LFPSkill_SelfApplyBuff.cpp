@@ -44,7 +44,6 @@ void ULFPSkill_SelfApplyBuff::Execute_Implementation(ALFPHexTile* TargetTile)
 	if (BuffDefinition)
 	{
 		BuffComponent->ApplyBuff(BuffDefinition, Owner);
-		Owner->RebuildCurrentStatsFromRuntimeSources();
 	}
 	else
 	{
