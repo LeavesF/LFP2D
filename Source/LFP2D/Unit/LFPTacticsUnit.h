@@ -117,6 +117,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
 	void CommitMovePosition();
 
+	UFUNCTION(BlueprintPure, Category = "Tactics Unit")
+	int32 GetMovedHexDistanceThisRound() const { return MovedHexDistanceThisRound; }
+
 	// 设置选中状态
 	UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
 	void SetSelected(bool bSelected);
@@ -255,6 +258,9 @@ protected:
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Unit State|Stats")
 	int32 CurrentMovePoints = 3;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Unit State|Movement")
+	int32 MovedHexDistanceThisRound = 0;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Unit State|Stats")
 	int32 CurrentSpeed = 5;
