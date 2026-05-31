@@ -228,6 +228,37 @@ void ULFPBuffComponent::OnTurnEnded()
     }
 }
 
+void ULFPBuffComponent::OnSkillDamageReceived(ALFPTacticsUnit* DamageSourceUnit, ULFPSkillBase* DamageSourceSkill, int32 DamageAmount)
+{
+    ALFPTacticsUnit* OwnerUnit = GetOwnerUnit();
+    if (!OwnerUnit || !OwnerUnit->IsAlive() || DamageAmount <= 0)
+    {
+        return;
+    }
+
+    EvaluateBuffs();
+
+    for (int32 Index = 0; Index < BuffInstances.Num(); ++Index)
+    {
+        if (!OwnerUnit->IsAlive())
+        {
+            break;
+        }
+
+        FLFPBuffInstance& BuffInstance = BuffInstances[Index];
+        if (!BuffInstance.IsActive())
+        {
+            continue;
+        }
+
+        FLFPBuffEffectContext Context = MakeEffectContext(BuffInstance, OwnerUnit);
+        Context.DamageSourceUnit = DamageSourceUnit;
+        Context.DamageSourceSkill = DamageSourceSkill;
+        Context.DamageAmount = DamageAmount;
+        ExecuteBuffEffectsWithContext(BuffInstance, ELFPBuffTriggerEvent::OnSkillDamageReceived, Context);
+    }
+}
+
 int32 ULFPBuffComponent::RemoveBuffById(FGameplayTag BuffId)
 {
     if (!BuffId.IsValid())
@@ -529,6 +560,16 @@ void ULFPBuffComponent::ExecuteBuffEffects(FLFPBuffInstance& BuffInstance, ELFPB
     }
 
     const FLFPBuffEffectContext Context = MakeEffectContext(BuffInstance, OwnerUnit);
+    ExecuteBuffEffectsWithContext(BuffInstance, TriggerEvent, Context);
+}
+
+void ULFPBuffComponent::ExecuteBuffEffectsWithContext(FLFPBuffInstance& BuffInstance, ELFPBuffTriggerEvent TriggerEvent, const FLFPBuffEffectContext& Context)
+{
+    if (!BuffInstance.Definition)
+    {
+        return;
+    }
+
     BuffInstance.Definition->ExecuteEffects(TriggerEvent, Context);
 }
 

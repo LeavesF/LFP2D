@@ -8,6 +8,7 @@
 
 class ALFPTacticsUnit;
 class ULFPBuffDefinitionDataAsset;
+class ULFPSkillBase;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLFPBuffListChangedSignature);
 
@@ -36,6 +37,9 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Buff")
     void OnTurnEnded();
+
+    UFUNCTION(BlueprintCallable, Category = "Buff")
+    void OnSkillDamageReceived(ALFPTacticsUnit* DamageSourceUnit, ULFPSkillBase* DamageSourceSkill, int32 DamageAmount);
 
     UFUNCTION(BlueprintCallable, Category = "Buff")
     int32 RemoveBuffById(FGameplayTag BuffId);
@@ -81,6 +85,7 @@ private:
     ALFPTacticsUnit* GetOwnerUnit() const;
     void AddBuffInstance(ULFPBuffDefinitionDataAsset* BuffDefinition, ALFPTacticsUnit* SourceUnit, int32 InitialStackCount, int32 DurationTurnsOverride);
     void ExecuteBuffEffects(FLFPBuffInstance& BuffInstance, ELFPBuffTriggerEvent TriggerEvent, ALFPTacticsUnit* OwnerUnit);
+    void ExecuteBuffEffectsWithContext(FLFPBuffInstance& BuffInstance, ELFPBuffTriggerEvent TriggerEvent, const FLFPBuffEffectContext& Context);
     void CleanupExpiredBuffs();
     bool EvaluateBuffCondition(const FLFPBuffInstance& BuffInstance, ALFPTacticsUnit* OwnerUnit) const;
     FLFPBuffEffectContext MakeEffectContext(const FLFPBuffInstance& BuffInstance, ALFPTacticsUnit* OwnerUnit) const;

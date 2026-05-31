@@ -1,6 +1,10 @@
 #include "LFP2D/Buff/LFPBuffEffect.h"
+#include "LFP2D/Buff/LFPBuffComponent.h"
+#include "LFP2D/Buff/LFPBuffDefinitionDataAsset.h"
+#include "LFP2D/Buff/LFPBuffTags.h"
 #include "LFP2D/HexGrid/LFPHexGridManager.h"
 #include "LFP2D/HexGrid/LFPTerrainDataAsset.h"
+#include "LFP2D/Skill/LFPSkillBase.h"
 #include "LFP2D/Unit/LFPTacticsUnit.h"
 
 void ULFPBuffEffect::Execute_Implementation(const FLFPBuffEffectContext& Context) const
@@ -133,4 +137,82 @@ FLFPBuffStatModifier ULFPBuffEffect_TerrainStatScaling::GetStatModifier_Implemen
     }
 
     return Result;
+}
+
+ULFPBuffEffect_RootMeleeDamageSource::ULFPBuffEffect_RootMeleeDamageSource()
+{
+    TriggerEvent = ELFPBuffTriggerEvent::OnSkillDamageReceived;
+}
+
+void ULFPBuffEffect_RootMeleeDamageSource::Execute_Implementation(const FLFPBuffEffectContext& Context) const
+{
+    ALFPTacticsUnit* TargetUnit = Context.TargetUnit.Get();
+    ALFPTacticsUnit* DamageSourceUnit = Context.DamageSourceUnit.Get();
+    if (!TargetUnit || !TargetUnit->IsAlive() || !DamageSourceUnit || !DamageSourceUnit->IsAlive() || DamageSourceUnit == TargetUnit)
+    {
+        return;
+    }
+
+    if (bRequireHostileSource && TargetUnit->GetAffiliation() == DamageSourceUnit->GetAffiliation())
+    {
+        return;
+    }
+
+    if (!IsMeleeDamageSource(Context))
+    {
+        return;
+    }
+
+    ULFPBuffDefinitionDataAsset* BuffDefinition = GetRootedBuffDefinition();
+    ULFPBuffComponent* BuffComponent = DamageSourceUnit->GetBuffComponent();
+    if (!BuffDefinition || !BuffComponent)
+    {
+        return;
+    }
+
+    BuffComponent->ApplyBuff(BuffDefinition, TargetUnit, 1, RootedDurationTurns);
+}
+
+ULFPBuffDefinitionDataAsset* ULFPBuffEffect_RootMeleeDamageSource::GetRootedBuffDefinition() const
+{
+    if (RootedBuffDefinition)
+    {
+        return RootedBuffDefinition;
+    }
+
+    if (!RuntimeRootedBuffDefinition)
+    {
+        ULFPBuffEffect_RootMeleeDamageSource* MutableThis = const_cast<ULFPBuffEffect_RootMeleeDamageSource*>(this);
+        MutableThis->RuntimeRootedBuffDefinition = NewObject<ULFPBuffDefinitionDataAsset>(MutableThis, TEXT("RuntimeRootMeleeDamageSourceRootedBuffDefinition"));
+        MutableThis->RuntimeRootedBuffDefinition->BuffId = LFPBuffTags::RequestBuffTag(LFPBuffTags::RootedBuffIdName);
+        MutableThis->RuntimeRootedBuffDefinition->DisplayName = FText::FromString(TEXT("缠绕"));
+        MutableThis->RuntimeRootedBuffDefinition->Description = FText::FromString(TEXT("下回合无法移动。"));
+        MutableThis->RuntimeRootedBuffDefinition->Category = ELFPBuffCategory::Debuff;
+        MutableThis->RuntimeRootedBuffDefinition->DurationPolicy.DurationType = ELFPBuffDurationType::TimedTurns;
+        MutableThis->RuntimeRootedBuffDefinition->DurationPolicy.DurationTurns = RootedDurationTurns;
+        MutableThis->RuntimeRootedBuffDefinition->StackingPolicy.StackingMode = ELFPBuffStackingMode::RefreshDuration;
+        MutableThis->RuntimeRootedBuffDefinition->StackingPolicy.MaxStacks = 1;
+    }
+
+    return RuntimeRootedBuffDefinition;
+}
+
+bool ULFPBuffEffect_RootMeleeDamageSource::IsMeleeDamageSource(const FLFPBuffEffectContext& Context) const
+{
+    ALFPTacticsUnit* TargetUnit = Context.TargetUnit.Get();
+    ALFPTacticsUnit* DamageSourceUnit = Context.DamageSourceUnit.Get();
+    const ULFPSkillBase* DamageSourceSkill = Context.DamageSourceSkill.Get();
+    if (!TargetUnit || !DamageSourceUnit)
+    {
+        return false;
+    }
+
+    if (DamageSourceSkill &&
+        DamageSourceSkill->MaxRange <= 1 &&
+        DamageSourceSkill->ReleaseRangeType == ESkillRangeType::Coverage)
+    {
+        return true;
+    }
+
+    return FLFPHexCoordinates::Distance(TargetUnit->GetCurrentCoordinates(), DamageSourceUnit->GetCurrentCoordinates()) == 1;
 }

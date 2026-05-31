@@ -135,7 +135,7 @@ public:
 	int32 GetBaseMovePoints() const { return BaseMaxMovePoints; }
 
 	UFUNCTION(BlueprintPure, Category = "Tactics Unit")
-	int32 GetCurrentMovePoints() const { return CurrentMovePoints; }
+	int32 GetCurrentMovePoints() const { return IsMovementBlocked() ? 0 : CurrentMovePoints; }
 
 	UFUNCTION(BlueprintPure, Category = "Tactics Unit")
 	int32 GetCurrentMaxMovePoints() const { return CurrentMaxMovePoints; }
@@ -154,6 +154,9 @@ public:
 	// 检查是否有足够移动力
 	UFUNCTION(BlueprintPure, Category = "Tactics Unit")
 	bool HasEnoughMovePoints(int32 Required) const;
+
+	UFUNCTION(BlueprintPure, Category = "Tactics Unit")
+	bool IsMovementBlocked() const;
 
 	// 检查是否有足够行动力
 	UFUNCTION(BlueprintPure, Category = "Tactics Unit")

@@ -35,6 +35,27 @@ void ULFPSkill_SelfApplyBuff::Execute_Implementation(ALFPHexTile* TargetTile)
 		return;
 	}
 
+	ApplyConfiguredBuffToOwner();
+}
+
+void ULFPSkill_SelfApplyBuff::RegisterPassiveBuffs_Implementation(ALFPTacticsUnit* InOwner)
+{
+	if (!bIsPassiveSkill || !InOwner)
+	{
+		return;
+	}
+
+	Owner = InOwner;
+	ApplyConfiguredBuffToOwner();
+}
+
+void ULFPSkill_SelfApplyBuff::ApplyConfiguredBuffToOwner()
+{
+	if (!Owner)
+	{
+		return;
+	}
+
 	ULFPBuffComponent* BuffComponent = Owner->GetBuffComponent();
 	if (!BuffComponent)
 	{

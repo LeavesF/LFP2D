@@ -7,6 +7,7 @@
 
 class ALFPTacticsUnit;
 class ULFPBuffDefinitionDataAsset;
+class ULFPSkillBase;
 class UTexture2D;
 
 UENUM(BlueprintType)
@@ -60,9 +61,10 @@ enum class ELFPBuffTriggerEvent : uint8
 
     // 目标单位回合结束时触发，当前预留。
     OnTurnEnd UMETA(DisplayName = "On Turn End"),
-
     // 属性汇总触发点，不直接执行，而是在 RebuildCurrentStatsFromRuntimeSources 中读取。
-    PassiveStat UMETA(DisplayName = "Passive Stat")
+    PassiveStat UMETA(DisplayName = "Passive Stat"),
+
+    OnSkillDamageReceived UMETA(DisplayName = "On Skill Damage Received")
 };
 
 UENUM(BlueprintType)
@@ -173,6 +175,15 @@ struct FLFPBuffEffectContext
     // 当前剩余回合数；无限期 Buff 通常为 0。
     UPROPERTY(BlueprintReadOnly, Category = "Buff")
     int32 RemainingTurns = 0;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Buff|Event")
+    TObjectPtr<ALFPTacticsUnit> DamageSourceUnit = nullptr;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Buff|Event")
+    TObjectPtr<ULFPSkillBase> DamageSourceSkill = nullptr;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Buff|Event")
+    int32 DamageAmount = 0;
 };
 
 USTRUCT(BlueprintType)

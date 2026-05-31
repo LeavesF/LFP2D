@@ -88,3 +88,32 @@ public:
 
     virtual FLFPBuffStatModifier GetStatModifier_Implementation(const FLFPBuffEffectContext& Context) const override;
 };
+
+class ULFPBuffDefinitionDataAsset;
+
+UCLASS(Blueprintable, BlueprintType, EditInlineNew, DefaultToInstanced)
+class LFP2D_API ULFPBuffEffect_RootMeleeDamageSource : public ULFPBuffEffect
+{
+    GENERATED_BODY()
+
+public:
+    ULFPBuffEffect_RootMeleeDamageSource();
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Buff|Effect")
+    TObjectPtr<ULFPBuffDefinitionDataAsset> RootedBuffDefinition = nullptr;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Buff|Effect", meta = (ClampMin = "2"))
+    int32 RootedDurationTurns = 2;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Buff|Effect")
+    bool bRequireHostileSource = true;
+
+    UPROPERTY(Transient)
+    TObjectPtr<ULFPBuffDefinitionDataAsset> RuntimeRootedBuffDefinition = nullptr;
+
+    virtual void Execute_Implementation(const FLFPBuffEffectContext& Context) const override;
+
+private:
+    ULFPBuffDefinitionDataAsset* GetRootedBuffDefinition() const;
+    bool IsMeleeDamageSource(const FLFPBuffEffectContext& Context) const;
+};

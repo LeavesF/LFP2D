@@ -408,6 +408,7 @@ ALFPHexTile* ALFPTacticsUnit::GetCurrentTile()
 bool ALFPTacticsUnit::MoveToTile(ALFPHexTile* NewTargetTile)
 {
 	if (!NewTargetTile) return false;
+	if (GetCurrentMovePoints() <= 0) return false;
 
 	ALFPHexGridManager* GridManager = GetGridManager();
 	if (!GridManager) return false;
@@ -520,7 +521,10 @@ void ALFPTacticsUnit::CommitMovePosition()
 
 void ALFPTacticsUnit::ResetForNewRound()
 {
-	CurrentMovePoints = CurrentMaxMovePoints;
+	const FGameplayTag RootedTag = LFPBuffTags::RequestBuffTag(LFPBuffTags::RootedBuffIdName);
+	const bool bBlockMovementThisRound = RootedTag.IsValid() && BuffComponent && BuffComponent->HasBuffById(RootedTag);
+
+	CurrentMovePoints = bBlockMovementThisRound ? 0 : CurrentMaxMovePoints;
 	MovedHexDistanceThisRound = 0;
 	bHasActed = false;
 	LastCommittedCoordinates = CurrentCoordinates;
@@ -533,6 +537,11 @@ void ALFPTacticsUnit::ResetForNewRound()
 
 	// 清除上一轮的行动计划
 	ClearActionPlan();
+
+	if (bBlockMovementThisRound && BuffComponent)
+	{
+		BuffComponent->RemoveBuffById(RootedTag);
+	}
 }
 
 void ALFPTacticsUnit::OnTurnStarted()
@@ -574,15 +583,6 @@ void ALFPTacticsUnit::OnMouseEnter()
 void ALFPTacticsUnit::SetSelected(bool bSelected)
 {
 	bIsSelected = bSelected;
-	// 视觉反馈：高亮选中单位
-	if (bSelected)
-	{
-		SpriteComponent->SetSpriteColor(FLinearColor::Yellow);
-	}
-	else
-	{
-		SpriteComponent->SetSpriteColor(FLinearColor::White);
-	}
 }
 
 //void ALFPTacticsUnit::HighlightMovementRange(bool bHighlight)
@@ -629,7 +629,13 @@ void ALFPTacticsUnit::ConsumeActionPoints(int32 Amount)
 
 bool ALFPTacticsUnit::HasEnoughMovePoints(int32 Required) const
 {
-	return CurrentMovePoints >= Required;
+	return !IsMovementBlocked() && CurrentMovePoints >= Required;
+}
+
+bool ALFPTacticsUnit::IsMovementBlocked() const
+{
+	const FGameplayTag RootedTag = LFPBuffTags::RequestBuffTag(LFPBuffTags::RootedBuffIdName);
+	return RootedTag.IsValid() && BuffComponent && BuffComponent->HasBuffById(RootedTag);
 }
 
 bool ALFPTacticsUnit::HasEnoughActionPoints(int32 Required) const
@@ -794,6 +800,11 @@ int32 ALFPTacticsUnit::ApplySkillDamage(ALFPTacticsUnit* Target, const ULFPSkill
 
 	if (TotalDamage > 0)
 	{
+		if (ULFPBuffComponent* TargetBuffComponent = Target->GetBuffComponent())
+		{
+			TargetBuffComponent->OnSkillDamageReceived(DamageSource, const_cast<ULFPSkillBase*>(SourceSkill), TotalDamage);
+		}
+
 		UE_LOG(LogTemp, Log, TEXT("[SkillDamage] 释放者=%s, 技能=%s, 伤害=%d, 受击者=%s"),
 			*DamageSource->GetName(),
 			*SourceSkill->GetName(),
@@ -818,7 +829,16 @@ int32 ALFPTacticsUnit::ApplySkillTypedDamage(ALFPTacticsUnit* Target, int32 Dama
 	const int32 DefenseValue = (DamageType == ELFPAttackType::AT_Magical) ? Target->GetSpellDefense() : Target->GetPhysicalBlock();
 	int32 ActualDamage = FMath::Max(Damage - DefenseValue, 1);
 	ActualDamage = DamageSource->ApplyOutgoingDamageMultiplierToResolvedDamage(ActualDamage);
-	return Target->ApplyResolvedDamage(ActualDamage);
+	const int32 AppliedDamage = Target->ApplyResolvedDamage(ActualDamage);
+	if (AppliedDamage > 0)
+	{
+		if (ULFPBuffComponent* TargetBuffComponent = Target->GetBuffComponent())
+		{
+			TargetBuffComponent->OnSkillDamageReceived(DamageSource, const_cast<ULFPSkillBase*>(SourceSkill), AppliedDamage);
+		}
+	}
+
+	return AppliedDamage;
 }
 
 int32 ALFPTacticsUnit::ApplyOutgoingDamageMultiplierToResolvedDamage(int32 Damage) const

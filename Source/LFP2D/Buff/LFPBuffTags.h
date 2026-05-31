@@ -7,6 +7,8 @@ namespace LFPBuffTags
 {
 	inline constexpr const TCHAR* EnemyMissDamageBoostBuffIdName = TEXT("Buff.Status.EnemyMissDamageBoost");
 	inline constexpr const TCHAR* EnemyMissSpeedBoostBuffIdName = TEXT("Buff.Status.EnemyMissSpeedBoost");
+	inline constexpr const TCHAR* RootedBuffIdName = TEXT("Buff.Status.Rooted");
+	inline constexpr const TCHAR* CounterVineBuffIdName = TEXT("Buff.Passive.CounterVine");
 
 	inline FGameplayTag RequestBuffTag(const TCHAR* TagName)
 	{
