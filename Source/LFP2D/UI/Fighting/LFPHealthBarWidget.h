@@ -13,6 +13,8 @@
 
 class ALFPTacticsUnit;
 class ULFPBuffIconWidget;
+class ULFPPlannedSkillIconWidget;
+class UTexture2D;
 
 /**
  *
@@ -39,6 +41,12 @@ public:
 	// 重新读取当前单位的可见 Buff，并刷新血条下方的 Buff 图标。
 	UFUNCTION(BlueprintCallable, Category = "Health Bar|Buff")
 	void RefreshBuffIcons();
+
+	UFUNCTION(BlueprintCallable, Category = "Health Bar|Planned Skill")
+	void ShowPlannedSkillIcon(UTexture2D* IconTexture);
+
+	UFUNCTION(BlueprintCallable, Category = "Health Bar|Planned Skill")
+	void HidePlannedSkillIcon();
 
 protected:
 	// 血量变化事件处理
@@ -67,6 +75,12 @@ protected:
 	// 血条下方的 Buff 容器。蓝图中可使用 HorizontalBox、WrapBox 等任意 PanelWidget，并命名为 BuffContainer。
 	UPROPERTY(BlueprintReadOnly, Category = "Health Bar|Buff", meta = (BindWidgetOptional))
 	UPanelWidget* BuffContainer;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Health Bar|Planned Skill", meta = (BindWidgetOptional))
+	UImage* PlannedSkillIconImage;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Health Bar|Planned Skill", meta = (BindWidgetOptional))
+	ULFPPlannedSkillIconWidget* PlannedSkillIconWidget;
 
 	// 单个 Buff 图标 Widget 类。建议设置为继承自 LFPBuffIconWidget 的蓝图。
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health Bar|Buff")

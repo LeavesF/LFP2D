@@ -162,34 +162,21 @@ void AddCarriedCardPreviews(
 {
 	const FGameplayTag RaceTag = FindFirstTagWithPrefix(UnitDefinition.SpecialTags, TEXT("Unit.Race."));
 
-	if (!UnitDefinition.DefaultCarriedCards.IsEmpty())
+	for (const TSoftObjectPtr<ULFPCardDataAsset>& CardData : UnitDefinition.DefaultCarriedCards)
 	{
-		for (const TSoftObjectPtr<ULFPCardDataAsset>& CardData : UnitDefinition.DefaultCarriedCards)
+		ULFPCardDataAsset* LoadedCardData = CardData.LoadSynchronous();
+		if (!LoadedCardData || !LoadedCardData->IsValidCardData())
 		{
-			ULFPCardDataAsset* LoadedCardData = CardData.LoadSynchronous();
-			if (!LoadedCardData || !LoadedCardData->IsValidCardData())
-			{
-				continue;
-			}
-
-			FLFPCardDefinition Definition = LoadedCardData->BuildCardDefinition();
-			if (Definition.CardCategory == ELFPCardCategory::RaceSpecific && !Definition.RequiredTag.IsValid())
-			{
-				Definition.RequiredTag = RaceTag;
-			}
-
-			AddPreviewCardDefinition(Definition, Outer, MaxCards, OutCards);
-			if (OutCards.Num() >= MaxCards)
-			{
-				break;
-			}
+			continue;
 		}
-		return;
-	}
 
-	for (TSubclassOf<ULFPSkillBase> SkillClass : UnitDefinition.DefaultCarriedCardSkillClasses)
-	{
-		AddPreviewCardClass(SkillClass, Outer, MaxCards, OutCards, ELFPCardCategory::RaceSpecific, RaceTag);
+		FLFPCardDefinition Definition = LoadedCardData->BuildCardDefinition();
+		if (Definition.CardCategory == ELFPCardCategory::RaceSpecific && !Definition.RequiredTag.IsValid())
+		{
+			Definition.RequiredTag = RaceTag;
+		}
+
+		AddPreviewCardDefinition(Definition, Outer, MaxCards, OutCards);
 		if (OutCards.Num() >= MaxCards)
 		{
 			break;

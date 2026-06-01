@@ -3,8 +3,10 @@
 
 #include "LFP2D/Skill/LFPSkillComponent.h"
 #include "LFP2D/Buff/LFPBuffComponent.h"
+#include "LFP2D/Card/LFPCardDataAsset.h"
+#include "LFP2D/Core/LFPGameInstance.h"
+#include "LFP2D/Core/LFPUnitRegistryDataAsset.h"
 #include "LFP2D/HexGrid/LFPHexTile.h"
-#include "LFP2D/Skill/LFPSkillDataAsset.h"
 #include "LFP2D/Unit/LFPTacticsUnit.h"
 
 namespace
@@ -42,6 +44,7 @@ ULFPSkillComponent::ULFPSkillComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
+    Skills.Empty();
     DefaultAttackSkill = nullptr;
 	// ...
 }
@@ -51,8 +54,6 @@ ULFPSkillComponent::ULFPSkillComponent()
 void ULFPSkillComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-    InitializeSkills();
 }
 
 
@@ -66,36 +67,44 @@ void ULFPSkillComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 
 void ULFPSkillComponent::InitializeSkills()
 {
+    ALFPTacticsUnit* OwnerUnit = Cast<ALFPTacticsUnit>(GetOwner());
+    ULFPGameInstance* GameInstance = OwnerUnit ? Cast<ULFPGameInstance>(OwnerUnit->GetGameInstance()) : nullptr;
+    if (!OwnerUnit || !GameInstance || !GameInstance->UnitRegistry)
+    {
+        InitializeSkillsFromCards(TArray<TSoftObjectPtr<ULFPCardDataAsset>>());
+        return;
+    }
+
+    FLFPUnitRegistryEntry Entry;
+    if (!GameInstance->UnitRegistry->FindEntry(OwnerUnit->UnitTypeID, Entry))
+    {
+        InitializeSkillsFromCards(TArray<TSoftObjectPtr<ULFPCardDataAsset>>());
+        return;
+    }
+
+    InitializeSkillsFromCards(Entry.DefaultCarriedCards);
+}
+
+void ULFPSkillComponent::InitializeSkillsFromCards(const TArray<TSoftObjectPtr<ULFPCardDataAsset>>& CardDataAssets)
+{
     // 清空所有技能
     Skills.Empty();
     DefaultAttackSkill = nullptr;
 
     ALFPTacticsUnit* OwnerUnit = Cast<ALFPTacticsUnit>(GetOwner());
-    if (!OwnerUnit || !SkillData) return;
+    if (!OwnerUnit) return;
+    const ULFPGameInstance* GameInstance = Cast<ULFPGameInstance>(OwnerUnit->GetGameInstance());
 
     if (ULFPBuffComponent* BuffComponent = OwnerUnit->GetBuffComponent())
     {
         BuffComponent->ClearPassiveBuffs();
     }
 
-    // 从数据资产创建技能实例
-    for (TSubclassOf<ULFPSkillBase> SkillClass : SkillData->AvailableSkills)
-    {
-        if (SkillClass)
-        {
-            ULFPSkillBase* NewSkill = NewObject<ULFPSkillBase>(this, SkillClass);
-            if (NewSkill)
-            {
-                Skills.Add(NewSkill);
-                NewSkill->InitSkill(OwnerUnit);
-                NewSkill->RegisterPassiveBuffs(OwnerUnit);
+    AddSkillFromCard(GetGlobalAttackCardForOwner(GameInstance, OwnerUnit), OwnerUnit);
 
-                if (!DefaultAttackSkill && NewSkill->bIsDefaultAttack)
-                {
-                    DefaultAttackSkill = NewSkill;
-                }
-            }
-        }
+    for (const TSoftObjectPtr<ULFPCardDataAsset>& CardData : CardDataAssets)
+    {
+        AddSkillFromCard(CardData, OwnerUnit);
     }
 
     if (!DefaultAttackSkill)
@@ -119,7 +128,86 @@ void ULFPSkillComponent::InitializeSkills()
     //    DefaultAttackSkill->bIsDefaultAttack = true;
     //    DefaultAttackSkill->SkillName = FText::FromString("普通攻击");
     //    Skills.Add(DefaultAttackSkill);
-    //}
+    //}    
+}
+
+TSoftObjectPtr<ULFPCardDataAsset> ULFPSkillComponent::GetGlobalAttackCardForOwner(
+    const ULFPGameInstance* GameInstance,
+    const ALFPTacticsUnit* OwnerUnit) const
+{
+    if (!GameInstance || !OwnerUnit)
+    {
+        return TSoftObjectPtr<ULFPCardDataAsset>();
+    }
+
+    const FGameplayTag AttackTag = FindFirstOwnerTagWithPrefix(OwnerUnit, TEXT("Unit.Attack."));
+    const FString TagName = AttackTag.GetTagName().ToString();
+    if (TagName.EndsWith(TEXT(".Ranged")))
+    {
+        return GameInstance->FallbackRangedAttackCard;
+    }
+    if (TagName.EndsWith(TEXT(".Magic")))
+    {
+        return GameInstance->FallbackMagicAttackCard;
+    }
+
+    return GameInstance->FallbackMeleeAttackCard;
+}
+
+FGameplayTag ULFPSkillComponent::FindFirstOwnerTagWithPrefix(const ALFPTacticsUnit* OwnerUnit, const FString& Prefix) const
+{
+    if (!OwnerUnit)
+    {
+        return FGameplayTag();
+    }
+
+    const FGameplayTagContainer& Tags = OwnerUnit->GetSpecialTags();
+    for (const FGameplayTag& Tag : Tags)
+    {
+        if (Tag.GetTagName().ToString().StartsWith(Prefix))
+        {
+            return Tag;
+        }
+    }
+
+    return FGameplayTag();
+}
+
+void ULFPSkillComponent::AddSkillFromCard(const TSoftObjectPtr<ULFPCardDataAsset>& CardData, ALFPTacticsUnit* OwnerUnit)
+{
+    if (CardData.IsNull() || !OwnerUnit)
+    {
+        return;
+    }
+
+    ULFPCardDataAsset* LoadedCardData = CardData.LoadSynchronous();
+    if (!LoadedCardData || !LoadedCardData->IsValidCardData())
+    {
+        return;
+    }
+
+    ULFPSkillBase* NewSkill = NewObject<ULFPSkillBase>(this, LoadedCardData->SkillClass);
+    if (!NewSkill)
+    {
+        return;
+    }
+
+    Skills.Add(NewSkill);
+    NewSkill->InitSkill(OwnerUnit);
+    NewSkill->SkillName = LoadedCardData->DisplayName;
+    NewSkill->SkillDescription = LoadedCardData->Description;
+    NewSkill->SkillIcon = LoadedCardData->Icon;
+    if (LoadedCardData->ActionPointCost != INDEX_NONE)
+    {
+        NewSkill->ActionPointCost = LoadedCardData->ActionPointCost;
+    }
+
+    NewSkill->RegisterPassiveBuffs(OwnerUnit);
+
+    if (!DefaultAttackSkill && NewSkill->bIsDefaultAttack)
+    {
+        DefaultAttackSkill = NewSkill;
+    }
 }
 
 TArray<ULFPSkillBase*> ULFPSkillComponent::GetAvailableSkills() const

@@ -3,7 +3,6 @@
 
 #include "LFP2D/AI/LFPAIController.h"
 #include "LFP2D/AI/LFPEnemyBehaviorData.h"
-#include "LFP2D/Card/LFPCardDataAsset.h"
 #include "LFP2D/Core/LFPGameInstance.h"
 #include "LFP2D/Core/LFPUnitRegistryDataAsset.h"
 #include "LFP2D/Unit/LFPTacticsUnit.h"
@@ -327,9 +326,17 @@ FEnemyActionPlan ALFPAIController::CreateActionPlanWithTargetLocks(
     if (SelectWeightedSkillForTarget(TargetUnit, SelectedSkill, CasterTile, EffectAreaTiles))
     {
         Plan.PlannedSkill = SelectedSkill;
-        Plan.TargetUnit = TargetUnit;
-        Plan.TargetTile = TargetUnit->GetCurrentTile();
         Plan.CasterPositionTile = CasterTile;
+        if (SelectedSkill && SelectedSkill->TargetType == ESkillTargetType::Self)
+        {
+            Plan.TargetUnit = ControlledUnit;
+            Plan.TargetTile = CasterTile;
+        }
+        else
+        {
+            Plan.TargetUnit = TargetUnit;
+            Plan.TargetTile = TargetUnit->GetCurrentTile();
+        }
         Plan.EffectAreaTiles = EffectAreaTiles;
         Plan.bIsValid = Plan.TargetTile != nullptr && Plan.CasterPositionTile != nullptr;
         return Plan;
@@ -394,91 +401,14 @@ void ALFPAIController::BuildEnemyCardSkills()
         return;
     }
 
-    const TSoftObjectPtr<ULFPCardDataAsset> AttackCard = GetGlobalAttackCardForUnit();
-    if (!AttackCard.IsNull())
+    for (ULFPSkillBase* Skill : ControlledUnit->GetAvailableSkills())
     {
-        AddEnemyCardSkillFromCardData(AttackCard);
+        if (Skill && !Skill->IsPassiveSkill())
+        {
+            RuntimeEnemyCardSkills.Add(Skill);
+        }
     }
 
-    ULFPGameInstance* GameInstance = GetLFPGameInstance(this);
-    if (!GameInstance || !GameInstance->UnitRegistry)
-    {
-        return;
-    }
-
-    FLFPUnitRegistryEntry Entry;
-    if (!GameInstance->UnitRegistry->FindEntry(ControlledUnit->UnitTypeID, Entry))
-    {
-        return;
-    }
-
-    for (const TSoftObjectPtr<ULFPCardDataAsset>& CardData : Entry.DefaultCarriedCards)
-    {
-        AddEnemyCardSkillFromCardData(CardData);
-    }
-}
-
-bool ALFPAIController::AddEnemyCardSkillFromCardData(const TSoftObjectPtr<ULFPCardDataAsset>& CardData)
-{
-    if (CardData.IsNull() || !ControlledUnit)
-    {
-        return false;
-    }
-
-    ULFPCardDataAsset* LoadedCardData = CardData.LoadSynchronous();
-    if (!LoadedCardData || !LoadedCardData->IsValidCardData())
-    {
-        return false;
-    }
-
-    ULFPSkillBase* RuntimeSkill = NewObject<ULFPSkillBase>(this, LoadedCardData->SkillClass);
-    if (!RuntimeSkill)
-    {
-        return false;
-    }
-
-    RuntimeSkill->InitSkill(ControlledUnit);
-    RuntimeSkill->SkillName = LoadedCardData->DisplayName;
-    RuntimeSkill->SkillDescription = LoadedCardData->Description;
-    RuntimeSkill->SkillIcon = LoadedCardData->Icon;
-    if (LoadedCardData->ActionPointCost != INDEX_NONE)
-    {
-        RuntimeSkill->ActionPointCost = LoadedCardData->ActionPointCost;
-    }
-
-    RuntimeEnemyCardSkills.Add(RuntimeSkill);
-    return true;
-}
-
-TSoftObjectPtr<ULFPCardDataAsset> ALFPAIController::GetGlobalAttackCardForUnit() const
-{
-    const ULFPGameInstance* GameInstance = GetLFPGameInstance(this);
-    if (!GameInstance || !ControlledUnit)
-    {
-        return TSoftObjectPtr<ULFPCardDataAsset>();
-    }
-
-    const FGameplayTag AttackTag = FindFirstControlledUnitTagWithPrefix(TEXT("Unit.Attack."));
-    if (!AttackTag.IsValid())
-    {
-        return TSoftObjectPtr<ULFPCardDataAsset>();
-    }
-
-    const FString TagName = AttackTag.GetTagName().ToString();
-    if (TagName.EndsWith(TEXT(".Melee")))
-    {
-        return GameInstance->FallbackMeleeAttackCard;
-    }
-    if (TagName.EndsWith(TEXT(".Ranged")))
-    {
-        return GameInstance->FallbackRangedAttackCard;
-    }
-    if (TagName.EndsWith(TEXT(".Magic")))
-    {
-        return GameInstance->FallbackMagicAttackCard;
-    }
-
-    return TSoftObjectPtr<ULFPCardDataAsset>();
 }
 
 FGameplayTag ALFPAIController::FindFirstControlledUnitTagWithPrefix(const FString& Prefix) const
@@ -502,19 +432,7 @@ FGameplayTag ALFPAIController::FindFirstControlledUnitTagWithPrefix(const FStrin
 
 bool ALFPAIController::IsEnemyTargetSkill(ULFPSkillBase* Skill) const
 {
-    if (!Skill || Skill->IsPassiveSkill() || Skill->CurrentCooldown > 0 || Skill->BasePriority <= 0.0f)
-    {
-        return false;
-    }
-
-    return
-        Skill->TargetType == ESkillTargetType::SingleEnemy ||
-        Skill->TargetType == ESkillTargetType::MutiEnemy ||
-        Skill->TargetType == ESkillTargetType::AllEnemy ||
-        Skill->TargetType == ESkillTargetType::SingleUnit ||
-        Skill->TargetType == ESkillTargetType::MutiUnit ||
-        Skill->TargetType == ESkillTargetType::AllUnit ||
-        Skill->TargetType == ESkillTargetType::AnyTile;
+    return Skill && !Skill->IsPassiveSkill() && Skill->CurrentCooldown <= 0 && Skill->BasePriority > 0.0f;
 }
 
 bool ALFPAIController::SelectWeightedSkillForTarget(
@@ -538,6 +456,8 @@ bool ALFPAIController::SelectWeightedSkillForTarget(
         return false;
     }
 
+    ALFPHexTile* ControlledUnitTile = ControlledUnit->GetCurrentTile();
+
     TArray<FEnemySkillPlanCandidate> Candidates;
     for (ULFPSkillBase* Skill : RuntimeEnemyCardSkills)
     {
@@ -546,9 +466,22 @@ bool ALFPAIController::SelectWeightedSkillForTarget(
             continue;
         }
 
+        ALFPTacticsUnit* CandidateTargetUnit = TargetUnit;
+        ALFPHexTile* CandidateTargetTile = TargetTile;
+        if (Skill->TargetType == ESkillTargetType::Self)
+        {
+            CandidateTargetUnit = ControlledUnit;
+            CandidateTargetTile = ControlledUnitTile;
+        }
+
+        if (!CandidateTargetTile)
+        {
+            continue;
+        }
+
         float PositionValue = -MAX_FLT;
         FEnemySkillPlanCandidate Candidate;
-        if (TryBuildCandidateForTarget(Skill, TargetUnit, TargetTile, 0, PositionValue, Candidate))
+        if (TryBuildCandidateForTarget(Skill, CandidateTargetUnit, CandidateTargetTile, 0, PositionValue, Candidate))
         {
             Candidate.EffectivePriority = Skill->BasePriority;
             Candidates.Add(Candidate);

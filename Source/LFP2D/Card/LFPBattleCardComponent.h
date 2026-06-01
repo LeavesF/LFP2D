@@ -133,8 +133,6 @@ private:
 	void AddPlayerDeckCards(ULFPGameInstance* GameInstance);
 	void AddUnitCards(ULFPGameInstance* GameInstance, const TArray<ALFPTacticsUnit*>& DeployedUnits);
 	void AddConfiguredUnitCards(ALFPTacticsUnit* Unit, const TArray<TSoftObjectPtr<ULFPCardDataAsset>>& Cards);
-	void AddConfiguredUnitCards(ALFPTacticsUnit* Unit, const TArray<TSubclassOf<ULFPSkillBase>>& CardSkillClasses,
-		ELFPCardCategory Category);
 	void AddSharedAttackCards(const TArray<ALFPTacticsUnit*>& DeployedUnits);
 	bool AddUnitSharedAttackCardToHand(ALFPTacticsUnit* Unit);
 	FGameplayTag ResolveRequiredTag(const FLFPCardDefinition& Definition, ALFPTacticsUnit* SourceUnit,

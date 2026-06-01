@@ -5,6 +5,7 @@
 
 #include "LFP2D/Buff/LFPBuffComponent.h"
 #include "LFP2D/UI/Fighting/LFPBuffIconWidget.h"
+#include "LFP2D/UI/Fighting/LFPPlannedSkillIconWidget.h"
 #include "LFP2D/Unit/LFPTacticsUnit.h"
 
 void ULFPHealthBarWidget::NativeConstruct()
@@ -17,6 +18,8 @@ void ULFPHealthBarWidget::NativeConstruct()
 		// 初始化满血条
 		//SetVisibility(ESlateVisibility::Hidden);
 	}
+
+	HidePlannedSkillIcon();
 }
 
 void ULFPHealthBarWidget::BindToUnit(ALFPTacticsUnit* Unit)
@@ -72,6 +75,8 @@ void ULFPHealthBarWidget::UnbindFromUnit()
 		BuffContainer->ClearChildren();
 	}
 
+	HidePlannedSkillIcon();
+
 	// 隐藏血条
 	SetVisibility(ESlateVisibility::Hidden);
 }
@@ -91,6 +96,42 @@ void ULFPHealthBarWidget::UpdateHealthBar(int32 CurrentHealth, int32 MaxHealth)
 	HealthText->SetText(FText::FromString(HealthString));
 }
 
+void ULFPHealthBarWidget::ShowPlannedSkillIcon(UTexture2D* IconTexture)
+{
+	if (!IconTexture)
+	{
+		HidePlannedSkillIcon();
+		return;
+	}
+
+	if (PlannedSkillIconWidget)
+	{
+		PlannedSkillIconWidget->SetSkillIcon(IconTexture);
+		PlannedSkillIconWidget->SetVisibility(ESlateVisibility::Visible);
+		return;
+	}
+
+	if (PlannedSkillIconImage)
+	{
+		PlannedSkillIconImage->SetBrushFromTexture(IconTexture);
+		PlannedSkillIconImage->SetVisibility(ESlateVisibility::Visible);
+	}
+}
+
+void ULFPHealthBarWidget::HidePlannedSkillIcon()
+{
+	if (PlannedSkillIconWidget)
+	{
+		PlannedSkillIconWidget->SetSkillIcon(nullptr);
+		PlannedSkillIconWidget->SetVisibility(ESlateVisibility::Hidden);
+	}
+
+	if (PlannedSkillIconImage)
+	{
+		PlannedSkillIconImage->SetVisibility(ESlateVisibility::Hidden);
+	}
+}
+
 void ULFPHealthBarWidget::OnHealthChanged(int32 CurrentHealth, int32 MaxHealth)
 {
 	UpdateHealthBar(CurrentHealth, MaxHealth);
@@ -105,6 +146,8 @@ void ULFPHealthBarWidget::OnUnitDeath()
 	{
 		BuffContainer->ClearChildren();
 	}
+
+	HidePlannedSkillIcon();
 
 	// 可选：显示死亡效果或文本
 	if (HealthText)

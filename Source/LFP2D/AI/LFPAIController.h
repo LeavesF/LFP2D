@@ -13,7 +13,6 @@
 class ALFPTacticsUnit;
 class ALFPHexGridManager;
 class ALFPHexTile;
-class ULFPCardDataAsset;
 class ULFPEnemyBehaviorData;
 
 struct FEnemySkillPlanCandidate
@@ -189,8 +188,6 @@ private:
     TArray<TObjectPtr<ULFPSkillBase>> RuntimeEnemyCardSkills;
 
     void BuildEnemyCardSkills();
-    bool AddEnemyCardSkillFromCardData(const TSoftObjectPtr<ULFPCardDataAsset>& CardData);
-    TSoftObjectPtr<ULFPCardDataAsset> GetGlobalAttackCardForUnit() const;
     FGameplayTag FindFirstControlledUnitTagWithPrefix(const FString& Prefix) const;
     bool IsEnemyTargetSkill(ULFPSkillBase* Skill) const;
     bool SelectWeightedSkillForTarget(

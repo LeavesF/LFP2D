@@ -2197,7 +2197,6 @@ void ALFPTacticsPlayerController::AutoPlacePartyUnits()
 		{
 			Unit->Affiliation = EUnitAffiliation::UA_Player;
 			Unit->UnitTypeID = Entry.TypeID;
-			Unit->UnitTier = Entry.Tier;
 			Unit->InitializeFromRegistry(GI->UnitRegistry);
 			GI->ApplyOwnedRelicsToUnit(Unit);
 
@@ -2344,7 +2343,6 @@ ALFPTacticsUnit* ALFPTacticsPlayerController::SpawnDeploymentUnit(const FLFPUnit
 
 	Unit->Affiliation = EUnitAffiliation::UA_Player;
 	Unit->UnitTypeID = Entry.TypeID;
-	Unit->UnitTier = Entry.Tier;
 	Unit->InitializeFromRegistry(GI->UnitRegistry);
 	GI->ApplyOwnedRelicsToUnit(Unit);
 	Unit->SetCurrentCoordinates(Tile->GetCoordinates());

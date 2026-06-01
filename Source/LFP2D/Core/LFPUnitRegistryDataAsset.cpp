@@ -12,11 +12,7 @@ bool ULFPUnitRegistryDataAsset::FindEntry(FName TypeID, FLFPUnitRegistryEntry& O
 
 TSubclassOf<ALFPTacticsUnit> ULFPUnitRegistryDataAsset::GetUnitClass(FName TypeID) const
 {
-	if (const FLFPUnitRegistryEntry* Found = UnitRegistry.Find(TypeID))
-	{
-		return Found->UnitClass;
-	}
-	return nullptr;
+	return UnitRegistry.Contains(TypeID) ? UnitClass : nullptr;
 }
 
 TArray<FName> ULFPUnitRegistryDataAsset::GetEvolutionTargets(FName TypeID) const

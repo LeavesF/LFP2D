@@ -10,6 +10,9 @@
 // 委托签名
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSkillExecutedSignature, ALFPTacticsUnit*, Caster, ALFPHexTile*, TargetTile);
 
+class ULFPCardDataAsset;
+class ULFPGameInstance;
+
 UCLASS(Blueprintable, ClassGroup=(Skill), meta=(BlueprintSpawnableComponent))
 class LFP2D_API ULFPSkillComponent : public UActorComponent
 {
@@ -31,6 +34,8 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Skill")
     void InitializeSkills();
 
+    void InitializeSkillsFromCards(const TArray<TSoftObjectPtr<ULFPCardDataAsset>>& CardDataAssets);
+
     // 获取所有可用技能
     UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Skill")
     TArray<ULFPSkillBase*> GetAvailableSkills() const;
@@ -51,16 +56,19 @@ public:
     UPROPERTY(BlueprintAssignable, Category = "Skill")
     FOnSkillExecutedSignature OnSkillExecuted;
 
+private:
+    TSoftObjectPtr<ULFPCardDataAsset> GetGlobalAttackCardForOwner(const ULFPGameInstance* GameInstance, const ALFPTacticsUnit* OwnerUnit) const;
+    FGameplayTag FindFirstOwnerTagWithPrefix(const ALFPTacticsUnit* OwnerUnit, const FString& Prefix) const;
+    void AddSkillFromCard(const TSoftObjectPtr<ULFPCardDataAsset>& CardData, ALFPTacticsUnit* OwnerUnit);
+
 protected:
     // 所有技能
-    UPROPERTY(EditAnywhere, Category = "Skill")
+    UPROPERTY(VisibleInstanceOnly, Category = "Skill")
     TArray<ULFPSkillBase*> Skills;
 
     // 默认攻击技能
-    UPROPERTY(EditAnywhere, Category = "Skill")
+    UPROPERTY(VisibleInstanceOnly, Category = "Skill")
     ULFPSkillBase* DefaultAttackSkill;
 
     // 技能数据资产
-    UPROPERTY(EditAnywhere, Category = "Skill")
-    class ULFPSkillDataAsset* SkillData;
 };

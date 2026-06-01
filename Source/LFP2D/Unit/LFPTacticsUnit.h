@@ -648,7 +648,7 @@ public:
 
 	// 获取攻击范围大小
 	UFUNCTION(BlueprintCallable, Category = "Unit Combat")
-	int32 GetAttackRange() { return AttackRange; }
+	int32 GetAttackRange() const;
 
 	// 检查目标是否在攻击范围内
 	UFUNCTION(BlueprintPure, Category = "Unit Combat")
@@ -672,14 +672,6 @@ private:
 protected:
 	// 处理死亡
 	void HandleDeath();
-
-	// 攻击范围
-	UPROPERTY(EditAnywhere, Category = "Unit Combat")
-	int32 AttackRange = 2;
-
-	// 近战攻击模式
-	UPROPERTY(EditAnywhere, Category = "Unit Combat")
-	bool bMeleeAttack = true;
 
 	// 死亡状态
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Unit State", meta = (AllowPrivateAccess = "true"))
@@ -793,16 +785,4 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "AI Plan")
 	void ShowPlannedSkillIcon(bool bShow);
 
-protected:
-	// 头顶计划技能图标组件
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	class UWidgetComponent* PlannedSkillIconComponent;
-
-	// 技能图标 Widget 蓝图类
-	UPROPERTY(EditDefaultsOnly, Category = "AI Plan")
-	TSubclassOf<class ULFPPlannedSkillIconWidget> PlannedSkillIconWidgetClass;
-
-	// 技能图标距头顶距离
-	UPROPERTY(EditDefaultsOnly, Category = "AI Plan")
-	float SkillIconTopDist = 100.f;
 };

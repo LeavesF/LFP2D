@@ -143,21 +143,9 @@ int32 ULFPBattleCardComponent::AddUnitCarriedCardsToHand(ULFPGameInstance* GameI
 	}
 
 	int32 AddedCount = 0;
-	if (!Entry.DefaultCarriedCards.IsEmpty())
+	for (const TSoftObjectPtr<ULFPCardDataAsset>& CardData : Entry.DefaultCarriedCards)
 	{
-		for (const TSoftObjectPtr<ULFPCardDataAsset>& CardData : Entry.DefaultCarriedCards)
-		{
-			if (AddCardDataToHand(CardData, Unit))
-			{
-				AddedCount++;
-			}
-		}
-		return AddedCount;
-	}
-
-	for (TSubclassOf<ULFPSkillBase> SkillClass : Entry.DefaultCarriedCardSkillClasses)
-	{
-		if (AddCardToHand(SkillClass, Unit, ELFPCardCategory::RaceSpecific))
+		if (AddCardDataToHand(CardData, Unit))
 		{
 			AddedCount++;
 		}
@@ -474,21 +462,12 @@ void ULFPBattleCardComponent::AddUnitCards(ULFPGameInstance* GameInstance, const
 			continue;
 		}
 
-		// 单位注册表中的 DefaultCarriedCardSkillClasses 视为种族专属型。
 		if (GameInstance && GameInstance->UnitRegistry)
 		{
 			FLFPUnitRegistryEntry Entry;
 			if (GameInstance->UnitRegistry->FindEntry(Unit->UnitTypeID, Entry))
 			{
-				if (!Entry.DefaultCarriedCards.IsEmpty())
-				{
-					AddConfiguredUnitCards(Unit, Entry.DefaultCarriedCards);
-				}
-				else
-				{
-					AddConfiguredUnitCards(Unit, Entry.DefaultCarriedCardSkillClasses,
-						ELFPCardCategory::RaceSpecific);
-				}
+				AddConfiguredUnitCards(Unit, Entry.DefaultCarriedCards);
 			}
 		}
 	}
@@ -500,31 +479,6 @@ void ULFPBattleCardComponent::AddConfiguredUnitCards(ALFPTacticsUnit* Unit,
 	for (const TSoftObjectPtr<ULFPCardDataAsset>& CardData : Cards)
 	{
 		AddCardDataToDrawPile(CardData, Unit);
-	}
-}
-
-void ULFPBattleCardComponent::AddConfiguredUnitCards(ALFPTacticsUnit* Unit,
-	const TArray<TSubclassOf<ULFPSkillBase>>& CardSkillClasses, ELFPCardCategory Category)
-{
-	for (TSubclassOf<ULFPSkillBase> SkillClass : CardSkillClasses)
-	{
-		// 种族专属型使用单位的种族Tag；通用型后续可额外指定Tag。
-		FGameplayTag Tag;
-		if (Category == ELFPCardCategory::RaceSpecific)
-		{
-			// 从单位SpecialTags中取第一个种族Tag（如 Unit.Race.Dragon）
-			const FGameplayTagContainer& Tags = Unit->GetSpecialTags();
-			for (const FGameplayTag& T : Tags)
-			{
-				if (T.GetTagName().ToString().StartsWith(TEXT("Unit.Race.")))
-				{
-					Tag = T;
-					break;
-				}
-			}
-		}
-
-		AddCardToDrawPile(SkillClass, Unit, Category, Tag);
 	}
 }
 

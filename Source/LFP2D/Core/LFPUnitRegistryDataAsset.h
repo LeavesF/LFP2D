@@ -11,16 +11,13 @@ class ULFPCardDataAsset;
 class ULFPBetrayalCondition;
 class ULFPEnemyBehaviorData;
 class ULFPSkillBase;
+class UPaperSprite;
 
 /* 单位注册表条目：映射 TypeID 到单位蓝图、属性和默认携带卡。 */
 USTRUCT(BlueprintType)
 struct FLFPUnitRegistryEntry
 {
 	GENERATED_BODY()
-
-	/* 单位蓝图类。 */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit Registry")
-	TSubclassOf<ALFPTacticsUnit> UnitClass;
 
 	/* 显示名称。 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit Registry")
@@ -29,6 +26,9 @@ struct FLFPUnitRegistryEntry
 	/* 单位图标，主要供 UI 使用。 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit Registry")
 	TObjectPtr<UTexture2D> Icon = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit Registry|Visual")
+	TObjectPtr<UPaperSprite> Sprite = nullptr;
 
 	/* 单位阶级，用于 UI 显示。 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit Registry")
@@ -50,13 +50,21 @@ struct FLFPUnitRegistryEntry
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit Registry|Stats")
 	FLFPUnitAdvancedStats AdvancedStats;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit Registry|Loot", meta = (ClampMin = "0"))
+	int32 DropGoldMin = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit Registry|Loot", meta = (ClampMin = "0"))
+	int32 DropGoldMax = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit Registry|Loot", meta = (ClampMin = "0"))
+	int32 DropFoodMin = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit Registry|Loot", meta = (ClampMin = "0"))
+	int32 DropFoodMax = 0;
+
 	/* 可进化目标 TypeID 列表，空表示终阶。 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit Registry|Evolution")
 	TArray<FName> EvolutionTargets;
-
-	/* 单位类型默认携带进战斗牌库的卡牌技能类；每个出战实例仍会额外获得普通攻击卡。 */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit Registry|Cards")
-	TArray<TSubclassOf<ULFPSkillBase>> DefaultCarriedCardSkillClasses;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit Registry|Cards")
 	TArray<TSoftObjectPtr<ULFPCardDataAsset>> DefaultCarriedCards;
@@ -75,6 +83,9 @@ class LFP2D_API ULFPUnitRegistryDataAsset : public UDataAsset
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit Registry")
+	TSubclassOf<ALFPTacticsUnit> UnitClass;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit Registry")
 	TMap<FName, FLFPUnitRegistryEntry> UnitRegistry;
 

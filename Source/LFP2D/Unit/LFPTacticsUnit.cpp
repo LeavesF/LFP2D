@@ -19,7 +19,6 @@
 #include "LFP2D/Core/LFPGameInstance.h"
 #include "LFP2D/Core/LFPUnitRegistryDataAsset.h"
 #include "LFP2D/UI/Fighting/LFPHealthBarWidget.h"
-#include "LFP2D/UI/Fighting/LFPPlannedSkillIconWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/TimelineComponent.h"
 #include "Components/WidgetComponent.h"
@@ -58,13 +57,6 @@ ALFPTacticsUnit::ALFPTacticsUnit()
 	BuffComponent = CreateDefaultSubobject<ULFPBuffComponent>(TEXT("BuffComponent"));
 	BetrayalComponent = CreateDefaultSubobject<ULFPBetrayalComponent>(TEXT("BetrayalComponent"));
 
-	// 创建头顶计划技能图标组件
-	PlannedSkillIconComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("PlannedSkillIconComponent"));
-	PlannedSkillIconComponent->SetupAttachment(RootComponent);
-	PlannedSkillIconComponent->SetWidgetSpace(EWidgetSpace::Screen);
-	PlannedSkillIconComponent->SetDrawAtDesiredSize(true);
-	PlannedSkillIconComponent->SetRelativeLocation(FVector(0, 250, 0)); // 在血条上方
-	PlannedSkillIconComponent->SetVisibility(false); // 默认隐藏
 }
 
 bool ALFPTacticsUnit::InitializeFromRegistry(ULFPUnitRegistryDataAsset* Registry)
@@ -94,7 +86,14 @@ void ALFPTacticsUnit::ApplyRegistryEntry(const FLFPUnitRegistryEntry& Entry)
 {
 	UnitRace = Entry.Race;
 	SpecialTags = Entry.SpecialTags;
+	UnitTier = Entry.Tier;
+	UnitIconTexture = Entry.Icon;
 	EnemyBehaviorData = Entry.EnemyBehaviorData;
+
+	if (SpriteComponent && Entry.Sprite)
+	{
+		SpriteComponent->SetSprite(Entry.Sprite);
+	}
 
 	BaseAttackType = Entry.BaseStats.AttackType;
 	BaseAttack = Entry.BaseStats.Attack;
@@ -109,6 +108,14 @@ void ALFPTacticsUnit::ApplyRegistryEntry(const FLFPUnitRegistryEntry& Entry)
 	BaseWeight = Entry.AdvancedStats.Weight;
 
 	ResetCurrentStatsToBase();
+	DropGold = FMath::RandRange(FMath::Min(Entry.DropGoldMin, Entry.DropGoldMax), FMath::Max(Entry.DropGoldMin, Entry.DropGoldMax));
+	DropFood = FMath::RandRange(FMath::Min(Entry.DropFoodMin, Entry.DropFoodMax), FMath::Max(Entry.DropFoodMin, Entry.DropFoodMax));
+
+	if (SkillComponent)
+	{
+		SkillComponent->InitializeSkillsFromCards(Entry.DefaultCarriedCards);
+	}
+
 	if (BetrayalComponent)
 	{
 		BetrayalComponent->ConfigureFromTemplates(Entry.BetrayalConditionTemplates);
@@ -118,6 +125,9 @@ void ALFPTacticsUnit::ApplyRegistryEntry(const FLFPUnitRegistryEntry& Entry)
 	{
 		AIController->SetBehaviorData(EnemyBehaviorData);
 	}
+
+	OnHealthChangedDelegate.Broadcast(CurrentHealth, GetCurrentMaxHealth());
+	OnHealthChangedWithUnitDelegate.Broadcast(this, CurrentHealth, GetCurrentMaxHealth());
 }
 
 void ALFPTacticsUnit::ResetCurrentStatsToBase(bool bResetHealth)
@@ -219,6 +229,8 @@ void ALFPTacticsUnit::RebuildCurrentStatsFromRuntimeSources()
 
 	CurrentHealth = FMath::Clamp(CurrentHealth, 0, GetCurrentMaxHealth());
 	CurrentMovePoints = FMath::Clamp(SavedCurrentMovePoints, 0, CurrentMaxMovePoints);
+	OnHealthChangedDelegate.Broadcast(CurrentHealth, GetCurrentMaxHealth());
+	OnHealthChangedWithUnitDelegate.Broadcast(this, CurrentHealth, GetCurrentMaxHealth());
 	OnRuntimeStatsChangedDelegate.Broadcast(this);
 }
 
@@ -305,8 +317,7 @@ void ALFPTacticsUnit::BeginPlay()
 	// 初始化血量
 	CurrentHealth = FMath::Clamp(CurrentHealth, 0, GetCurrentMaxHealth());
 	InitializeHealthBar();
-
-	PlannedSkillIconComponent->SetRelativeLocation(FVector(0, SkillIconTopDist, 0)); // 在血条上方
+	ShowPlannedSkillIcon(CurrentActionPlan.bIsValid && CurrentActionPlan.PlannedSkill != nullptr);
 
 	// 如果是敌方单位，创建AI控制器
 	if (IsEnemy())
@@ -1226,58 +1237,47 @@ TArray<ALFPHexTile*> ALFPTacticsUnit::GetAttackRangeTiles()
 {
 	TArray<ALFPHexTile*> AttackRangeTiles;
 
-	if (ALFPHexGridManager* GridManager = GetGridManager())
+	ULFPSkillBase* DefaultAttackSkill = GetDefaultAttackSkill();
+	if (!DefaultAttackSkill)
 	{
-		// 近战攻击范围
-		if (bMeleeAttack)
-		{
-			// 获取相邻格子
-			TArray<FLFPHexCoordinates> Neighbors = CurrentCoordinates.GetNeighbors();
-			for (const FLFPHexCoordinates& Coord : Neighbors)
-			{
-				FLFPHexCoordinates Key(Coord.Q, Coord.R);
-				if (ALFPHexTile* Tile = GridManager->GetTileAtCoordinates(Key))
-				{
-					AttackRangeTiles.Add(Tile);
-				}
-			}
-		}
-		// 远程攻击范围
-		else
-		{
-			// 获取攻击范围内的所有格子
-			TArray<ALFPHexTile*> TilesInRange = GridManager->GetTilesInRange(GetCurrentTile(), AttackRange, GetAffiliation());
+		return AttackRangeTiles;
+	}
 
-			for (ALFPHexTile* Tile : TilesInRange)
-			{
-				AttackRangeTiles.Add(Tile);
-			}
+	ALFPHexGridManager* GridManager = GetGridManager();
+	if (!GridManager)
+	{
+		return AttackRangeTiles;
+	}
+
+	for (const FLFPHexCoordinates& Coord : DefaultAttackSkill->GetReleaseRangeInGrid())
+	{
+		if (ALFPHexTile* Tile = GridManager->GetTileAtCoordinates(Coord))
+		{
+			AttackRangeTiles.Add(Tile);
 		}
 	}
 
 	return AttackRangeTiles;
 }
 
+int32 ALFPTacticsUnit::GetAttackRange() const
+{
+	const ULFPSkillBase* DefaultAttackSkill = SkillComponent ? SkillComponent->GetDefaultAttackSkill() : nullptr;
+	return DefaultAttackSkill ? DefaultAttackSkill->MaxRange : 0;
+}
+
 bool ALFPTacticsUnit::IsTargetInAttackRange(ALFPTacticsUnit* Target) const
 {
 	if (!Target || !Target->GetCurrentTile()) return false;
 
-	// 计算距离
-	int32 Distance = FLFPHexCoordinates::Distance(
-		CurrentCoordinates,
-		Target->GetCurrentCoordinates()
-	);
+	ULFPSkillBase* DefaultAttackSkill = SkillComponent ? SkillComponent->GetDefaultAttackSkill() : nullptr;
+	if (!DefaultAttackSkill)
+	{
+		return false;
+	}
 
-	// 近战攻击判定
-	if (bMeleeAttack)
-	{
-		return Distance == 1; // 相邻格子
-	}
-	// 远程攻击判定
-	else
-	{
-		return Distance >= 2 && Distance <= AttackRange;
-	}
+	ALFPHexTile* CurrentTile = const_cast<ALFPTacticsUnit*>(this)->GetCurrentTile();
+	return DefaultAttackSkill->CanReleaseFrom(CurrentTile, Target->GetCurrentTile());
 }
 
 FLinearColor ALFPTacticsUnit::GetAffiliationColor() const
@@ -1344,22 +1344,24 @@ void ALFPTacticsUnit::ClearActionPlan()
 
 void ALFPTacticsUnit::ShowPlannedSkillIcon(bool bShow)
 {
-	if (!PlannedSkillIconComponent) return;
-
-	PlannedSkillIconComponent->SetVisibility(bShow);
-
-	if (bShow && CurrentActionPlan.PlannedSkill && CurrentActionPlan.PlannedSkill->SkillIcon)
+	if (!HealthBarComponent)
 	{
-		// 确保 Widget 已创建
-		if (PlannedSkillIconWidgetClass && !PlannedSkillIconComponent->GetWidget())
-		{
-			PlannedSkillIconComponent->SetWidgetClass(PlannedSkillIconWidgetClass);
-		}
+		return;
+	}
 
-		if (ULFPPlannedSkillIconWidget* IconWidget = Cast<ULFPPlannedSkillIconWidget>(PlannedSkillIconComponent->GetWidget()))
-		{
-			IconWidget->SetSkillIcon(CurrentActionPlan.PlannedSkill->SkillIcon);
-		}
+	ULFPHealthBarWidget* HealthBarWidget = Cast<ULFPHealthBarWidget>(HealthBarComponent->GetWidget());
+	if (!HealthBarWidget)
+	{
+		return;
+	}
+
+	if (bShow && CurrentActionPlan.PlannedSkill)
+	{
+		HealthBarWidget->ShowPlannedSkillIcon(CurrentActionPlan.PlannedSkill->SkillIcon);
+	}
+	else
+	{
+		HealthBarWidget->HidePlannedSkillIcon();
 	}
 }
 

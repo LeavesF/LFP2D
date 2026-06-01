@@ -619,22 +619,9 @@ void ULFPCurrentUnitInfoWidget::BuildCarriedCardInstances(TArray<FLFPCardInstanc
 		return;
 	}
 
-	if (!RegistryEntry.DefaultCarriedCards.IsEmpty())
+	for (const TSoftObjectPtr<ULFPCardDataAsset>& CardData : RegistryEntry.DefaultCarriedCards)
 	{
-		for (const TSoftObjectPtr<ULFPCardDataAsset>& CardData : RegistryEntry.DefaultCarriedCards)
-		{
-			AddCarriedCardData(CardData, OutCards);
-			if (OutCards.Num() >= MaxCarriedCards)
-			{
-				break;
-			}
-		}
-		return;
-	}
-
-	for (TSubclassOf<ULFPSkillBase> SkillClass : RegistryEntry.DefaultCarriedCardSkillClasses)
-	{
-		AddCarriedCardSkillClass(SkillClass, OutCards);
+		AddCarriedCardData(CardData, OutCards);
 		if (OutCards.Num() >= MaxCarriedCards)
 		{
 			break;
