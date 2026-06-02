@@ -16,12 +16,14 @@ class ALFPHexGridManager;
 class UInputMappingContext;
 class UInputAction;
 class UUserWidget;
+class UPaperSprite;
 
 class ULFPSkillBase;
 
 class ALFPTurnManager;
 
 class ULFPBattleHUDWidget;
+class ULFPCardDragLineWidget;
 class ULFPMapEditorComponent;
 class ULFPMapEditorWidget;
 class ULFPUnitRegistryDataAsset;
@@ -142,8 +144,27 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Cards")
 	TObjectPtr<ULFPBattleCardComponent> BattleCardComponent;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cards|Drag",
+		meta = (DisplayName = "Card Drag Visual Offset"))
+	FVector2D CardClickDragVisualOffset = FVector2D::ZeroVector;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cards|Drag", meta = (ClampMin = "0.01"))
+	float CardDragVisualScale = 1.25f;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cards|Drag")
-	FVector2D CardClickDragVisualOffset = FVector2D(-64.0f, -96.0f);
+	FVector2D CardDragLineAnchorOffset = FVector2D::ZeroVector;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cards|Drag")
+	TObjectPtr<UPaperSprite> CardDragLineSprite;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cards|Drag", meta = (ClampMin = "1.0"))
+	float CardDragLineThickness = 12.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cards|Drag")
+	FLinearColor CardDragLineTint = FLinearColor::White;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cards|Drag")
+	bool bTileCardDragLineSprite = true;
 
 	// 当前选中的单位
 	UPROPERTY()
@@ -181,6 +202,8 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera")
 	float CameraRotationYawAngle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
 	FVector CameraOffset;
 
 	// 拖拽状态
@@ -254,13 +277,16 @@ public:
 	void HandleSkillTargetSelecting(ULFPSkillBase* Skill);
 
 	// 手牌操作：点击出牌 / 悬停预览 / 取消预览
-	void OnHandCardClicked(const FLFPCardInstance& CardInstance, TSubclassOf<UUserWidget> DragVisualClass = nullptr);
+	void OnHandCardClicked(const FLFPCardInstance& CardInstance, TSubclassOf<UUserWidget> DragVisualClass = nullptr,
+		FVector2D SourceCardViewportPosition = FVector2D::ZeroVector,
+		FVector2D SourceCardViewportSize = FVector2D::ZeroVector);
 	void PreviewCardUsableUnits(const FLFPCardInstance& CardInstance);
 	void ClearCardUsableUnitPreview();
 	bool IsCardDragActive() const { return bHasActiveDraggedCard; }
 	bool ProcessCardDropOnUnit(const FLFPCardInstance& CardInstance, ALFPTacticsUnit* Unit);
 	void BeginCardDrag(const FLFPCardInstance& CardInstance, TSubclassOf<UUserWidget> DragVisualClass = nullptr,
-		bool bShowDragVisual = true);
+		bool bShowDragVisual = true, FVector2D SourceCardViewportPosition = FVector2D::ZeroVector,
+		FVector2D SourceCardViewportSize = FVector2D::ZeroVector);
 	void EndCardDrag();
 	void CancelActiveCardDrag();
 
@@ -407,6 +433,12 @@ protected:
 	void ShowActiveCardDragVisual(const FLFPCardInstance& CardInstance, TSubclassOf<UUserWidget> DragVisualClass);
 	void UpdateActiveCardDragVisual();
 	void ClearActiveCardDragVisual();
+	void ShowActiveCardDragLine();
+	void UpdateActiveCardDragLine();
+	void ClearActiveCardDragLine();
+	FVector2D CalculateActiveCardDragVisualPosition() const;
+	FVector2D GetActiveCardDragVisualSize() const;
+	FVector2D GetActiveCardDragVisualAnchorPosition() const;
 	bool TryCompleteActiveCardDragAtViewportPosition(FVector2D ViewportPosition);
 	bool FinishCardForSkill(ULFPSkillBase* Skill);
 	void CancelCardTargetSelection();
@@ -466,6 +498,15 @@ protected:
 
 	UPROPERTY()
 	TSubclassOf<UUserWidget> ActiveCardDragVisualClass;
+
+	UPROPERTY()
+	TObjectPtr<ULFPCardDragLineWidget> ActiveCardDragLineVisual;
+
+	FVector2D ActiveCardDragVisualPosition = FVector2D::ZeroVector;
+	FVector2D ActiveCardDragMouseStartPosition = FVector2D::ZeroVector;
+	FVector2D ActiveCardDragSourcePosition = FVector2D::ZeroVector;
+	FVector2D ActiveCardDragSourceSize = FVector2D::ZeroVector;
+	bool bHasActiveCardDragSource = false;
 
 	// 当前选中高亮的格子（用于清除上一次高亮）
 	UPROPERTY()

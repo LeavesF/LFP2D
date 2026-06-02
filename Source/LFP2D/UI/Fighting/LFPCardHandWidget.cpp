@@ -5,6 +5,7 @@
 #include "LFP2D/Player/LFPTacticsPlayerController.h"
 #include "LFP2D/Unit/LFPTacticsUnit.h"
 #include "LFP2D/UI/Fighting/LFPCardItemWidget.h"
+#include "Blueprint/WidgetLayoutLibrary.h"
 #include "Components/TextBlock.h"
 #include "Components/WrapBox.h"
 
@@ -177,22 +178,14 @@ void ULFPCardHandWidget::OnCardClickedInHand(const FLFPCardInstance& CardInstanc
 	}
 
 	// 通知 PlayerController 处理手牌点击。
+	TSubclassOf<UUserWidget> DragVisualClass;
+	FVector2D SourcePosition = FVector2D::ZeroVector;
+	FVector2D SourceSize = FVector2D::ZeroVector;
+	GetCardDragVisualInfo(CardInstance, DragVisualClass, SourcePosition, SourceSize);
+
 	ResetDisplayedCardPopups();
 	TacticsPC->ClearCardUsableUnitPreview();
-	TSubclassOf<UUserWidget> DragVisualClass;
-	for (ULFPCardItemWidget* CardWidget : HandCardWidgets)
-	{
-		if (CardWidget && CardWidget->GetCardInstance().InstanceID == CardInstance.InstanceID)
-		{
-			DragVisualClass = CardWidget->DragVisualClass;
-			if (!DragVisualClass)
-			{
-				DragVisualClass = CardWidget->GetClass();
-			}
-			break;
-		}
-	}
-	TacticsPC->OnHandCardClicked(CardInstance, DragVisualClass);
+	TacticsPC->OnHandCardClicked(CardInstance, DragVisualClass, SourcePosition, SourceSize);
 	if (TacticsPC->IsCardDragActive())
 	{
 		SetCardMainContentHiddenForDrag(CardInstance.InstanceID, true);
@@ -251,23 +244,15 @@ void ULFPCardHandWidget::OnCardDragStartedInHand(const FLFPCardInstance& CardIns
 	}
 
 	TacticsPC->ClearCardUsableUnitPreview();
-	ResetDisplayedCardPopups();
 
 	TSubclassOf<UUserWidget> DragVisualClass;
-	for (ULFPCardItemWidget* CardWidget : HandCardWidgets)
-	{
-		if (CardWidget && CardWidget->GetCardInstance().InstanceID == CardInstance.InstanceID)
-		{
-			DragVisualClass = CardWidget->DragVisualClass;
-			if (!DragVisualClass)
-			{
-				DragVisualClass = CardWidget->GetClass();
-			}
-			break;
-		}
-	}
+	FVector2D SourcePosition = FVector2D::ZeroVector;
+	FVector2D SourceSize = FVector2D::ZeroVector;
+	GetCardDragVisualInfo(CardInstance, DragVisualClass, SourcePosition, SourceSize);
 
-	TacticsPC->BeginCardDrag(CardInstance, DragVisualClass, false);
+	ResetDisplayedCardPopups();
+
+	TacticsPC->BeginCardDrag(CardInstance, DragVisualClass, true, SourcePosition, SourceSize);
 	if (TacticsPC->IsCardDragActive())
 	{
 		SetCardMainContentHiddenForDrag(CardInstance.InstanceID, true);
@@ -283,6 +268,47 @@ void ULFPCardHandWidget::OnCardDragEndedInHand()
 
 	RestoreHiddenDraggedCard();
 	RefreshHandDisplay();
+}
+
+bool ULFPCardHandWidget::GetCardDragVisualInfo(const FLFPCardInstance& CardInstance,
+	TSubclassOf<UUserWidget>& OutDragVisualClass, FVector2D& OutSourcePosition, FVector2D& OutSourceSize)
+{
+	OutDragVisualClass = nullptr;
+	OutSourcePosition = FVector2D::ZeroVector;
+	OutSourceSize = FVector2D::ZeroVector;
+
+	for (ULFPCardItemWidget* CardWidget : HandCardWidgets)
+	{
+		if (CardWidget && CardWidget->GetCardInstance().InstanceID == CardInstance.InstanceID)
+		{
+			OutDragVisualClass = CardWidget->DragVisualClass;
+			if (!OutDragVisualClass)
+			{
+				OutDragVisualClass = CardWidget->GetClass();
+			}
+
+			const FGeometry CardGeometry = CardWidget->GetCachedGeometry();
+			const FGeometry ViewportGeometry = UWidgetLayoutLibrary::GetViewportWidgetGeometry(this);
+			const FVector2D LocalSize = CardGeometry.GetLocalSize();
+			if (LocalSize.X <= KINDA_SMALL_NUMBER || LocalSize.Y <= KINDA_SMALL_NUMBER)
+			{
+				return true;
+			}
+
+			const FVector2D CardTopLeft = ViewportGeometry.AbsoluteToLocal(
+				CardGeometry.LocalToAbsolute(FVector2D::ZeroVector));
+			const FVector2D CardBottomRight = ViewportGeometry.AbsoluteToLocal(
+				CardGeometry.LocalToAbsolute(LocalSize));
+
+			OutSourcePosition = CardTopLeft;
+			OutSourceSize = FVector2D(
+				FMath::Abs(CardBottomRight.X - CardTopLeft.X),
+				FMath::Abs(CardBottomRight.Y - CardTopLeft.Y));
+			return true;
+		}
+	}
+
+	return false;
 }
 
 void ULFPCardHandWidget::ApplyUnitPlayablePopups()

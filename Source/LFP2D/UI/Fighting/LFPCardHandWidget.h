@@ -94,6 +94,8 @@ public:
 private:
 	void ApplyUnitPlayablePopups();
 	void ResetDisplayedCardPopups();
+	bool GetCardDragVisualInfo(const FLFPCardInstance& CardInstance, TSubclassOf<UUserWidget>& OutDragVisualClass,
+		FVector2D& OutSourcePosition, FVector2D& OutSourceSize);
 	void SetCardMainContentHiddenForDrag(int32 CardInstanceID, bool bHidden);
 	void RestoreHiddenDraggedCard();
 

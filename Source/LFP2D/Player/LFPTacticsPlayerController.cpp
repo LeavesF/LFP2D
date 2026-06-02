@@ -10,6 +10,7 @@
 #include "LFP2D/Unit/LFPTacticsUnit.h"
 #include "LFP2D/Turn/LFPTurnManager.h"
 #include "LFP2D/UI/Fighting/LFPBattleHUDWidget.h"
+#include "LFP2D/UI/Fighting/LFPCardDragLineWidget.h"
 #include "LFP2D/UI/Fighting/LFPCardItemWidget.h"
 #include "LFP2D/UI/Fighting/LFPCurrentUnitInfoWidget.h"
 #include "LFP2D/UI/Fighting/LFPCardHandWidget.h"
@@ -1258,13 +1259,65 @@ void ALFPTacticsPlayerController::ShowActiveCardDragVisual(const FLFPCardInstanc
 	}
 
 	ActiveCardDragVisual->SetVisibility(ESlateVisibility::HitTestInvisible);
+	const float VisualScale = FMath::Max(0.01f, CardDragVisualScale);
+	ActiveCardDragVisual->SetRenderTransformPivot(FVector2D::ZeroVector);
+	ActiveCardDragVisual->SetRenderScale(FVector2D(VisualScale, VisualScale));
+	if (bHasActiveCardDragSource)
+	{
+		ActiveCardDragVisual->SetDesiredSizeInViewport(ActiveCardDragSourceSize);
+	}
 	ActiveCardDragVisual->AddToViewport(1000);
+	ActiveCardDragVisualPosition = CalculateActiveCardDragVisualPosition();
+	ActiveCardDragVisual->SetPositionInViewport(ActiveCardDragVisualPosition, false);
+	ShowActiveCardDragLine();
 	UpdateActiveCardDragVisual();
 }
 
 void ALFPTacticsPlayerController::UpdateActiveCardDragVisual()
 {
+	UpdateActiveCardDragLine();
+
 	if (!ActiveCardDragVisual || !ActiveCardDragVisual->IsInViewport())
+	{
+		return;
+	}
+}
+
+void ALFPTacticsPlayerController::ClearActiveCardDragVisual()
+{
+	ClearActiveCardDragLine();
+
+	if (ActiveCardDragVisual)
+	{
+		ActiveCardDragVisual->RemoveFromParent();
+		ActiveCardDragVisual = nullptr;
+	}
+}
+
+void ALFPTacticsPlayerController::ShowActiveCardDragLine()
+{
+	ClearActiveCardDragLine();
+
+	if (!CardDragLineSprite)
+	{
+		return;
+	}
+
+	ActiveCardDragLineVisual = CreateWidget<ULFPCardDragLineWidget>(this);
+	if (!ActiveCardDragLineVisual)
+	{
+		return;
+	}
+
+	ActiveCardDragLineVisual->ConfigureLine(CardDragLineThickness, CardDragLineTint, bTileCardDragLineSprite);
+	ActiveCardDragLineVisual->SetLineSprite(CardDragLineSprite);
+	ActiveCardDragLineVisual->AddToViewport(999);
+	UpdateActiveCardDragLine();
+}
+
+void ALFPTacticsPlayerController::UpdateActiveCardDragLine()
+{
+	if (!ActiveCardDragLineVisual || !ActiveCardDragLineVisual->IsInViewport())
 	{
 		return;
 	}
@@ -1277,19 +1330,49 @@ void ALFPTacticsPlayerController::UpdateActiveCardDragVisual()
 	}
 
 	const float ViewportScale = UWidgetLayoutLibrary::GetViewportScale(this);
-	const FVector2D SlatePosition = ViewportScale > KINDA_SMALL_NUMBER
+	const FVector2D MousePosition = ViewportScale > KINDA_SMALL_NUMBER
 		? FVector2D(MouseX, MouseY) / ViewportScale
 		: FVector2D(MouseX, MouseY);
-	ActiveCardDragVisual->SetPositionInViewport(SlatePosition + CardClickDragVisualOffset, false);
+	ActiveCardDragLineVisual->SetLine(GetActiveCardDragVisualAnchorPosition(), MousePosition);
 }
 
-void ALFPTacticsPlayerController::ClearActiveCardDragVisual()
+void ALFPTacticsPlayerController::ClearActiveCardDragLine()
 {
-	if (ActiveCardDragVisual)
+	if (ActiveCardDragLineVisual)
 	{
-		ActiveCardDragVisual->RemoveFromParent();
-		ActiveCardDragVisual = nullptr;
+		ActiveCardDragLineVisual->RemoveFromParent();
+		ActiveCardDragLineVisual = nullptr;
 	}
+}
+
+FVector2D ALFPTacticsPlayerController::CalculateActiveCardDragVisualPosition() const
+{
+	if (!bHasActiveCardDragSource)
+	{
+		return ActiveCardDragMouseStartPosition + CardClickDragVisualOffset;
+	}
+
+	const float VisualScale = FMath::Max(0.01f, CardDragVisualScale);
+	const FVector2D ScaledVisualSize = ActiveCardDragSourceSize * VisualScale;
+	const FVector2D CenteredAboveCardOffset(
+		(ActiveCardDragSourceSize.X - ScaledVisualSize.X) * 0.5f,
+		-ScaledVisualSize.Y);
+	return ActiveCardDragSourcePosition + CenteredAboveCardOffset + CardClickDragVisualOffset;
+}
+
+FVector2D ALFPTacticsPlayerController::GetActiveCardDragVisualSize() const
+{
+	if (!bHasActiveCardDragSource)
+	{
+		return FVector2D::ZeroVector;
+	}
+
+	return ActiveCardDragSourceSize * FMath::Max(0.01f, CardDragVisualScale);
+}
+
+FVector2D ALFPTacticsPlayerController::GetActiveCardDragVisualAnchorPosition() const
+{
+	return ActiveCardDragVisualPosition + GetActiveCardDragVisualSize() * 0.5f + CardDragLineAnchorOffset;
 }
 
 bool ALFPTacticsPlayerController::TryCompleteActiveCardDragAtViewportPosition(FVector2D ViewportPosition)
@@ -1531,7 +1614,8 @@ void ALFPTacticsPlayerController::ResolveActiveCardSkillTargetAtViewportPosition
 
 
 void ALFPTacticsPlayerController::OnHandCardClicked(const FLFPCardInstance& CardInstance,
-	TSubclassOf<UUserWidget> DragVisualClass)
+	TSubclassOf<UUserWidget> DragVisualClass, FVector2D SourceCardViewportPosition,
+	FVector2D SourceCardViewportSize)
 {
 	if (!CardInstance.RuntimeSkill)
 	{
@@ -1546,7 +1630,8 @@ void ALFPTacticsPlayerController::OnHandCardClicked(const FLFPCardInstance& Card
 		{
 			if (SelectedUnit->CanUseCard(CardInstance))
 			{
-				BeginCardDrag(CardInstance, DragVisualClass);
+				BeginCardDrag(CardInstance, DragVisualClass, true, SourceCardViewportPosition,
+					SourceCardViewportSize);
 				return;
 			}
 
@@ -1558,7 +1643,7 @@ void ALFPTacticsPlayerController::OnHandCardClicked(const FLFPCardInstance& Card
 		}
 	}
 
-	BeginCardDrag(CardInstance, DragVisualClass);
+	BeginCardDrag(CardInstance, DragVisualClass, true, SourceCardViewportPosition, SourceCardViewportSize);
 }
 
 void ALFPTacticsPlayerController::PreviewCardUsableUnits(const FLFPCardInstance& CardInstance)
@@ -1613,7 +1698,8 @@ void ALFPTacticsPlayerController::ClearCardUsableUnitPreview()
 }
 
 void ALFPTacticsPlayerController::BeginCardDrag(const FLFPCardInstance& CardInstance,
-	TSubclassOf<UUserWidget> DragVisualClass, bool bShowDragVisual)
+	TSubclassOf<UUserWidget> DragVisualClass, bool bShowDragVisual, FVector2D SourceCardViewportPosition,
+	FVector2D SourceCardViewportSize)
 {
 	if (!CardInstance.IsValid())
 	{
@@ -1628,6 +1714,21 @@ void ALFPTacticsPlayerController::BeginCardDrag(const FLFPCardInstance& CardInst
 	ActiveDraggedCard = CardInstance;
 	ActiveCardDragVisualClass = DragVisualClass;
 	bHasActiveDraggedCard = true;
+	bHasActiveCardDragSource = SourceCardViewportSize.X > KINDA_SMALL_NUMBER &&
+		SourceCardViewportSize.Y > KINDA_SMALL_NUMBER;
+	ActiveCardDragSourcePosition = SourceCardViewportPosition;
+	ActiveCardDragSourceSize = SourceCardViewportSize;
+	ActiveCardDragMouseStartPosition = FVector2D::ZeroVector;
+	float MouseX = 0.0f;
+	float MouseY = 0.0f;
+	if (GetMousePosition(MouseX, MouseY))
+	{
+		const float ViewportScale = UWidgetLayoutLibrary::GetViewportScale(this);
+		ActiveCardDragMouseStartPosition = ViewportScale > KINDA_SMALL_NUMBER
+			? FVector2D(MouseX, MouseY) / ViewportScale
+			: FVector2D(MouseX, MouseY);
+	}
+	ActiveCardDragVisualPosition = CalculateActiveCardDragVisualPosition();
 	ActiveCardDragPhase = IsTargetSelectingCard(CardInstance)
 		? ELFPActiveCardDragPhase::SelectingUsableUnit
 		: ELFPActiveCardDragPhase::None;
@@ -1667,6 +1768,9 @@ void ALFPTacticsPlayerController::EndCardDrag()
 	bHasActiveDraggedCard = false;
 	ActiveCardDragPhase = ELFPActiveCardDragPhase::None;
 	ActiveCardDragVisualClass = nullptr;
+	bHasActiveCardDragSource = false;
+	ActiveCardDragSourcePosition = FVector2D::ZeroVector;
+	ActiveCardDragSourceSize = FVector2D::ZeroVector;
 	ClearActiveCardDragVisual();
 	ClearCardUsableUnitPreview();
 

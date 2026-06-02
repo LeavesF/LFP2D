@@ -256,11 +256,6 @@ void ULFPCardItemWidget::NativeOnDragDetected(const FGeometry& InGeometry, const
 	DragOp->DraggedCard = CardInstance;
 	DragOp->Pivot = EDragPivot::CenterCenter;
 
-	if (DragVisualClass)
-	{
-		DragOp->DefaultDragVisual = CreateWidget(this, DragVisualClass);
-	}
-
 	OutOperation = DragOp;
 	OnCardDragStarted.Broadcast(CardInstance);
 }
