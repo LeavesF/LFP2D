@@ -77,12 +77,12 @@ bool ALFPTacticsUnit::InitializeFromRegistry(ULFPUnitRegistryDataAsset* Registry
 		return false;
 	}
 
-	ApplyRegistryEntry(Entry);
+	ApplyRegistryEntry(Entry, *Registry);
 	bStatsInitialized = true;
 	return true;
 }
 
-void ALFPTacticsUnit::ApplyRegistryEntry(const FLFPUnitRegistryEntry& Entry)
+void ALFPTacticsUnit::ApplyRegistryEntry(const FLFPUnitRegistryEntry& Entry, const ULFPUnitRegistryDataAsset& Registry)
 {
 	UnitRace = Entry.Race;
 	SpecialTags = Entry.SpecialTags;
@@ -93,6 +93,20 @@ void ALFPTacticsUnit::ApplyRegistryEntry(const FLFPUnitRegistryEntry& Entry)
 	if (SpriteComponent && Entry.Sprite)
 	{
 		SpriteComponent->SetSprite(Entry.Sprite);
+	}
+
+	if (SpriteComponent)
+	{
+		SpriteComponent->SetRelativeLocation(Entry.bUseCustomSpriteLocationOffset
+			? Entry.SpriteLocationOffset
+			: Registry.DefaultSpriteLocationOffset);
+	}
+
+	if (HealthBarComponent)
+	{
+		HealthBarComponent->SetRelativeLocation(Entry.bUseCustomHealthBarLocationOffset
+			? Entry.HealthBarLocationOffset
+			: Registry.DefaultHealthBarLocationOffset);
 	}
 
 	BaseAttackType = Entry.BaseStats.AttackType;

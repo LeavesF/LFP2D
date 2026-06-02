@@ -168,7 +168,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Unit Stats")
 	bool InitializeFromRegistry(ULFPUnitRegistryDataAsset* Registry);
 
-	void ApplyRegistryEntry(const FLFPUnitRegistryEntry& Entry);
+	void ApplyRegistryEntry(const FLFPUnitRegistryEntry& Entry, const ULFPUnitRegistryDataAsset& Registry);
 
 	UFUNCTION(BlueprintCallable, Category = "Unit Stats")
 	void ResetCurrentStatsToBase(bool bResetHealth = true);

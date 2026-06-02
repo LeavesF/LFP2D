@@ -30,6 +30,18 @@ struct FLFPUnitRegistryEntry
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit Registry|Visual")
 	TObjectPtr<UPaperSprite> Sprite = nullptr;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit Registry|Visual")
+	bool bUseCustomSpriteLocationOffset = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit Registry|Visual", meta = (EditCondition = "bUseCustomSpriteLocationOffset"))
+	FVector SpriteLocationOffset = FVector::ZeroVector;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit Registry|Visual")
+	bool bUseCustomHealthBarLocationOffset = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit Registry|Visual", meta = (EditCondition = "bUseCustomHealthBarLocationOffset"))
+	FVector HealthBarLocationOffset = FVector(0.f, 150.f, 0.f);
+
 	/* 单位阶级，用于 UI 显示。 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit Registry")
 	int32 Tier = 1;
@@ -85,6 +97,12 @@ class LFP2D_API ULFPUnitRegistryDataAsset : public UDataAsset
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit Registry")
 	TSubclassOf<ALFPTacticsUnit> UnitClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit Registry|Visual")
+	FVector DefaultSpriteLocationOffset = FVector::ZeroVector;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit Registry|Visual")
+	FVector DefaultHealthBarLocationOffset = FVector(0.f, 150.f, 0.f);
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit Registry")
 	TMap<FName, FLFPUnitRegistryEntry> UnitRegistry;
