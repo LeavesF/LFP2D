@@ -97,6 +97,21 @@ void ALFPHexTile::BeginPlay()
 	}
 }
 
+void ALFPHexTile::SetFoliageSpriteComponentRoll(float RollAngle)
+{
+	if (!FoliageSpriteComponent)
+	{
+		return;
+	}
+
+	FRotator FoliageRotation = FoliageSpriteComponent->GetRelativeRotation();
+	if (!FMath::IsNearlyEqual(FoliageRotation.Roll, RollAngle, 0.01f))
+	{
+		FoliageRotation.Roll = RollAngle;
+		FoliageSpriteComponent->SetRelativeRotation(FoliageRotation);
+	}
+}
+
 // Called every frame
 void ALFPHexTile::Tick(float DeltaTime)
 {

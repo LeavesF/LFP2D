@@ -19,6 +19,7 @@
 #include "LFP2D/Core/LFPGameInstance.h"
 #include "LFP2D/Core/LFPUnitRegistryDataAsset.h"
 #include "LFP2D/UI/Fighting/LFPHealthBarWidget.h"
+#include "Camera/PlayerCameraManager.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/TimelineComponent.h"
 #include "Components/WidgetComponent.h"
@@ -46,9 +47,11 @@ ALFPTacticsUnit::ALFPTacticsUnit()
 
 	// 创建血条组件
 	HealthBarComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBarComponent"));
-	HealthBarComponent->SetupAttachment(RootComponent);
-	HealthBarComponent->SetWidgetSpace(EWidgetSpace::Screen);
+	HealthBarComponent->SetupAttachment(SpriteComponent);
+	HealthBarComponent->SetWidgetSpace(EWidgetSpace::World);
 	HealthBarComponent->SetDrawAtDesiredSize(true);
+	HealthBarComponent->SetTwoSided(true);
+	HealthBarComponent->SetPivot(FVector2D(0.5f, 0.5f));
 	// 设置相对位置（在单位上方）
 	HealthBarComponent->SetRelativeLocation(FVector(0, 150, 0));
 
@@ -708,6 +711,8 @@ void ALFPTacticsUnit::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	// UpdateHealthBarWorldFacing();
+
 	// 逐格平滑移动
 	if (bIsMoving && CurrentPathIndex >= 0 && CurrentPathIndex < MovePath.Num() - 1)
 	{
@@ -750,6 +755,58 @@ void ALFPTacticsUnit::InitializeHealthBar()
 			// 绑定到单位
 			HealthBarWidget->BindToUnit(this);
 		}
+
+		ApplyHealthBarWorldSettings();
+		// UpdateHealthBarWorldFacing();
+	}
+}
+
+void ALFPTacticsUnit::SetSpriteComponentRoll(float RollAngle)
+{
+	if (!SpriteComponent)
+	{
+		return;
+	}
+
+	FRotator SpriteRotation = SpriteComponent->GetRelativeRotation();
+	if (!FMath::IsNearlyEqual(SpriteRotation.Roll, RollAngle, 0.01f))
+	{
+		SpriteRotation.Roll = RollAngle;
+		SpriteComponent->SetRelativeRotation(SpriteRotation);
+	}
+}
+
+void ALFPTacticsUnit::ApplyHealthBarWorldSettings()
+{
+	if (!HealthBarComponent)
+	{
+		return;
+	}
+
+	HealthBarComponent->SetWorldScale3D(FVector(FMath::Max(0.01f, HealthBarWorldScale)));
+	if (UUserWidget* HealthBarWidget = HealthBarComponent->GetWidget())
+	{
+		HealthBarWidget->SetRenderScale(FVector2D(1.0f, 1.0f));
+	}
+}
+
+void ALFPTacticsUnit::UpdateHealthBarWorldFacing()
+{
+	if (!HealthBarComponent)
+	{
+		return;
+	}
+
+	const APlayerCameraManager* CameraManager = UGameplayStatics::GetPlayerCameraManager(this, 0);
+	if (!CameraManager)
+	{
+		return;
+	}
+
+	const FVector ToCamera = CameraManager->GetCameraLocation() - HealthBarComponent->GetComponentLocation();
+	if (!ToCamera.IsNearlyZero())
+	{
+		HealthBarComponent->SetWorldRotation(ToCamera.Rotation());
 	}
 }
 

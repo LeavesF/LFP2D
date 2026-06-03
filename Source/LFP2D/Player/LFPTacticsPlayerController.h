@@ -30,6 +30,7 @@ class ULFPUnitRegistryDataAsset;
 class ULFPBattleCardComponent;
 class ULFPGameInstance;
 class ULFPBetrayalCondition;
+class UCurveFloat;
 
 struct FLFPCardInstance;
 
@@ -203,6 +204,12 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera")
 	float CameraRotationYawAngle;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera|Zoom Pitch")
+	TObjectPtr<UCurveFloat> CameraPitchZoomCurve;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera|Zoom Pitch", meta = (ClampMin = "0.0"))
+	float CameraPitchInterpSpeed = 8.0f;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
 	FVector CameraOffset;
 
@@ -237,6 +244,8 @@ protected:
 	float MaxZoomDistance = 2000.0f;
 
 	float CurrentZoom = 1000.0f;
+
+	float TargetCameraRotationPitchAngle = 60.0f;
 
 	// 场景切换后首帧跳过相机平滑插值
 	bool bSnapCameraNextFrame = true;
@@ -450,6 +459,11 @@ protected:
 	bool ExecuteDroppedCardImmediately(const FLFPCardInstance& CardInstance, ALFPTacticsUnit* Unit, ALFPHexTile* TargetTile);
 	bool BeginCardTargetSelection(const FLFPCardInstance& CardInstance, ALFPTacticsUnit* Unit);
 	void ResolveActiveCardSkillTargetAtViewportPosition(const FLFPCardInstance& CardInstance, FVector2D ViewportPosition);
+	float CalculateCameraZoomAlpha() const;
+	float CalculateCameraPitchFromZoom() const;
+	void UpdateCameraPitchTargetFromZoom(bool bImmediate = false);
+	void UpdateCameraPitch(float DeltaTime);
+	void ApplyCameraPitchToSceneSprites();
 
 	// 移动已部署单位到空格子
 	void MoveDeployedUnitToTile(int32 PartyIndex, ALFPHexTile* TargetTile);

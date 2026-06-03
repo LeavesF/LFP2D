@@ -27,6 +27,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Components/Widget.h"
+#include "Curves/CurveFloat.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
@@ -95,6 +96,7 @@ ALFPTacticsPlayerController::ALFPTacticsPlayerController()
 	SelectedTile = nullptr;
 	bIsSelecting = false;
 	CameraRotationPitchAngle = 60.0f;
+	TargetCameraRotationPitchAngle = CameraRotationPitchAngle;
 	CameraRotationYawAngle = 0.0f;
 	bDebugEnabled = false;
 	CameraOffset = FVector::ZeroVector;
@@ -186,6 +188,7 @@ void ALFPTacticsPlayerController::BeginPlay()
 
 	// 首帧跳过相机平滑插值
 	bSnapCameraNextFrame = true;
+	UpdateCameraPitchTargetFromZoom(true);
 }
 
 void ALFPTacticsPlayerController::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -241,6 +244,7 @@ void ALFPTacticsPlayerController::Tick(float DeltaTime)
 
 	UpdateActiveCardDragVisual();
 
+	UpdateCameraPitch(DeltaTime);
 
 	// 更新相机位置
 	if (GridManager)
@@ -812,6 +816,7 @@ void ALFPTacticsPlayerController::OnCameraZoom(const FInputActionValue& Value)
 {
 	const float ZoomValue = Value.Get<float>();
 	CurrentZoom = FMath::Clamp(CurrentZoom - ZoomValue * CameraZoomSpeed, MinZoomDistance, MaxZoomDistance);
+	UpdateCameraPitchTargetFromZoom();
 }
 
 void ALFPTacticsPlayerController::SelectUnit(ALFPTacticsUnit* Unit)
@@ -1612,6 +1617,80 @@ void ALFPTacticsPlayerController::ResolveActiveCardSkillTargetAtViewportPosition
 	}
 }
 
+float ALFPTacticsPlayerController::CalculateCameraZoomAlpha() const
+{
+	if (FMath::IsNearlyEqual(MinZoomDistance, MaxZoomDistance))
+	{
+		return 0.0f;
+	}
+
+	const float MinZoom = FMath::Min(MinZoomDistance, MaxZoomDistance);
+	const float MaxZoom = FMath::Max(MinZoomDistance, MaxZoomDistance);
+	return FMath::Clamp((CurrentZoom - MinZoom) / (MaxZoom - MinZoom), 0.0f, 1.0f);
+}
+
+float ALFPTacticsPlayerController::CalculateCameraPitchFromZoom() const
+{
+	return CameraPitchZoomCurve
+		? CameraPitchZoomCurve->GetFloatValue(CalculateCameraZoomAlpha())
+		: CameraRotationPitchAngle;
+}
+
+void ALFPTacticsPlayerController::UpdateCameraPitchTargetFromZoom(bool bImmediate)
+{
+	TargetCameraRotationPitchAngle = CalculateCameraPitchFromZoom();
+
+	if (bImmediate || CameraPitchInterpSpeed <= 0.0f)
+	{
+		CameraRotationPitchAngle = TargetCameraRotationPitchAngle;
+		ApplyCameraPitchToSceneSprites();
+	}
+}
+
+void ALFPTacticsPlayerController::UpdateCameraPitch(float DeltaTime)
+{
+	if (FMath::IsNearlyEqual(CameraRotationPitchAngle, TargetCameraRotationPitchAngle, 0.01f))
+	{
+		return;
+	}
+
+	CameraRotationPitchAngle = FMath::FInterpTo(
+		CameraRotationPitchAngle,
+		TargetCameraRotationPitchAngle,
+		DeltaTime,
+		CameraPitchInterpSpeed);
+
+	if (FMath::IsNearlyEqual(CameraRotationPitchAngle, TargetCameraRotationPitchAngle, 0.01f))
+	{
+		CameraRotationPitchAngle = TargetCameraRotationPitchAngle;
+	}
+
+	ApplyCameraPitchToSceneSprites();
+}
+
+void ALFPTacticsPlayerController::ApplyCameraPitchToSceneSprites()
+{
+	TArray<AActor*> FoundUnits;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALFPTacticsUnit::StaticClass(), FoundUnits);
+	for (AActor* Actor : FoundUnits)
+	{
+		if (ALFPTacticsUnit* Unit = Cast<ALFPTacticsUnit>(Actor))
+		{
+			Unit->SetSpriteComponentRoll(CameraRotationPitchAngle);
+		}
+	}
+
+	if (GridManager)
+	{
+		for (const TPair<FIntPoint, ALFPHexTile*>& TilePair : GridManager->GetGridMap())
+		{
+			if (ALFPHexTile* Tile = TilePair.Value)
+			{
+				Tile->SetFoliageSpriteComponentRoll(-CameraRotationPitchAngle);
+			}
+		}
+	}
+}
 
 void ALFPTacticsPlayerController::OnHandCardClicked(const FLFPCardInstance& CardInstance,
 	TSubclassOf<UUserWidget> DragVisualClass, FVector2D SourceCardViewportPosition,
@@ -2303,6 +2382,7 @@ void ALFPTacticsPlayerController::AutoPlacePartyUnits()
 			Unit->UnitTypeID = Entry.TypeID;
 			Unit->InitializeFromRegistry(GI->UnitRegistry);
 			GI->ApplyOwnedRelicsToUnit(Unit);
+			Unit->SetSpriteComponentRoll(CameraRotationPitchAngle);
 
 			// 放置到对应出生点格子
 			if (PlayerSpawnTiles.IsValidIndex(i))
@@ -2449,6 +2529,7 @@ ALFPTacticsUnit* ALFPTacticsPlayerController::SpawnDeploymentUnit(const FLFPUnit
 	Unit->UnitTypeID = Entry.TypeID;
 	Unit->InitializeFromRegistry(GI->UnitRegistry);
 	GI->ApplyOwnedRelicsToUnit(Unit);
+	Unit->SetSpriteComponentRoll(CameraRotationPitchAngle);
 	Unit->SetCurrentCoordinates(Tile->GetCoordinates());
 
 	Tile->SetIsOccupied(true);

@@ -497,6 +497,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Unit Display")
 	void InitializeHealthBar();
 
+	UFUNCTION(BlueprintCallable, Category = "Unit Display")
+	void SetSpriteComponentRoll(float RollAngle);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Display|Health Bar", meta = (ClampMin = "0.01"))
+	float HealthBarWorldScale = 0.5f;
+
 public:
 	// 血量属性
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Stats")
@@ -661,6 +667,9 @@ public:
 	void UpdateHealthUI();
 
 private:
+	void ApplyHealthBarWorldSettings();
+	void UpdateHealthBarWorldFacing();
+
 	// 纯扣血入口；传入值视为已经完成防御、暴击等结算后的最终伤害。
 	int32 ApplyResolvedDamage(int32 Damage);
 

@@ -255,6 +255,9 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Hex Tile")
 	ULFPTerrainDataAsset* GetTerrainData() const { return TerrainData; }
 
+	UFUNCTION(BlueprintCallable, Category = "Hex Tile|Visual")
+	void SetFoliageSpriteComponentRoll(float RollAngle);
+
 	// 装饰精灵组件（叠加在基础地形上方，纯视觉）
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UPaperSpriteComponent> DecorationSpriteComponent;
