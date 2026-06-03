@@ -16,6 +16,21 @@ enum class ELFPSpawnFaction : uint8
 	SF_Neutral  UMETA(DisplayName = "中立")
 };
 
+USTRUCT(BlueprintType)
+struct FLFPEnemyMapUnitRow : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy Unit")
+	int32 Q = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy Unit")
+	int32 R = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy Unit")
+	FName UnitTypeID = NAME_None;
+};
+
 /**
  * 地图格子行数据（DataTable / CSV 行结构）
  * RowName 使用 "Q_R" 格式，如 "3_-2"

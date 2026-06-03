@@ -323,13 +323,16 @@ void ALFPTacticsUnit::BeginPlay()
 	}
 
 	// 注册到回合管理器
-	if (ALFPTurnManager* TurnManager = GetTurnManager())
+	if (!bIsMapEditorPreviewUnit)
 	{
-		TurnManager->RegisterUnit(this);
+		if (ALFPTurnManager* TurnManager = GetTurnManager())
+		{
+			TurnManager->RegisterUnit(this);
+		}
 	}
 
 	FLFPHexCoordinates SpawnPoint = FLFPHexCoordinates(StartCoordinates_Q, StartCoordinates_R);
-	SetCurrentCoordinates(SpawnPoint);
+	SetCurrentCoordinates(SpawnPoint, !bIsMapEditorPreviewUnit);
 
 	// 初始化血量
 	CurrentHealth = FMath::Clamp(CurrentHealth, 0, GetCurrentMaxHealth());
@@ -337,7 +340,7 @@ void ALFPTacticsUnit::BeginPlay()
 	ShowPlannedSkillIcon(CurrentActionPlan.bIsValid && CurrentActionPlan.PlannedSkill != nullptr);
 
 	// 如果是敌方单位，创建AI控制器
-	if (IsEnemy())
+	if (!bIsMapEditorPreviewUnit && IsEnemy())
 	{
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.Owner = this;
@@ -360,9 +363,12 @@ void ALFPTacticsUnit::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
 
-	if (ALFPTurnManager* TurnManager = GetTurnManager())
+	if (!bIsMapEditorPreviewUnit)
 	{
-		TurnManager->UnregisterUnit(this);
+		if (ALFPTurnManager* TurnManager = GetTurnManager())
+		{
+			TurnManager->UnregisterUnit(this);
+		}
 	}
 
 }

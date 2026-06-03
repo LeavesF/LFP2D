@@ -91,6 +91,9 @@ protected:
 	UFUNCTION()
 	void OnBattleResultConfirmed();
 
+	void ClearPreplacedNonPlayerUnits();
+	void SpawnEnemyUnitsFromCSV(const FString& BattleMapName);
+
 	// ============== 管理器 ==============
 
 	// 网格管理器类（蓝图中配置）

@@ -105,7 +105,7 @@ void ALFPTurnManager::StartGame()
         if (ALFPTacticsUnit* Unit = Cast<ALFPTacticsUnit>(Actor))
         {
             // 仅注册非玩家单位（玩家单位在布置阶段结束后注册）
-            if (Unit->GetAffiliation() != EUnitAffiliation::UA_Player)
+            if (!Unit->IsMapEditorPreviewUnit() && Unit->GetAffiliation() != EUnitAffiliation::UA_Player)
             {
                 TurnOrderUnits.Add(Unit);
             }
@@ -139,7 +139,7 @@ void ALFPTurnManager::EndDeploymentPhase()
     {
         if (ALFPTacticsUnit* Unit = Cast<ALFPTacticsUnit>(Actor))
         {
-            if (Unit->GetAffiliation() == EUnitAffiliation::UA_Player && !TurnOrderUnits.Contains(Unit))
+            if (!Unit->IsMapEditorPreviewUnit() && Unit->GetAffiliation() == EUnitAffiliation::UA_Player && !TurnOrderUnits.Contains(Unit))
             {
                 TurnOrderUnits.Add(Unit);
             }
@@ -294,7 +294,10 @@ void ALFPTurnManager::RefreshAllRuntimeUnitStates(bool bAllowReorder)
     {
         if (ALFPTacticsUnit* Unit = Cast<ALFPTacticsUnit>(Actor))
         {
-            Units.Add(Unit);
+            if (!Unit->IsMapEditorPreviewUnit())
+            {
+                Units.Add(Unit);
+            }
         }
     }
 
@@ -954,7 +957,7 @@ void ALFPTurnManager::OnUnitFinishedAction(ALFPTacticsUnit* Unit)
 
 void ALFPTurnManager::RegisterUnit(ALFPTacticsUnit* Unit)
 {
-    if (Unit && !TurnOrderUnits.Contains(Unit))
+    if (Unit && !Unit->IsMapEditorPreviewUnit() && !TurnOrderUnits.Contains(Unit))
     {
         TurnOrderUnits.Add(Unit);
 

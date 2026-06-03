@@ -9,6 +9,7 @@
 
 class ALFPHexGridManager;
 class ALFPHexTile;
+class ALFPTacticsUnit;
 
 // 编辑器工具模式
 UENUM(BlueprintType)
@@ -20,7 +21,9 @@ enum class ELFPMapEditorTool : uint8
 	MET_SpawnPoint  UMETA(DisplayName = "出生点"),
 	MET_Event       UMETA(DisplayName = "事件标签"),
 	MET_AddTile     UMETA(DisplayName = "添加格子"),
-	MET_RemoveTile  UMETA(DisplayName = "移除格子")
+	MET_RemoveTile  UMETA(DisplayName = "移除格子"),
+	MET_EnemyUnit   UMETA(DisplayName = "Enemy Unit"),
+	MET_RemoveEnemyUnit UMETA(DisplayName = "Remove Enemy Unit")
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEditorToolChanged, ELFPMapEditorTool, NewTool);
@@ -68,6 +71,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Map Editor|Brush")
 	void SetBrushEventTag(FGameplayTag InTag) { BrushEventTag = InTag; }
 
+	UFUNCTION(BlueprintCallable, Category = "Map Editor|Brush")
+	void SetBrushEnemyUnitTypeID(FName InUnitTypeID) { BrushEnemyUnitTypeID = InUnitTypeID; }
+
 	// 对已有格子应用当前工具
 	UFUNCTION(BlueprintCallable, Category = "Map Editor")
 	void ApplyToolToTile(ALFPHexTile* Tile);
@@ -107,6 +113,15 @@ protected:
 	// 获取地图保存目录
 	FString GetMapSaveDirectory() const;
 
+	FString GetEnemyMapFilePath(const FString& FileName) const;
+	bool SaveEnemyUnits(const FString& FileName);
+	bool LoadEnemyUnits(const FString& FileName);
+	void ClearEnemyUnitPreviews();
+	void RebuildEnemyUnitPreviews();
+	void PlaceEnemyUnitAtTile(ALFPHexTile* Tile, FName UnitTypeID);
+	void RemoveEnemyUnitAtTile(ALFPHexTile* Tile);
+	ALFPTacticsUnit* SpawnEnemyUnitPreview(ALFPHexTile* Tile, FName UnitTypeID);
+
 protected:
 	// 编辑器是否激活
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Map Editor")
@@ -132,7 +147,16 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Map Editor|Brush")
 	FGameplayTag BrushEventTag;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Map Editor|Brush")
+	FName BrushEnemyUnitTypeID = NAME_None;
+
 	// GridManager 缓存
 	UPROPERTY()
 	mutable TObjectPtr<ALFPHexGridManager> CachedGridManager;
+
+	UPROPERTY()
+	TMap<FIntPoint, FName> EnemyUnitTypeByCoord;
+
+	UPROPERTY()
+	TMap<FIntPoint, TObjectPtr<ALFPTacticsUnit>> EnemyUnitPreviewByCoord;
 };

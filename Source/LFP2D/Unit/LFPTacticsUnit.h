@@ -95,6 +95,9 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Tactics Unit")
 	FLFPHexCoordinates GetCurrentCoordinates() const { return CurrentCoordinates; }
 
+	UFUNCTION(BlueprintCallable, Category = "Tactics Unit")
+	void SetStartCoordinates(int32 Q, int32 R) { StartCoordinates_Q = Q; StartCoordinates_R = R; }
+
 	UFUNCTION(BlueprintPure, Category = "Tactics Unit")
 	ALFPHexTile* GetCurrentTile();
 	//// 获取可移动范围
@@ -187,6 +190,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Unit Stats")
 	void RebuildCurrentStatsFromRuntimeSources();
+
+	UFUNCTION(BlueprintPure, Category = "Map Editor")
+	bool IsMapEditorPreviewUnit() const { return bIsMapEditorPreviewUnit; }
 
 	UFUNCTION(BlueprintPure, Category = "Unit Combat")
 	bool HasAliveFriendlyWithinHexRange(int32 Range, bool bExcludeSelf = true) const;
@@ -536,6 +542,9 @@ public:
 	// 阵营标识
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Stats")
 	EUnitAffiliation Affiliation = EUnitAffiliation::UA_Player;
+
+	UPROPERTY(Transient, BlueprintReadWrite, Category = "Map Editor")
+	bool bIsMapEditorPreviewUnit = false;
 
 	// ==== 单位身份 ====
 

@@ -1,4 +1,6 @@
 #include "LFP2D/UI/MapEditor/LFPMapEditorWidget.h"
+#include "LFP2D/Core/LFPGameInstance.h"
+#include "LFP2D/Core/LFPUnitRegistryDataAsset.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
 #include "Components/ComboBoxString.h"
@@ -15,11 +17,14 @@ void ULFPMapEditorWidget::NativeConstruct()
 	if (EventToolButton) EventToolButton->OnClicked.AddDynamic(this, &ULFPMapEditorWidget::OnEventToolClicked);
 	if (AddTileToolButton) AddTileToolButton->OnClicked.AddDynamic(this, &ULFPMapEditorWidget::OnAddTileToolClicked);
 	if (RemoveTileToolButton) RemoveTileToolButton->OnClicked.AddDynamic(this, &ULFPMapEditorWidget::OnRemoveTileToolClicked);
+	if (EnemyUnitToolButton) EnemyUnitToolButton->OnClicked.AddDynamic(this, &ULFPMapEditorWidget::OnEnemyUnitToolClicked);
+	if (RemoveEnemyUnitToolButton) RemoveEnemyUnitToolButton->OnClicked.AddDynamic(this, &ULFPMapEditorWidget::OnRemoveEnemyUnitToolClicked);
 
 	// 绑定参数下拉框
 	if (TerrainTypeComboBox) TerrainTypeComboBox->OnSelectionChanged.AddDynamic(this, &ULFPMapEditorWidget::OnTerrainTypeChanged);
 	if (DecorationComboBox) DecorationComboBox->OnSelectionChanged.AddDynamic(this, &ULFPMapEditorWidget::OnDecorationIDChanged);
 	if (SpawnFactionComboBox) SpawnFactionComboBox->OnSelectionChanged.AddDynamic(this, &ULFPMapEditorWidget::OnSpawnFactionChanged);
+	if (EnemyUnitComboBox) EnemyUnitComboBox->OnSelectionChanged.AddDynamic(this, &ULFPMapEditorWidget::OnEnemyUnitTypeChanged);
 
 	// 绑定保存/加载按钮
 	if (SaveButton) SaveButton->OnClicked.AddDynamic(this, &ULFPMapEditorWidget::OnSaveClicked);
@@ -42,6 +47,41 @@ void ULFPMapEditorWidget::NativeConstruct()
 
 	PopulateEnumComboBox(TerrainTypeComboBox, StaticEnum<ELFPTerrainType>(), TEXT("TT_Grass"));
 	PopulateEnumComboBox(SpawnFactionComboBox, StaticEnum<ELFPSpawnFaction>(), TEXT("SF_Player"));
+
+	if (EnemyUnitComboBox)
+	{
+		EnemyUnitComboBox->ClearOptions();
+		if (const ULFPGameInstance* GI = Cast<ULFPGameInstance>(GetGameInstance()))
+		{
+			if (GI->UnitRegistry)
+			{
+				TArray<FName> UnitTypeIDs;
+				GI->UnitRegistry->UnitRegistry.GetKeys(UnitTypeIDs);
+				UnitTypeIDs.Sort([](const FName& A, const FName& B)
+				{
+					return A.LexicalLess(B);
+				});
+
+				for (const FName& UnitTypeID : UnitTypeIDs)
+				{
+					if (!UnitTypeID.IsNone())
+					{
+						EnemyUnitComboBox->AddOption(UnitTypeID.ToString());
+					}
+				}
+
+				if (UnitTypeIDs.Num() > 0)
+				{
+					const FString DefaultUnitType = UnitTypeIDs[0].ToString();
+					EnemyUnitComboBox->SetSelectedOption(DefaultUnitType);
+					if (EditorComponent)
+					{
+						EditorComponent->SetBrushEnemyUnitTypeID(UnitTypeIDs[0]);
+					}
+				}
+			}
+		}
+	}
 }
 
 void ULFPMapEditorWidget::InitializeEditor(ULFPMapEditorComponent* EditorComp)
@@ -51,6 +91,10 @@ void ULFPMapEditorWidget::InitializeEditor(ULFPMapEditorComponent* EditorComp)
 	if (EditorComponent)
 	{
 		EditorComponent->OnEditorToolChanged.AddDynamic(this, &ULFPMapEditorWidget::UpdateToolIndicator);
+		if (EnemyUnitComboBox && !EnemyUnitComboBox->GetSelectedOption().IsEmpty())
+		{
+			EditorComponent->SetBrushEnemyUnitTypeID(FName(*EnemyUnitComboBox->GetSelectedOption()));
+		}
 	}
 }
 
@@ -86,6 +130,16 @@ void ULFPMapEditorWidget::OnRemoveTileToolClicked()
 	if (EditorComponent) EditorComponent->SetCurrentTool(ELFPMapEditorTool::MET_RemoveTile);
 }
 
+void ULFPMapEditorWidget::OnEnemyUnitToolClicked()
+{
+	if (EditorComponent) EditorComponent->SetCurrentTool(ELFPMapEditorTool::MET_EnemyUnit);
+}
+
+void ULFPMapEditorWidget::OnRemoveEnemyUnitToolClicked()
+{
+	if (EditorComponent) EditorComponent->SetCurrentTool(ELFPMapEditorTool::MET_RemoveEnemyUnit);
+}
+
 // ============== 参数变化回调 ==============
 
 void ULFPMapEditorWidget::OnTerrainTypeChanged(FString SelectedItem, ESelectInfo::Type SelectionType)
@@ -116,6 +170,12 @@ void ULFPMapEditorWidget::OnSpawnFactionChanged(FString SelectedItem, ESelectInf
 	{
 		EditorComponent->SetBrushSpawnFaction(static_cast<ELFPSpawnFaction>(Value));
 	}
+}
+
+void ULFPMapEditorWidget::OnEnemyUnitTypeChanged(FString SelectedItem, ESelectInfo::Type SelectionType)
+{
+	if (!EditorComponent || SelectedItem.IsEmpty()) return;
+	EditorComponent->SetBrushEnemyUnitTypeID(FName(*SelectedItem));
 }
 
 // ============== 保存/加载 ==============
@@ -174,6 +234,8 @@ void ULFPMapEditorWidget::UpdateToolIndicator(ELFPMapEditorTool NewTool)
 		{ELFPMapEditorTool::MET_Event, TEXT("事件标签")},
 		{ELFPMapEditorTool::MET_AddTile, TEXT("添加格子")},
 		{ELFPMapEditorTool::MET_RemoveTile, TEXT("移除格子")},
+		{ELFPMapEditorTool::MET_EnemyUnit, TEXT("敌人单位")},
+		{ELFPMapEditorTool::MET_RemoveEnemyUnit, TEXT("移除敌人")},
 	};
 
 	if (const FString* Name = ToolNames.Find(NewTool))

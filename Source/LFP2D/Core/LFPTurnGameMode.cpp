@@ -3,14 +3,19 @@
 
 #include "LFP2D/Core/LFPTurnGameMode.h"
 #include "LFP2D/Core/LFPGameInstance.h"
+#include "LFP2D/Core/LFPUnitRegistryDataAsset.h"
+#include "LFP2D/HexGrid/LFPMapData.h"
 #include "LFP2D/Turn/LFPTurnManager.h"
 #include "LFP2D/Turn/LFPBattleRelicRuntimeManager.h"
 #include "LFP2D/Unit/LFPTacticsUnit.h"
 #include "LFP2D/HexGrid/LFPHexGridManager.h"
+#include "LFP2D/HexGrid/LFPHexTile.h"
 #include "LFP2D/Player/LFPTacticsPlayerController.h"
 #include "LFP2D/UI/Fighting/LFPBattleHUDWidget.h"
 #include "LFP2D/UI/Fighting/LFPBattleResultWidget.h"
 #include "Kismet/GameplayStatics.h"
+#include "Engine/DataTable.h"
+#include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
 
 void ALFPTurnGameMode::StartPlay()
@@ -59,6 +64,12 @@ void ALFPTurnGameMode::StartPlay()
 
 	// 生成回合管理器
 	// 优先生成蓝图配置的 TurnManager，让 BP_TurnManager 上的资产引用参与运行。
+	ClearPreplacedNonPlayerUnits();
+	if (GridManager && !CachedBattleRequest.BattleMapName.IsEmpty())
+	{
+		SpawnEnemyUnitsFromCSV(CachedBattleRequest.BattleMapName);
+	}
+
 	TSubclassOf<ALFPTurnManager> EffectiveTurnManagerClass = TurnManagerClass;
 	if (!EffectiveTurnManagerClass)
 	{
@@ -82,6 +93,114 @@ void ALFPTurnGameMode::StartPlay()
 	}
 
 	Super::StartPlay();
+}
+
+void ALFPTurnGameMode::ClearPreplacedNonPlayerUnits()
+{
+	TArray<AActor*> FoundUnits;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALFPTacticsUnit::StaticClass(), FoundUnits);
+
+	for (AActor* Actor : FoundUnits)
+	{
+		ALFPTacticsUnit* Unit = Cast<ALFPTacticsUnit>(Actor);
+		if (!Unit || Unit->GetAffiliation() == EUnitAffiliation::UA_Player)
+		{
+			continue;
+		}
+
+		if (ALFPHexTile* Tile = Unit->GetCurrentTile())
+		{
+			if (Tile->GetUnitOnTile() == Unit)
+			{
+				Tile->SetIsOccupied(false);
+				Tile->SetUnitOnTile(nullptr);
+			}
+		}
+
+		Unit->Destroy();
+	}
+}
+
+void ALFPTurnGameMode::SpawnEnemyUnitsFromCSV(const FString& BattleMapName)
+{
+	if (!GridManager || BattleMapName.IsEmpty())
+	{
+		return;
+	}
+
+	ULFPGameInstance* GI = Cast<ULFPGameInstance>(GetGameInstance());
+	if (!GI || !GI->UnitRegistry)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Battle enemy spawn skipped: UnitRegistry is missing"));
+		return;
+	}
+
+	const FString EnemyCSVPath = FPaths::ProjectSavedDir() / TEXT("Maps") / (BattleMapName + TEXT("_enemies.csv"));
+	if (!FPaths::FileExists(EnemyCSVPath))
+	{
+		UE_LOG(LogTemp, Log, TEXT("Battle enemy spawn: enemy CSV not found %s"), *EnemyCSVPath);
+		return;
+	}
+
+	FString CSVContent;
+	if (!FFileHelper::LoadFileToString(CSVContent, *EnemyCSVPath))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Battle enemy spawn: failed to read %s"), *EnemyCSVPath);
+		return;
+	}
+
+	UDataTable* TempTable = NewObject<UDataTable>(GetTransientPackage());
+	TempTable->RowStruct = FLFPEnemyMapUnitRow::StaticStruct();
+
+	TArray<FString> Problems = TempTable->CreateTableFromCSVString(CSVContent);
+	for (const FString& Problem : Problems)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Battle enemy CSV parse issue: %s"), *Problem);
+	}
+
+	TArray<FLFPEnemyMapUnitRow*> Rows;
+	TempTable->GetAllRows<FLFPEnemyMapUnitRow>(TEXT("SpawnEnemyUnitsFromCSV"), Rows);
+
+	int32 SpawnedCount = 0;
+	for (const FLFPEnemyMapUnitRow* Row : Rows)
+	{
+		if (!Row || Row->UnitTypeID.IsNone())
+		{
+			continue;
+		}
+
+		const FLFPHexCoordinates Coord(Row->Q, Row->R);
+		ALFPHexTile* Tile = GridManager->GetTileAtCoordinates(Coord);
+		if (!Tile)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Battle enemy spawn: missing tile (%d,%d) for %s"),
+				Row->Q, Row->R, *Row->UnitTypeID.ToString());
+			continue;
+		}
+
+		TSubclassOf<ALFPTacticsUnit> UnitClass = GI->UnitRegistry->GetUnitClass(Row->UnitTypeID);
+		if (!UnitClass)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Battle enemy spawn: invalid UnitTypeID %s"), *Row->UnitTypeID.ToString());
+			continue;
+		}
+
+		const FTransform SpawnTransform(FRotator::ZeroRotator, Tile->GetActorLocation() + FVector(0.f, 0.f, 1.f));
+		ALFPTacticsUnit* Unit = GetWorld()->SpawnActorDeferred<ALFPTacticsUnit>(
+			UnitClass, SpawnTransform, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+		if (!Unit)
+		{
+			continue;
+		}
+
+		Unit->Affiliation = EUnitAffiliation::UA_Enemy;
+		Unit->UnitTypeID = Row->UnitTypeID;
+		Unit->SetStartCoordinates(Coord.Q, Coord.R);
+		Unit->FinishSpawning(SpawnTransform);
+		++SpawnedCount;
+	}
+
+	UE_LOG(LogTemp, Log, TEXT("Battle enemy spawn: spawned %d enemy units from %s"), SpawnedCount, *EnemyCSVPath);
 }
 
 void ALFPTurnGameMode::EndBattle(bool bVictory, bool bEscaped)

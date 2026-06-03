@@ -35,11 +35,14 @@ private:
 	UFUNCTION() void OnEventToolClicked();
 	UFUNCTION() void OnAddTileToolClicked();
 	UFUNCTION() void OnRemoveTileToolClicked();
+	UFUNCTION() void OnEnemyUnitToolClicked();
+	UFUNCTION() void OnRemoveEnemyUnitToolClicked();
 
 	// 参数变化回调
 	UFUNCTION() void OnTerrainTypeChanged(FString SelectedItem, ESelectInfo::Type SelectionType);
 	UFUNCTION() void OnDecorationIDChanged(FString SelectedItem, ESelectInfo::Type SelectionType);
 	UFUNCTION() void OnSpawnFactionChanged(FString SelectedItem, ESelectInfo::Type SelectionType);
+	UFUNCTION() void OnEnemyUnitTypeChanged(FString SelectedItem, ESelectInfo::Type SelectionType);
 
 	// 保存/加载回调
 	UFUNCTION() void OnSaveClicked();
@@ -71,6 +74,12 @@ protected:
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
 	TObjectPtr<UButton> RemoveTileToolButton;
 
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+	TObjectPtr<UButton> EnemyUnitToolButton;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+	TObjectPtr<UButton> RemoveEnemyUnitToolButton;
+
 	// 地形类型下拉框
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
 	TObjectPtr<UComboBoxString> TerrainTypeComboBox;
@@ -82,6 +91,9 @@ protected:
 	// 出生点阵营下拉框
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
 	TObjectPtr<UComboBoxString> SpawnFactionComboBox;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+	TObjectPtr<UComboBoxString> EnemyUnitComboBox;
 
 	// 出生点索引输入
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
