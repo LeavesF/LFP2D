@@ -259,6 +259,33 @@ void ULFPBuffComponent::OnSkillDamageReceived(ALFPTacticsUnit* DamageSourceUnit,
     }
 }
 
+void ULFPBuffComponent::OnMovedOneTile()
+{
+    ALFPTacticsUnit* OwnerUnit = GetOwnerUnit();
+    if (!OwnerUnit || !OwnerUnit->IsAlive())
+    {
+        return;
+    }
+
+    EvaluateBuffs();
+
+    for (int32 Index = 0; Index < BuffInstances.Num(); ++Index)
+    {
+        if (!OwnerUnit->IsAlive())
+        {
+            break;
+        }
+
+        FLFPBuffInstance& BuffInstance = BuffInstances[Index];
+        if (BuffInstance.IsActive())
+        {
+            ExecuteBuffEffects(BuffInstance, ELFPBuffTriggerEvent::OnMovedOneTile, OwnerUnit);
+        }
+    }
+
+    CleanupExpiredBuffs();
+}
+
 int32 ULFPBuffComponent::RemoveBuffById(FGameplayTag BuffId)
 {
     if (!BuffId.IsValid())

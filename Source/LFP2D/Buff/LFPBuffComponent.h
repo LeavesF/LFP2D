@@ -42,6 +42,9 @@ public:
     void OnSkillDamageReceived(ALFPTacticsUnit* DamageSourceUnit, ULFPSkillBase* DamageSourceSkill, int32 DamageAmount);
 
     UFUNCTION(BlueprintCallable, Category = "Buff")
+    void OnMovedOneTile();
+
+    UFUNCTION(BlueprintCallable, Category = "Buff")
     int32 RemoveBuffById(FGameplayTag BuffId);
 
     UFUNCTION(BlueprintCallable, Category = "Buff")

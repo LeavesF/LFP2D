@@ -525,6 +525,7 @@ void ALFPTacticsUnit::CommitMovePosition()
 
 	TArray<ALFPHexTile*> Path = GM->FindPath(StartTile, CurrTile, nullptr, GetAffiliation());
 	MovedHexDistanceThisRound += FMath::Max(0, Path.Num() - 1);
+	const int32 MovedStepCount = Path.Num();
 
 	// 构建 ZoC 映射，逐格累计消耗（从 ZoC 格出发时消耗替换为 ZoC 代价）
 	const TMap<FIntPoint, int32> ZocMap = GM->BuildZocCountMap(GetAffiliation());
@@ -551,6 +552,14 @@ void ALFPTacticsUnit::CommitMovePosition()
 		Tile->SetUnitOnTile(this);
 	}
 	LastCommittedCoordinates = CurrentCoordinates;
+
+	if (BuffComponent)
+	{
+		for (int32 StepIndex = 0; StepIndex < MovedStepCount && IsAlive(); ++StepIndex)
+		{
+			BuffComponent->OnMovedOneTile();
+		}
+	}
 }
 
 void ALFPTacticsUnit::ResetForNewRound()

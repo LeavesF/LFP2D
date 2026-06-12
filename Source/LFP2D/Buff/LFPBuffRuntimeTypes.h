@@ -64,7 +64,9 @@ enum class ELFPBuffTriggerEvent : uint8
     // 属性汇总触发点，不直接执行，而是在 RebuildCurrentStatsFromRuntimeSources 中读取。
     PassiveStat UMETA(DisplayName = "Passive Stat"),
 
-    OnSkillDamageReceived UMETA(DisplayName = "On Skill Damage Received")
+    OnSkillDamageReceived UMETA(DisplayName = "On Skill Damage Received"),
+
+    OnMovedOneTile UMETA(DisplayName = "On Moved One Tile")
 };
 
 UENUM(BlueprintType)
